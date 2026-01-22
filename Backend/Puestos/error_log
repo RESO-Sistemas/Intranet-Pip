@@ -1,0 +1,214 @@
+[10-Apr-2023 17:33:41 UTC] UPDATE Puestos SET Puesto = 'JEFE DE VENTAS INSTITUCIO'
+              WHERE IdPuesto = '23';
+[26-Apr-2023 22:25:19 UTC] PDOException: SQLSTATE[HY000]: General error: 1267 Illegal mix of collations (utf8_unicode_ci,IMPLICIT) and (utf8_general_ci,IMPLICIT) for operation '=' in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:67
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(67): PDOStatement->execute()
+#1 /home/klynet/public_html/Backend/Puestos/Puestos.php(49): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/Backend/Puestos/App.php(24): Puestos->addPuestos('NNNN', '1')
+#3 {main}
+[26-Apr-2023 22:25:19 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/Backend/Puestos/Puestos.php on line 50
+[26-Apr-2023 22:28:23 UTC] CALL spNuevoPuestoControl('1111111','1')
+[26-Apr-2023 22:28:23 UTC] PDOException: SQLSTATE[HY000]: General error: 1267 Illegal mix of collations (utf8_unicode_ci,IMPLICIT) and (utf8_general_ci,IMPLICIT) for operation '=' in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:67
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(67): PDOStatement->execute()
+#1 /home/klynet/public_html/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/Backend/Puestos/App.php(24): Puestos->addPuestos('1111111', '1')
+#3 {main}
+[26-Apr-2023 22:28:23 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/Backend/Puestos/Puestos.php on line 51
+[26-Apr-2023 22:31:24 UTC] CALL spNuevoPuestoControl('1111111111','1')
+[02-May-2023 21:55:59 UTC] CALL spNuevoPuestoControl('Líder de Contac Center','2')
+[11-May-2023 21:29:06 UTC] CALL spNuevoPuestoControl('VENDEDOR CONTAC CENTER','1')
+[31-May-2023 17:14:37 UTC] UPDATE Puestos SET Puesto = 'RELACIONES LABORALES'
+              WHERE IdPuesto = '86';
+[01-Jun-2023 22:39:02 UTC] CALL spNuevoPuestoControl('Gerente de Consultorios y Dermos','2')
+[01-Jun-2023 22:56:33 UTC] UPDATE Puestos SET Puesto = 'GERENTE DE CONSULTORIOS Y DERMO'
+              WHERE IdPuesto = '97';
+[06-Jun-2023 15:35:05 UTC] UPDATE Puestos SET Puesto = 'Líder de Sucursal Hospital Municipal'
+              WHERE IdPuesto = '94';
+[06-Jun-2023 15:35:35 UTC] CALL spNuevoPuestoControl('LÍDER CONTAC CENTER','1')
+[06-Jun-2023 15:40:50 UTC] CALL spNuevoPuestoControl('SUBLÍDER CONTAC CENTER','1')
+[06-Jun-2023 18:21:49 UTC] CALL spNuevoPuestoControl('AUX DE NOMINAS','2')
+[14-Jul-2023 17:57:52 UTC] CALL spNuevoPuestoControl('LÍDER SUCURSAL DARK STORE','2')
+[14-Jul-2023 17:58:06 UTC] CALL spNuevoPuestoControl('SUBLÍDER SUCURSAL DARK STORE','2')
+[02-Aug-2023 15:27:17 UTC] UPDATE Puestos SET Puesto = 'ASISTENTE ADMINISTRATIVO'
+              WHERE IdPuesto = '90';
+[15-Dec-2023 18:48:48 UTC] CALL spNuevoPuestoControl('JEFE MERCADERIAS MODULO DIF','1')
+[15-Dec-2023 18:49:03 UTC] CALL spNuevoPuestoControl('MERCADER MODULO DIF','1')
+[11-Jan-2024 21:50:33 UTC] CALL spNuevoPuestoControl('SUBGERENTE MODULO DIF','1')
+[11-Jan-2024 21:58:40 UTC] UPDATE Puestos SET Puesto = 'TELEFONISTA'
+              WHERE IdPuesto = '95';
+[11-Jan-2024 22:26:19 UTC] CALL spNuevoPuestoControl('AUX ADMINISTRATIVO DNN','2')
+[17-Jan-2024 14:16:15 UTC] UPDATE Puestos SET Puesto = 'GERENTE DE SUCURSAL'
+              WHERE IdPuesto = '2';
+[17-Jan-2024 14:16:28 UTC] UPDATE Puestos SET Puesto = 'GERENTE DE ZONA'
+              WHERE IdPuesto = '15';
+[17-Jan-2024 14:16:45 UTC] UPDATE Puestos SET Puesto = 'SUB GERENTE DE SUCURSAL'
+              WHERE IdPuesto = '84';
+[17-Jan-2024 14:16:55 UTC] UPDATE Puestos SET Puesto = 'SUBGERENTE DE SUCURSAL'
+              WHERE IdPuesto = '3';
+[29-Jan-2024 22:22:19 UTC] CALL spNuevoPuestoControl('GERENTE DE MANTENIMIENTO','2')
+[29-Jan-2024 22:27:40 UTC] CALL spNuevoPuestoControl('GERENTE DE CONSUMOS INTERNOS Y EXPANSIÓN','2')
+[29-Jan-2024 22:27:54 UTC] CALL spNuevoPuestoControl('JEFE DE CONSTRUCCIÓN','2')
+[23-May-2024 15:11:13 UTC] CALL spNuevoPuestoControl('Jefe de Recibo CEDI','3')
+[23-Sep-2024 20:37:23 UTC] CALL spNuevoPuestoControl('GERENTE DE PROGRAMACIÓN Y DESARROLLO','2')
+[26-Sep-2024 19:53:21 UTC] CALL spNuevoPuestoControl('JEFE DE CONTROL DE EGRESOS','2')
+[26-Sep-2024 19:56:34 UTC] CALL spNuevoPuestoControl('JEFE DE CONTROL DE INGRESOS','2')
+[22-Jan-2025 15:16:59 UTC] CALL spNuevoPuestoControl('DIRECTOR DE SERVICIOS DE SOPORTE','2')
+[17-Feb-2025 16:13:31 UTC] UPDATE Puestos SET Puesto = 'ANALISTA DE INFRAESTRUCTURA'
+              WHERE IdPuesto = '17';
+[24-Mar-2025 14:58:47 UTC] CALL spNuevoPuestoControl('MERCADER FARMACIA','1')
+[27-Mar-2025 17:46:41 UTC] CALL spNuevoPuestoControl('Analista de Control Presupuestal','2')
+[27-Mar-2025 17:49:31 UTC] UPDATE Puestos SET Puesto = 'ANALISTA DE CONTROL PRESUPUESTAL'
+              WHERE IdPuesto = '128';
+[10-Apr-2025 18:18:20 UTC] CALL spNuevoPuestoControl('Plan de Lealtad','2')
+[11-Apr-2025 20:42:29 UTC] CALL spNuevoPuestoControl('GERENTE MODULO DIF','1')
+[06-May-2025 15:38:51 UTC] CALL spNuevoPuestoControl('GERENTE DE PREVENCIÓN DE PÉRDIDAS','2')
+[11-Jul-2025 16:06:11 UTC] CALL spNuevoPuestoControl('Gerente de Ventas Institucionales y Mayoreo','2')
+[23-Jul-2025 17:22:26 UTC] CALL spNuevoPuestoControl('prueba','1')
+[23-Jul-2025 17:22:26 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba', '1')
+#3 {main}
+[23-Jul-2025 17:22:26 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:22:32 UTC] CALL spNuevoPuestoControl('prueba','2')
+[23-Jul-2025 17:22:32 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba', '2')
+#3 {main}
+[23-Jul-2025 17:22:32 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:22:37 UTC] CALL spNuevoPuestoControl('prueba45','2')
+[23-Jul-2025 17:22:37 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba45', '2')
+#3 {main}
+[23-Jul-2025 17:22:37 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:23:18 UTC] CALL spNuevoPuestoControl('prueba45','2')
+[23-Jul-2025 17:23:18 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba45', '2')
+#3 {main}
+[23-Jul-2025 17:23:18 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:23:27 UTC] CALL spNuevoPuestoControl('prueba45','1')
+[23-Jul-2025 17:23:27 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba45', '1')
+#3 {main}
+[23-Jul-2025 17:23:27 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:23:32 UTC] CALL spNuevoPuestoControl('prueba45asd','1')
+[23-Jul-2025 17:23:32 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba45asd', '1')
+#3 {main}
+[23-Jul-2025 17:23:32 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:24:21 UTC] CALL spNuevoPuestoControl('prueba45asd','1')
+[23-Jul-2025 17:24:21 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba45asd', '1')
+#3 {main}
+[23-Jul-2025 17:24:21 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[23-Jul-2025 17:24:38 UTC] UPDATE Puestos SET Puesto = 'TELEFONISTAA'
+              WHERE IdPuesto = '103';
+[23-Jul-2025 17:24:50 UTC] UPDATE Puestos SET Puesto = 'TELEFONISTA'
+              WHERE IdPuesto = '103';
+[20-Aug-2025 16:58:33 UTC] UPDATE Puestos SET Puesto = 'AGENTE DE VENTASS'
+              WHERE IdPuesto = '127';
+[22-Aug-2025 15:55:42 UTC] CALL spNuevoPuestoControl('prueba as','2')
+[22-Aug-2025 15:55:42 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('prueba as', '2')
+#3 {main}
+[22-Aug-2025 15:55:42 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 15:55:51 UTC] CALL spNuevoPuestoControl('dasd','2')
+[22-Aug-2025 15:55:51 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('dasd', '2')
+#3 {main}
+[22-Aug-2025 15:55:51 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 15:56:23 UTC] CALL spNuevoPuestoControl('dasd PRUEBA','3')
+[22-Aug-2025 15:56:23 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('dasd PRUEBA', '3')
+#3 {main}
+[22-Aug-2025 15:56:23 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 15:56:44 UTC] CALL spNuevoPuestoControl('dasd','3')
+[22-Aug-2025 15:56:44 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('dasd', '3')
+#3 {main}
+[22-Aug-2025 15:56:44 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:25:35 UTC] CALL spNuevoPuestoControl('asd','3')
+[22-Aug-2025 16:25:35 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('asd', '3')
+#3 {main}
+[22-Aug-2025 16:25:35 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:26:52 UTC] CALL spNuevoPuestoControl('asd','3')
+[22-Aug-2025 16:26:52 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('asd', '3')
+#3 {main}
+[22-Aug-2025 16:26:52 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:26:56 UTC] CALL spNuevoPuestoControl('asd','2')
+[22-Aug-2025 16:26:56 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('asd', '2')
+#3 {main}
+[22-Aug-2025 16:26:56 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:26:59 UTC] CALL spNuevoPuestoControl('asd','1')
+[22-Aug-2025 16:26:59 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('asd', '1')
+#3 {main}
+[22-Aug-2025 16:26:59 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:29:45 UTC] CALL spNuevoPuestoControl('dasd','3')
+[22-Aug-2025 16:29:45 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('dasd', '3')
+#3 {main}
+[22-Aug-2025 16:29:45 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:45:43 UTC] CALL spNuevoPuestoControl('dasd','3')
+[22-Aug-2025 16:45:43 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spNuevoPuestoControl' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php(50): Conexiones->Procedure('CALL spNuevoPue...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Puestos/App.php(24): Puestos->addPuestos('dasd', '3')
+#3 {main}
+[22-Aug-2025 16:45:43 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/demonew/Backend/Puestos/Puestos.php on line 51
+[22-Aug-2025 16:50:34 UTC] UPDATE Puestos SET Puesto = 'AGENTE DE VENTASSE'
+              WHERE IdPuesto = '127';
+[22-Aug-2025 16:51:14 UTC] UPDATE Puestos SET Puesto = 'ANALISTA DE CONTRIB SOCIAA'
+              WHERE IdPuesto = '82';
+[22-Aug-2025 16:52:41 UTC] UPDATE Puestos SET Puesto = 'AGENTE DE VENTASSE'
+              WHERE IdPuesto = '127';

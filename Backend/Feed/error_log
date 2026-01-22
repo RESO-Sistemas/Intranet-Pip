@@ -1,0 +1,1177 @@
+[31-Jul-2024 17:36:51 UTC] titulo generado: Nuevo feed!:INVITACIÓN - Plática: Atención de Lesiones y Riesgos de Trabajo 
+[31-Jul-2024 17:36:51 UTC] {"id":"8de0f52a-eeba-469d-994e-b9ff295256b1","external_id":null}
+[31-Jul-2024 17:36:52 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[31-Jul-2024 19:19:43 UTC] titulo generado: Nuevo feed!:Envío GRATIS y Descuentos Exclusivos en compras en línea.
+[31-Jul-2024 19:19:44 UTC] {"id":"4d00b976-45ab-4fbd-bf29-c4f872d35d75","external_id":null}
+[31-Jul-2024 19:19:44 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[01-Aug-2024 15:17:56 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(11): Feed->newFeed('Colaboradores a...', 'Como parte de l...', '')
+#3 {main}
+[01-Aug-2024 15:17:56 UTC] titulo generado: 
+[01-Aug-2024 15:17:57 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[01-Aug-2024 15:17:57 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[01-Aug-2024 15:20:53 UTC] titulo generado: Nuevo feed!:Colaboradores aprenden sobre alimentación para prevenir enfermedades en Brigada de Salud 
+[01-Aug-2024 15:20:53 UTC] {"id":"1974d9e7-41ba-4476-ab50-9514a322d559","external_id":null}
+[01-Aug-2024 15:20:53 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[02-Aug-2024 15:29:45 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(632): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Muchas felici...', '2565')
+#3 {main}
+[02-Aug-2024 19:29:47 UTC] titulo generado: Nuevo feed!:INVITACIÓN - Plática: Burnout y Manejo de Estrés Laboral 
+[02-Aug-2024 19:29:48 UTC] {"id":"3d5a8b8d-6240-4fd0-aded-5b97edb990d4","external_id":null}
+[02-Aug-2024 19:29:48 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[02-Aug-2024 22:17:27 UTC] titulo generado: Nuevo feed!:Colaboradores Aprenden sobre Salud Sexual y Reproductiva en la Brigada de Salud
+[02-Aug-2024 22:17:27 UTC] {"id":"5df7d6fd-77d9-45c6-a961-489eb85781d9","external_id":null}
+[02-Aug-2024 22:17:27 UTC] Envio de correos. Total: 890 Correctos: 1 Errores: 0
+[06-Aug-2024 15:15:53 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(11): Feed->newFeed('Personal del CE...', 'Como parte de l...', '')
+#3 {main}
+[06-Aug-2024 15:15:53 UTC] titulo generado: 
+[06-Aug-2024 15:15:53 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[06-Aug-2024 15:15:53 UTC] Envio de correos. Total: 886 Correctos: 1 Errores: 0
+[06-Aug-2024 15:17:12 UTC] titulo generado: Nuevo feed!:Personal del CEDI aprende a atender lesiones y riesgos de trabajo en charla de Brigada de Salud 
+[06-Aug-2024 15:17:12 UTC] {"id":"97d33669-b9fd-421d-94d7-2b3e50ad549a","external_id":null}
+[06-Aug-2024 15:17:12 UTC] Envio de correos. Total: 886 Correctos: 1 Errores: 0
+[06-Aug-2024 17:21:03 UTC] titulo generado: Nuevo feed!:¡COMPRA EN CASA! - Aprovecha las promociones de Agosto
+[06-Aug-2024 17:21:03 UTC] {"id":"bf636717-aa9a-4bd9-89a2-b3dd66ef905a","external_id":null}
+[06-Aug-2024 17:21:04 UTC] Envio de correos. Total: 886 Correctos: 1 Errores: 0
+[07-Aug-2024 15:30:11 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Muchas felici...', '2577')
+#3 {main}
+[08-Aug-2024 15:35:20 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(11): Feed->newFeed('REDONDEO KLYNS:...', 'En agosto apoya...', '')
+#3 {main}
+[08-Aug-2024 15:35:20 UTC] titulo generado: 
+[08-Aug-2024 15:35:22 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[08-Aug-2024 15:35:22 UTC] Envio de correos. Total: 886 Correctos: 1 Errores: 0
+[08-Aug-2024 15:38:27 UTC] titulo generado: Nuevo feed!:REDONDEO KLYNS: En Agosto apoyamos a Casa del Anciano Doctor Samuel Silva, A.C. 
+[08-Aug-2024 15:38:28 UTC] {"id":"8cf580ca-ed1a-4c06-b12a-1caad254255e","external_id":null}
+[08-Aug-2024 15:38:29 UTC] Envio de correos. Total: 886 Correctos: 1 Errores: 0
+[08-Aug-2024 17:56:35 UTC] titulo generado: Nuevo feed!:Colaboradores se Capacitan en Manejo de Estrés y Prevención del Burnout en la Brigada de Salud. 
+[08-Aug-2024 17:56:35 UTC] {"id":"3d75887b-8b1c-47ff-a65a-7d22647e128e","external_id":null}
+[08-Aug-2024 17:56:35 UTC] Envio de correos. Total: 885 Correctos: 1 Errores: 0
+[12-Aug-2024 15:19:36 UTC] titulo generado: Nuevo feed!:Más de 80 colaboradores reciben asesoría nutricional en la Brigada de Salud 
+[12-Aug-2024 15:19:37 UTC] {"id":"3b6039ba-0c27-4296-b512-1f16c058c774","external_id":null}
+[12-Aug-2024 15:19:37 UTC] Envio de correos. Total: 884 Correctos: 1 Errores: 0
+[12-Aug-2024 18:58:57 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[12-Aug-2024 18:58:58 UTC] {"id":"dd5c4c8f-5a37-4732-b6e2-e6765e86d293","external_id":null}
+[12-Aug-2024 18:58:58 UTC] Envio de correos. Total: 884 Correctos: 1 Errores: 0
+[12-Aug-2024 22:21:36 UTC] titulo generado: Nuevo feed!:Beneficios de los Planes de Lealtad 
+[12-Aug-2024 22:21:37 UTC] {"id":"85d9015b-7e56-4d15-9795-6a4b20657daf","external_id":null}
+[12-Aug-2024 22:21:37 UTC] Envio de correos. Total: 884 Correctos: 1 Errores: 0
+[15-Aug-2024 15:20:09 UTC] titulo generado: Nuevo feed!:Vacante interna: Contacto Médico
+[15-Aug-2024 15:20:09 UTC] {"id":"b5624b72-e8ba-4e14-b74a-f499cf516393","external_id":null}
+[15-Aug-2024 15:20:09 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[15-Aug-2024 16:18:09 UTC] titulo generado: Nuevo feed!:Contamos con Ultrasonidos. 
+[15-Aug-2024 16:18:10 UTC] {"id":"13926d04-a197-4726-8986-90ff6c77266d","external_id":null}
+[15-Aug-2024 16:18:10 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[16-Aug-2024 14:46:47 UTC] titulo generado: Nuevo feed!: ¡Bienvenido, Edick Reyes! 
+[16-Aug-2024 14:46:47 UTC] {"id":"c6a61dfa-ffe3-4696-ab42-9c73fc391e0c","external_id":null}
+[16-Aug-2024 14:46:47 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[16-Aug-2024 22:50:00 UTC] titulo generado: Nuevo feed!:LÍDER CON VALOR - Reconoce a tu equipo.
+[16-Aug-2024 22:50:01 UTC] {"id":"fad29167-7d29-4cbe-87a6-48265788d615","external_id":null}
+[16-Aug-2024 22:50:01 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[16-Aug-2024 23:23:01 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[16-Aug-2024 23:23:01 UTC] {"id":"06f3de26-1469-4682-9778-a3b598fd0d6a","external_id":null}
+[16-Aug-2024 23:23:01 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[19-Aug-2024 20:25:14 UTC] titulo generado: Nuevo feed!:Comunicados - Semana 34
+[19-Aug-2024 20:25:14 UTC] {"id":"d971199b-7899-47dd-b1c0-ae26f430ae81","external_id":null}
+[19-Aug-2024 20:25:15 UTC] Envio de correos. Total: 662 Correctos: 1 Errores: 0
+[20-Aug-2024 15:38:36 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Muchas felici...', '2611')
+#3 {main}
+[21-Aug-2024 23:07:54 UTC] titulo generado: Nuevo feed!:Colaboradores son premiados por Concurso de Genéricos y Pañales
+[21-Aug-2024 23:07:55 UTC] {"id":"833b8fdf-8599-46e8-9d7e-c0b8ebc71d3a","external_id":null}
+[21-Aug-2024 23:07:55 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[22-Aug-2024 23:15:34 UTC] titulo generado: Nuevo feed!:Juegos ENCIVICA 2024
+[22-Aug-2024 23:15:34 UTC] {"id":"1e8b91a6-ad99-4687-a624-454bb8d49215","external_id":null}
+[22-Aug-2024 23:15:34 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[23-Aug-2024 15:49:25 UTC] titulo generado: Nuevo feed!: KLYNET: Nueva actualización - ¡Ya disponible! 
+[23-Aug-2024 15:49:26 UTC] {"id":"02dc6ef4-d248-4e72-98cb-18328774f432","external_id":null}
+[23-Aug-2024 15:49:26 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[27-Aug-2024 22:56:57 UTC] titulo generado: Nuevo feed!:Comunicados - Semana 35
+[27-Aug-2024 22:56:58 UTC] {"id":"9fee50f0-fe81-4c7f-85c0-3696c8dc6274","external_id":null}
+[27-Aug-2024 22:56:58 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[27-Aug-2024 23:09:34 UTC] titulo generado: Nuevo feed!:Dinámica: Exhibiciones Día de la Independencia
+[27-Aug-2024 23:09:35 UTC] {"id":"873018b5-af96-48b1-87ce-734bf176efbe","external_id":null}
+[27-Aug-2024 23:09:35 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[28-Aug-2024 14:55:16 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Muchas felici...', '2628')
+#3 {main}
+[28-Aug-2024 14:55:45 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Felicidades!', '2627')
+#3 {main}
+[28-Aug-2024 16:43:39 UTC] titulo generado: Nuevo feed!:¡Feliz día del Abuelo y la Abuela!
+[28-Aug-2024 16:43:40 UTC] {"id":"8ad3eca1-4757-4870-87ac-04976de78d03","external_id":null}
+[28-Aug-2024 16:43:40 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[30-Aug-2024 15:39:46 UTC] titulo generado: Nuevo feed!:Últimas horas de las promos del mes, ¡llena tu carrito!
+[30-Aug-2024 15:39:46 UTC] {"id":"2b374ca2-e689-4674-9238-6cc8ae177b4c","external_id":null}
+[30-Aug-2024 15:39:46 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[03-Sep-2024 17:20:13 UTC] titulo generado: Nuevo feed!:Comunicados - Semana 36
+[03-Sep-2024 17:20:14 UTC] {"id":"b507edc5-29d1-4949-801f-e038b89b29c9","external_id":null}
+[03-Sep-2024 17:20:14 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[04-Sep-2024 23:23:24 UTC] titulo generado: Nuevo feed!:¡COMPRA EN CASA! - Aprovecha las promociones de Septiembre
+[04-Sep-2024 23:23:24 UTC] {"id":"a8dedb35-c289-4a96-8a48-25fe4725fc63","external_id":null}
+[04-Sep-2024 23:23:24 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[05-Sep-2024 15:46:19 UTC] titulo generado: Nuevo feed!:REDONDEO KLYNS: En septiembre apoyamos al Instituto de Desarrollo Integral
+[05-Sep-2024 15:46:19 UTC] {"id":"8c5d833e-9a95-46cf-bf19-fbbf43ff40a0","external_id":null}
+[05-Sep-2024 15:46:20 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[06-Sep-2024 16:06:19 UTC] titulo generado: Nuevo feed!:Promociones Página Web / KLYNS.MX
+[06-Sep-2024 16:06:20 UTC] {"id":"ae09053b-8486-4db1-96ed-a2eb089665ae","external_id":null}
+[06-Sep-2024 16:06:20 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[06-Sep-2024 17:36:56 UTC] titulo generado: Nuevo feed!:Promoción: Alejandro Arreola 
+[06-Sep-2024 17:36:57 UTC] {"id":"bdcb8118-fa95-499c-9852-c0b72c7b44cc","external_id":null}
+[06-Sep-2024 17:36:57 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[06-Sep-2024 20:30:25 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[06-Sep-2024 20:30:25 UTC] {"id":"8b6feb12-1dae-409b-badc-a57490aa5a7f","external_id":null}
+[06-Sep-2024 20:30:25 UTC] Envio de correos. Total: 665 Correctos: 1 Errores: 0
+[09-Sep-2024 17:59:54 UTC] titulo generado: Nuevo feed!:Mentes con Alas recibe importante donativo del Redondeo KLYNS 
+[09-Sep-2024 17:59:55 UTC] {"id":"c20c7749-6e4c-48ba-be6c-e248d1a40c98","external_id":null}
+[09-Sep-2024 17:59:55 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[10-Sep-2024 16:03:11 UTC] titulo generado: Nuevo feed!:Vacante Interna: Gerente de Call Center
+[10-Sep-2024 16:03:13 UTC] {"id":"b1355ec1-68c1-4637-9120-8b0564475361","external_id":null}
+[10-Sep-2024 16:03:13 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[10-Sep-2024 18:28:29 UTC] titulo generado: Nuevo feed!:Promoción: Esther Aguilar
+[10-Sep-2024 18:28:29 UTC] {"id":"d56d28bf-0f10-4154-a964-124d4314221d","external_id":null}
+[10-Sep-2024 18:28:30 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[10-Sep-2024 21:00:24 UTC] titulo generado: Nuevo feed!:10 de Sep - Día Mundial para la Prevención del Suicidio
+[10-Sep-2024 21:00:24 UTC] {"id":"ac3852aa-1a78-472d-ae76-f8113f00981b","external_id":null}
+[10-Sep-2024 21:00:24 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[11-Sep-2024 16:29:21 UTC] titulo generado: Nuevo feed!:Comunicados - Semana 37
+[11-Sep-2024 16:29:21 UTC] {"id":"995486b8-6ad9-4810-9e44-a84296780cbe","external_id":null}
+[11-Sep-2024 16:29:21 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[13-Sep-2024 16:36:32 UTC] titulo generado: Nuevo feed!:Recomendaciones Contra el DENGUE.
+[13-Sep-2024 16:36:32 UTC] {"id":"11e69683-6b6b-453d-a16e-55b580dc3d2d","external_id":null}
+[13-Sep-2024 16:36:32 UTC] Envio de correos. Total: 664 Correctos: 1 Errores: 0
+[18-Sep-2024 17:53:54 UTC] titulo generado: Nuevo feed!:Encuesta de Satisfacción Laboral y Nivel de Servicio Interno 2024
+[18-Sep-2024 17:53:55 UTC] {"id":"6b8cfd56-ea81-4661-9c1a-22be09137766","external_id":null}
+[18-Sep-2024 17:53:55 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[18-Sep-2024 21:19:24 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('Felicidades Com...', '2680')
+#3 {main}
+[19-Sep-2024 20:15:31 UTC] titulo generado: Nuevo feed!:Sucursales Celebraron el Día de la Independencia
+[19-Sep-2024 20:15:31 UTC] {"id":"e6c4e14d-b296-4008-97a6-115257d6e3c2","external_id":null}
+[19-Sep-2024 20:15:31 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[23-Sep-2024 21:27:47 UTC] titulo generado: Nuevo feed!:¡ÚLTIMO DÍA! - Encuesta de Satisfacción Laboral y Nivel de Servicio
+[23-Sep-2024 21:27:47 UTC] {"id":"8eaf0301-bb3b-4d9e-b253-0bb3d94708e2","external_id":null}
+[23-Sep-2024 21:27:47 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[23-Sep-2024 22:45:12 UTC] titulo generado: Nuevo feed!:GANADORES: Dinámica de Exhibiciones
+[23-Sep-2024 22:45:13 UTC] {"id":"663a9773-4d5e-47db-b2c6-994ba19cf824","external_id":null}
+[23-Sep-2024 22:45:13 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[27-Sep-2024 16:29:25 UTC] titulo generado: Nuevo feed!:LÍDER CON VALOR - Reconoce y Motiva a tu Equipo.
+[27-Sep-2024 16:29:26 UTC] {"id":"68bed743-d51a-4ec8-a514-ed55c595b4ca","external_id":null}
+[27-Sep-2024 16:29:26 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[27-Sep-2024 18:17:08 UTC] titulo generado: Nuevo feed!:Redondeo KLYNS beneficia a niños y jóvenes del ILAL.  
+[27-Sep-2024 18:17:08 UTC] {"id":"a0541751-06e9-458d-a621-a9ae1b211047","external_id":null}
+[27-Sep-2024 18:17:08 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[02-Oct-2024 14:25:44 UTC] titulo generado: Nuevo feed!:Cuidarte es Quererte: Octubre, Mes de Prevención contra el Cáncer de Mama
+[02-Oct-2024 14:25:44 UTC] titulo generado: Nuevo feed!:Cuidarte es Quererte: Octubre, Mes de Prevención contra el Cáncer de Mama
+[02-Oct-2024 14:25:45 UTC] {"id":"a8e9299e-cec3-41f1-a770-299552a3b93f","external_id":null}
+[02-Oct-2024 14:25:45 UTC] Envio de correos. Total: 674 Correctos: 1 Errores: 0
+[02-Oct-2024 14:25:45 UTC] {"id":"890d95b8-228b-44b0-9e74-b691c6ab074f","external_id":null}
+[02-Oct-2024 14:25:45 UTC] Envio de correos. Total: 674 Correctos: 1 Errores: 0
+[03-Oct-2024 15:58:08 UTC] titulo generado: Nuevo feed!:¡COMPRA EN CASA! - Aprovecha las promociones de Octubre
+[03-Oct-2024 15:58:08 UTC] {"id":"d97aeb57-47ed-48a5-b92d-42171a2e3dac","external_id":null}
+[03-Oct-2024 15:58:08 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[03-Oct-2024 18:35:03 UTC] titulo generado: Nuevo feed!:Vacante Interna: Dermoconsejera - Suc. Independencia
+[03-Oct-2024 18:35:04 UTC] {"id":"24bc746e-ca1a-43ae-8063-745d48b4d618","external_id":null}
+[03-Oct-2024 18:35:04 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[04-Oct-2024 15:28:07 UTC] titulo generado: Nuevo feed!:Talento y dedicación: colaboradores finalizan capacitación avanzada en Excel
+[04-Oct-2024 15:28:09 UTC] {"id":"dd0f732d-cba6-4ada-8f10-56da34b9337c","external_id":null}
+[04-Oct-2024 15:28:09 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[07-Oct-2024 21:47:48 UTC] titulo generado: Nuevo feed!:Promociones Página Web / KLYNS.MX
+[07-Oct-2024 21:47:48 UTC] {"id":"a3714dab-c10d-4eb0-bde3-64b4f07bfe96","external_id":null}
+[07-Oct-2024 21:47:48 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[08-Oct-2024 15:33:55 UTC] titulo generado: Nuevo feed!:Cuidarte es Quererte: ¿Qué es el Cáncer de Mama?
+[08-Oct-2024 15:33:55 UTC] {"id":"a0604235-917a-4136-ac4b-fd7537ab8e13","external_id":null}
+[08-Oct-2024 15:33:55 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[08-Oct-2024 19:51:33 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Octubre 2024.
+[08-Oct-2024 19:51:33 UTC] {"id":"467a486e-db5f-4d59-8ea1-0354ed8dc122","external_id":null}
+[08-Oct-2024 19:51:33 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[09-Oct-2024 15:41:42 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(665): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('\xC2\xA1Muchas felici...', '2731')
+#3 {main}
+[09-Oct-2024 16:17:33 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[09-Oct-2024 16:17:33 UTC] {"id":"ffe06f12-01b6-44af-ba81-2d0cb3b26460","external_id":null}
+[09-Oct-2024 16:17:33 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[09-Oct-2024 21:04:54 UTC] titulo generado: Nuevo feed!:Cuidarte es Quererte: ¡Gana un Check Up - Cáncer de Mama!
+[09-Oct-2024 21:04:54 UTC] {"id":"fc732f29-73ba-47e1-b69b-411707852adb","external_id":null}
+[09-Oct-2024 21:04:54 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[09-Oct-2024 22:28:59 UTC] titulo generado: Nuevo feed!:CALL CENTER: Asignación de Gerencia y Promoción
+[09-Oct-2024 22:29:00 UTC] {"id":"0e3c0552-15c6-4915-9977-13b2391d95f3","external_id":null}
+[09-Oct-2024 22:29:00 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[10-Oct-2024 19:33:52 UTC] titulo generado: Nuevo feed!:Vacantes Internas KLYNS
+[10-Oct-2024 19:33:52 UTC] {"id":"266bd68b-a22e-4ac7-8804-147d824c5520","external_id":null}
+[10-Oct-2024 19:33:52 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[11-Oct-2024 15:36:51 UTC] titulo generado: Nuevo feed!:Redondeo KLYNS: En Octubre apoyamos al Museo Arocena
+[11-Oct-2024 15:36:51 UTC] {"id":"0913fdb0-4136-44ab-8bf3-4303a7f1b4d8","external_id":null}
+[11-Oct-2024 15:36:51 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[16-Oct-2024 19:08:10 UTC] titulo generado: Nuevo feed!:?️ Cuidarte es Quererte: Autoexplórate y Previene el Cáncer de Mama
+[16-Oct-2024 19:08:11 UTC] {"id":"e98590dc-0020-4fc4-bd90-686cd4fb2d22","external_id":null}
+[16-Oct-2024 19:08:11 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[17-Oct-2024 18:46:38 UTC] titulo generado: Nuevo feed!:Vacante Interna: Crédito y Cobranza
+[17-Oct-2024 18:46:39 UTC] {"id":"a45b265f-d93e-44e5-a57e-00a5ae65ca0e","external_id":null}
+[17-Oct-2024 18:46:39 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[17-Oct-2024 21:32:34 UTC] titulo generado: Nuevo feed!:RECORDATORIO: ¡Gana un Check Up - Cáncer de Mama!
+[17-Oct-2024 21:32:34 UTC] {"id":"40ca49f2-e6fb-40bf-8ecd-de0f33aff989","external_id":null}
+[17-Oct-2024 21:32:34 UTC] Envio de correos. Total: 673 Correctos: 1 Errores: 0
+[22-Oct-2024 19:21:58 UTC] titulo generado: Nuevo feed!:Ganadoras: Dinámica CheckUps Cáncer de Mama
+[22-Oct-2024 19:21:59 UTC] {"id":"9208c77f-1622-428a-b82d-52347c7b9d16","external_id":null}
+[22-Oct-2024 19:21:59 UTC] Envio de correos. Total: 672 Correctos: 1 Errores: 0
+[23-Oct-2024 15:25:35 UTC] titulo generado: Nuevo feed!:Charla “Cicatrices de Oro” inspira conciencia en la lucha contra el cáncer de mama. 
+[23-Oct-2024 15:25:36 UTC] {"id":"e0b5d12b-98e1-473c-8422-413e51db3e7f","external_id":null}
+[23-Oct-2024 15:25:36 UTC] Envio de correos. Total: 672 Correctos: 1 Errores: 0
+[23-Oct-2024 20:04:04 UTC] titulo generado: Nuevo feed!:Viste el Uniforme con Actitud Positiva
+[23-Oct-2024 20:04:04 UTC] {"id":"d6523ee9-3b44-4491-bb1a-b264e690fe38","external_id":null}
+[23-Oct-2024 20:04:04 UTC] Envio de correos. Total: 672 Correctos: 1 Errores: 0
+[24-Oct-2024 15:53:24 UTC] titulo generado: Nuevo feed!:Sigamos construyendo LÍDERES CON VALOR. 
+[24-Oct-2024 15:53:25 UTC] {"id":"8d993785-b273-47a7-9ad5-7ba383e58d81","external_id":null}
+[24-Oct-2024 15:53:25 UTC] Envio de correos. Total: 672 Correctos: 1 Errores: 0
+[30-Oct-2024 17:53:17 UTC] titulo generado: Nuevo feed!:Redondeo en acción: Entregamos donativo a la Casa del Anciano “Dr. Samuel Silva”. 
+[30-Oct-2024 17:53:17 UTC] {"id":"fa0126c1-a9ae-450f-bf96-69578a25dd44","external_id":null}
+[30-Oct-2024 17:53:18 UTC] Envio de correos. Total: 672 Correctos: 1 Errores: 0
+[31-Oct-2024 20:56:09 UTC] titulo generado: Nuevo feed!:Vistamos correctamente nuestros uniformes.
+[31-Oct-2024 20:56:10 UTC] {"id":"6814c334-7749-40f2-b21e-90d1a970cd52","external_id":null}
+[31-Oct-2024 20:56:10 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[01-Nov-2024 19:19:45 UTC] titulo generado: Nuevo feed!:Dinámica de Día de Muertos 2024
+[01-Nov-2024 19:19:45 UTC] {"id":"ac9598c0-4457-4c07-aa39-6b31452bbc25","external_id":null}
+[01-Nov-2024 19:19:45 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[01-Nov-2024 19:31:30 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[01-Nov-2024 19:31:31 UTC] {"id":"e4ee429f-0d94-4a3b-bab0-ed1f05920676","external_id":null}
+[01-Nov-2024 19:31:31 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[02-Nov-2024 18:02:48 UTC] titulo generado: Nuevo feed!:Invitación: Festival Ambulante 2024
+[02-Nov-2024 18:02:48 UTC] {"id":"596b91ff-ca56-402d-9835-518db7799441","external_id":null}
+[02-Nov-2024 18:02:48 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[04-Nov-2024 22:24:52 UTC] titulo generado: Nuevo feed!:Dinámicas- Revolución Mexicana
+[04-Nov-2024 22:24:52 UTC] {"id":"7374f566-c622-4e64-831b-a37da098dd58","external_id":null}
+[04-Nov-2024 22:24:52 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[05-Nov-2024 18:56:57 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Noviembre 2024.
+[05-Nov-2024 18:56:57 UTC] {"id":"111aeb1b-bf32-4592-b464-bb79c7c0e505","external_id":null}
+[05-Nov-2024 18:56:57 UTC] Envio de correos. Total: 718 Correctos: 1 Errores: 0
+[08-Nov-2024 22:22:45 UTC] titulo generado: Nuevo feed!:Farmacias KLYNS fomenta la inclusión en una charla con la comunidad sorda del ILAL. 
+[08-Nov-2024 22:22:46 UTC] {"id":"a06a9a45-f5ab-413c-bf19-027a22735e46","external_id":null}
+[08-Nov-2024 22:22:46 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[11-Nov-2024 17:38:32 UTC] titulo generado: Nuevo feed!:GANADORES: Dinámica Día de Muertos
+[11-Nov-2024 17:38:32 UTC] {"id":"13ea2a97-55ad-47f4-a5c2-305b04f55049","external_id":null}
+[11-Nov-2024 17:38:32 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[11-Nov-2024 23:23:16 UTC] titulo generado: Nuevo feed!:Ganadores concurso: Laboratorios RAAM.
+[11-Nov-2024 23:23:16 UTC] {"id":"9c719da8-89e2-4ae3-99da-badcd7936eb0","external_id":null}
+[11-Nov-2024 23:23:16 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[12-Nov-2024 14:56:18 UTC] titulo generado: Nuevo feed!:INVITACIÓN: PEREGRINACIÓN 2024. 
+[12-Nov-2024 14:56:19 UTC] {"id":"ab691da3-74a3-4af1-b391-91c826b11fcb","external_id":null}
+[12-Nov-2024 14:56:19 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[12-Nov-2024 17:06:17 UTC] titulo generado: Nuevo feed!:UBITS: ¡Felicidades, Sofía Castruita!
+[12-Nov-2024 17:06:18 UTC] {"id":"1a449472-66b5-4fbd-b815-73afb8f01c10","external_id":null}
+[12-Nov-2024 17:06:18 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[12-Nov-2024 21:05:55 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[12-Nov-2024 21:05:56 UTC] {"id":"0ba15b48-66d9-46c2-8b50-a43399b3f3a6","external_id":null}
+[12-Nov-2024 21:05:56 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[13-Nov-2024 22:57:06 UTC] titulo generado: Nuevo feed!:Concurso: Aderogyl y Histiacil
+[13-Nov-2024 22:57:06 UTC] {"id":"7829ecf8-343f-4933-a1d6-ada98a279cc8","external_id":null}
+[13-Nov-2024 22:57:06 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[14-Nov-2024 15:04:25 UTC] titulo generado: Nuevo feed!:Ofertas BUEN FIN - Tienda en Línea
+[14-Nov-2024 15:04:25 UTC] {"id":"d1f4e95d-097a-47f2-a7c8-f262f875fbd3","external_id":null}
+[14-Nov-2024 15:04:25 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[14-Nov-2024 15:04:25 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[14-Nov-2024 19:43:02 UTC] titulo generado: Nuevo feed!:Vacante Interna: Auxiliar de Catálogo (Compras).
+[14-Nov-2024 19:43:03 UTC] {"id":"29db735a-f5a5-48cd-b27c-2b5bd9b35733","external_id":null}
+[14-Nov-2024 19:43:03 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[15-Nov-2024 14:20:44 UTC] titulo generado: Nuevo feed!:Compañeros concluyen curso de Excel. 
+[15-Nov-2024 14:20:45 UTC] {"id":"17b06c63-6546-4418-b7af-a65899e052d0","external_id":null}
+[15-Nov-2024 14:20:45 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[15-Nov-2024 16:37:05 UTC] titulo generado: Nuevo feed!:Dinámicas- Revolución Mexicana
+[15-Nov-2024 16:37:06 UTC] {"id":"d2794d1b-3cb9-4d8e-92e5-e26ec24ddb99","external_id":null}
+[15-Nov-2024 16:37:06 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[15-Nov-2024 16:37:06 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[20-Nov-2024 18:34:35 UTC] titulo generado: Nuevo feed!:CONCURSO TABCIN DIA Y NOCHE CON 12 CAPSULAS
+[20-Nov-2024 18:34:35 UTC] {"id":"5298ee65-dad4-417b-99bf-73ea8d2c306e","external_id":null}
+[20-Nov-2024 18:34:36 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[22-Nov-2024 16:56:36 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[22-Nov-2024 16:56:36 UTC] {"id":"b593d7d8-3b28-4cf8-a6d8-a755de441974","external_id":null}
+[22-Nov-2024 16:56:36 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[22-Nov-2024 16:56:36 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[25-Nov-2024 23:19:40 UTC] titulo generado: Nuevo feed!:Redondeo KLYNS beneficia al Instituto de Desarrollo Integral. 
+[25-Nov-2024 23:19:40 UTC] {"id":"9d4c455a-5ff7-44e6-aa8c-869ce00f4bc4","external_id":null}
+[25-Nov-2024 23:19:40 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[25-Nov-2024 23:19:40 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[26-Nov-2024 23:08:08 UTC] titulo generado: Nuevo feed!:Me Cuido y me Vacuno: Campaña de vacunación 2024. 
+[26-Nov-2024 23:08:08 UTC] {"id":"3a7877c4-9a59-4c9f-a637-c4fcf793e761","external_id":null}
+[26-Nov-2024 23:08:08 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[26-Nov-2024 23:08:08 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[26-Nov-2024 23:21:37 UTC] titulo generado: Nuevo feed!:Ganadores: Concurso Alka-Seltzer
+[26-Nov-2024 23:21:37 UTC] {"id":"8ba8d519-981e-495d-a881-183ee9c18836","external_id":null}
+[26-Nov-2024 23:21:37 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[27-Nov-2024 16:52:23 UTC] titulo generado: Nuevo feed!:Colaboradores KLYNS reafirman su fe en la Peregrinación Anual Guadalupana. 
+[27-Nov-2024 16:52:23 UTC] {"id":"ca10fa12-128d-4e2f-9344-501e1ce33ae0","external_id":null}
+[27-Nov-2024 16:52:24 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[29-Nov-2024 14:05:27 UTC] titulo generado: Nuevo feed!:¡Llegaron los Black Days a Klyns! Aprovecha los descuentos hoy
+[29-Nov-2024 14:05:28 UTC] {"id":"6482a8ac-9754-4e6e-9d63-f7ff40d52a73","external_id":null}
+[29-Nov-2024 14:05:28 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[29-Nov-2024 14:05:28 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[29-Nov-2024 22:17:18 UTC] titulo generado: Nuevo feed!:¡Bienvenida, Katie Arellano!
+[29-Nov-2024 22:17:19 UTC] {"id":"445b82a1-4a9f-4f91-abff-70c67807c6ac","external_id":null}
+[29-Nov-2024 22:17:19 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[02-Dec-2024 19:42:45 UTC] titulo generado: Nuevo feed!:COMPRA EN CASA - Promociones - Diciembre 2024
+[02-Dec-2024 19:42:45 UTC] {"id":"1c453a52-9fcf-4ba9-8098-7d6d076f3dcc","external_id":null}
+[02-Dec-2024 19:42:45 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[04-Dec-2024 17:40:29 UTC] titulo generado: Nuevo feed!:Farmacias KLYNS refuerza su compromiso con donativo a la Casa del Anciano. 
+[04-Dec-2024 17:40:30 UTC] {"id":"369ccd41-6fd9-4f5e-89ac-6efbdbdba482","external_id":null}
+[04-Dec-2024 17:40:31 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[04-Dec-2024 19:40:45 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Diciembre 2024.
+[04-Dec-2024 19:40:45 UTC] {"id":"de103af1-e22e-4489-8cef-d1101985c75d","external_id":null}
+[04-Dec-2024 19:40:45 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[05-Dec-2024 19:50:30 UTC] titulo generado: Nuevo feed!:Farmacias KLYNS reconoce la trayectoria de más de 50 colaboradores 
+[05-Dec-2024 19:50:30 UTC] {"id":"6d8f0592-2796-4d3b-b881-947db1dea354","external_id":null}
+[05-Dec-2024 19:50:31 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[06-Dec-2024 16:22:54 UTC] titulo generado: Nuevo feed!:CUPÓN DERMA COLABORADORES
+[06-Dec-2024 16:22:55 UTC] {"id":"a2bc26cb-9fe7-44a1-9ae2-bb0344774c08","external_id":null}
+[06-Dec-2024 16:22:55 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[06-Dec-2024 16:22:55 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[06-Dec-2024 21:11:44 UTC] titulo generado: Nuevo feed!:Ganadores - Dinámicas Revolución Mexicana
+[06-Dec-2024 21:11:45 UTC] {"id":"6c8b8a00-85e1-439c-b067-6ab8ef9fd6ed","external_id":null}
+[06-Dec-2024 21:11:45 UTC] Envio de correos. Total: 735 Correctos: 1 Errores: 0
+[09-Dec-2024 15:52:32 UTC] titulo generado: Nuevo feed!:¡BIENVENIDOS A KLYNS!
+[09-Dec-2024 15:52:32 UTC] {"id":"d1da0a89-37a7-42d1-862a-c8aa5742ecb9","external_id":null}
+[09-Dec-2024 15:52:32 UTC] Error al enviar el correo a : cesargue444@gmail.com Could not execute: /usr/sbin/sendmail -t -i<br>
+[09-Dec-2024 15:52:32 UTC] Envio de correos. Total: 735 Correctos: 0 Errores: 1
+[14-Dec-2024 00:42:55 UTC] titulo generado: Nuevo feed!:INDICACIONES: POSADA 2024 
+[14-Dec-2024 00:42:56 UTC] {"id":"ad601025-8cf7-4cd6-8e7a-395d533d27e9","external_id":null}
+[14-Dec-2024 00:42:56 UTC] Envio de correos. Total: 689 Correctos: 1 Errores: 0
+[18-Dec-2024 17:57:01 UTC] titulo generado: Nuevo feed!:La familia KLYNS celebra un año más de logros en la tradicional Posada. 
+[18-Dec-2024 17:57:02 UTC] {"id":"a8e6da94-af27-45bb-8164-79d4ac522306","external_id":null}
+[18-Dec-2024 17:57:02 UTC] Envio de correos. Total: 689 Correctos: 1 Errores: 0
+[19-Dec-2024 16:52:44 UTC] titulo generado: Nuevo feed!:Vacante Interna: Auxiliar de Catálogo (Compras).
+[19-Dec-2024 16:52:45 UTC] {"id":"d5d95246-3252-44e1-ac28-0168de657480","external_id":null}
+[19-Dec-2024 16:52:45 UTC] Envio de correos. Total: 689 Correctos: 1 Errores: 0
+[19-Dec-2024 23:26:05 UTC] titulo generado: Nuevo feed!:Convocatoria: ¡Tu voz transmite nuestras metas en 2025!
+[19-Dec-2024 23:26:06 UTC] {"id":"d472863c-97a2-41bb-b8f8-3dc1163a0b04","external_id":null}
+[19-Dec-2024 23:26:06 UTC] Envio de correos. Total: 689 Correctos: 1 Errores: 0
+[02-Jan-2025 20:21:51 UTC] titulo generado: Nuevo feed!:Farmacias Klyns cierra el 2024 con la tradicional Rifa Navideña. 
+[02-Jan-2025 20:21:51 UTC] {"id":"a54f24b3-8001-4632-94e8-936f4ae09b94","external_id":null}
+[02-Jan-2025 20:21:51 UTC] Envio de correos. Total: 689 Correctos: 1 Errores: 0
+[08-Jan-2025 15:30:40 UTC] titulo generado: Nuevo feed!:GANADORES: Concurso Aderogyl e Histiacil, y Concurso Tabcin Día y Noche.
+[08-Jan-2025 15:30:41 UTC] {"id":"2394e662-d62b-43ba-8346-d9b9477b8db1","external_id":null}
+[08-Jan-2025 15:30:41 UTC] Envio de correos. Total: 688 Correctos: 1 Errores: 0
+[08-Jan-2025 21:00:40 UTC] titulo generado: Nuevo feed!:LÍDER CON VALOR - ¡Sigamos construyendo líderes en 2025!
+[08-Jan-2025 21:00:41 UTC] {"id":"c199b088-3043-4f3e-ac1a-01f2616178da","external_id":null}
+[08-Jan-2025 21:00:41 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[15-Jan-2025 15:13:46 UTC] titulo generado: Nuevo feed!:Vacante Interna: Contacto Médico
+[15-Jan-2025 15:13:46 UTC] {"id":"82fe6e74-040a-4e13-8950-6a928f4699d3","external_id":null}
+[15-Jan-2025 15:13:46 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[15-Jan-2025 16:03:53 UTC] titulo generado: Nuevo feed!:Esquela: Expresamos nuestras condolencias.
+[15-Jan-2025 16:03:54 UTC] {"id":"99270177-d566-4655-9418-2f2ba4c580bb","external_id":null}
+[15-Jan-2025 16:03:54 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[15-Jan-2025 18:53:00 UTC] titulo generado: Nuevo feed!:Fe de erratas: Ganadores Concurso Aderogyl y Histiacil
+[15-Jan-2025 18:53:01 UTC] {"id":"b37ae1f9-347f-441b-895b-8b970c2b627d","external_id":null}
+[15-Jan-2025 18:53:01 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[22-Jan-2025 14:53:10 UTC] titulo generado: Nuevo feed!:Promoción: Ana Cristina Mendoza
+[22-Jan-2025 14:53:11 UTC] {"id":"1601c0b2-382d-45a0-a7c1-d7eefa8fa729","external_id":null}
+[22-Jan-2025 14:53:11 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[22-Jan-2025 18:23:27 UTC] titulo generado: Nuevo feed!:Maratón LALA: ¡Volveremos a apoyar!
+[22-Jan-2025 18:23:28 UTC] {"id":"74694a9f-4085-4793-80ae-d6ca129480df","external_id":null}
+[22-Jan-2025 18:23:28 UTC] Envio de correos. Total: 687 Correctos: 1 Errores: 0
+[24-Jan-2025 20:51:37 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[24-Jan-2025 20:51:38 UTC] {"id":"80bc3735-0b7f-4ef3-8e03-c2039e325a50","external_id":null}
+[24-Jan-2025 20:51:38 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[27-Jan-2025 22:51:31 UTC] titulo generado: Nuevo feed!:Vacante Interna: Asistente de Dirección.
+[27-Jan-2025 22:51:31 UTC] {"id":"c5760a33-107d-4071-a898-e8f25d5b83ae","external_id":null}
+[27-Jan-2025 22:51:31 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[29-Jan-2025 14:34:32 UTC] titulo generado: Nuevo feed!:Vacante Interna: Inventarista
+[29-Jan-2025 14:34:32 UTC] {"id":"627c8ea5-418c-4763-bac2-47241ab1467b","external_id":null}
+[29-Jan-2025 14:34:32 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[29-Jan-2025 15:46:17 UTC] titulo generado: Nuevo feed!:Culturas KLYNS: Construyendo juntos un futuro HUMANO y PRODUCTIVO.
+[29-Jan-2025 15:46:17 UTC] {"id":"215379ee-8188-4337-9c3d-0072bd62413f","external_id":null}
+[29-Jan-2025 15:46:17 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[30-Jan-2025 15:46:09 UTC] titulo generado: Nuevo feed!:Cupón Interno: Envío Gratis
+[30-Jan-2025 15:46:10 UTC] {"id":"c8ee5891-b755-4750-ba4b-985a4de1fe6f","external_id":null}
+[30-Jan-2025 15:46:10 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[31-Jan-2025 19:33:33 UTC] titulo generado: Nuevo feed!:¡Bienvenida, Alejandra Zamora!
+[31-Jan-2025 19:33:34 UTC] {"id":"5557ca41-6891-4f30-a0e2-ff488e6839b6","external_id":null}
+[31-Jan-2025 19:33:34 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[04-Feb-2025 15:52:28 UTC] titulo generado: Nuevo feed!:Culturas KLYNS: Comunicación con Calidad
+[04-Feb-2025 15:52:29 UTC] {"id":"c8c903d7-6a9c-4aa2-a089-be529fe20d9b","external_id":null}
+[04-Feb-2025 15:52:29 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[04-Feb-2025 16:02:03 UTC] titulo generado: Nuevo feed!:Promociones: Dermatología en Página Web
+[04-Feb-2025 16:02:04 UTC] {"id":"c6c8e805-833c-4487-9009-ee634e008b55","external_id":null}
+[04-Feb-2025 16:02:04 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[04-Feb-2025 23:15:26 UTC] titulo generado: Nuevo feed!:Ganadores: Sorteo Dermo
+[04-Feb-2025 23:15:26 UTC] {"id":"53c9a440-57bf-4f14-b11b-74dfc2d6fb20","external_id":null}
+[04-Feb-2025 23:15:27 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[05-Feb-2025 16:10:03 UTC] titulo generado: Nuevo feed!:Brigada de Salud 2025 -  1era Etapa
+[05-Feb-2025 16:10:04 UTC] {"id":"78e94c5c-f150-43cf-8d7a-3fb4c7e1ed37","external_id":null}
+[05-Feb-2025 16:10:04 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[05-Feb-2025 18:03:31 UTC] titulo generado: Nuevo feed!:Vacante Interna: Diseñador Gráfico
+[05-Feb-2025 18:03:31 UTC] {"id":"78e38d17-a4b1-4006-96f1-6e916eceb1e6","external_id":null}
+[05-Feb-2025 18:03:32 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[07-Feb-2025 19:54:42 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Febrero 2025.
+[07-Feb-2025 19:54:43 UTC] {"id":"b0ab5e22-342c-488d-aca6-09b062e7e083","external_id":null}
+[07-Feb-2025 19:54:43 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[07-Feb-2025 21:11:00 UTC] titulo generado: Nuevo feed!:Maratón LALA 2025 - ¡Únete a la fiesta y participa en nuestros Stands! 
+[07-Feb-2025 21:11:00 UTC] {"id":"3bf814b6-7a7e-4de6-8939-43712e07c473","external_id":null}
+[07-Feb-2025 21:11:00 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[07-Feb-2025 21:21:36 UTC] titulo generado: Nuevo feed!:¡Bienvenida, Zulema Nahle!
+[07-Feb-2025 21:21:36 UTC] {"id":"f9a80aee-7c9e-4ff9-9649-92da7555c35d","external_id":null}
+[07-Feb-2025 21:21:37 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[10-Feb-2025 17:58:51 UTC] titulo generado: Nuevo feed!:INVITACIÓN - Plática: Alimentación Consiente: Aprendiendo a escuchar a nuestro cuerpo.
+[10-Feb-2025 17:58:51 UTC] {"id":"e1efa866-51db-4e17-bceb-194177dc503a","external_id":null}
+[10-Feb-2025 17:58:51 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[12-Feb-2025 21:30:34 UTC] titulo generado: Nuevo feed!:Jornada de Salud Visual – Martes 18 de febrero
+[12-Feb-2025 21:30:34 UTC] {"id":"45344d45-abc0-48cf-86fe-d97468580948","external_id":null}
+[12-Feb-2025 21:30:34 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[13-Feb-2025 16:23:18 UTC] titulo generado: Nuevo feed!:Maratón LALA - ¡Dale Vida a Jarabeto!
+[13-Feb-2025 16:23:18 UTC] {"id":"5c2b5a06-3cac-4183-b3d3-b4273342b124","external_id":null}
+[13-Feb-2025 16:23:19 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[14-Feb-2025 18:25:45 UTC] titulo generado: Nuevo feed!:San Valentín - Aprovecha el "ENVÍO GRATIS" para colaboradores.
+[14-Feb-2025 18:25:46 UTC] {"id":"ca0eaa48-db72-4537-bf23-7069700a082b","external_id":null}
+[14-Feb-2025 18:25:46 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[14-Feb-2025 18:38:01 UTC] titulo generado: Nuevo feed!:¡Feliz San Valentín!
+[14-Feb-2025 18:38:01 UTC] {"id":"47fa9ddf-0af2-4b17-a436-e439f3cb0ad1","external_id":null}
+[14-Feb-2025 18:38:01 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[14-Feb-2025 23:02:28 UTC] titulo generado: Nuevo feed!:¡Bienvenida, Carolina Mejía!
+[14-Feb-2025 23:02:29 UTC] {"id":"4e548c0a-7259-43d5-ba11-cc630d1294c0","external_id":null}
+[14-Feb-2025 23:02:29 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[18-Feb-2025 22:42:58 UTC] titulo generado: Nuevo feed!:INVITACIÓN - Plática: La Depresión detrás de una Sonrisa. 
+[18-Feb-2025 22:42:58 UTC] {"id":"ac2d0f66-a16c-49c3-b261-d1bd7a03ba3b","external_id":null}
+[18-Feb-2025 22:42:58 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[19-Feb-2025 16:36:17 UTC] titulo generado: Nuevo feed!:Comunicados Oficiales: Semana 7
+[19-Feb-2025 16:36:18 UTC] {"id":"27d705ae-6be3-4343-ac6b-09d707fdb311","external_id":null}
+[19-Feb-2025 16:36:18 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[24-Feb-2025 14:50:31 UTC] titulo generado: Nuevo feed!:¡Bienvenido Kevin CHacón!
+[24-Feb-2025 14:50:32 UTC] {"id":"35d0df84-9fb9-466a-8799-7126e0d6e13b","external_id":null}
+[24-Feb-2025 14:50:32 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[26-Feb-2025 00:18:52 UTC] titulo generado: Nuevo feed!:Invitación - Jornada de Limpiezas Faciales 
+[26-Feb-2025 00:18:52 UTC] {"id":"3c0bd133-3635-4808-8be7-699d2dace2a7","external_id":null}
+[26-Feb-2025 00:18:52 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[26-Feb-2025 18:56:35 UTC] titulo generado: Nuevo feed!:¡COVA 2025 está en camino!
+[26-Feb-2025 18:56:36 UTC] {"id":"4002fc90-984d-4570-91bc-0b4402f5df3a","external_id":null}
+[26-Feb-2025 18:56:36 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[27-Feb-2025 15:42:42 UTC] titulo generado: Nuevo feed!:Vacante Interna: Jefe de Consumos Internos (ULTRA)
+[27-Feb-2025 15:42:42 UTC] {"id":"b8c40b44-b5b2-492e-bd1b-a6fd52129d73","external_id":null}
+[27-Feb-2025 15:42:42 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[28-Feb-2025 01:01:05 UTC] titulo generado: Nuevo feed!:Culturas KLYNS: Comunicación, la Clave para Entendernos
+[28-Feb-2025 01:01:06 UTC] {"id":"4261d18b-99fc-4c6a-8174-95a44559b8bd","external_id":null}
+[28-Feb-2025 01:01:06 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[28-Feb-2025 22:51:08 UTC] titulo generado: Nuevo feed!:Promoción: Griselda Ramos y Agnes Montes
+[28-Feb-2025 22:51:08 UTC] {"id":"c87f8948-81dd-4d4f-a9b7-ab6e88b16435","external_id":null}
+[28-Feb-2025 22:51:08 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[03-Mar-2025 15:24:16 UTC] titulo generado: Nuevo feed!:Invitación - Platica: La Importancia del Conocimiento de la Piel
+[03-Mar-2025 15:24:17 UTC] {"id":"b1275f07-ad3d-4e69-83fa-61af0188b632","external_id":null}
+[03-Mar-2025 15:24:17 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[05-Mar-2025 16:20:14 UTC] titulo generado: Nuevo feed!:Farmacias Klyns participa en el Maratón Internacional Lala 2025
+[05-Mar-2025 16:20:15 UTC] {"id":"21d2c9de-7c4a-4a63-9db4-b76e93a732e8","external_id":null}
+[05-Mar-2025 16:20:15 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[05-Mar-2025 21:20:33 UTC] titulo generado: Nuevo feed!:Redondeo Klyns beneficia a la Fundación Te Quiero Ver Feliz  
+[05-Mar-2025 21:20:33 UTC] {"id":"e16f8e87-e1b3-4122-8530-ca73a377efc2","external_id":null}
+[05-Mar-2025 21:20:33 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[06-Mar-2025 18:33:17 UTC] titulo generado: Nuevo feed!:Farmacias Klyns realiza la primera etapa de la Brigada de Salud 2025 
+[06-Mar-2025 18:33:17 UTC] {"id":"effa2188-5447-49ae-b9c2-1c1c9f0d0e96","external_id":null}
+[06-Mar-2025 18:33:17 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[07-Mar-2025 20:18:55 UTC] titulo generado: Nuevo feed!:¡Bienvenida Rosa Sánchez!
+[07-Mar-2025 20:18:56 UTC] {"id":"b8a312fb-e37d-4e01-8a1c-7861456d6095","external_id":null}
+[07-Mar-2025 20:18:56 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[10-Mar-2025 17:43:17 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[10-Mar-2025 17:43:17 UTC] {"id":"b0be46e8-7d5e-41fe-a954-841f6628a697","external_id":null}
+[10-Mar-2025 17:43:17 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[11-Mar-2025 18:12:04 UTC] titulo generado: Nuevo feed!:Vacantes Internas: Gerente de Zona y Gerente de Inventarios
+[11-Mar-2025 18:12:05 UTC] {"id":"315ffeb9-e321-4a3e-96e3-463c5d6d6e3f","external_id":null}
+[11-Mar-2025 18:12:05 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[12-Mar-2025 21:47:52 UTC] titulo generado: Nuevo feed!:AGRADECIMIENTO: ILAL
+[12-Mar-2025 21:47:52 UTC] {"id":"a5f4c098-bd2d-46f5-82d5-fc38e827af31","external_id":null}
+[12-Mar-2025 21:47:52 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[12-Mar-2025 21:50:03 UTC] titulo generado: Nuevo feed!:Promoción: Carolina Flores
+[12-Mar-2025 21:50:03 UTC] {"id":"0b46ebfd-f7ce-46e3-844d-1866e962d5e1","external_id":null}
+[12-Mar-2025 21:50:03 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[21-Mar-2025 16:15:14 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[21-Mar-2025 16:15:14 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[21-Mar-2025 16:15:14 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[24-Mar-2025 15:52:22 UTC] titulo generado: Nuevo feed!:COVA25 - Código Envío Gratis
+[24-Mar-2025 15:52:22 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[24-Mar-2025 15:52:22 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[25-Mar-2025 20:06:46 UTC] titulo generado: Nuevo feed!:COVA 2025: Una jornada de aprendizaje, reconocimientos y convivencia. 
+[25-Mar-2025 20:06:47 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[25-Mar-2025 20:06:47 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[28-Mar-2025 18:31:40 UTC] titulo generado: Nuevo feed!:Recomendaciones para Prevenir el Dengue
+[28-Mar-2025 18:31:40 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[28-Mar-2025 18:31:40 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[01-Apr-2025 18:36:41 UTC] titulo generado: Nuevo feed!:Vacante Interna: Contácto Médico
+[01-Apr-2025 18:36:42 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[01-Apr-2025 18:36:42 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[01-Apr-2025 22:06:31 UTC] titulo generado: Nuevo feed!:Promoción: Sagrario Martínez y Arturo de la Vara
+[01-Apr-2025 22:06:32 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[01-Apr-2025 22:06:32 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[01-Apr-2025 23:31:20 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('Felicidades! Mu...', '3109')
+#3 {main}
+[02-Apr-2025 14:54:43 UTC] titulo generado: Nuevo feed!:Promoción: Arturo de la Vara
+[02-Apr-2025 14:54:45 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Apr-2025 14:54:45 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[02-Apr-2025 15:49:57 UTC] titulo generado: Nuevo feed!:COVA 2025: Un evento que nos impulsa al éxito.
+[02-Apr-2025 15:49:58 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Apr-2025 15:49:58 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[02-Apr-2025 20:17:58 UTC] titulo generado: Nuevo feed!:Día Mundial del Autismo
+[02-Apr-2025 20:17:58 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Apr-2025 20:17:58 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[03-Apr-2025 16:07:41 UTC] titulo generado: Nuevo feed!:¡Pequeños Campeones KLYNS 2025 está aquí!  - Dinámica del Día del Niño. 
+[03-Apr-2025 16:07:42 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[03-Apr-2025 16:07:42 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[03-Apr-2025 21:23:50 UTC] titulo generado: Nuevo feed!:CULTURAS KLYNS: Proactividad
+[03-Apr-2025 21:23:50 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[03-Apr-2025 21:23:51 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[04-Apr-2025 16:38:39 UTC] titulo generado: Nuevo feed!:Chismógrafo KLYNS – ¿Cuánto saben nuestros colaboradores?
+[04-Apr-2025 16:38:39 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[04-Apr-2025 16:38:39 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[04-Apr-2025 17:11:09 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Abril 2025.
+[04-Apr-2025 17:11:09 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[04-Apr-2025 17:11:09 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[06-Apr-2025 21:11:41 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(851): Conexiones->ProcedureWithParam('CALL sp_reactsT...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(230): Feed->reactsToComment('1', '169')
+#3 {main}
+[06-Apr-2025 21:11:41 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/Backend/Feed/Feed.php on line 852
+[06-Apr-2025 21:11:45 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(851): Conexiones->ProcedureWithParam('CALL sp_reactsT...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(230): Feed->reactsToComment('1', '161')
+#3 {main}
+[06-Apr-2025 21:11:45 UTC] PHP Warning:  count(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/Backend/Feed/Feed.php on line 852
+[06-Apr-2025 21:14:23 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(210): Feed->makeComment('Muchas felicida...', '3109')
+#3 {main}
+[07-Apr-2025 16:50:48 UTC] titulo generado: Nuevo feed!:Reconocemos a los Líderes con Valor
+[07-Apr-2025 16:50:48 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[07-Apr-2025 16:50:48 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[07-Apr-2025 23:28:52 UTC] titulo generado: Nuevo feed!:Día Mundial de la Salud
+[07-Apr-2025 23:28:52 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[07-Apr-2025 23:28:52 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[08-Apr-2025 16:19:42 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias.
+[08-Apr-2025 16:19:42 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[08-Apr-2025 16:19:42 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[08-Apr-2025 16:35:33 UTC] titulo generado: Nuevo feed!:Gracias a nuestros proveedores en la COVA 2025.
+[08-Apr-2025 16:35:33 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[08-Apr-2025 16:35:33 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[10-Apr-2025 18:47:07 UTC] titulo generado: Nuevo feed!: ¡Pásale la pelota en COVA 2025!
+[10-Apr-2025 18:47:07 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[10-Apr-2025 18:47:07 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[15-Apr-2025 14:49:29 UTC] titulo generado: Nuevo feed!:Valoramos y Reconocemos a los Líderes con Valor
+[15-Apr-2025 14:49:29 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[15-Apr-2025 14:49:29 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[17-Apr-2025 18:13:17 UTC] titulo generado: Nuevo feed!:¡Bienvenido Jorge Castillo!
+[17-Apr-2025 18:13:17 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[17-Apr-2025 18:13:17 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[21-Apr-2025 20:39:46 UTC] titulo generado: Nuevo feed!:Videotutoriales: Captura de Recetas
+[21-Apr-2025 20:39:46 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[21-Apr-2025 20:39:46 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[22-Apr-2025 18:38:42 UTC] titulo generado: Nuevo feed!:Competencias y Cursos Asignados: Conoce las Diferencias
+[22-Apr-2025 18:38:42 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[22-Apr-2025 18:38:42 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[25-Apr-2025 17:50:47 UTC] titulo generado: Nuevo feed!:¡UBITS PARA TODOS!
+[25-Apr-2025 17:50:47 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[25-Apr-2025 17:50:47 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[29-Apr-2025 20:02:22 UTC] titulo generado: Nuevo feed!:Comunicados Oficiales Semana 16
+[29-Apr-2025 20:02:22 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[29-Apr-2025 20:02:22 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[30-Apr-2025 14:42:55 UTC] titulo generado: Nuevo feed!:Oxígeno disponible en caso de necesidad médica
+[30-Apr-2025 14:42:56 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[30-Apr-2025 14:42:56 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[30-Apr-2025 15:53:54 UTC] titulo generado: Nuevo feed!:¡FELIZ DÍA DEL NIÑO!
+[30-Apr-2025 15:53:55 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[30-Apr-2025 15:53:55 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[05-May-2025 15:53:17 UTC] titulo generado: Nuevo feed!:COMPETENCIAS ASIGNADAS Y CURSOS ASIGNADOS
+[05-May-2025 15:53:18 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[05-May-2025 15:53:19 UTC] Envio de correos. Total: 706 Correctos: 1 Errores: 0
+[09-May-2025 19:04:30 UTC] titulo generado: Nuevo feed!:¡FELIZ DÍA DE LA MADRE!
+[09-May-2025 19:04:31 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[09-May-2025 19:04:31 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[09-May-2025 19:46:12 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Mayo 2025.
+[09-May-2025 19:46:13 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[09-May-2025 19:46:13 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[12-May-2025 22:58:47 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[12-May-2025 22:58:47 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[12-May-2025 22:58:47 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[13-May-2025 23:33:49 UTC] titulo generado: Nuevo feed!:KLYNS celebra a sus Pequeños Campeones. 
+[13-May-2025 23:33:49 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[13-May-2025 23:33:49 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[14-May-2025 15:16:02 UTC] titulo generado: Nuevo feed!:Reconocemos con aprecio a las Mamás KLYNS 
+[14-May-2025 15:16:04 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[14-May-2025 15:16:04 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[19-May-2025 19:32:28 UTC] titulo generado: Nuevo feed!:KLYNS Farmacias lleva alegría a la Asociación Sonrisa Azul con donativo de redondeo. 
+[19-May-2025 19:32:28 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[19-May-2025 19:32:28 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[19-May-2025 21:00:52 UTC] titulo generado: Nuevo feed!:¡Mejora tu hogar con Mejoravit!
+[19-May-2025 21:00:53 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[19-May-2025 21:00:53 UTC] Envio de correos. Total: 705 Correctos: 1 Errores: 0
+[28-May-2025 18:41:14 UTC] titulo generado: Nuevo feed!:Vacante Interna: Jefe de embarques y farmacia (CEDI)
+[28-May-2025 18:41:15 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[28-May-2025 18:41:15 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[28-May-2025 23:01:59 UTC] titulo generado: Nuevo feed!:¡Líder con Valor se Renueva!
+[28-May-2025 23:01:59 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[28-May-2025 23:01:59 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[29-May-2025 20:49:57 UTC] titulo generado: Nuevo feed!:ATENCIÓN: Se solicitan Donadores de Sangre
+[29-May-2025 20:49:57 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[29-May-2025 20:49:57 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[30-May-2025 15:25:16 UTC] titulo generado: Nuevo feed!:Redondeo Klyns beneficia a Eslabones por la Educación
+[30-May-2025 15:25:17 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[30-May-2025 15:25:17 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[30-May-2025 22:59:49 UTC] titulo generado: Nuevo feed!:Vacante Interna: Auxiliar de Mesa de Control (ULTRA)
+[30-May-2025 22:59:50 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[30-May-2025 22:59:50 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[02-Jun-2025 17:03:44 UTC] titulo generado: Nuevo feed!:COMPRA EN CASA: Promociones de Aniversario
+[02-Jun-2025 17:03:45 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Jun-2025 17:03:45 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[02-Jun-2025 17:07:20 UTC] titulo generado: Nuevo feed!: Dinámica: ¡COMPRA, RECOMIENDA Y GANA! 
+[02-Jun-2025 17:07:20 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Jun-2025 17:07:20 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[02-Jun-2025 17:40:47 UTC] titulo generado: Nuevo feed!:Vacante Interna: Dermoconsejera en Torreón
+[02-Jun-2025 17:40:47 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[02-Jun-2025 17:40:47 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[04-Jun-2025 18:07:16 UTC] titulo generado: Nuevo feed!:¡HAZLO VISIBLE! Reconoce a quienes viven nuestros valores.
+[04-Jun-2025 18:07:17 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[04-Jun-2025 18:07:17 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[05-Jun-2025 16:07:45 UTC] titulo generado: Nuevo feed!:Comunicado Interno.
+[05-Jun-2025 16:07:45 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[05-Jun-2025 16:07:45 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[06-Jun-2025 23:07:23 UTC] titulo generado: Nuevo feed!:¡Compra, Recomienda y Gana! - Top Semanal de Participantes
+[06-Jun-2025 23:07:24 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[06-Jun-2025 23:07:24 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[10-Jun-2025 19:04:10 UTC] titulo generado: Nuevo feed!:LÍNEA DE ÉTICA: Tu voz importa, tu denuncia cuenta. 
+[10-Jun-2025 19:04:10 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[10-Jun-2025 19:04:10 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[11-Jun-2025 15:52:52 UTC] titulo generado: Nuevo feed!:¡Líder con Valor se transforma contigo!
+[11-Jun-2025 15:52:52 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[11-Jun-2025 15:52:52 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[12-Jun-2025 15:11:02 UTC] titulo generado: Nuevo feed!:Museo Arocena: Actividades Junio 2025.
+[12-Jun-2025 15:11:05 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[12-Jun-2025 15:11:05 UTC] Envio de correos. Total: 704 Correctos: 1 Errores: 0
+[13-Jun-2025 20:47:13 UTC] titulo generado: Nuevo feed!:¡Compra, Recomienda y Gana! - Top General Semana #2
+[13-Jun-2025 20:47:14 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[13-Jun-2025 20:47:14 UTC] Envio de correos. Total: 703 Correctos: 1 Errores: 0
+[13-Jun-2025 21:26:53 UTC] titulo generado: Nuevo feed!:¡FELIZ DÍA DEL PADRE!
+[13-Jun-2025 21:26:53 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[13-Jun-2025 21:26:53 UTC] Envio de correos. Total: 703 Correctos: 1 Errores: 0
+[16-Jun-2025 15:23:36 UTC] titulo generado: Nuevo feed!:Convenio Membresías City Club - 2025
+[16-Jun-2025 15:23:37 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[16-Jun-2025 15:23:37 UTC] Envio de correos. Total: 703 Correctos: 1 Errores: 0
+[17-Jun-2025 15:37:37 UTC] titulo generado: Nuevo feed!:Redondeo Klyns beneficia a Fundación Down de La Laguna 
+[17-Jun-2025 15:37:38 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[17-Jun-2025 15:37:38 UTC] Envio de correos. Total: 641 Correctos: 1 Errores: 0
+[19-Jun-2025 22:52:00 UTC] PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'NoEmpleado' cannot be null in /home/klynet/public_html/Backend/Conexiones/Conexiones.php:21
+Stack trace:
+#0 /home/klynet/public_html/Backend/Conexiones/Conexiones.php(21): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/Backend/Feed/App.php(11): Feed->newFeed('Participa y gan...', 'Hola equipo,<br...', 'https://forms.o...')
+#3 {main}
+[19-Jun-2025 22:52:00 UTC] titulo generado: 
+[19-Jun-2025 22:52:01 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[19-Jun-2025 22:52:01 UTC] Envio de correos. Total: 641 Correctos: 1 Errores: 0
+[19-Jun-2025 22:54:20 UTC] titulo generado: Nuevo feed!:Participa y gana $2,000 registrando tus compras personales
+[19-Jun-2025 22:54:21 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[19-Jun-2025 22:54:21 UTC] Envio de correos. Total: 641 Correctos: 1 Errores: 0
+[20-Jun-2025 21:16:16 UTC] titulo generado: Nuevo feed!:¡Compra, Recomienda y Gana! - Top Semana #3
+[20-Jun-2025 21:16:17 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[20-Jun-2025 21:16:17 UTC] Envio de correos. Total: 641 Correctos: 1 Errores: 0
+[26-Jun-2025 15:12:11 UTC] titulo generado: Nuevo feed!:Líder con Valor: ¡Seguimos reconociendo lo que vale!
+[26-Jun-2025 15:12:12 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[26-Jun-2025 15:12:12 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[27-Jun-2025 18:55:55 UTC] titulo generado: Nuevo feed!:¡Bienvenida, Tanhia Rodríguez!
+[27-Jun-2025 18:55:56 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[27-Jun-2025 18:55:56 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[27-Jun-2025 19:45:41 UTC] titulo generado: Nuevo feed!:Donativo en especie beneficia a la Casa del Anciano Dr. Samuel Silva.
+[27-Jun-2025 19:45:41 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[27-Jun-2025 19:45:41 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[27-Jun-2025 20:37:04 UTC] titulo generado: Nuevo feed!:¡Compra, Recomienda y Gana! - Top Semana #4
+[27-Jun-2025 20:37:04 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[27-Jun-2025 20:37:04 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[03-Jul-2025 23:27:44 UTC] titulo generado: Nuevo feed!:Línea de Ética: Haz tu denuncia anónima en Klynet.
+[03-Jul-2025 23:27:44 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[03-Jul-2025 23:27:44 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[04-Jul-2025 18:28:43 UTC] titulo generado: Nuevo feed!:GANADORES CONCURSO ¡COMPRA, RECOMIENDA Y GANA! 
+[04-Jul-2025 18:28:44 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[04-Jul-2025 18:28:44 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[09-Jul-2025 17:55:56 UTC] titulo generado: Nuevo feed!:Líder con Valor: ¡Hazlo Visible! 
+[09-Jul-2025 17:55:56 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[09-Jul-2025 17:55:56 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[10-Jul-2025 22:30:33 UTC] titulo generado: Nuevo feed!:¡Inicia la Segunda Etapa de la Brigada de Salud 2025!
+[10-Jul-2025 22:30:33 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[10-Jul-2025 22:30:33 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[11-Jul-2025 18:03:03 UTC] titulo generado: Nuevo feed!:Invitación: Carrera CANACINTRA 5K / 10K Torreón
+[11-Jul-2025 18:03:03 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[11-Jul-2025 18:03:03 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[11-Jul-2025 21:17:32 UTC] titulo generado: Nuevo feed!:¡Bienvenidos a KLYNS!
+[11-Jul-2025 21:17:32 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[11-Jul-2025 21:17:32 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[16-Jul-2025 15:29:27 UTC] titulo generado: Nuevo feed!:Esquela - Expresamos nuestras condolencias
+[16-Jul-2025 15:29:28 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[16-Jul-2025 15:29:28 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[17-Jul-2025 15:33:14 UTC] titulo generado: Nuevo feed!:Líder con Valor: Un gesto, un valor, una tarjeta.
+[17-Jul-2025 15:33:14 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[17-Jul-2025 15:33:14 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[22-Jul-2025 15:14:08 UTC] titulo generado: Nuevo feed!:¡Nos visita la presidenta del DIF Torreón!
+[22-Jul-2025 15:14:08 UTC] {"id":"","errors":["All included players are not subscribed"],"warnings":["FCM Errors: (FCM API (V1) Update Required) Your Android audience has stopped receiving messages. You must update your Firebase account. It takes just a few minutes when you follow our guide."]}
+[22-Jul-2025 15:14:08 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[23-Jul-2025 15:36:57 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('Prueba Nueva Pu...', 'Prueba descripc...', 'https://www.fac...')
+#3 {main}
+[23-Jul-2025 16:08:24 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('Prueba2', 'DescripcionPrue...', 'https://www.fac...')
+#3 {main}
+[23-Jul-2025 16:16:05 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('P3', 'DP3', 'https://www.fac...')
+#3 {main}
+[23-Jul-2025 16:24:42 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevoFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(11): Feed->newFeed('p4', 'DP4', 'https://www.fac...')
+#3 {main}
+[23-Jul-2025 16:24:42 UTC] titulo generado: 
+[23-Jul-2025 16:24:42 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[23-Jul-2025 16:24:42 UTC] Envio de correos. Total: 744 Correctos: 1 Errores: 0
+[23-Jul-2025 17:51:48 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('prueba', 'prueba', 'https://demonew...')
+#3 {main}
+[26-Jul-2025 01:00:56 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('prueba', '3362')
+#3 {main}
+[26-Jul-2025 01:07:02 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('prueba', '3362')
+#3 {main}
+[26-Jul-2025 01:13:04 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('prueba', '3362')
+#3 {main}
+[26-Jul-2025 01:14:25 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('PRUEBA', '3362')
+#3 {main}
+[28-Jul-2025 16:16:15 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('\\zx\\z', 'asdasd', '')
+#3 {main}
+[28-Jul-2025 16:25:20 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('asdad', 'dasd', '')
+#3 {main}
+[28-Jul-2025 16:32:34 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('as', 'asdasd', '')
+#3 {main}
+[28-Jul-2025 18:46:52 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('asd', 'asd', '')
+#3 {main}
+[29-Jul-2025 17:31:56 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('asdasd', '3362')
+#3 {main}
+[29-Jul-2025 17:32:07 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('asd', '3362')
+#3 {main}
+[31-Jul-2025 16:16:10 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('asd', 'asda', '')
+#3 {main}
+[25-Aug-2025 17:24:27 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spEliminarFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(467): Conexiones->Procedure('CALL spEliminar...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(122): Feed->eliminarFeed('3362')
+#3 {main}
+[25-Aug-2025 17:24:39 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spEliminarFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(467): Conexiones->Procedure('CALL spEliminar...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(122): Feed->eliminarFeed('3362')
+#3 {main}
+[25-Aug-2025 17:24:39 UTC] PHP Warning:  rmdir(../../Archivos/Feed/3362): No such file or directory in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 475
+[25-Aug-2025 17:24:53 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spEliminarFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(467): Conexiones->Procedure('CALL spEliminar...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(122): Feed->eliminarFeed('3362')
+#3 {main}
+[25-Aug-2025 17:24:53 UTC] PHP Warning:  rmdir(../../Archivos/Feed/3362): No such file or directory in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 475
+[26-Aug-2025 17:13:28 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevoFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(11): Feed->newFeed('asdsasd', 'asdasdasddasdas...', 'opqopwiepqwoei')
+#3 {main}
+[26-Aug-2025 17:13:28 UTC] titulo generado: 
+[26-Aug-2025 17:13:28 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[26-Aug-2025 17:13:28 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[26-Aug-2025 17:14:11 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevoFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(11): Feed->newFeed('prueba', 'asdasdadasdasd', '')
+#3 {main}
+[26-Aug-2025 17:14:11 UTC] titulo generado: 
+[26-Aug-2025 17:14:11 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[26-Aug-2025 17:14:11 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[26-Aug-2025 17:29:25 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevoFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(25): Conexiones->ProcedureWithParam('CALL sp_NuevoFe...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(11): Feed->newFeed('asdasd', 'asds', '')
+#3 {main}
+[26-Aug-2025 17:29:25 UTC] titulo generado: 
+[26-Aug-2025 17:29:25 UTC] {"errors":["Notification contents must not be null for any languages."]}
+[26-Aug-2025 17:29:25 UTC] Envio de correos. Total: 743 Correctos: 1 Errores: 0
+[26-Aug-2025 17:30:49 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.spEliminarFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:92
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(92): PDOStatement->execute()
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(467): Conexiones->Procedure('CALL spEliminar...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(122): Feed->eliminarFeed('3362')
+#3 {main}
+[26-Aug-2025 17:30:49 UTC] PHP Warning:  rmdir(../../Archivos/Feed/3362): No such file or directory in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 475
+[02-Sep-2025 17:06:11 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[02-Sep-2025 19:09:11 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[02-Sep-2025 19:09:16 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[02-Sep-2025 19:09:21 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[02-Sep-2025 19:09:25 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 15:49:07 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 15:54:30 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 15:54:38 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 15:54:53 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 16:02:38 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[03-Sep-2025 16:30:30 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2685', '1')
+#3 {main}
+[03-Sep-2025 16:30:35 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2553', '2')
+#3 {main}
+[03-Sep-2025 16:31:05 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2685', '1')
+#3 {main}
+[03-Sep-2025 17:00:39 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2685', '1')
+#3 {main}
+[03-Sep-2025 17:05:30 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2550', '1')
+#3 {main}
+[03-Sep-2025 17:15:53 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('3216', '1')
+#3 {main}
+[04-Sep-2025 15:19:49 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('asdsd', 'asdasdasd', '')
+#3 {main}
+[04-Sep-2025 15:34:48 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('ASDASDASD', '1413')
+#3 {main}
+[04-Sep-2025 16:06:12 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[04-Sep-2025 16:06:26 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('3216', '2')
+#3 {main}
+[05-Sep-2025 15:59:01 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_makeCommentFeed' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(666): Conexiones->ProcedureWithParam('CALL sp_makeCom...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(210): Feed->makeComment('asds', '2547')
+#3 {main}
+[05-Sep-2025 17:11:22 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('sdasd', 'asdasdasdasdasd', '')
+#3 {main}
+[05-Sep-2025 17:12:55 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_actionPostRequest' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(549): Conexiones->ProcedureWithParam('CALL sp_actionP...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(136): Feed->executeActionPostRequest('2550', '1')
+#3 {main}
+[05-Sep-2025 17:13:11 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('sadasd', 'asdasdasd', '')
+#3 {main}
+[05-Sep-2025 17:34:47 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_newFedFromIndex' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:19
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(19): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(650): Conexiones->ProcedureWithParam('CALL sp_newFedF...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(155): Feed->newFeedFromIndex('sadas', 'dasdasdasd', '')
+#3 {main}
+[05-Sep-2025 18:15:19 UTC] PDOException: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_rejectCommentsF' in /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php:33
+Stack trace:
+#0 /home/klynet/public_html/demonew/Backend/Conexiones/Conexiones.php(33): PDOStatement->execute(Array)
+#1 /home/klynet/public_html/demonew/Backend/Feed/Feed.php(835): Conexiones->ExecuteQueryWithParam('CALL sp_rejectC...', Array)
+#2 /home/klynet/public_html/demonew/Backend/Feed/App.php(224): Feed->rejectCommentsF(Array)
+#3 {main}
+[18-Oct-2025 22:01:08 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[18-Oct-2025 22:01:08 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[19-Oct-2025 23:54:57 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[19-Oct-2025 23:54:57 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Oct-2025 02:30:36 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Oct-2025 02:30:36 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[23-Oct-2025 23:46:23 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[23-Oct-2025 23:46:23 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[24-Oct-2025 01:51:39 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[24-Oct-2025 01:51:39 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[25-Oct-2025 22:57:43 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[25-Oct-2025 22:57:43 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[30-Oct-2025 08:26:32 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[30-Oct-2025 08:26:32 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[31-Oct-2025 18:10:27 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[31-Oct-2025 18:10:27 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[03-Nov-2025 17:09:30 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[03-Nov-2025 17:09:30 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Nov-2025 06:17:18 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Nov-2025 06:17:18 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[09-Nov-2025 11:46:05 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[09-Nov-2025 11:46:05 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[10-Nov-2025 19:57:50 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[10-Nov-2025 19:57:50 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[13-Nov-2025 08:10:54 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[13-Nov-2025 08:10:54 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[17-Nov-2025 12:21:22 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[17-Nov-2025 12:21:22 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[17-Nov-2025 12:21:26 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[17-Nov-2025 12:21:26 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[17-Nov-2025 12:21:36 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[17-Nov-2025 12:21:36 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[17-Nov-2025 12:21:39 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[17-Nov-2025 12:21:39 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[19-Nov-2025 03:25:19 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[19-Nov-2025 03:25:19 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[19-Nov-2025 03:25:48 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[19-Nov-2025 03:25:48 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Nov-2025 16:43:05 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Nov-2025 16:43:05 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Nov-2025 16:43:35 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Nov-2025 16:43:35 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Nov-2025 16:43:49 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Nov-2025 16:43:49 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[01-Dec-2025 20:21:28 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[01-Dec-2025 20:21:28 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[02-Dec-2025 05:03:02 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[02-Dec-2025 05:03:02 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[02-Dec-2025 05:03:35 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[02-Dec-2025 05:03:35 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[03-Dec-2025 22:09:30 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[03-Dec-2025 22:09:30 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[03-Dec-2025 22:09:33 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[03-Dec-2025 22:09:33 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[03-Dec-2025 22:18:01 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[03-Dec-2025 22:18:01 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[03-Dec-2025 22:18:34 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[03-Dec-2025 22:18:34 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Dec-2025 18:28:02 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Dec-2025 18:28:02 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Dec-2025 18:28:20 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Dec-2025 18:28:20 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Dec-2025 18:59:37 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Dec-2025 18:59:37 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Dec-2025 18:59:54 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Dec-2025 18:59:54 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[04-Dec-2025 21:23:36 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[04-Dec-2025 21:23:36 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[06-Dec-2025 09:29:20 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[06-Dec-2025 09:29:20 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[16-Dec-2025 03:59:39 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[16-Dec-2025 03:59:39 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[16-Dec-2025 04:00:44 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[16-Dec-2025 04:00:44 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[16-Dec-2025 04:00:50 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[16-Dec-2025 04:00:50 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[16-Dec-2025 04:01:05 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[16-Dec-2025 04:01:05 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Dec-2025 10:40:36 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Dec-2025 10:40:36 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[23-Dec-2025 06:00:17 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[23-Dec-2025 06:00:17 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[23-Dec-2025 06:11:41 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[23-Dec-2025 06:11:41 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[26-Dec-2025 14:45:42 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[26-Dec-2025 14:45:42 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[26-Dec-2025 22:59:25 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[26-Dec-2025 22:59:25 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[30-Dec-2025 12:24:32 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[30-Dec-2025 12:24:32 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[30-Dec-2025 18:52:10 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[30-Dec-2025 18:52:10 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[05-Jan-2026 05:56:35 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[05-Jan-2026 05:56:35 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[05-Jan-2026 05:57:12 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[05-Jan-2026 05:57:12 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[06-Jan-2026 23:27:39 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[06-Jan-2026 23:27:39 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[06-Jan-2026 23:27:48 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[06-Jan-2026 23:27:48 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[06-Jan-2026 23:29:05 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[06-Jan-2026 23:29:05 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[08-Jan-2026 16:48:58 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[08-Jan-2026 16:48:58 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[20-Jan-2026 03:12:19 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[20-Jan-2026 03:12:19 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[20-Jan-2026 03:12:22 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[20-Jan-2026 03:12:22 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 03:35:10 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 03:35:10 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 03:35:33 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 03:35:33 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 03:35:34 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 03:35:34 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 16:42:56 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 16:42:56 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 16:43:43 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 16:43:43 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104
+[21-Jan-2026 17:06:32 UTC] PHP Warning:  Undefined array key "NoEmpleado" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 102
+[21-Jan-2026 17:06:32 UTC] PHP Warning:  Undefined array key "IdSucursal" in /home/klynet/public_html/demonew/Backend/Feed/Feed.php on line 104

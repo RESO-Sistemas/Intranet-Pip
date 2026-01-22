@@ -1,0 +1,84 @@
+[22-Dec-2022 13:08:28 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 63
+[22-Dec-2022 13:08:28 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 63
+[22-Dec-2022 13:09:02 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:09:02 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:09:02 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:09:02 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:09:30 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:09:30 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:09:30 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:09:30 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:10:16 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:10:16 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 48
+[22-Dec-2022 13:10:16 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:10:16 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 66
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  scandir() expects parameter 1 to be a valid path, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 39
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 41
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 41
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 43
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  scandir() expects parameter 1 to be a valid path, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 61
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 63
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 63
+[22-Dec-2022 13:13:40 America/Mexico_City] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 65
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  scandir() expects parameter 1 to be a valid path, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 39
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 41
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 41
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 43
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  scandir() expects parameter 1 to be a valid path, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 58
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 60
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  array_pop() expects parameter 1 to be array, null given in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 60
+[22-Dec-2022 13:14:15 America/Mexico_City] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home3/resosist/public_html/klyns/Backend/Configuracion/Configuracion.php on line 62
+[22-Dec-2022 13:34:56 America/Mexico_City] PHP Warning:  trim() expects parameter 1 to be string, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/App.php on line 63
+[22-Dec-2022 13:37:42 America/Mexico_City] PHP Warning:  trim() expects parameter 1 to be string, array given in /home3/resosist/public_html/klyns/Backend/Configuracion/App.php on line 63
+[22-Dec-2022 13:48:43 America/Mexico_City] PHP Warning:  unlink(../../Archivos/ImagesBirthday/): Is a directory in /home3/resosist/public_html/klyns/Backend/Configuracion/App.php on line 24
+[22-Dec-2022 13:53:33 America/Mexico_City] PHP Warning:  unlink(../../Archivos/ImagesBirthday//): Is a directory in /home3/resosist/public_html/klyns/Backend/Configuracion/App.php on line 34
+[03-Mar-2023 18:03:32 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Constitución', Dia = '02-06'
+                WHERE idDiasFestivos = '2';
+[03-Mar-2023 18:03:42 UTC] UPDATE DiasFestivos SET Descripcion = 'Natalicio de Benito Juárez', Dia = '03-20'
+                WHERE idDiasFestivos = '3';
+[15-Dec-2023 18:10:03 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo', Dia = '01-01'
+                WHERE idDiasFestivos = '1';
+[29-Jan-2024 14:20:50 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Constitución', Dia = '02-05'
+                WHERE idDiasFestivos = '2';
+[29-Jan-2024 14:25:01 UTC] UPDATE DiasFestivos SET Descripcion = 'Natalicio de Benito Juárez', Dia = '03-18'
+                WHERE idDiasFestivos = '3';
+[29-Jan-2024 14:26:59 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Revolución Mexicana', Dia = '11-18'
+                WHERE idDiasFestivos = '6';
+[10-Sep-2024 15:13:12 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Independencia de México', Dia = '09-16'
+                WHERE idDiasFestivos = '5';
+[10-Sep-2024 15:14:49 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Independencia de México', Dia = '09-16'
+                WHERE idDiasFestivos = '5';
+[18-Feb-2025 23:16:22 UTC] UPDATE DiasFestivos SET Descripcion = 'Aniversario de la Constitución', Dia = '02-03'
+                WHERE idDiasFestivos = '2';
+[18-Feb-2025 23:18:04 UTC] UPDATE DiasFestivos SET Descripcion = 'Natalicio de Benito Juárez', Dia = '03-17'
+                WHERE idDiasFestivos = '3';
+[18-Aug-2025 15:18:30 UTC] UPDATE DiasFestivos SET Descripcion = 'sads', Dia = '07-01'
+                WHERE idDiasFestivos = '10';
+[18-Aug-2025 17:49:01 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo', Dia = '01-01'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 17:53:25 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act', Dia = '04-01'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:01:43 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act', Dia = '04-08'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:04:42 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act nuevo', Dia = '10-07'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:05:41 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act nuevo 12', Dia = '07-12'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:07:21 UTC] UPDATE DiasFestivos SET Descripcion = 'Transición del Poder Ejecutivo update', Dia = '10-12'
+                WHERE idDiasFestivos = '9';
+[18-Aug-2025 18:07:35 UTC] UPDATE DiasFestivos SET Descripcion = 'Transición del Poder Ejecutivo update 2', Dia = '07-01'
+                WHERE idDiasFestivos = '9';
+[18-Aug-2025 18:07:56 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act nuevo 12', Dia = '07-12'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:18:20 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act nuevo 12', Dia = '07-12'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:18:32 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo act act nuevo 12 34', Dia = '07-12'
+                WHERE idDiasFestivos = '1';
+[18-Aug-2025 18:18:41 UTC] UPDATE DiasFestivos SET Descripcion = 'Día del Trabajo act ', Dia = '05-01'
+                WHERE idDiasFestivos = '4';
+[18-Aug-2025 18:19:56 UTC] UPDATE DiasFestivos SET Descripcion = '12-12-13', Dia = '12-12'
+                WHERE idDiasFestivos = '15';
+[18-Aug-2025 18:20:46 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo', Dia = '07-12'
+                WHERE idDiasFestivos = '1';
+[19-Aug-2025 16:06:40 UTC] UPDATE DiasFestivos SET Descripcion = 'Año Nuevo 2024', Dia = '01-01'
+                WHERE idDiasFestivos = '8';

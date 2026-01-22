@@ -1,0 +1,94 @@
+
+     .pointer-link{
+        cursor:pointer;
+      }
+      
+      .borProd{
+        border-radius:5px;
+      }
+      
+      #inputPrecio::placeholder{
+        text-align: right;
+      }
+      
+      #inputCosto::placeholder{
+        text-align: right;
+      }
+      .most{
+        display: inline-block;
+        background-color: #DF89BC;
+        overflow:hidden;
+        border: 8px;
+        border-color: white;
+        border-radius: 4px;
+        color: white;
+        text-align: center;
+        margin: 5px;
+        display: inline-block;
+        font-size:17px
+      }
+      
+      .mostArchivo{
+        display: inline-block;
+        background-color: #FFF;
+        overflow:hidden;
+        border: 8px;
+        border-color: white;
+        border-radius: 4px;
+        color: white;
+        text-align: center;
+        margin: 5px;
+        display: inline-block;
+        font-size:17px
+      }
+      
+      .mostt{
+        display:inline;
+        width:150px;
+        overflow:hidden;
+        cursor:pointer;
+        color:black;
+      }
+      .mostt:hover{
+        color: #F80000;
+      }
+      .quitar{
+        color:#0676B3;
+      }
+      .quitar:hover{
+        cursor: pointer;
+        color: #C61300
+      }
+      .upload_drop{
+        border-radius: 6px;
+        height:auto;
+        overflow:hidden;
+        border: 2px dashed #9FA3A6;
+        line-height: 20px;
+        text-align: center;
+        color: #9FA3A6;
+      }
+      .upload_drop.drop{
+        border-color: #2BA4FF;
+        color: #2BA4FF;
+      }
+      .upload_drops{
+        height:auto;
+        overflow:hidden;
+        border: 2px dashed #9FA3A6;
+        line-height: 20px;
+        text-align: center;
+        color: #9FA3A6;
+      }
+      .upload_drops.drop{
+        border-color: #2BA4FF;
+        color: #2BA4FF;
+      }
+      
+      .texto1{
+        border: 1px solid #BEBEBE;
+        border-radius: 5px;
+        margin: 5px;
+        cursor: text;
+      
+      }

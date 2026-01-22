@@ -1,0 +1,2 @@
+[21-Apr-2023 17:22:38 UTC] PDOException - SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'Descripcion'
+[21-Apr-2023 17:23:14 UTC] PDOException - SQLSTATE[21000]: Cardinality violation: 1222 The used SELECT statements have a different number of columns

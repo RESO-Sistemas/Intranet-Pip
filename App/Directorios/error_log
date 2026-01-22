@@ -1,0 +1,139 @@
+[14-Mar-2023 01:21:26 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 33
+[14-Mar-2023 01:21:26 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(34): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[15-Mar-2023 01:02:19 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[15-Mar-2023 01:02:19 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[15-Mar-2023 10:11:53 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[15-Mar-2023 10:11:53 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[22-Mar-2023 00:23:49 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[22-Mar-2023 00:23:49 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[22-Mar-2023 01:34:36 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[22-Mar-2023 01:34:36 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[22-Mar-2023 09:52:46 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[22-Mar-2023 09:52:46 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[22-Mar-2023 10:08:56 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[22-Mar-2023 10:08:56 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[24-Mar-2023 09:40:48 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[24-Mar-2023 09:40:48 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[25-Mar-2023 11:01:20 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[25-Mar-2023 11:01:20 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[29-Mar-2023 20:07:53 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[29-Mar-2023 20:07:53 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[30-Mar-2023 13:32:13 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[30-Mar-2023 13:32:13 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[31-Mar-2023 17:01:53 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[31-Mar-2023 17:01:53 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[31-Mar-2023 17:03:14 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[31-Mar-2023 17:03:14 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[03-Apr-2023 15:29:52 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[03-Apr-2023 15:29:52 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[04-Apr-2023 16:08:37 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[04-Apr-2023 16:08:37 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[12-Apr-2023 14:45:11 America/Mexico_City] PHP Warning:  Undefined array key "TiposExtSelected" in /home3/resosist/public_html/klyns/App/Directorios/App.php on line 19
+[12-Apr-2023 14:45:11 America/Mexico_City] PHP Fatal error:  Uncaught TypeError: sizeof(): Argument #1 ($value) must be of type Countable|array, null given in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php:35
+Stack trace:
+#0 /home3/resosist/public_html/klyns/App/Directorios/Directorios.php(73): Directorios->getTiposDirectorioExtensiones('ARR', NULL)
+#1 /home3/resosist/public_html/klyns/App/Directorios/App.php(20): Directorios->getDirectorioExtensiones(NULL)
+#2 {main}
+  thrown in /home3/resosist/public_html/klyns/App/Directorios/Directorios.php on line 35
+[20-Apr-2023 23:35:00 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[21-Apr-2023 17:27:28 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 03:28:47 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 03:31:22 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 03:56:47 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 03:58:43 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 03:59:30 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 04:09:27 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 04:11:00 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 04:11:29 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 04:13:52 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 04:14:39 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:01:27 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:03:54 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:06:07 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:10:41 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:11:24 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:11:47 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:14:27 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 05:24:33 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 15:41:09 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 15:44:14 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 15:53:56 UTC] PHP Warning:  sizeof(): Parameter must be an array or an object that implements Countable in /home/klynet/public_html/App/Directorios/Directorios.php on line 35
+[29-Apr-2023 16:49:04 UTC] PHP Fatal error:  Uncaught Error: Call to undefined method Directorios::getDetalleDirectorioExtensiones() in /home/klynet/public_html/App/Directorios/App.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/klynet/public_html/App/Directorios/App.php on line 11
