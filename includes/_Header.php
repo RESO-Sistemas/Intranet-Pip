@@ -67,7 +67,7 @@
                 <a
                   class="dropdown-item d-flex align-items-center"
                   href="index.php">
-                  <i class="material-icons me-2">home</i>Inicio
+                  <i class="material-icons me-2">home</i>Inicioooooooooooooooo
                 </a>
               </li>
               <li>
