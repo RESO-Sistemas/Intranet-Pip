@@ -58,12 +58,6 @@
                 <a class="btn btn-primary" id="btnLogin">Login</a>
                 <a style="cursor: pointer;" class="auth-forgot-password float-end" id="to-recover">Olvidaste la contraseña?</a>
             </div>
-            <div class="divider"></div>
-            <div class="auth-alts">
-                <a href="#" class="auth-alts-google"></a>
-                <a href="#" class="auth-alts-facebook"></a>
-                <a href="#" class="auth-alts-twitter"></a>
-            </div>
         </div>
     </div>
 
