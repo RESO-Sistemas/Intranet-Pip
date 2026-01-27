@@ -186,22 +186,16 @@
   </div>
 
 
-  <?php include("scripts.php"); ?>
-
-
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>
-
   <!-- neptune Javascripts -->
 
-
-
+  <?php include("scripts.php"); ?>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-  <!-- <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
-  <script src="./neptune/js/pages/select2.js"></script> -->
+  
+  <!-- Scripts específicos de esta página -->
   <script src="scripts/global.js" charset="utf-8"></script>
   <script src="scripts/Puestos.js" charset="utf-8"></script>
   <script type="text/javascript">
