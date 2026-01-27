@@ -130,7 +130,17 @@ class Empleados extends Conexiones
     {
         $NoEmpleado = ($_COOKIE["NoEmpleado"]);
         try {
-            $Password = base64_encode($Password);
+            // Obtener el password actual de la BD para comparar
+            $qActual = "SELECT Password FROM Empleados WHERE NoEmpleado = '$NoEmpleado';";
+            $consActual = $this->Select($qActual, array());
+            $PasswordActualBD = $consActual[0]["Password"];
+            
+            // Solo codificar si el password es diferente al que ya está en la BD
+            // Esto evita la doble codificación cuando el usuario no cambió su password
+            if ($Password !== $PasswordActualBD) {
+                $Password = base64_encode($Password);
+            }
+            
             $q = "UPDATE Empleados SET Email = '$Email', Movil = '$Movil', Password = '$Password' WHERE NoEmpleado = '$NoEmpleado';";
             $this->ExecuteQuery($q, array());
             return "1";

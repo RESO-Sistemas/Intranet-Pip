@@ -120,19 +120,22 @@ document
 //nuevo funcionamiento para el nuevo modal
 
 $(document).ready(function () {
-  $("#calendar").evoCalendar({
-    theme: "Orange Coral",
-    language: "es",
-    format: "mm/dd/yyyy",
-    titleFormat: "MM yyyy",
-    eventHeaderFormat: "MM d, yyyy",
-    todayHighlight: true,
-    sidebarDisplayDefault: false,
-    sidebarToggler: true,
-    eventDisplayDefault: false,
-    eventListToggler: false,
-    calendarEvents: null,
-  });
+  // Inicializar solo EvoCalendar (calendario morado)
+  if ($("#calendar").length && typeof $("#calendar").evoCalendar === 'function') {
+    $("#calendar").evoCalendar({
+      theme: "Orange Coral",
+      language: "es",
+      format: "mm/dd/yyyy",
+      titleFormat: "MM yyyy",
+      eventHeaderFormat: "MM d, yyyy",
+      todayHighlight: true,
+      sidebarDisplayDefault: false,
+      sidebarToggler: true,
+      eventDisplayDefault: false,
+      eventListToggler: false,
+      calendarEvents: null,
+    });
+  }
   getAgenda();
 
   $(".zoom").hover(
@@ -153,9 +156,12 @@ async function loadAll() {
   await llenadoSelectDivision();
 }
 
-$("#calendar").on("selectDate", function (event, newDate, oldDate) {
-  getEventosDetalle(newDate);
-});
+// Event listener para el calendario
+if ($("#calendar").length) {
+  $("#calendar").on("selectDate", function (event, newDate, oldDate) {
+    getEventosDetalle(newDate);
+  });
+}
 
 function onlynumber(e) {
   tecla = document.all ? e.keyCode : e.which;
