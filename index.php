@@ -1,3 +1,4 @@
+<?php include("AutorizaPagina.php"); ?>
 <?php
 require_once("Backend/Empleados/Empleados.php");
 $ins = new Empleados();

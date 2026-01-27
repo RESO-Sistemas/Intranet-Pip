@@ -1,3 +1,4 @@
+<?php include("AutorizaPagina.php"); ?>
 <?php
   include("verifica.php");
   require_once("Backend/Feed/Feed.php");

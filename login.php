@@ -1,3 +1,12 @@
+<?php
+require_once("Backend/Session/SessionManager.php");
+
+// Si ya hay sesión activa, redirigir a index
+if (SessionManager::isLoggedIn()) {
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

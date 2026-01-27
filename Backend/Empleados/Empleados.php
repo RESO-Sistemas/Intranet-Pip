@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (file_exists("../Conexiones/Conexiones.php")) {
     require_once("../Conexiones/Conexiones.php");
 } else {
@@ -12,6 +12,16 @@ if (file_exists("../Conexiones/Conexiones.php")) {
         require_once("././Backend/Conexiones/Conexiones.php");
     }
 }
+
+// Cargar SessionManager
+if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+} else if (file_exists("./Backend/Session/SessionManager.php")) {
+    require_once("./Backend/Session/SessionManager.php");
+} else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+}
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -24,36 +34,20 @@ class Empleados extends Conexiones
       $q = "SELECT NoEmpleado,Nivel,IdDivision,IdSucursal,Nombre,IdPuesto,IdCentroCosto FROM Empleados WHERE NoEmpleado = '$NoEmpleado' AND Password = '$Password';";
       $cons = $this->Select($q, array());
       if (sizeof($cons) > 0) {
-          $tiempo_limite = "+1 days";
-          setcookie("NoEmpleado", $cons[0]["NoEmpleado"], strtotime($tiempo_limite), "/");
-          setcookie("nivel", $cons[0]["Nivel"], strtotime($tiempo_limite), "/");
-          setcookie("IdDivision", $cons[0]["IdDivision"], strtotime($tiempo_limite), "/");
-          setcookie("IdSucursal", $cons[0]["IdSucursal"], strtotime($tiempo_limite), "/");
-          setcookie("idSPuesto", $cons[0]["IdPuesto"], strtotime($tiempo_limite), "/");
-          setcookie("idCentroCosto", $cons[0]["IdCentroCosto"],strtotime($tiempo_limite), "/");
-          setcookie("nombre", $cons[0]["Nombre"], strtotime($tiempo_limite), "/");
-          setcookie("sesion", "activa", strtotime($tiempo_limite), "/");
-          setcookie("tipo_sesion", "1", strtotime($tiempo_limite), "/");
-          setcookie("verificaSesion", "activa", strtotime($tiempo_limite), "/");
+          // Usar SessionManager en lugar de cookies
+          SessionManager::login($cons[0]);
           error_log("el usuario $NoEmpleado inicio sesion");
           return "1";
       } else {
           error_log("el usuario $NoEmpleado no pudo iniciar sesion");
-          return "Numero de usuario y/o contraseña incorrectos";
+          return "Numero de usuario y/o contrase?a incorrectos";
       }
   }
 
   function validarLogin(){
-    $ContadorSuccess = 0;
-    for ($i=0; $i < 25 ; $i++) {
-      if (isset($_COOKIE["NoEmpleado"]) && !empty($_COOKIE["NoEmpleado"])) {
-          $ContadorSuccess ++;
-      } else {
-        error_log("no se genero la cookie");
-      }
-    }
-    if ($ContadorSuccess > 0) {
-      error_log("cookie ".$_COOKIE["NoEmpleado"]." generada.");
+    SessionManager::init();
+    if (SessionManager::isLoggedIn()) {
+      error_log("sesion activa para usuario ".SessionManager::get('NoEmpleado'));
       return "1";
     } else {
       return "ERROR!";
@@ -63,7 +57,7 @@ class Empleados extends Conexiones
     function autorizaPermisoPagina($URL) {
       $URL = explode('/',$URL);
       $URL = $URL[1];
-      $idPuesto = ($_COOKIE["idSPuesto"]);
+      $idPuesto = (SessionManager::get("idSPuesto"));
       $q = "SELECT M.URL FROM MenusPermisos AS MP
               INNER JOIN menus as M ON M.id_menu = MP.id_menu
               WHERE M.Id_Padre <> 0 AND MP.IdPuesto = '$idPuesto';";
@@ -83,7 +77,7 @@ class Empleados extends Conexiones
     {
         $ArrayRetorno = [];
         $Datos = [];
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT EM.Imagen,EM.Nombre,EM.Email,EM.Movil,EM.NoEmpleado,EM.RFC,EM.CURP,EM.NoSeguro,EM.Password,EM.FNacimiento,P.Puesto,SU.Sucursal,EM.Antiguedad,CC.CentrodeCosto,DI.Division,DI.IdDivision,EM.Firma FROM Empleados as EM
             INNER JOIN Puestos as P ON P.IdPuesto = EM.IdPuesto
             INNER JOIN SucursalDepto AS SU ON SU.IdSucursal = EM.IdSucursal
@@ -128,15 +122,15 @@ class Empleados extends Conexiones
 
     function updateDatosEmpleado($Email, $Movil, $Password)
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
             // Obtener el password actual de la BD para comparar
             $qActual = "SELECT Password FROM Empleados WHERE NoEmpleado = '$NoEmpleado';";
             $consActual = $this->Select($qActual, array());
             $PasswordActualBD = $consActual[0]["Password"];
             
-            // Solo codificar si el password es diferente al que ya está en la BD
-            // Esto evita la doble codificación cuando el usuario no cambió su password
+            // Solo codificar si el password es diferente al que ya est? en la BD
+            // Esto evita la doble codificaci?n cuando el usuario no cambi? su password
             if ($Password !== $PasswordActualBD) {
                 $Password = base64_encode($Password);
             }
@@ -151,7 +145,7 @@ class Empleados extends Conexiones
 
     function updateFotoEmpleado($Imagen)
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
             $q = "UPDATE Empleados SET Imagen = '$Imagen' WHERE NoEmpleado = '$NoEmpleado';";
             $this->ExecuteQuery($q, array());
@@ -164,7 +158,7 @@ class Empleados extends Conexiones
 
     function getNameFotoEmpleado()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT Imagen FROM Empleados WHERE NoEmpleado = '$NoEmpleado';";
         $cons = $this->Select($q, array());
         return $cons;
@@ -172,8 +166,8 @@ class Empleados extends Conexiones
 
     function getColaboradores()
     {
-        $IdDivision = ($_COOKIE["IdDivision"]);
-        $IdSucursal = ($_COOKIE["IdSucursal"]);
+        $IdDivision = (SessionManager::get("IdDivision"));
+        $IdSucursal = (SessionManager::get("IdSucursal"));
         $q = "SELECT EM.Nombre,EM.Email,P.Puesto,EM.Nivel,EM.Imagen,EM.NoEmpleado FROM Empleados as EM left JOIN Puestos AS P ON P.IdPuesto = EM.IdPuesto
           WHERE IdSucursal = '$IdSucursal' AND EM.Status = 1
           ORDER BY EM.Nivel;";
@@ -182,8 +176,8 @@ class Empleados extends Conexiones
 
     function getColaboradoresOrganigrama()
     {
-        $IdDivision = ($_COOKIE["IdDivision"]);
-        $IdSucursal = ($_COOKIE["IdSucursal"]);
+        $IdDivision = (SessionManager::get("IdDivision"));
+        $IdSucursal = (SessionManager::get("IdSucursal"));
         $q = "SELECT EM.Nombre,EM.Email,P.Puesto,EM.Nivel,EM.NoEmpleado FROM Empleados as EM left JOIN Puestos AS P ON P.IdPuesto = EM.IdPuesto
           WHERE IdDivision = '$IdDivision' and IdSucursal = '$IdSucursal'
           ORDER BY EM.Nivel;";
@@ -193,7 +187,7 @@ class Empleados extends Conexiones
     function getDatosEmpleadosOrganigrama($NoEmpleadoAjax)
     {
         if ($NoEmpleadoAjax == "0") {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = (SessionManager::get("NoEmpleado"));
             $q = "SELECT EM.Imagen,EM.Nombre,EM.Email,EM.Movil,EM.NoEmpleado,EM.RFC,EM.CURP,EM.NoSeguro,EM.Password,EM.FNacimiento,P.Puesto,SU.Sucursal,EM.Antiguedad,CC.CentrodeCosto,DI.Division,DI.IdDivision FROM Empleados as EM
               INNER JOIN Puestos as P ON P.IdPuesto = EM.IdPuesto
               INNER JOIN SucursalDepto AS SU ON SU.IdSucursal = EM.IdSucursal
@@ -215,7 +209,7 @@ class Empleados extends Conexiones
     function updateDatosSaludEmpleado($HabitusExteriorDescripcion, $Peso, $Complexion, $Talla, $FrCardiaca, $FrRespiratoria, $TensionArterial, $Temperatura, $GrupoSanguineo, $FactorRh, $CartillaVacunacion, $EsquemaCompleto, $OtrosComentariosSalud)
     {
         try {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = (SessionManager::get("NoEmpleado"));
             $q = "UPDATE Empleados SET HabitusExteriorDescripcion = '$HabitusExteriorDescripcion', Peso = '$Peso', Complexion = '$Complexion', Talla = '$Talla', FrCardiaca = '$FrCardiaca',
               FrRespiratoria = '$FrRespiratoria', TensionArterial = '$TensionArterial', Temperatura = '$Temperatura', GrupoSanguineo = '$GrupoSanguineo', FactorRh = '$FactorRh', CartillaVacunacion = '$CartillaVacunacion',
               EsquemaCompleto = '$EsquemaCompleto', OtrosComentariosSalud = '$OtrosComentariosSalud'
@@ -229,7 +223,7 @@ class Empleados extends Conexiones
 
     function getDatosSaludEmpleado()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT HabitusExteriorDescripcion,Complexion,Talla,FrCardiaca,FrRespiratoria,TensionArterial,Temperatura,
             GrupoSanguineo,FactorRh,CartillaVacunacion,EsquemaCompleto,OtrosComentariosSalud,Peso FROM Empleados
             WHERE NoEmpleado = '$NoEmpleado';";
@@ -323,7 +317,7 @@ class Empleados extends Conexiones
 
     function getDatosEmpleadoSolocitud()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT Nombre,DiasVacacionesRest as DiferenciaYears FROM Empleados
       where NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q));
@@ -333,13 +327,13 @@ class Empleados extends Conexiones
     {
         $FechaRegresoUNIX = strtotime($DiaRegreso);
         $FechaRegresoNoUNIX = date('Y-m-d',$FechaRegresoUNIX);
-        $NombreEmp = ($_COOKIE["nombre"]);
+        $NombreEmp = (SessionManager::get("nombre"));
         $ArrMsgPush = [];
         $fechaActual = date('d-m-Y');
         // $fechaFin = date("d-m-Y",strtotime($FechaInicio."+ $FechaInicio days"));
         $fechaFin = $FechaFin;
 
-        $EmpleadoHijo = ($_COOKIE["NoEmpleado"]);
+        $EmpleadoHijo = (SessionManager::get("NoEmpleado"));
         $Conexiones4 = new Conexiones();
         $q4 = "SELECT Firma, tokenOS FROM Empleados WHERE NoEmpleado = '$EmpleadoHijo'; ";
         $cons4 = $Conexiones4->Select($q4, array());
@@ -358,7 +352,7 @@ class Empleados extends Conexiones
         if (sizeof($cons) > 0) {
           if ($cons[0]["tokenOS"] !== null && $cons[0]["tokenOS"] != "") {
               array_push($ArrMsgPush,[
-                "msg" => 'El empleado '.$NombreEmp.' está solicitando sus vacaciones.',
+                "msg" => 'El empleado '.$NombreEmp.' est? solicitando sus vacaciones.',
                 "token" => $cons[0]["tokenOS"],
               ]);
             }
@@ -505,14 +499,14 @@ class Empleados extends Conexiones
 
     function getMisSolicitudesVacaciones()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT idSolicitudesVacaciones,ComentariosSolicitud, Status,date_format(Registro ,'%d-%m-%Y') as FechaSolicitud FROM SolicitudesVacaciones WHERE NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q, array()));
     }
 
     function getMisSolicitudesPorRevisar()
     {
-        $EmpleadoPadre = ($_COOKIE["NoEmpleado"]);
+        $EmpleadoPadre = (SessionManager::get("NoEmpleado"));
         $q = "SELECT SV.idSolicitudesVacaciones,E.Nombre,date_format(SV.FechaInicio, '%d' '/' '%m' '/' '%y' '   ' '%H' ':' '%i') as FechaInicio,
             date_format(SV.FechaFin, '%d' '/' '%m' '/' '%y' '   ' '%H' ':' '%i') as FechaFin,SV.ComentariosSolicitud,
             date_format(SV.Registro ,'%d-%m-%Y') as FechaSolicitud FROM SolicitudesVacaciones AS SV
@@ -524,12 +518,12 @@ class Empleados extends Conexiones
     function updateStatusSolicitud($Status, $idSolicitudesVacaciones)
     {
         try {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = (SessionManager::get("NoEmpleado"));
             $q = "SELECT Firma FROM Empleados WHERE NoEmpleado = '$NoEmpleado'";
             $cons = $this->Select($q,array());
             $Firma = $cons[0]["Firma"];
             if ($Firma == "" || $Firma === null) {
-                return 'Diríjase a "Mi Perfil" y actualicé su firma, por favor.';
+                return 'Dir?jase a "Mi Perfil" y actualic? su firma, por favor.';
             } else {
                 $Conexiones2 = new Conexiones();
                 $q2 = "UPDATE SolicitudesVacaciones SET Status = '$Status',JefeInmediatoAutoriza = '$NoEmpleado' , FechaJefeInmediatoAutoriza = now()
@@ -578,7 +572,7 @@ class Empleados extends Conexiones
                       for ($i=0; $i < sizeof($cons3); $i++) {
                         if ($cons3[$i]["tokenOS"] !== null && $cons3[$i]["tokenOS"] != "") {
                           array_push($ArrMsgPush,[
-                            "msg" => 'Nómina: Has recibido una nueva solicitud de vacaciones del empleado '.$NombreEmp,
+                            "msg" => 'N?mina: Has recibido una nueva solicitud de vacaciones del empleado '.$NombreEmp,
                             "token" => $cons3[$i]["tokenOS"]
                           ]);
                         }
@@ -685,7 +679,7 @@ class Empleados extends Conexiones
                                                   <tr>
                                                       <td style='background-color: #ecf0f1; text-align: center; padding: 0; text-align:center; margin: 4% 10% 2%;   font-family: sans-serif;'>
                                                           <div style='text-align: center; margin-top: 2vh;'>
-                                                              <span><b>Puesto del empleado: </b>$Puesto</span>
+                                                              <span><b>Puesto del empleado:?</b>$Puesto</span>
                                                          </div>
                                                       </td>
                                                   </tr>
@@ -756,7 +750,7 @@ class Empleados extends Conexiones
     function addVacunacionCOVID($Numero, $Vacuna, $FechaVacunacion)
     {
       if (sizeof($Numero) > 0) {
-          $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+          $NoEmpleado = (SessionManager::get("NoEmpleado"));
           for ($i = 0; $i < sizeof($Numero); $i++) {
               $con = new Conexiones();
               $q = "INSERT INTO EsquemaVacunacionCOVID(Numero,Vacuna,FechaVacunacion,NoEmpleado)
@@ -771,7 +765,7 @@ class Empleados extends Conexiones
 
     function getEsquemaVacunacion()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT idEsquemaVacunacionCOVID,Numero,Vacuna,FechaVacunacion FROM EsquemaVacunacionCOVID
             where NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q, array()));
@@ -794,7 +788,7 @@ class Empleados extends Conexiones
 
     function getDivisionEmpleado(){
         try {
-          $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+          $NoEmpleado = (SessionManager::get("NoEmpleado"));
           $q = "SELECT P.IdDivision,DV.LaburaSabados,DV.LaburaDomingos, DV.LaburaDiasFestivos
                 FROM Empleados AS E
                 INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
@@ -923,7 +917,7 @@ class Empleados extends Conexiones
     function SubirFirma($imagen64)
     {
         $random = rand(1000, 9999);
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $carpeta = "../../Archivos/ImgEmpleados/$NoEmpleado/Firma/";
         $img = str_replace('data:image/png;base64,', '', $imagen64);
         $img = str_replace(' ', '+', $img);
@@ -948,14 +942,14 @@ class Empleados extends Conexiones
     }
     function getFirmaEmp()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT Firma,NoEmpleado from Empleados where  NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q, array()));
     }
 
     function getDetalleSolicitud($idSolicitudesVacaciones)
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $array = [];
         $q = "SELECT SU.Sucursal,SV.NoEmpleado,SV.Status,EM.Firma,EM.Nombre,P.Puesto,
         DATE_FORMAT(EM.Antiguedad, '%d-%m-%Y') AS Antiguedad,
@@ -1019,12 +1013,12 @@ class Empleados extends Conexiones
     function realizarAccionSolicitudFinal($idSolicitudesVacaciones, $Status)
     {
         try {
-            $UsuarioFinalAutoriza = ($_COOKIE["NoEmpleado"]);
+            $UsuarioFinalAutoriza = (SessionManager::get("NoEmpleado"));
             $q = "SELECT Firma FROM Empleados WHERE NoEmpleado = '$UsuarioFinalAutoriza'";
             $cons = $this->Select($q,array());
             $Firma = $cons[0]["Firma"];
             if ($Firma == "" || $Firma === null) {
-                return 'Diríjase a "Mi Perfil" y actualicé su firma, por favor.';
+                return 'Dir?jase a "Mi Perfil" y actualic? su firma, por favor.';
             } else {
                 $valNewStatus = "";
                 $retornoMensaje = "";
@@ -1128,7 +1122,7 @@ class Empleados extends Conexiones
                                     <div style='background-color:black; height:2px'></div>
                                     <div>
                                         <br>
-                                        <span style='font-size: 23px ;'>Fecha de Aceptación: </span>
+                                        <span style='font-size: 23px ;'>Fecha de Aceptaci?n: </span>
                                         <span style='margin-left:2vh; font-size: 20px;'>$FechaAutorizado</span><br>
                                     </div>
                                     <a href='https://klynet.mx/SolicitudesVacacionesFinales.php?Solicitud=$idSolicitudesVacaciones'>Ver Solicitud</a>
@@ -1524,8 +1518,8 @@ class Empleados extends Conexiones
 
     function getJefesPosiblesSolicitud()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
-        // $IdSucursal = ($_COOKIE["IdSucursal"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
+        // $IdSucursal = (SessionManager::get("IdSucursal"));
         $q = "CALL spGetJefesPosiblesPuesto('$NoEmpleado')";
         return json_encode($this->Procedure($q, array()));
     }
@@ -1548,7 +1542,7 @@ class Empleados extends Conexiones
 
     function asignarJefeEmpleadoSolicitud($EmpleadoPadre)
     {
-        $EmpleadoHijo = ($_COOKIE["NoEmpleado"]);
+        $EmpleadoHijo = (SessionManager::get("NoEmpleado"));
         $q = "SELECT COUNT(*) AS Existe FROM RelacionEmpleados WHERE EmpleadoHijo = '$EmpleadoHijo';";
         $cons = $this->Select($q, array());
         $Existe = $cons[0]["Existe"];
@@ -1571,14 +1565,14 @@ class Empleados extends Conexiones
 
     function getJefeAsignadoSolicitud()
     {
-        $EmpleadoHijo = ($_COOKIE["NoEmpleado"]);
+        $EmpleadoHijo = (SessionManager::get("NoEmpleado"));
         $q = "SELECT EmpleadoPadre FROM RelacionEmpleados WHERE EmpleadoHijo = '$EmpleadoHijo';";
         return json_encode($this->Select($q, array()));
     }
 
     function getDetallesEmpleadoLogeado()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT E.Nombre,E.Email,E.Movil,P.Puesto,E.Imagen,$NoEmpleado NoEmpleado FROM Empleados AS E
                 INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                 WHERE E.NoEmpleado = '$NoEmpleado';";
@@ -1587,7 +1581,7 @@ class Empleados extends Conexiones
 
     function getMsgSolicitudesVacacionesRecibidasJefe()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT SV.idSolicitudesVacaciones,concat('El empleado ',E.Nombre, ' solicita sus vacaciones.') as Msg, concat(ComentariosSolicitud) as Motivo FROM SolicitudesVacaciones  AS SV
         INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
         WHERE SV.Status = 0 AND SV.EmpleadoPadre = '$NoEmpleado' AND SV.VistoMsjJefe = 0;";
@@ -1607,7 +1601,7 @@ class Empleados extends Conexiones
         $ArrayRetorno = [];
         $DatosRegistro = [];
         $ArrayRegistros = [];
-        $idSPuesto = ($_COOKIE["idSPuesto"]);
+        $idSPuesto = (SessionManager::get("idSPuesto"));
         $q = "SELECT Valor AS PuestosAceptados FROM Configuracion WHERE idConfiguracion = 1;";
         $cons = $this->Select($q, array());
         $PuestosAceptados = explode(",", $cons[0]["PuestosAceptados"]);
@@ -1818,7 +1812,7 @@ class Empleados extends Conexiones
     }
 
     function getCantidadNotificaciones(){
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT SUM((SELECT coalesce(count(*),0) FROM LineaEticaMensajes AS LEM
         WHERE Revisado = 1 AND MensajeRevisado = 1 AND NoEmpleado = '$NoEmpleado') + (SELECT coalesce(count(*),0) FROM SolicitudesVacaciones  AS SV
         INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
@@ -1826,7 +1820,7 @@ class Empleados extends Conexiones
         $cons = $this->Select($q,array());
         $CantidadNotificaciones = $cons[0]["CantidadNotificaciones"];
         $Conexiones2 = new Conexiones();
-        $idSPuesto = ($_COOKIE["idSPuesto"]);
+        $idSPuesto = (SessionManager::get("idSPuesto"));
         $q2 = "SELECT Valor AS PuestosAceptados FROM Configuracion WHERE idConfiguracion = 1;";
         $cons2 = $Conexiones2->Select($q2, array());
         $PuestosAceptados = explode(",", $cons2[0]["PuestosAceptados"]);
@@ -1882,13 +1876,13 @@ class Empleados extends Conexiones
 
     function recuperarPassword($Email){
     if ($Email == "") {
-        return "Por favor ingrese un correo electrónico.";
+        return "Por favor ingrese un correo electr?nico.";
     }
     $q = "SELECT coalesce(count(*),0) as Existe FROM Empleados WHERE Email = '$Email';";
     $cons = $this->Select($q,array());
     $Existe = $cons[0]["Existe"];
     if ($Existe < 1) {
-        return "Correo electrónico no encontrado.";
+        return "Correo electr?nico no encontrado.";
     } else {
         $Conexiones2 = new Conexiones();
         $q2 = "CALL spEnviaSolicitudRecoveryPass('$Email')";
@@ -1919,7 +1913,7 @@ class Empleados extends Conexiones
               $mail->setFrom('interno@klynet.mx','Klyns');
               $mail->addAddress($Email, "Klyns");
 
-              $mensajeSubject = "Klyns, Solicitud para recuperar contraseña.";
+              $mensajeSubject = "Klyns, Solicitud para recuperar contrase?a.";
               $mensajeSubject = utf8_decode($mensajeSubject);
               $mail->Subject = $mensajeSubject;
               $mensajeBody = "
@@ -1993,21 +1987,21 @@ class Empleados extends Conexiones
                                                <td style='background-color:#ecf0f1; margin: 4% 10% 2%;   font-family: sans-serif;'>
                                                    <div style='text-align: center; margin-top: 2vh;'>
                                                        <h2 style='color: #B00000;margin: 0 4vh 0 4vh;'>$NombreEmp!</h2>
-                                                       <p style='margin: 3vh 4vh 0 4vh; text-align: justify !important;'>Se solicitó un restablecimiento de contraseña para el correo $Email, por favor haz clic en el siguiente botón para cambiar tu contraseña.</p>
+                                                       <p style='margin: 3vh 4vh 0 4vh; text-align: justify !important;'>Se solicit? un restablecimiento de contrase?a para el correo $Email, por favor haz clic en el siguiente bot?n para cambiar tu contrase?a.</p>
                                                    </div>
                                                </td>
                                            </tr>
                                            <tr style='background-color:#ecf0f1; margin: 4% 10% 2%; height: 15vh;'>
                                                <td >
                                                <div style='text-align: center;'>
-                                                       <a class='button-15' style='text-align: center; color:white !important' href='https://klynet.mx/RecoveryPassword.php?No=$idRecoveryPass'>Cambiar Contraseña</a>
+                                                       <a class='button-15' style='text-align: center; color:white !important' href='https://klynet.mx/RecoveryPassword.php?No=$idRecoveryPass'>Cambiar Contrase?a</a>
                                                </div>
                                                </td>
                                            </tr>
                                            <tr style='background-color:#ecf0f1; margin: 2% 10% 2%; height: 10vh;'>
                                                <td>
                                                    <div style='text-align: center; padding:2vh'>
-                                                       <span>La solicitud estará disponible por <b>$TiempoLimiteSoli horas</b> a partir del envío de la solicitud.</span>
+                                                       <span>La solicitud estar? disponible por <b>$TiempoLimiteSoli horas</b> a partir del env?o de la solicitud.</span>
                                                    </div>
                                                </td>
                                            </tr>
@@ -2059,20 +2053,11 @@ class Empleados extends Conexiones
         $q = "SELECT NoEmpleado,Nivel,IdDivision,IdSucursal,Nombre,IdPuesto,IdCentroCosto FROM Empleados WHERE NoEmpleado = '$NoEmpleado' AND Password = '$Password';";
         $cons = $this->Select($q, array());
         if (sizeof($cons) > 0) {
-          $tiempo_limite = "+1 days";
-          setcookie("NoEmpleado", $cons[0]["NoEmpleado"], strtotime($tiempo_limite), "/");
-          setcookie("nivel", $cons[0]["Nivel"], strtotime($tiempo_limite), "/");
-          setcookie("IdDivision", $cons[0]["IdDivision"], strtotime($tiempo_limite), "/");
-          setcookie("IdSucursal", $cons[0]["IdSucursal"], strtotime($tiempo_limite), "/");
-          setcookie("idSPuesto", $cons[0]["IdPuesto"], strtotime($tiempo_limite), "/");
-          setcookie("idCentroCosto", $cons[0]["IdCentroCosto"],strtotime($tiempo_limite), "/");
-          setcookie("nombre", $cons[0]["Nombre"], strtotime($tiempo_limite), "/");
-          setcookie("sesion", "activa", strtotime($tiempo_limite), "/");
-          setcookie("tipo_sesion", "1", strtotime($tiempo_limite), "/");
-          setcookie("verificaSesion", "activa", strtotime($tiempo_limite), "/");
+          // Usar SessionManager en lugar de cookies
+          SessionManager::login($cons[0]);
             return "1";
         } else {
-            return "Numero de usuario y/o contraseña incorrectos";
+            return "Numero de usuario y/o contrase?a incorrectos";
         }
     }
 
@@ -2132,7 +2117,7 @@ class Empleados extends Conexiones
       }
 
       function getMisSolicitudesVacacionesEstadoNomina () {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
         $q = "SELECT SV.ComentariosSolicitud, SV.Status,SV.idSolicitudesVacaciones,E.Nombre,date_format(SV.Registro ,'%d-%m-%Y') as FechaSolicitud FROM SolicitudesVacaciones AS SV
                 INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
                 WHERE EmpleadoPadre = '$NoEmpleado' AND FechaJefeInmediatoAutoriza <> ''
@@ -2143,8 +2128,8 @@ class Empleados extends Conexiones
       function getMensajeCapacitacionGlobal () {
       $ArrayRetorno = [];
       $Datos = [];
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
-      $q = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados,concat('Se te ha asignado la siguiente capacitación: ',Descripcion) as Descripcion,concat('La capacitación comenzará el día ',date_format(FechaInicio,'%d-%m-%Y')) AS FechaInicio,(select TIMESTAMPDIFF(DAY,C.FechaInicio,NOW())) as DifDias FROM CapacitacionDetalle AS CD
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
+      $q = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados,concat('Se te ha asignado la siguiente capacitaci?n:?',Descripcion) as Descripcion,concat('La capacitaci?n comenzar? el d?a ',date_format(FechaInicio,'%d-%m-%Y')) AS FechaInicio,(select TIMESTAMPDIFF(DAY,C.FechaInicio,NOW())) as DifDias FROM CapacitacionDetalle AS CD
               INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
               WHERE C.Status = 1;";
       $cons = $this->Select($q,array());
@@ -2177,7 +2162,7 @@ class Empleados extends Conexiones
     }
 
     function cerrarMensajeCapacitacion ($idCapacitacion) {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "INSERT INTO EstadoMensajesCapacitacion (NoEmpleado,idCapacitacion,Registro)
 	           VALUES ('$NoEmpleado','$idCapacitacion',NOW());";
       $this->ExecuteQuery($q,array());
@@ -2186,10 +2171,10 @@ class Empleados extends Conexiones
 
     function getHistoricoSolicitudesNomina ($FechaIni,$FechaFin) {
       if ($FechaIni == "" || $FechaFin == "") {
-        return "Fecha no Válida.";
+        return "Fecha no V?lida.";
       }else {
         $q = "SELECT E.Nombre,SV.ComentariosSolicitud,
-                IF(SV.Status = 2,'Denegada por Nómina',if(SV.Status = 3,'Aceptada por Nómina','Pendiente de Revisión')) as Status,
+                IF(SV.Status = 2,'Denegada por N?mina',if(SV.Status = 3,'Aceptada por N?mina','Pendiente de Revisi?n')) as Status,
                 date_format(SV.Registro,'%d-%m-%Y') AS FechaSolicitud,SV.idSolicitudesVacaciones,SV.Status AS NumStatus
                 FROM SolicitudesVacaciones AS SV
                 INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
@@ -2207,7 +2192,7 @@ class Empleados extends Conexiones
     }
 
     function getSolicitudesCanceladasJefe () {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "SELECT E.Nombre,SV.ComentariosSolicitud,date_format(SV.Registro,'%d-%m-%Y') AS FechaSolicitud,SV.idSolicitudesVacaciones
               FROM SolicitudesVacaciones AS SV
               INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
@@ -2234,7 +2219,7 @@ class Empleados extends Conexiones
           if(E.Temperatura = 0 ,'Sin registro',IF(E.Temperatura is null,'Sin registro',E.Temperatura)) as Temperatura,
           if(E.GrupoSanguineo = '' ,'Sin registro',IF(E.GrupoSanguineo is null,'Sin registro',E.GrupoSanguineo)) as GrupoSanguineo,
           if(E.FactorRh is null ,'Sin registro',IF(E.FactorRh = 1,'Positivo ( + )','Negativo ( - )')) as FactorRh,
-          if(E.CartillaVacunacion = 0 ,'Sin Cartilla de vacunación','Sí cuenta con cartilla de vacunación') as CartillaVacunacion,
+          if(E.CartillaVacunacion = 0 ,'Sin Cartilla de vacunaci?n','S? cuenta con cartilla de vacunaci?n') as CartillaVacunacion,
           if(E.EsquemaCompleto = 0 ,'No cuenta con Esquema Completo','Cuenta con Esquema Completo') as EsquemaCompleto,
           if(E.OtrosComentariosSalud = '' ,'Sin registro',IF(E.OtrosComentariosSalud is null,'Sin registro',E.OtrosComentariosSalud)) as OtrosComentariosSalud
           FROM Empleados AS E
@@ -2245,7 +2230,7 @@ class Empleados extends Conexiones
 
   function loadGblDataEmployee(){
     try {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "SELECT Nombre AS NameEmployee, IF(Email IS NULL OR Email = '','Sin registros',Email) as EmailEmployee,
               IF(Imagen IS NULL OR Imagen = '','assets/Klyns.png',CONCAT('Archivos/ImgEmpleados/',NoEmpleado,'/',Imagen)) AS ImgEmployee
             FROM Empleados
@@ -2262,7 +2247,7 @@ class Empleados extends Conexiones
           "Resultado" => true,
           "Siguiente" => false,
           "ConMsg" => true,
-          "Msg" => "Ha ocurrido un error al obtener los datos del empleado conectado, intente iniciar sesión nuevamente para poder continuar."
+          "Msg" => "Ha ocurrido un error al obtener los datos del empleado conectado, intente iniciar sesi?n nuevamente para poder continuar."
         ];
       }
       return json_encode($arrRetorno);
@@ -2321,7 +2306,7 @@ class Empleados extends Conexiones
 
   function getMySubordinatesPerEvaluation(){
     try {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "SELECT E.NoEmpleado, E.Nombre, 1 AS TipoSubordinado, SD.Sucursal, P.Puesto
             FROM Empleados AS E
             INNER JOIN RelacionEmpleados AS RE ON RE.EmpleadoHijo = E.NoEmpleado
@@ -2369,7 +2354,7 @@ class Empleados extends Conexiones
 
   function visitIndexEmployee(){
     try {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "INSERT INTO BitacoraVisitasIndex(NoEmpleado) VALUES (?);";
       $this->ExecuteQueryWithParam($q, [$NoEmpleado]);
       return "1";

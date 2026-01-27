@@ -1,3 +1,4 @@
+<?php include("AutorizaPagina.php"); ?>
 <?php
 if (isset($_COOKIE["tipo_sesion"])) {
     if ($_COOKIE["tipo_sesion"] != "1") {
