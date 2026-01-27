@@ -27,7 +27,11 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
 <!-- Alertify -->
 <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
-<?php if ($current_page !== 'login' && $current_page !== 'index'): ?>
+<?php 
+// Chartist solo para páginas específicas que lo necesitan (evitar en la mayoría de páginas)
+$chartist_pages = ['dashboard']; // Solo en dashboard
+if (in_array($current_page, $chartist_pages)): 
+?>
 <!-- Chartist solo para dashboard -->
 <script src="assets/libs/chartist/dist/chartist.min.js"></script>
 <script src="assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>

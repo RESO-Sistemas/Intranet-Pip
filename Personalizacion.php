@@ -541,13 +541,13 @@
 
     </div>
 
-    <?php include("scripts.php"); ?>
-
     <!-- neptune Javascripts -->
 
     <?php include("neptune_js.php");  ?>
 
     <!-- neptune Javascripts -->
+
+    <?php include("scripts.php"); ?>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
 
@@ -561,11 +561,9 @@
 
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <!-- Scripts específicos de esta página -->
+
     <script src="scripts/global.js" charset="utf-8"></script>
-
-    <script src="assets/libs/toastr/build/toastr.min.js"></script>
-
-    <script src="assets/extra-libs/toastr/toastr-init.js"></script>
 
     <script src="scripts/Personalizacion.js" charset="utf-8"></script>
 

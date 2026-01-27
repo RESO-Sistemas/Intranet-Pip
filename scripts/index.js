@@ -72,10 +72,14 @@
 //     }
 //   }
 // });
-$("#fileUpload").fileUpload({
-  id: "filesFeedForm",
-  multiple: true,
-});
+
+// Inicializar fileUpload solo si el plugin y el elemento existen
+if ($("#fileUpload").length && typeof $.fn.fileUpload === 'function') {
+  $("#fileUpload").fileUpload({
+    id: "filesFeedForm",
+    multiple: true,
+  });
+}
 
 //nuevo funcionamiento para el nuevo modal
 
@@ -95,26 +99,32 @@ $("#fileUpload").fileUpload({
 //     }
 //   });
 
-document
-  .getElementById("btn-actionGreen")
-  .addEventListener("click", async function () {
+// Validar que el elemento exista antes de agregar listener
+const btnActionGreen = document.getElementById("btn-actionGreen");
+if (btnActionGreen) {
+  btnActionGreen.addEventListener("click", async function () {
     let resultV = await verifyInputs("formFeed");
     if (resultV) {
       var files = $("#filesFeedForm")[0].files;
       if (files.length > 0) {
         saveInfoFeed();
-        modal.hide();
+        if (typeof modal !== 'undefined') {
+          modal.hide();
+        }
       } else {
         const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Informacion!</span>
               <span class="alert-text">Por favor, selecciona al menos un archivo.</span>
         </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
+        if (typeof showBootstrapAlert === 'function') {
+          showBootstrapAlert(messageContent, "top-right", 5000);
+        }
         return false;
       }
     }
   });
+}
 
 //cuando se cierre el modal que se limpie
 //nuevo funcionamiento para el nuevo modal
