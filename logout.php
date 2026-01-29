@@ -4,5 +4,7 @@ require_once("Backend/Session/SessionManager.php");
 // Cerrar sesión usando SessionManager
 SessionManager::logout();
 
-echo '<meta http-equiv="refresh" content="0;url=login.php" />';
- ?>
+// Redirigir inmediatamente sin crear nueva sesión
+header("Location: login.php");
+exit();
+?>
