@@ -903,7 +903,6 @@ async function pAjaxAsync(url, datos, pcarga) {
               <span class="alert-text">¡Ha ocurrido un error inesperado, inténtelo de nuevo por favor!</span>
             </div>`;
       showBootstrapAlertWar(messageContent, "top-right", 5000);
-      s;
     }
   }
 }

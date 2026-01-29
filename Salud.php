@@ -139,9 +139,9 @@ $MenuP = $Conf->getMenusPadre();
                           </div>
                           <div class="card-title">Información sanguinea</div>
                           <div class="row align-items-center mb-4">
-                            <div class="col">
+                            <div class="col-12 col-md-6">
                               <label class="form-label">Grupo:</label>
-                              <select id="INFSGrupo" name="INFSGrupo" class="form-control">
+                              <select id="INFSGrupo" name="INFSGrupo" class="form-control form-select">
                                 <option value="">Listado grupo sanguíneo</option>
                                 <option value="A">A</option>
                                 <option value="B">B</option>
@@ -149,9 +149,9 @@ $MenuP = $Conf->getMenusPadre();
                                 <option value="O">O</option>
                               </select>
                             </div>
-                            <div class="col">
+                            <div class="col-12 col-md-6">
                               <label class="form-label">Factor Rh:</label>
-                              <select id="INFSFactirRh" name="INFSFactirRh" class="form-control">
+                              <select id="INFSFactirRh" name="INFSFactirRh" class="form-control form-select">
                                 <option value="" selected disabled>Factor rh</option>
                                 <option value="0">-</option>
                                 <option value="1">+</option>

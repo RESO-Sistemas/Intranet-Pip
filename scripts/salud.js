@@ -221,7 +221,6 @@ function updateEsquemaVacunacion(val) {
       let numero = $("#txtNumeroVacuna" + val).val();
       let vacuna = $("#txtNombreVacuna" + val).val();
       let fecha = $("#txtFecha" + val).val();
-      alert(fecha);
       $.ajax({
         type: "post",
         url: "Backend/Empleados/App.php",
