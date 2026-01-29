@@ -15,6 +15,9 @@
 <script src="./neptune/js/main.min.js"></script>
 <script src="./neptune/js/custom.js"></script>
 
+<!-- Scripts globales personalizados -->
+<script src="./scripts/global.js?v=<?php echo time(); ?>"></script>
+
 <?php 
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 if ($current_page !== 'login'): 

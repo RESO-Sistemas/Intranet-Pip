@@ -47,7 +47,7 @@ if ($current_page !== 'login'):
 
 <!-- Estilos principales del sistema -->
 
-<link href="./neptune/css/main.min.css" rel="stylesheet">
+<link href="./neptune/css/main.css" rel="stylesheet">
 
 <link href="./neptune/css/custom.css" rel="stylesheet">
 

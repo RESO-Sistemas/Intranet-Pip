@@ -262,6 +262,14 @@ function getCapacitaciones() {
   };
   let tableCapacitacion = $("#tableCapacitacion").dataTable({
     destroy: true,
+    language: {
+      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+      zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+      info: "PÁGINA _PAGE_ DE _PAGES_",
+      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
+      infoFiltered: "",
+      search: "BUSCAR",
+    },
     ajax: {
       type: "POST",
       url: "Backend/Capacitacion/App.php",

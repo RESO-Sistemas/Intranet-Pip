@@ -19,6 +19,9 @@ class SessionManager
     {
         self::init();
         
+        // Regenerar el Session ID por seguridad (previene session fixation)
+        session_regenerate_id(true);
+        
         $_SESSION['NoEmpleado'] = $userData['NoEmpleado'];
         $_SESSION['nivel'] = $userData['Nivel'];
         $_SESSION['IdDivision'] = $userData['IdDivision'];
@@ -33,22 +36,31 @@ class SessionManager
     }
 
     /**
-     * Destruye la sesión del usuario
+     * Destruye la sesión del usuario y elimina la cookie PHPSESSID
      */
     public static function logout()
     {
         self::init();
         
+        // Limpiar todas las variables de sesión
         $_SESSION = array();
         
-        if (ini_get("session.use_cookies")) {
+        // Eliminar la cookie de sesión (PHPSESSID)
+        if (isset($_COOKIE[session_name()])) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params["path"], $params["domain"],
-                $params["secure"], $params["httponly"]
+            setcookie(
+                session_name(), 
+                '', 
+                time() - 3600,
+                $params["path"], 
+                $params["domain"],
+                $params["secure"], 
+                $params["httponly"]
             );
+            unset($_COOKIE[session_name()]);
         }
         
+        // Destruir la sesión completamente
         session_destroy();
     }
 

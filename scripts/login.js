@@ -16,7 +16,7 @@ $("#btnLogin").click(async function () {
     const messageContent = `
             <div class="alert-content">
              <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Ingrese todos los campos.</span>
+              <span class="alert-text">Llena todos los campos</span>
             </div>`;
     showBootstrapAlertWar(messageContent, "top-right", 5000);
 
