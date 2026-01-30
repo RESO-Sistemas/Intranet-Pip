@@ -17,6 +17,13 @@
       }
   }
 
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
+
   class Capacitacion extends Conexiones {
     function getFechasRango($fechaInicio,$fechaFin){
       $fechaInicio=strtotime($fechaInicio);
@@ -103,7 +110,7 @@
     }
 
     function getCapacitacionesUsDisponibles () {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       $ListCapacitaciones = [];
       $q = "SELECT C.Descripcion,C.FechaInicio,C.FechaFin,C.HoraInicio,C.HoraFin,C.idCapacitacion,C.Dias,C.archivo,C.Tipo,CD.NoEmpleado
             FROM Capacitacion AS C INNER JOIN CapacitacionDetalle AS CD ON CD.id_capacitacion = C.idCapacitacion

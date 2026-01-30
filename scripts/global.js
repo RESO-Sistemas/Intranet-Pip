@@ -9,12 +9,24 @@ const url_m_Configuracion = "Backend/Configuracion/App.php";
 const url_m_Dashboard = "Backend/Dashboard/App.php";
 const url_m_Feed = "Backend/Feed/App.php";
 
-const prof_Name = document.getElementById("PerfilNombreEmp");
-const prof_Email = document.getElementById("PerfilCorreoEmp");
-const prof_Img = document.getElementById("profileImg");
-const prof_imgSmall = document.getElementById("imgSmallProfile");
+let prof_Name, prof_Email, prof_Img, prof_imgSmall;
 
-loadAllFunctions();
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+  // No ejecutar funciones globales en la página de login
+  const currentPage = window.location.pathname.split('/').pop();
+  if (currentPage === 'login.php') {
+    return;
+  }
+  
+  prof_Name = document.getElementById("PerfilNombreEmp");
+  prof_Email = document.getElementById("PerfilCorreoEmp");
+  prof_Img = document.getElementById("profileImg");
+  prof_imgSmall = document.getElementById("imgSmallProfile");
+  
+  loadAllFunctions();
+});
+
 async function loadAllFunctions() {
   await loadGblDataEmployee();
   getMensajeVistoLineaEtica();

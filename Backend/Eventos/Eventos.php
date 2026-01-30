@@ -16,6 +16,13 @@
       require_once("././Backend/Conexiones/Conexiones.php");
       }
   }
+
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
   class Eventos extends Conexiones {
     function getEventosDetalle ($fecha) {
         $ArrayRetorno = [];
@@ -51,14 +58,14 @@
     }
 
     function getEventoDetalleBirthday ($fechaSinFormatear,$FechaAgenda,$FechaMesDia) {
-        $IdSucursal = ($_COOKIE["IdSucursal"]);
+        $IdSucursal = SessionManager::get("IdSucursal");
         $q = "SELECT Nombre,date_format(FNacimiento, '%d-%m') as FNacimiento FROM Empleados WHERE date_format(FNacimiento,'%m-%d') = '$FechaMesDia'  AND Status = 1;";
         $cons = $this->Select($q,array());
         return $cons;
     }
 
     function getEventoDetalleAnniversary ($fechaSinFormatear,$FechaAgenda,$FechaMesDia) {
-        $IdSucursal = ($_COOKIE["IdSucursal"]);
+        $IdSucursal = SessionManager::get("IdSucursal");
         $q = "SELECT Nombre,date_format(Antiguedad, '%d-%m') as Antiguedad FROM Empleados WHERE date_format(Antiguedad,'%m-%d') = '$FechaMesDia'  AND Status = 1;";
         $cons = $this->Select($q,array());
         return $cons;
@@ -73,7 +80,7 @@
     function getEventoDetalleCapacitacion ($fechaSinFormatear,$FechaAgenda,$FechaMesDia) {
         $ArrayRetorno = [];
         $DatosArr = [];
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT C.Descripcion,C.FechaInicio,C.FechaFin,C.HoraInicio,C.HoraFin,C.Tipo,CD.NoEmpleado FROM Capacitacion AS C
                 INNER JOIN CapacitacionDetalle AS CD ON CD.id_capacitacion = C.idCapacitacion
                 WHERE C.FechaInicio = '$FechaAgenda'; ";
@@ -100,8 +107,8 @@
     function getEventos ($fecha) {
       $fecha = date_create($fecha);
       $fecha = date_format($fecha,"Y");
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
-      $IdSucursal = ($_COOKIE["IdSucursal"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
+      $IdSucursal = SessionManager::get("IdSucursal");
 
       $q = "SELECT Titulo,concat(Descripcion,' .En un horario de comienzo a',HoraInicio,' y finalizara a las ',HoraFin) as Descripcion,FechaInicio,
             HoraInicio,HoraFin,Status,'event' AS TipoEvento,'#9ED863' AS Color FROM Eventos;";

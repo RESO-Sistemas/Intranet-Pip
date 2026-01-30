@@ -16,6 +16,13 @@
       require_once("././Backend/Conexiones/Conexiones.php");
       }
   }
+
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
   class Evaluaciones extends Conexiones
   {
     function getEvaluacionesDisponibles(){
@@ -57,7 +64,7 @@
 
     function getEvaluadosEvaluacion($IdEval){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT E.Nombre,TO_BASE64(EV.idEvaluacionDetalle) AS idEvDetalle,IF(EV.StatusEvaluado = 1,'Realizada','Pendiente') AS StatusRealizado,
               	EV.StatusEvaluado,TO_BASE64(EV.idEvaluaciones) AS idEvaluaciones,
               IF(EV.JefeEvalua = 1 ,'Subordinado',IF(EV.ParEvalua = 1,'Empleado Par', IF(EV.AutoEvalua = 1,'Auto Evaluación','Jefe'))) AS RelacionEvaluado,
@@ -73,8 +80,8 @@
     }
 
     function getColaboradoresOrganigrama(){
-      $IdDivision = ($_COOKIE["IdDivision"]);
-      $IdSucursal = ($_COOKIE["IdSucursal"]);
+      $IdDivision = SessionManager::get("IdDivision");
+      $IdSucursal = SessionManager::get("IdSucursal");
       $q="SELECT EM.Nombre,EM.Email,P.Puesto,EM.Nivel,EM.NoEmpleado FROM Empleados as EM left JOIN Puestos AS P ON P.IdPuesto = EM.IdPuesto
           WHERE EM.IdSucursal = '$IdSucursal'
           ORDER BY EM.Nivel;";
@@ -84,8 +91,8 @@
     function getDetalleEvaluacion(){
       $retorno = [];
       $datos = [];
-      $Nivel = ($_COOKIE["nivel"]);
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $Nivel = SessionManager::get("nivel");
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       $Evaluaciones = new Evaluaciones();
       $Evaluacione2 = new Evaluaciones();
       $ListColaboradores = $Evaluaciones->getColaboradoresOrganigrama();
@@ -109,7 +116,7 @@
 
     function respondeEvaluacion ($idEvaluaciones,$NoEmpleadoEvaluado,$idCompetencias,$NoEmpleado,$Comentarios,$Calificacion) {
       $contenidoValue = "";
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       for ($i=0; $i < sizeof($NoEmpleadoEvaluado) ; $i++) {
         $contenidoValue .="($idEvaluaciones,$NoEmpleadoEvaluado[$i],$idCompetencias[$i],$NoEmpleado,now(),'$Comentarios[$i]','$Calificacion[$i]'),";
       }
@@ -150,7 +157,7 @@
 
     function addEsperaEvaluacion($dataEvaluation){
           try {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = SessionManager::get("NoEmpleado");
             $q = "DELETE FROM EsperaNuevaEvaluacion WHERE NoEmpleadoRegistra = '$NoEmpleado'";
             $this->ExecuteQuery($q,array());
             $dataEvaluation = json_decode($dataEvaluation, true);
@@ -171,7 +178,7 @@
         }
         function addEvaluacion ($Titulo,$FechaInicio,$FechaFin,$dataEvaluation,$inpRetroFechaIni,$inpRetroFechaFin,$inpPlanAFechaIni,$inpPlanAFechaFin) {
           try {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = SessionManager::get("NoEmpleado");
             $InstEspera = new Evaluaciones();
             $ResultEspera = $InstEspera->addEsperaEvaluacion($dataEvaluation);
             if ($ResultEspera) {
@@ -1055,7 +1062,7 @@
 
     function getAllDataEmployeeGeneral(){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT EV.Titulo AS NameEvaluacion,E.Nombre,E.NoEmpleado,ED.NivelEvaluado,P.Puesto,TO_BASE64(ED.idEvaluaciones) AS idEvaluaciones,
               IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = 1 AND NoEmpleadoEvaluado = '$NoEmpleado' AND Status = 1) > 0 AND
               	(SELECT COUNT(*) FROM EvaluacionDetalle WHERE ParEvalua = 1 AND NoEmpleadoEvaluado = '$NoEmpleado' AND Status = 1) > 0,'A',
@@ -1096,7 +1103,7 @@
     function getAllGeneralDataPerEmployeeFinal(){
       try {
         $finalData = [];
-        $NoEmpleado = base64_encode(($_COOKIE["NoEmpleado"]));
+        $NoEmpleado = base64_encode(SessionManager::get("NoEmpleado"));
         $InstInitialEv = new Evaluaciones();
         $ResInstInitialEv = $InstInitialEv->getAllDataEmployeeGeneral();
         $arrReturn = [
@@ -1113,7 +1120,7 @@
     function acceptFeedback($evaluation){
       try {
         $evaluation = base64_decode($evaluation);
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "INSERT INTO RetroalimentacionEvaluacion(idEvaluaciones, NoEmpleado) VALUES('$evaluation','$NoEmpleado')";
         $this->ExecuteQuery($q,array());
         $arrReturn = [
@@ -1230,7 +1237,7 @@
 
     function acceptResultsEvaluation($evaluation,$employee,$required,$dataCompetences){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $evaluation = base64_decode($evaluation);
         $employee = base64_decode($employee);
         $q = "CALL sp_CreaPlanAccion('$evaluation','$employee','$NoEmpleado','$required');";
@@ -1327,7 +1334,7 @@
 
     function getEmployeesWhitPlanAction(){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT E.NoEmpleado, E.Nombre, P.Puesto, SD.Sucursal
               FROM PlanesAccionEvaluacion AS PAE
               INNER JOIN Empleados AS E ON E.NoEmpleado = PAE.NoEmpleado
@@ -1377,7 +1384,7 @@
 
     function getMyPlansAction(){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT TO_BASE64(PAE.idPlanesAccionEvaluacion) AS idPlanesAccionEvaluacion, EV.Titulo
               FROM PlanesAccionEvaluacion AS PAE
               INNER JOIN Evaluaciones AS EV  ON EV.idEvaluaciones = PAE.idEvaluaciones
@@ -1396,7 +1403,7 @@
 
     function getSummaryPlanAction($planA){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT StatusConfirmaActividades,IF(FechaConfirmaActividades IS NULL, 'No registrado', FechaConfirmaActividades) AS FechaConfirmaActividades,
               StatusConfirmaPlanAccion, IF(FechaConfirmaPlanAccion IS NULL,'No registrado', FechaConfirmaPlanAccion) AS FechaConfirmaPlanAccion,
               (SELECT RE.FechaAceptado FROM RetroalimentacionEvaluacion AS RE
@@ -2065,7 +2072,7 @@
 
     function shareEvaluation($dataEvaluation, $evaluation){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $evaluation = base64_decode($evaluation);
         $InstEspera = new Evaluaciones();
         $ResultEspera = $InstEspera->addEsperaEvaluacion($dataEvaluation);

@@ -16,16 +16,23 @@
       require_once("././Backend/Conexiones/Conexiones.php");
       }
   }
+
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
   class Configuracion extends Conexiones{
     function getMenusPadre(){
-      $idSPuesto = ($_COOKIE["idSPuesto"]);
+      $idSPuesto = SessionManager::get("idSPuesto");
       $q = "SELECT id_menu,Descripcion,URL,Argumentos FROM menus
       WHERE Id_Padre = 0 and id_menu in (SELECT id_menu FROM MenusPermisos WHERE IdPuesto = '$idSPuesto');";
       $cons = $this->Select($q,array());
       return $cons;
     }
     function getMenusHijo($Id_Padre){
-      $idSPuesto = ($_COOKIE["idSPuesto"]);
+      $idSPuesto = SessionManager::get("idSPuesto");
       $q = "SELECT id_menu,Descripcion,URL,Argumentos FROM menus
       WHERE Id_Padre = '$Id_Padre' and id_menu in (SELECT id_menu FROM MenusPermisos WHERE IdPuesto = '$idSPuesto') AND Habilitado = 1;";
       $cons = $this->Select($q,array());

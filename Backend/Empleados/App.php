@@ -1,6 +1,13 @@
 <?php
 include("Empleados.php");
 
+// Cargar SessionManager
+if (file_exists("../Session/SessionManager.php")) {
+  require_once("../Session/SessionManager.php");
+} else if (file_exists("../../Session/SessionManager.php")) {
+  require_once("../../Session/SessionManager.php");
+}
+
 $op = $_POST["op"];
 $Empleados = new Empleados();
 
@@ -28,7 +35,7 @@ if ($op == "updateDatosEmpleado") {
 
 if ($op == "updateFotoEmpleado") {
   $Empleados2 = new Empleados();
-  $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+  $NoEmpleado = SessionManager::get("NoEmpleado");
   $resp = $Empleados->getNameFotoEmpleado();
   $ImgText = $resp[0]["Imagen"];
 

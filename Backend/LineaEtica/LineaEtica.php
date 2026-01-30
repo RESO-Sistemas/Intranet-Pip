@@ -13,6 +13,13 @@ if (file_exists("../Conexiones/Conexiones.php")) {
     }
 }
 
+// Cargar SessionManager
+if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+} else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+}
+
 class LineaEtica extends Conexiones
 {
     function getOpcionesLineaEtica()
@@ -32,7 +39,7 @@ class LineaEtica extends Conexiones
     function addMensajeLineaEtica($idCatalogoLineaEtica, $Mensaje, $idDivision, $sucursal)
     {
         try {
-            $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+            $NoEmpleado = SessionManager::get("NoEmpleado");
             $q = "INSERT INTO LineaEticaMensajes (idCatalogoLineaEtica,NoEmpleado,Registro,Mensaje,id_division, IdSucursal)
               VALUES ('$idCatalogoLineaEtica','$NoEmpleado',now(),'$Mensaje','$idDivision', '$sucursal');";
             $this->ExecuteQuery($q, array());
@@ -135,7 +142,7 @@ class LineaEtica extends Conexiones
     }
     function getMensajeVistoLineaEtica()
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT Mensaje,idLineaEticaMensajes FROM LineaEticaMensajes AS LEM
             WHERE Revisado = 1 AND MensajeRevisado = 1 AND NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q, array()));
@@ -176,7 +183,7 @@ class LineaEtica extends Conexiones
 
     function getNotifiLineaEticaPendientes(){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT PuestoRecibeLineaEtica FROM ConfiguracionPersonalizacion";
         $result = $this->Select($q,array());
         $valPuestos = $result[0]["PuestoRecibeLineaEtica"];

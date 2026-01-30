@@ -18,9 +18,16 @@
   }
   require_once("../PHPMailer/SenderHelper.php");
 
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
+
   class Feed extends Conexiones {
     function newFeed ($nTitulo,$nDescripcion,$nHipervinculo) {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       $q = "CALL sp_NuevoFeed (?,?,?,?)";
       $cons = $this->ProcedureWithParam($q,array($nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo));
       $MMensaje = $cons[0]["Titulo"];
@@ -99,9 +106,9 @@
 
     function loadFeeds () {
       $actYear = date("Y");
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       $NombreArchivo = "";
-      $IdSucursal = ($_COOKIE["IdSucursal"]);
+      $IdSucursal = SessionManager::get("IdSucursal");
       $ficheros1  = scandir("../../Archivos/ImagesBirthday/",1);
       for ($i=0; $i < 2 ; $i++) {
           array_pop($ficheros1);
@@ -244,7 +251,7 @@
     }
     function addComentariosFeed ($idFeed,$Comentario) {
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "INSERT INTO ComentariosFeed (idFeed,NoEmpleado,Comentario,Registro) VALUES ('$idFeed','$NoEmpleado','$Comentario',NOW());";
         $this->ExecuteQuery($q,array());
         return "1";
@@ -256,7 +263,7 @@
     function MeGustaFeed ($idFeed,$idTipoReaccion) {
       try {
         $ArrayRetorno = [];
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT * FROM ReaccionFeed WHERE idFeed = '$idFeed' AND NoEmpleado = '$NoEmpleado' and idTipoReaccion = '$idTipoReaccion'";
         $cons = $this->Select($q,array());
         $Conexiones2 = new Conexiones();
@@ -538,7 +545,7 @@
     function executeActionPostRequest($post, $action){
       try {
         $post = base64_decode($post);
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         if (!$action == 1) {
           $msg = "La petición de la publicación ha sido denegada.";
           $action = 0;
@@ -560,7 +567,7 @@
 
     function executeActionComments($data, $action){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         if ($action != 1) {
           $action = 0;
           $msg = "Los comentarios seleccionados han sido rechazados.";
@@ -588,7 +595,7 @@
 
     function getCommentsFeedSelected($iFeed){
       try {
-        $user = $_COOKIE["NoEmpleado"];
+        $user = SessionManager::get("NoEmpleado");
         $insReactionC = new Feed();
         $reactionC = $insReactionC->getReactionCommentsFeed($iFeed);
         $q = "SELECT
@@ -645,7 +652,7 @@
 
     function newFeedFromIndex ($nTitulo,$nDescripcion,$nHipervinculo) {
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "CALL sp_newFedFromIndex (?,?,?,?)";
         $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
         $MMensaje = $cons[0]["Titulo"];
@@ -661,7 +668,7 @@
 
     function makeComment($commentary, $i_Feed){
       try {
-        $NoEmpleado = $_COOKIE["NoEmpleado"];
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "CALL sp_makeCommentFeed(?,?,?)";
         $res = $this->ProcedureWithParam($q, [$i_Feed, $NoEmpleado, $commentary]);
         $arrReturn = [
@@ -729,7 +736,7 @@
       try {
         $insReactionC = new Feed();
         $reactionC = $insReactionC->getReactionCommentsFeed($feed);
-        $user = $_COOKIE["NoEmpleado"];
+        $user = SessionManager::get("NoEmpleado");
         $q = "SELECT
                 CF.idFeed,
                 CF.NoEmpleado,
@@ -826,7 +833,7 @@
 
     function rejectCommentsF($data){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $cant = count($data);
         for ($i=0; $i < $cant ; $i++) {
           $comm = base64_decode($data[$i]);
@@ -846,7 +853,7 @@
 
     function reactsToComment($type, $comment){
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "CALL sp_reactsToComment(?,?,?)";
         $res = $this->ProcedureWithParam($q, [$NoEmpleado, $type, $comment]);
         $cantRes = count($res);

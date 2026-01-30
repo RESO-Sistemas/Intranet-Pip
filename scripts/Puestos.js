@@ -31,11 +31,16 @@ async function getListPuestos() {
     table = $("#TablePuestos").DataTable({
       destroy: true,
       language: {
-        zeroRecords: "No se encontraron Registros.",
-        info: "Página _PAGE_ de _PAGES_",
-        infoEmpty: "No se encontro ese Registro.",
+        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+        info: "PÁGINA _PAGE_ DE _PAGES_",
+        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
         infoFiltered: "",
-        search: "Buscar: ",
+        search: "BUSCAR",
+        paginate: {
+          previous: "ANTERIOR",
+          next: "SIGUIENTE"
+        }
       },
       bSort: false,
       bPaginate: true,

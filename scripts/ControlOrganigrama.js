@@ -49,6 +49,10 @@ let tableOrganigramas = $("#tableOrganigramas").dataTable({
     infoEmpty: "NO HAY DATOS PARA MOSTRAR",
     infoFiltered: "",
     search: "BUSCAR",
+    paginate: {
+      previous: "ANTERIOR",
+      next: "SIGUIENTE"
+    }
   },
   columnDefs: [
     {

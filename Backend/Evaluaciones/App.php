@@ -1,5 +1,13 @@
 <?php
   include("Evaluaciones.php");
+
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  }
+
   $Evaluaciones = new Evaluaciones();
   $op = $_POST["op"];
   if ($op == "getEvaluacionesDisponibles") {
@@ -204,7 +212,7 @@
     }
 
     if ($op == "getGeneralDetailEvaluatedUs") {
-      $employee = base64_encode(($_COOKIE["NoEmpleado"]));
+      $employee = base64_encode(SessionManager::get("NoEmpleado"));
       $evaluation = $_POST["evaluation"];
       echo trim($Evaluaciones->getGeneralDetailEvaluated($employee,$evaluation));
     }

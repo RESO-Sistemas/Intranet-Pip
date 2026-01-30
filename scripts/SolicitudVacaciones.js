@@ -12,6 +12,10 @@ let ContenidoMisSolicitudes = $("#ContenidoMisSolicitudes").dataTable({
     infoEmpty: "NO HAY DATOS PARA MOSTRAR",
     infoFiltered: "",
     search: "BUSCAR",
+    paginate: {
+      previous: "ANTERIOR",
+      next: "SIGUIENTE"
+    }
   },
 
   columnDefs: [
@@ -72,6 +76,10 @@ let ContenidoSolicitudesPend = $("#ContenidoSolicitudesPend").dataTable({
     infoEmpty: "NO HAY DATOS PARA MOSTRAR",
     infoFiltered: "",
     search: "BUSCAR",
+    paginate: {
+      previous: "ANTERIOR",
+      next: "SIGUIENTE"
+    }
   },
   columnDefs: [
     {
@@ -359,6 +367,10 @@ let ContenidoSolicitudesNomina = $("#ContenidoSolicitudesNomina").dataTable({
     infoEmpty: "NO HAY DATOS PARA MOSTRAR",
     infoFiltered: "",
     search: "BUSCAR",
+    paginate: {
+      previous: "ANTERIOR",
+      next: "SIGUIENTE"
+    }
   },
   columnDefs: [
     {
@@ -535,6 +547,10 @@ let tableSolicitudesCanceladas = $("#tableSolicitudesCanceladas").dataTable({
     infoEmpty: "NO HAY DATOS PARA MOSTRAR",
     infoFiltered: "",
     search: "BUSCAR",
+    paginate: {
+      previous: "ANTERIOR",
+      next: "SIGUIENTE"
+    }
   },
   columnDefs: [
     {

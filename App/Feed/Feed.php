@@ -17,9 +17,18 @@
       }
   }
 
+  // Cargar SessionManager
+  if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+  } else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+  } else if (file_exists("../Backend/Session/SessionManager.php")) {
+    require_once("../Backend/Session/SessionManager.php");
+  }
+
   class Feed extends Conexiones {
     function newFeed ($nTitulo,$nDescripcion) {
-      $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+      $NoEmpleado = SessionManager::get("NoEmpleado");
       $q = "CALL sp_NuevoFeed ('$nTitulo','$nDescripcion','$NoEmpleado')";
       $cons = $this->Procedure($q,array());
       return $cons;
@@ -256,7 +265,7 @@
 
     function newFeedFromIndex ($nTitulo,$nDescripcion,$nHipervinculo) {
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "CALL sp_newFedFromIndex (?,?,?,?)";
         $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
         $MMensaje = $cons[0]["Titulo"];

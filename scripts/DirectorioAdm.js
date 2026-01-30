@@ -246,6 +246,18 @@ function getListadoPersonal() {
 
     let tableEmpleadosEmTel = $("#tableEmpleadosEmTel").dataTable({
       destroy: true,
+      language: {
+        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+        info: "PÁGINA _PAGE_ DE _PAGES_",
+        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
+        infoFiltered: "",
+        search: "BUSCAR",
+        paginate: {
+          previous: "ANTERIOR",
+          next: "SIGUIENTE"
+        }
+      },
       ajax: {
         type: "POST",
         url: "Backend/Empleados/App.php",
@@ -753,6 +765,18 @@ function getListadoPersonalExtensiones() {
 
     let tableEmpleadosExtensiones = $("#tableEmpleadosExtensiones").dataTable({
       destroy: true,
+      language: {
+        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+        info: "PÁGINA _PAGE_ DE _PAGES_",
+        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
+        infoFiltered: "",
+        search: "BUSCAR",
+        paginate: {
+          previous: "ANTERIOR",
+          next: "SIGUIENTE"
+        }
+      },
       ajax: {
         type: "POST",
         url: "Backend/Empleados/App.php",
@@ -1316,6 +1340,18 @@ async function getDirectorioSucursal() {
   };
   let tableDirectorioSucursal = await $("#tableDirectorioSucursal").dataTable({
     destroy: true,
+    language: {
+      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+      zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+      info: "PÁGINA _PAGE_ DE _PAGES_",
+      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
+      infoFiltered: "",
+      search: "BUSCAR",
+      paginate: {
+        previous: "ANTERIOR",
+        next: "SIGUIENTE"
+      }
+    },
     ajax: {
       type: "POST",
       url: "Backend/Directorios/App.php",

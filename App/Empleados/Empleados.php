@@ -13,6 +13,15 @@ if (file_exists("../Conexiones/Conexiones.php")) {
     }
 }
 
+// Cargar SessionManager
+if (file_exists("../Session/SessionManager.php")) {
+    require_once("../Session/SessionManager.php");
+} else if (file_exists("../../Session/SessionManager.php")) {
+    require_once("../../Session/SessionManager.php");
+} else if (file_exists("../Backend/Session/SessionManager.php")) {
+    require_once("../Backend/Session/SessionManager.php");
+}
+
 class Empleados extends Conexiones
 {
     function loginEmpleado($NoEmpleado, $Password)
@@ -668,7 +677,7 @@ class Empleados extends Conexiones
 
     function getDetalleSolicitudVacaciones($idSolicitudesVacaciones,$NoEmpleado)
     {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
+        $NoEmpleado = SessionManager::get("NoEmpleado");
         $array = [];
         $q = "SELECT SV.NoEmpleado,SV.Status,EM.Firma,EM.Nombre,P.Puesto,EM.Antiguedad,CC.CentrodeCosto,DI.Division,SV.Registro,SV.FechaInicio,SV.FechaFin,EM.IdCentroCosto,SV.TotalDias,EM.DiasVacacionesRest FROM Empleados as EM
               left JOIN Puestos as P ON P.IdPuesto = EM.IdPuesto
@@ -1224,7 +1233,7 @@ class Empleados extends Conexiones
         $cons = $this->Select($q,array());
         $CantidadNotificaciones = $cons[0]["CantidadNotificaciones"];
         $Conexiones2 = new Conexiones();
-        $idSPuesto = ($_COOKIE["idSPuesto"]);
+        $idSPuesto = SessionManager::get("idSPuesto");
         $q2 = "SELECT Valor AS PuestosAceptados FROM Configuracion WHERE idConfiguracion = 1;";
         $cons2 = $Conexiones2->Select($q2, array());
         $PuestosAceptados = explode(",", $cons2[0]["PuestosAceptados"]);

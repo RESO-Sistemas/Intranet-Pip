@@ -269,6 +269,10 @@ function getCapacitaciones() {
       infoEmpty: "NO HAY DATOS PARA MOSTRAR",
       infoFiltered: "",
       search: "BUSCAR",
+      paginate: {
+        previous: "ANTERIOR",
+        next: "SIGUIENTE"
+      }
     },
     ajax: {
       type: "POST",
