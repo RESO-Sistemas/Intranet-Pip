@@ -24,8 +24,6 @@ let tableFeeds = $("#tableFeeds").dataTable({
 
     }
 
-    search: "BUSCAR",
-
   },
 
   columnDefs: [

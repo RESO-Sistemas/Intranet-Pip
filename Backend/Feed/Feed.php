@@ -652,18 +652,7 @@
 
     function newFeedFromIndex ($nTitulo,$nDescripcion,$nHipervinculo) {
       try {
-<<<<<<< HEAD
         $NoEmpleado = SessionManager::get("NoEmpleado");
-        $q = "CALL sp_newFedFromIndex (?,?,?,?)";
-        $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
-        $MMensaje = $cons[0]["Titulo"];
-        // $NewInstFeed = new Feed();
-        // $NewInstFeed->sendPushNotificationToSegment($MMensaje);
-        // $NewInstFeed2 = new Feed();
-        // $NewInstFeed2->NotificarNuevoFeedByMail();
-        return $cons[0];
-=======
-        $NoEmpleado = isset($_COOKIE["NoEmpleado"]) ? $_COOKIE["NoEmpleado"] : 0;
         
         // Primero intentar con el procedimiento almacenado
         try {
@@ -701,7 +690,6 @@
         
         return null;
         
->>>>>>> origin/carlos
       } catch (\Exception $e) {
         error_log("Error en newFeedFromIndex: " . $e->getMessage());
         return null;
