@@ -628,21 +628,28 @@ async function loadFeeds() {
     });
     console.log(response);
   } catch (e) {
-    console.log(e);
+    console.log("Error en loadFeeds ajax:", e);
   } finally {
+    // Validar que response sea un array
+    if (!Array.isArray(response)) {
+      console.log("Response no es un array:", response);
+      response = [];
+    }
+    
     response.sort(
       (a, b) => new Date(b.Registro).getTime() - new Date(a.Registro).getTime()
     );
     let contentHtmlFinal = "";
     let urlImgProfile = "";
-    console.log(response);
+    console.log("Feeds a mostrar:", response);
 
     for (let i = 0; i < response.length; i++) {
+      try {
       const feed = response[i];
       let colorMg = feed.MeGusta == 1 ? "color:#E91E63;" : "color:black;";
       let colorCong =
         feed.Felicitacion == 1 ? "color:#8E24AA;" : "color:black;";
-      let cantComm = feed.ArrayComentarios.length;
+      let cantComm = feed.ArrayComentarios ? feed.ArrayComentarios.length : 0;
 
       let contentBtnFel = "";
       let contentHtmlImg = "";
@@ -652,10 +659,12 @@ async function loadFeeds() {
       let contentHtmlMg = "";
       let contentHtmlCongra = "";
 
-      const employesMg = feed.EmpleadosReaccion.filter(
+      // Validar que EmpleadosReaccion existe y es un array
+      const empleadosReaccion = feed.EmpleadosReaccion || [];
+      const employesMg = empleadosReaccion.filter(
         (i) => i.TipoReaccion == 1
       );
-      const employesF = feed.EmpleadosReaccion.filter(
+      const employesF = empleadosReaccion.filter(
         (i) => i.TipoReaccion == 2
       );
       const cantMg = employesMg.length;
@@ -685,10 +694,10 @@ async function loadFeeds() {
       switch (feed.Tipo) {
         case "CMP":
         case "ANY":
-          arrDescription = feed.Descripcion.split("<br>");
+          arrDescription = (feed.Descripcion || '').split("<br>");
           arrInd = arrDescription.slice(1);
           if (arrInd.length == 0) {
-            const arrSplit = feed.Descripcion.split(". ");
+            const arrSplit = (feed.Descripcion || '').split(". ");
             descriptionFinal += `<label><b class="form-label">${
               arrSplit[0] ?? ""
             }</b> ${arrSplit[1] ?? ""}</label>`;
@@ -719,7 +728,7 @@ async function loadFeeds() {
           }
           break;
         default:
-          descriptionFinal = feed.Descripcion;
+          descriptionFinal = feed.Descripcion || '';
           if (feed.Archivo) {
             const arrFiles = feed.Archivo.split(",");
             for (let k = 0; k < arrFiles.length; k++) {
@@ -741,7 +750,7 @@ async function loadFeeds() {
         : "assets/logoK.png";
 
       contentHtmlFinal += `
-            <div class="card" >
+            <div class="card mb-3" >
     <div class="card-body" style="min-height:170px; padding:15px;">
         <ul class="list-unstyled">
             <li class="mb-4">
@@ -751,12 +760,12 @@ async function loadFeeds() {
                     </div>
                     <div class="flex-grow-1 border p-3 rounded">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="fw-bold mb-0">${feed.Nombre}</h6>
+                            <h6 class="fw-bold mb-0">${feed.Nombre || 'Usuario'}</h6>
                             <small class="text-muted">Publicado hace ${
-                              feed.DiferenciaRegistro
+                              feed.DiferenciaRegistro || '0 Minutos'
                             }</small>
                         </div>
-                        <p class="mb-2">${feed.Titulo}</p>
+                        <p class="mb-2">${feed.Titulo || ''}</p>
                         <div class="text-justify">
                             <hr class="my-2">
                             ${descriptionFinal}
@@ -820,7 +829,7 @@ async function loadFeeds() {
         colorMg ? "" : "text-dark"
       }" onclick="MeGusta(${feed.idFeed},1)">
                                     <i class="fa-solid fa-heart me-1"></i> ${
-                                      feed.CantidadMeGusta
+                                      feed.CantidadMeGusta || 0
                                     } Me gusta
                                 </a>
                             </div>
@@ -835,7 +844,7 @@ async function loadFeeds() {
                                     colorCong ? "" : "text-dark"
                                   }" onclick="MeGusta(${feed.idFeed},2)">
                                     <i class="fas fa-birthday-cake me-1"></i> ${
-                                      feed.CantidadFelicitaciones
+                                      feed.CantidadFelicitaciones || 0
                                     } Felicitaciones
                                 </a>
                             </div>`
@@ -877,6 +886,9 @@ async function loadFeeds() {
         </ul>
     </div>
 </div>`;
+      } catch (errFeed) {
+        console.log("Error procesando feed #" + i + ":", errFeed, response[i]);
+      }
     }
 
     $("#ContenidoFeed").html(contentHtmlFinal);
@@ -1349,7 +1361,8 @@ async function saveInfoFeed() {
   let dataSend = new FormData(form);
   dataSend.append("op", "addPublicationFromIndex"); // Puedes agregar datos adicionales si es necesario
   let ajaxR = await pAjaxAsyncForm(url_m_Feed, dataSend, 1);
-  if (ajaxR.Resultado) {
+  // Verificar que la respuesta existe antes de acceder a sus propiedades
+  if (ajaxR && ajaxR.Resultado) {
     setTimeout(function () {
       location.reload();
     }, 1500);

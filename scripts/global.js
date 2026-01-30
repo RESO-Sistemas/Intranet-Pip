@@ -1330,7 +1330,7 @@ function quitarEspaciosExtras(cadena) {
 }
 
 async function pAjaxAsyncForm(url, formData, pcarga) {
-  let respuesta = "";
+  let respuesta = null;
   if (pcarga == 1) {
     Cargando();
   }
@@ -1345,11 +1345,13 @@ async function pAjaxAsyncForm(url, formData, pcarga) {
     });
   } catch (e) {
     console.log(e);
+    respuesta = null;
   } finally {
     if (pcarga == 1) {
       QuitarCargando();
     }
-    if (respuesta.Resultado) {
+    // Verificar que respuesta existe antes de acceder a sus propiedades
+    if (respuesta && respuesta.Resultado) {
       if (respuesta.Siguiente) {
         if (respuesta.Msg !== undefined) {
           // toastr.success(respuesta.Msg);
@@ -1371,8 +1373,9 @@ async function pAjaxAsyncForm(url, formData, pcarga) {
         </div>`;
           showBootstrapAlert(messageContent, "top-right", 5000);
         }
+        return respuesta; // También devolver respuesta aquí
       }
-    } else if (!respuesta.Resultado) {
+    } else if (respuesta && !respuesta.Resultado) {
       // toastr.warning(
       //   "¡Ha ocurrido un error inesperado, inténtelo de nuevo por favor!"
       // );
@@ -1382,7 +1385,9 @@ async function pAjaxAsyncForm(url, formData, pcarga) {
               <span class="alert-text">¡Ha ocurrido un error inesperado, inténtelo de nuevo por favor!</span>
             </div>`;
       showBootstrapAlertWar(messageContent, "top-right", 5000);
+      return respuesta;
     }
+    return respuesta; // Siempre devolver respuesta al final
   }
 }
 

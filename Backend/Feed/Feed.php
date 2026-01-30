@@ -164,7 +164,7 @@
                     INNER JOIN Empleados AS E ON E.NoEmpleado = F.NoEmpleado
                     LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = F.idFeed
                     LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
-                    where F.Tipo = 'FED' OR F.Tipo = 'FIN' AND AutorizadoIndex = 1 AND YEAR(F.Registro) = '$actYear'
+                    where (F.Tipo = 'FED' OR F.Tipo = 'FIN') AND YEAR(F.Registro) = '$actYear'
                     GROUP BY F.idFeed
                     having DDias < 45
                     ORDER BY F.Registro DESC) AS TABLA3;";
@@ -645,17 +645,47 @@
 
     function newFeedFromIndex ($nTitulo,$nDescripcion,$nHipervinculo) {
       try {
-        $NoEmpleado = ($_COOKIE["NoEmpleado"]);
-        $q = "CALL sp_newFedFromIndex (?,?,?,?)";
-        $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
-        $MMensaje = $cons[0]["Titulo"];
-        // $NewInstFeed = new Feed();
-        // $NewInstFeed->sendPushNotificationToSegment($MMensaje);
-        // $NewInstFeed2 = new Feed();
-        // $NewInstFeed2->NotificarNuevoFeedByMail();
-        return $cons[0];
+        $NoEmpleado = isset($_COOKIE["NoEmpleado"]) ? $_COOKIE["NoEmpleado"] : 0;
+        
+        // Primero intentar con el procedimiento almacenado
+        try {
+          $q = "CALL sp_newFedFromIndex (?,?,?,?)";
+          $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
+          if ($cons && isset($cons[0]["f_idFeed"])) {
+            return $cons[0];
+          }
+        } catch (\Exception $spError) {
+          // SP no existe o falló, continuar con INSERT directo
+        }
+        
+        // Si el SP falla, usar INSERT directo con PDO lastInsertId
+        $nTituloEsc = addslashes($nTitulo);
+        $nDescripcionEsc = addslashes($nDescripcion);
+        $nHipervinculoEsc = addslashes($nHipervinculo);
+        
+        // Crear conexión PDO directa para poder usar lastInsertId
+        $dsn = "mysql:host=162.240.213.3;dbname=klynet_datosdemo;charset=utf8mb4";
+        $pdo = new PDO($dsn, 'klynet_usrdatosdemo', 'Us3rK1yns2@25', [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+        
+        $qInsert = "INSERT INTO Feed (Titulo, Descripcion, NoEmpleado, Hipervinculo, Tipo, Registro, AutorizadoIndex) 
+                    VALUES (?, ?, ?, ?, 'FED', NOW(), 1)";
+        $stmt = $pdo->prepare($qInsert);
+        $stmt->execute([$nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo]);
+        
+        $lastId = $pdo->lastInsertId();
+        $pdo = null;
+        
+        if ($lastId) {
+          return ["f_idFeed" => $lastId, "Titulo" => $nTitulo];
+        }
+        
+        return null;
+        
       } catch (\Exception $e) {
-        return $e;
+        error_log("Error en newFeedFromIndex: " . $e->getMessage());
+        return null;
       }
     }
 

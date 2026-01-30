@@ -210,14 +210,12 @@ $MenuP = $Conf->getMenusPadre();
     </div>
   </div>
 
-  <!-- neptune Javascripts -->
+  <!-- neptune Javascripts (incluye jQuery, BlockUI y global.js) -->
   <?php include("neptune_js.php");  ?>
   <!-- neptune Javascripts -->
 
   <?php include("scripts.php"); ?>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="plugins/evo-calendar/js/evo-calendar.js"></script>
   <script src="plugins/tingle-master/dist/tingle.min.js" charset="utf-8"></script>
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
@@ -227,8 +225,7 @@ $MenuP = $Conf->getMenusPadre();
   <script src="/plugins/unitegallery-master/package/unitegallery/themes/slider/ug-theme-slider.js" charset="utf-8"></script>
   
   <!-- Scripts específicos de la página - SIEMPRE AL FINAL -->
-  <script src="scripts/index.js"></script>
-  <script src="scripts/global.js" charset="utf-8"></script>
+  <script src="scripts/index.js" charset="utf-8"></script>
 
 
 </body>

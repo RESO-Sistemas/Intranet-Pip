@@ -3,6 +3,9 @@
 <!-- jQuery siempre primero -->
 <script src="./neptune/plugins/jquery/jquery-3.5.1.min.js"></script>
 
+<!-- BlockUI - debe cargarse después de jQuery y antes de global.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+
 <!-- Bootstrap y dependencias -->
 <script src="./neptune/plugins/bootstrap/js/popper.min.js"></script>
 <script src="./neptune/plugins/bootstrap/js/bootstrap.min.js"></script>
