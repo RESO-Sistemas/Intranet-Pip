@@ -165,7 +165,7 @@
     function getEventosAdmin ($fecha) {
       $fecha = date_create($fecha);
       $fecha = date_format($fecha,"Y");
-      $q = "SELECT Titulo,Descripcion,FechaInicio,FechaFin,HoraInicio,HoraFin,Status,'event' AS TipoEvento,'#9ED863' AS Color,idEventos FROM Eventos WHERE  now() < FechaFin";
+      $q = "SELECT Titulo,Descripcion,FechaInicio,FechaFin,HoraInicio,HoraFin,Status,'event' AS TipoEvento,'#9ED863' AS Color,idEventos FROM Eventos ORDER BY FechaInicio DESC";
       return json_encode($this->Select($q,array()));
     }
 

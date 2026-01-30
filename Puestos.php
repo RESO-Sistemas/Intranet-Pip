@@ -82,7 +82,7 @@
                       </div>
                       <div class="col-12 col-md-6">
                         <label class="form-label fw-bold">¿A qué división pertenece el puesto?</label>
-                        <select id="slctDivision" class="form-control">
+                        <select id="slctDivision" class="form-select">
                           <option value="" disabled selected>Listado de divisiones</option>
                         </select>
                       </div>

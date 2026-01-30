@@ -8,7 +8,7 @@
   }
 
   if ($op == "getEventosAdmin") {
-    $fecha = $_POST["fecha"];
+    $fecha = isset($_POST["fecha"]) ? $_POST["fecha"] : date('Y-m-d');
     echo trim($Eventos->getEventosAdmin($fecha));
   }
 

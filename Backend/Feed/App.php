@@ -1,7 +1,8 @@
 <?php
+  ob_start(); // Iniciar buffer de salida
   include("Feed.php");
   $Feed = new Feed();
-  $op = $_POST["op"];
+  $op = $_POST["op"] ?? '';
 
   if ($op == "newFeed") {
     $nTitulo = $_POST["txtTitulo"];
@@ -147,16 +148,34 @@
   }
 
   if ($op == "addPublicationFromIndex") {
+      // Limpiar cualquier salida previa
+      ob_clean();
+      
       $difWebp = 0;
       $actDate = date('d-m-Y_H-i-s'); // Cambiado d-m-Y H:i:s a d-m-Y_H-i-s para usar como parte del nombre del archivo
-      $mnf_title = $_POST["mnf_title"];
-      $mnf_desc = nl2br($_POST["mnf_desc"]);
-      $mnf_url = $_POST["mnf_url"];
+      $mnf_title = $_POST["mnf_title"] ?? '';
+      $mnf_desc = nl2br($_POST["mnf_desc"] ?? '');
+      $mnf_url = $_POST["mnf_url"] ?? '';
+      
+      // Insertar el feed en la base de datos
       $resInsert = $Feed->newFeedFromIndex($mnf_title, $mnf_desc, $mnf_url);
+      
+      // Verificar si se obtuvo el ID del feed
+      if (!$resInsert || !isset($resInsert["f_idFeed"]) || empty($resInsert["f_idFeed"])) {
+          header('Content-Type: application/json');
+          $arrReturn = [
+              "Resultado" => false,
+              "Siguiente" => false,
+              "Msg" => "Error al crear la publicación en la base de datos."
+          ];
+          echo json_encode($arrReturn);
+          exit;
+      }
+      
       $idGen = $resInsert["f_idFeed"];
       $folder = "../../Archivos/Feed/$idGen/";
 
-      if (isset($_FILES['filesFeedForm'])) {
+      if (isset($_FILES['filesFeedForm']) && !empty($_FILES['filesFeedForm']['name'][0])) {
           $cantFiles = count($_FILES['filesFeedForm']['name']);
           $NameFile = "";
           $countFile = 0;
@@ -181,7 +200,6 @@
                   if (move_uploaded_file($file_tmp, $path)) {
                       $NameFile .= $nameFileS . ',';
                   } else {
-                      error_log("Error al mover el archivo $namefile");
                       continue; // Saltar a la siguiente iteración si hay un error
                   }
               }
@@ -193,15 +211,18 @@
           // Actualizar nombre de archivos en la base de datos
           $insUpdateNameFile = new Feed();
           $insUpdateNameFile->AddNombreArchivoFeed($idGen, $NameFile);
-
-          // Respuesta JSON de éxito
-          $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Msg" => "Publicación realizada."
-          ];
-          echo json_encode($arrReturn);
       }
+      
+      // Respuesta JSON de éxito (siempre responder)
+      header('Content-Type: application/json');
+      $arrReturn = [
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Msg" => "Publicación realizada.",
+          "idFeed" => $idGen
+      ];
+      echo json_encode($arrReturn);
+      exit;
   }
 
   if ($op == "makeComment") {
