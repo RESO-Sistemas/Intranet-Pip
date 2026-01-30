@@ -2106,9 +2106,4 @@ async function limpiarInp() {
 
   $("#IdDFUpdate").val();
 
-<<<<<<< HEAD
 }
-
-=======
-}
->>>>>>> origin/carlos
