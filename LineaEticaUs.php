@@ -19,18 +19,6 @@
     <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
     <script src="componentes/detallesEmpleadoLogeado.js"></script>
-    <style media="screen">
-        .textDesc {
-            font-size: 2em !important;
-        }
-
-        @media only screen and (max-width: 600px) {
-            .textDesc {
-                font-size: 1em !important;
-            }
-        }
-    </style>
-
 
 </head>
 
@@ -56,78 +44,88 @@
                 <div class="content-wrapper">
                     <div class="container">
                         <div class="row">
-                            <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
+                            <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
                                 <div class="row">
-                                    <div class="col s12 l12" style="position: relative;">
+                                    <div class="col-12" style="position: relative;">
                                         <div id="contenidoMensajes" style="margin-right:2vh"></div>
                                     </div>
-                                    <div class="col s12 l12" style="position: relative;">
+                                    <div class="col-12" style="position: relative;">
                                         <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
                                     </div>
-                                    <div class="col s12 l12" style="position: relative;">
+                                    <div class="col-12" style="position: relative;">
                                         <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col">
+                            <div class="col-12">
                                 <div class="page-description page-description-tabbed">
-                                    <h1>Linea de Ética</h1>
+                                    <h1 class="text-center text-md-start">Linea de Ética</h1>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col">
+                            <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
                                             <form id="formLineaEtica" action="Backend/LineaEtica/App.php" method="post">
-                                                <div class="row justify-content-end mb-4">
-                                                    <div class="col-auto">
-                                                        <span class="badge badge-style-bordered rounded-pill badge-warning">
+                                                <!-- Mensaje de advertencia responsive -->
+                                                <div class="row justify-content-center mb-4">
+                                                    <div class="col-12 col-md-auto text-center">
+                                                        <span class="badge badge-style-bordered rounded-pill badge-warning d-inline-block" style="font-size: 0.875rem; padding: 0.5rem 1rem; word-wrap: break-word; max-width: 100%;">
                                                             La información que envíes será totalmente anónima.
                                                         </span>
-
                                                     </div>
                                                 </div>
-                                                <div class="row align-items-center mb-4">
-                                                    <div class="col">
+
+                                                <!-- Dropdowns Division y Sucursal responsive -->
+                                                <div class="row mb-4">
+                                                    <div class="col-12 col-md-6 mb-3 mb-md-0">
                                                         <label class="form-label">Division:</label>
-                                                        <select id="division" name="division" class="form-control" required>
+                                                        <select id="division" name="division" class="form-control form-select" required>
                                                             <option value="" selected disabled>Línea de ética</option>
                                                         </select>
                                                         <span for="division"></span>
                                                     </div>
-                                                    <div class="col">
+                                                    <div class="col-12 col-md-6">
                                                         <label class="form-label">Sucursal:</label>
-                                                        <select id="sl_branch" name="sucursal" class="form-control" required disabled></select>
+                                                        <select id="sl_branch" name="sucursal" class="form-control form-select" required disabled></select>
                                                         <span for="sl_branch"></span>
                                                     </div>
                                                 </div>
+
+                                                <!-- Título de selección de situación -->
                                                 <div class="row justify-content-center mb-2">
-                                                    <div class="col-auto text-center">
-                                                        <h6 class="form-label">Selecciona la situación:</h6>
-                                                        <small class="text-muted">Selecciona la situción que quieres reportar.</small>
+                                                    <div class="col-12 text-center">
+                                                        <h6 class="form-label mb-1">Selecciona la situación:</h6>
+                                                        <small class="text-muted d-block">Selecciona la situación que quieres reportar.</small>
                                                     </div>
                                                 </div>
+
+                                                <!-- Dropdown de situación -->
                                                 <div class="row justify-content-center mb-4">
-                                                    <div class="col-auto">
-                                                        <select id="slctLineaEtica" name="slctLineaEtica" class="form-control" required>
-                                                            <option value="" disabled>Línea de ética</option>
+                                                    <div class="col-12 col-md-8 col-lg-6">
+                                                        <select id="slctLineaEtica" name="slctLineaEtica" class="form-control form-select" required>
+                                                            <option value="" selected disabled>Selecciona una opción</option>
                                                         </select>
                                                         <span for="slctLineaEtica"></span>
                                                     </div>
                                                 </div>
+
+                                                <!-- Textarea para descripción -->
                                                 <div class="row justify-content-center mb-4">
-                                                    <div class="col">
-                                                        <label for="contenidoLineaEtica" class="form-label">Describe la situación o inconformidad que presentes.:</label>
-                                                        <textarea id="contenidoLineaEtica" name="contenidoLineaEtica" class="form-control" style="height:15vh" placeholder="Escribe tu mensaje..." required></textarea>
+                                                    <div class="col-12">
+                                                        <label for="contenidoLineaEtica" class="form-label">Describe la situación o inconformidad que presentes:</label>
+                                                        <textarea id="contenidoLineaEtica" name="contenidoLineaEtica" class="form-control" style="height:15vh; min-height: 120px;" placeholder="Escribe tu mensaje..." required></textarea>
                                                     </div>
                                                 </div>
+
+                                                <!-- Botón de envío -->
                                                 <div class="row justify-content-center mb-4">
-                                                    <div class="col-auto">
-                                                        <button class="btn btn-success" id="EnviarLineaE">Enviar</button>
+                                                    <div class="col-12 col-md-auto text-center">
+                                                        <button class="btn btn-success w-100 w-md-auto px-5" id="EnviarLineaE" style="max-width: 300px;">Enviar</button>
                                                     </div>
                                                 </div>
                                             </form>

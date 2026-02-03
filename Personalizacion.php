@@ -35,13 +35,71 @@
     <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
 
     <!-- <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet"> -->
-
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-
     <style media="screen">
-
+        /* Fix para dropdowns que aparecen detrás del modal */
+        body.modal-open {
+            overflow: visible !important;
+        }
+        
+        .modal {
+            overflow: visible !important;
+        }
+        
+        .modal-dialog {
+            overflow: visible !important;
+        }
+        
+        .modal-content {
+            overflow: visible !important;
+        }
+        
+        .modal-body {
+            overflow-y: auto !important;
+            overflow-x: visible !important;
+            max-height: 70vh;
+        }
+        
+        /* Asegurar que los selects tengan el z-index correcto y posición */
+        select.form-select {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+        
+        /* Fix para el error de aria-hidden en DataTables */
+        .dataTables_length select {
+            z-index: auto !important;
+        }
+        
+        /* Asegurar que el backdrop no tape los selects */
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+        
+        #ModalDiasFestivos {
+            z-index: 1050 !important;
+        }
+        
+        /* Responsividad para pantallas pequeñas */
+        @media (max-width: 767px) {
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            
+            .btn {
+                font-size: 0.875rem;
+                padding: 0.5rem 1rem;
+            }
+        }
     </style>
-
 </head>
 
 
@@ -310,66 +368,37 @@
 
 
                         <!-- Body con scroll -->
-
-                        <div class="modal-body" id="divDiasFestivos" style="max-height:70vh; overflow-y:auto;">
-
+                        <div class="modal-body" id="divDiasFestivos">
                             <div class="container-fluid">
-
                                 <div class="row g-3">
 
 
 
                                     <!-- Selección de mes, día y descripción -->
-
                                     <div class="col-12">
 
+                                        <div class="row g-3">
 
-
-                                        <div class="row g-3 align-items-center">
-
-
-
-                                            <div class="col-12 col-md-4 text-center">
-
-                                                <label for="mesSelected" class="form-label fw-bold">Seleccione el mes</label>
-
+                                            <div class="col-12 col-sm-6 col-md-4">
+                                                <label for="mesSelected" class="form-label fw-bold d-block text-center">Seleccione el mes</label>
                                                 <select id="mesSelected" class="form-select"></select>
-
                                             </div>
 
-
-
-                                            <div class="col-12 col-md-4 text-center">
-
-                                                <label for="diaSelected" class="form-label fw-bold">Seleccione el día</label>
-
+                                            <div class="col-12 col-sm-6 col-md-4">
+                                                <label for="diaSelected" class="form-label fw-bold d-block text-center">Seleccione el día</label>
                                                 <select id="diaSelected" class="form-select"></select>
-
                                             </div>
 
-
-
-                                            <div class="col-12 col-md-4 text-center">
-
-                                                <label for="txtDescripcionDiaF" class="form-label fw-bold">Descripción</label>
-
+                                            <div class="col-12 col-md-4">
+                                                <label for="txtDescripcionDiaF" class="form-label fw-bold d-block text-center">Descripción</label>
                                                 <input type="text" id="txtDescripcionDiaF" class="form-control">
-
                                             </div>
 
-
-
-                                            <div class="col-12 text-center">
-
-                                                <button type="button" class="btn btn-success mt-2" id="btnAddDiaF">Agregar día festivo</button>
-
+                                            <div class="col-12 text-center mt-3">
+                                                <button type="button" class="btn btn-success" id="btnAddDiaF">Agregar día festivo</button>
                                             </div>
-
-
 
                                         </div>
-
-
 
                                     </div>
 
@@ -470,27 +499,17 @@
 
 
                                     <!-- Selección mes y día -->
-
                                     <div class="col-12">
 
-                                        <div class="row g-3 justify-content-center">
-
-                                            <div class="col-12 col-md-7 text-center">
-
-                                                <label for="mesSelectedUpdate" class="form-label fw-bold">Seleccione el mes</label>
-
+                                        <div class="row g-3">
+                                            <div class="col-12 col-sm-6 col-md-7">
+                                                <label for="mesSelectedUpdate" class="form-label fw-bold d-block text-center">Seleccione el mes</label>
                                                 <select id="mesSelectedUpdate" class="form-select"></select>
-
                                             </div>
-
-                                            <div class="col-12 col-md-5 text-center">
-
-                                                <label for="diaSelectedUpdate" class="form-label fw-bold">Seleccione el día</label>
-
+                                            <div class="col-12 col-sm-6 col-md-5">
+                                                <label for="diaSelectedUpdate" class="form-label fw-bold d-block text-center">Seleccione el día</label>
                                                 <select id="diaSelectedUpdate" class="form-select"></select>
-
                                             </div>
-
                                         </div>
 
                                     </div>
@@ -542,29 +561,13 @@
     </div>
 
     <!-- neptune Javascripts -->
-
     <?php include("neptune_js.php");  ?>
-
     <!-- neptune Javascripts -->
-
     <?php include("scripts.php"); ?>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
-
-        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
-
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <!-- Scripts específicos de esta página -->
-
-    <script src="scripts/Personalizacion.js" charset="utf-8"></script>
-
-
-
-
+    <script src="scripts/Personalizacion.js?v=<?php echo time(); ?>"></script>
 
 </body>
-
-
 
 </html>
