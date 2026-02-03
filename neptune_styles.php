@@ -51,6 +51,9 @@ if ($current_page !== 'login'):
 
 <link href="./neptune/css/custom.css" rel="stylesheet">
 
+<!-- Estilos Responsive Globales - Aplicados a todas las vistas -->
+<link href="assets/css/responsive-global.css" rel="stylesheet">
+
 
 
 <!-- Iconos del sistema -->

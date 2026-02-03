@@ -56,22 +56,22 @@ $MenuP = $Conf->getMenusPadre();
         <div class="content-wrapper">
           <div class="container">
             <div class="row">
-              <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
+              <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
                 <div class="row">
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajes" style="margin-right:2vh"></div>
                   </div>
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
                   </div>
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
-              <div class="col">
+              <div class="col-12">
                 <div class="page-description page-description-tabbed">
                   <h1>Salud</h1>
                   <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">

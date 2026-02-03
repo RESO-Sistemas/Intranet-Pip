@@ -71,25 +71,25 @@ $MenuP = $Conf->getMenusPadre();
         <div class="content-wrapper">
           <div class="container">
             <div class="row">
-              <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
+              <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
                 <div class="row">
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajes" style="margin-right:2vh"></div>
                   </div>
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
                   </div>
-                  <div class="col s12 l12" style="position: relative;">
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="row">
-              <div class="col">
+              <div class="col-12">
                 <div class="page-description page-description-tabbed">
-                  <h1>Inicio</h1>
-                  <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+                  <h1 class="text-center text-md-start">Inicio</h1>
+                  <ul class="nav nav-tabs mb-3 justify-content-center justify-content-md-start" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                       <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="hoaccountme" aria-selected="true">Novedades</button>
                     </li>
@@ -115,10 +115,12 @@ $MenuP = $Conf->getMenusPadre();
                               <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
 
                                 <!-- MODAL -->
-                                <div class="d-flex justify-content-end">
-                                  <button type="button" class="btn btn-primary m-b-sm" data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable">
-                                    <i class="fas fa-plus"></i> Nueva Publicación
-                                  </button>
+                                <div class="row mb-3">
+                                  <div class="col-12 d-flex justify-content-center justify-content-md-end">
+                                    <button type="button" class="btn btn-primary btn-sm btn-md-lg w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable" style="max-width: 300px;">
+                                      <i class="fas fa-plus"></i> Nueva Publicación
+                                    </button>
+                                  </div>
                                 </div>
                                 <div class="modal fade" id="exampleModalCenteredScrollable" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true" style="display: none;">
                                   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -172,7 +174,7 @@ $MenuP = $Conf->getMenusPadre();
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="col todo-list">
+                                  <div class="col-12 todo-list">
                                     <div class="overflow-y-auto" id="ContenidoFeed" style="height: 700px;">
                                     </div>
                                   </div>
@@ -193,9 +195,13 @@ $MenuP = $Conf->getMenusPadre();
                     <div class="card">
                       <div class="card-body">
                         <div class="row">
-                          <div id="contenidoAgendaEventos" class="contenidoEventos"></div>
+                          <div class="col-12" id="contenidoAgendaEventos"></div>
                         </div>
-                        <div id="calendar"></div>
+                        <div class="row">
+                          <div class="col-12">
+                            <div id="calendar" class="table-responsive"></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

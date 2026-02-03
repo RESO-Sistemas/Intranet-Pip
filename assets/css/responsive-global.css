@@ -1,0 +1,740 @@
+/**
+ * RESPONSIVE GLOBAL CSS
+ * Estilos globales para hacer todas las vistas responsivas
+ * Autor: Sistema Intranet Klyns
+ * Última actualización: 2026-02-03
+ */
+
+/* ============================================================
+   MOBILE FIRST - Base para dispositivos móviles
+   ============================================================ */
+
+/* Prevenir desbordamiento horizontal en toda la aplicación */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.app-content,
+.content-wrapper {
+    overflow-x: hidden;
+}
+
+/* Asegurar que las cards no se desborden */
+.card {
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.card-body {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ============================================================
+   MOBILE (<768px)
+   ============================================================ */
+@media (max-width: 767px) {
+    
+    /* --- CONTENEDORES --- */
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* --- TÍTULOS --- */
+    .page-description h1 {
+        font-size: 1.75rem;
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
+    /* --- BOTONES --- */
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Botones de acción principales al 100% */
+    .btn-primary,
+    .btn-success,
+    .btn-danger {
+        width: 100%;
+        max-width: 300px;
+        margin: 0.25rem auto;
+        display: block;
+    }
+
+    /* Grupos de botones en mobile */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-group > .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* --- TABLAS --- */
+    .table-responsive {
+        border: 0;
+        font-size: 0.875rem;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* --- FORMULARIOS --- */
+    .form-control,
+    .form-select {
+        font-size: 0.875rem;
+        width: 100% !important;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        display: block;
+        width: 100%;
+    }
+
+    /* Inputs al 100% en mobile */
+    .form-control,
+    .form-select,
+    textarea,
+    select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* Dropdowns y selects específicos */
+    select {
+        font-size: 0.875rem !important;
+        padding: 0.5rem !important;
+    }
+
+    /* Select2 responsive */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container .select2-selection--single {
+        height: auto !important;
+        min-height: 38px;
+    }
+
+    /* Grupos de formulario */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .row > [class*="col-"] .form-control,
+    .row > [class*="col-"] .form-select,
+    .row > [class*="col-"] select {
+        width: 100% !important;
+    }
+
+    /* --- MODALES --- */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-header,
+    .modal-footer {
+        padding: 0.75rem;
+    }
+
+    .modal-title {
+        font-size: 1.1rem;
+    }
+
+    /* --- TABS --- */
+    .nav-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-tabs .nav-link {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* --- DATATABLES --- */
+    .dataTables_wrapper {
+        font-size: 0.875rem;
+    }
+
+    /* Fix para el label "BUSCAR:" y el input */
+    .dataTables_filter {
+        text-align: center !important;
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_filter label {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        font-size: 0.875rem;
+    }
+
+    .dataTables_filter input {
+        width: 100% !important;
+        margin: 0.5rem 0 0 0 !important;
+        display: block !important;
+    }
+
+    /* Fix para "MOSTRAR" y el select */
+    .dataTables_length {
+        text-align: center !important;
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_length label {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        align-items: center !important;
+        font-size: 0.875rem;
+    }
+
+    .dataTables_length select {
+        width: 100% !important;
+        max-width: 200px !important;
+        margin: 0.5rem 0 !important;
+    }
+
+    /* Wrapper general de DataTables */
+    .dataTables_wrapper .row {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .dataTables_wrapper .row > div {
+        width: 100% !important;
+    }
+
+    .dataTables_info {
+        font-size: 0.75rem;
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+
+    .dataTables_paginate {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+
+    /* --- BADGES Y ETIQUETAS --- */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        display: inline-block;
+    }
+
+    /* Badges de advertencia (naranja/warning) */
+    .badge-warning,
+    .badge-style-bordered {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.75rem !important;
+        word-break: break-word;
+        white-space: normal;
+        max-width: 100%;
+        line-height: 1.4;
+    }
+
+    /* Pills responsive */
+    .rounded-pill {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* --- ALERTAS --- */
+    .alert {
+        font-size: 0.875rem;
+        padding: 0.75rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Alertas con colores específicos */
+    .alert-warning,
+    .alert-info,
+    .alert-success,
+    .alert-danger {
+        font-size: 0.875rem !important;
+        padding: 0.75rem !important;
+    }
+
+    /* Texto naranja y mensajes de información */
+    .text-warning,
+    .text-orange {
+        font-size: 0.875rem !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    /* Campos de información en formularios */
+    .info-text,
+    .help-text {
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    /* --- BREADCRUMBS --- */
+    .breadcrumb {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+    }
+
+    /* --- MENSAJES FLOTANTES --- */
+    [style*="position: fixed"] {
+        position: relative !important;
+    }
+
+    #contenidoMensajes,
+    #contenidoMensajesSolicitudesVJefe,
+    #contenidoMensajesSolicitudesNomina {
+        margin-right: 0 !important;
+        position: relative !important;
+    }
+
+    /* --- SPACING --- */
+    .m-1, .mx-1, .me-1 { margin-right: 0.25rem !important; }
+    .m-1, .mx-1, .ms-1 { margin-left: 0.25rem !important; }
+    .m-2, .mx-2, .me-2 { margin-right: 0.5rem !important; }
+    .m-2, .mx-2, .ms-2 { margin-left: 0.5rem !important; }
+
+    .p-3 { padding: 0.75rem !important; }
+    .p-4 { padding: 1rem !important; }
+    .p-5 { padding: 1.25rem !important; }
+
+    /* --- UTILIDADES --- */
+    .text-truncate {
+        max-width: 100%;
+    }
+
+    /* Ocultar elementos no esenciales en mobile */
+    .d-mobile-none {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   TABLETS (768px - 991px)
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 991px) {
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .page-description h1 {
+        font-size: 2rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+
+    .table {
+        font-size: 0.9rem;
+    }
+
+    /* Mostrar elementos ocultos en mobile */
+    .d-mobile-none {
+        display: block !important;
+    }
+}
+
+/* ============================================================
+   DESKTOP (≥992px)
+   ============================================================ */
+@media (min-width: 992px) {
+    
+    /* Restaurar estilos normales */
+    .container {
+        max-width: 1140px;
+    }
+
+    /* Mostrar todos los elementos */
+    .d-mobile-none {
+        display: block !important;
+    }
+}
+
+/* ============================================================
+   LARGE DESKTOP (≥1200px)
+   ============================================================ */
+@media (min-width: 1200px) {
+    
+    .container {
+        max-width: 1320px;
+    }
+}
+
+/* ============================================================
+   UTILITIES RESPONSIVE
+   ============================================================ */
+
+/* Width utilities responsive */
+.w-mobile-100 {
+    width: 100% !important;
+}
+
+@media (min-width: 768px) {
+    .w-md-auto {
+        width: auto !important;
+    }
+    
+    .w-md-50 {
+        width: 50% !important;
+    }
+}
+
+/* Text alignment responsive */
+.text-mobile-center {
+    text-align: center !important;
+}
+
+@media (min-width: 768px) {
+    .text-md-start {
+        text-align: left !important;
+    }
+    
+    .text-md-end {
+        text-align: right !important;
+    }
+}
+
+/* Flex utilities responsive */
+@media (max-width: 767px) {
+    .flex-mobile-column {
+        flex-direction: column !important;
+    }
+    
+    .justify-content-mobile-center {
+        justify-content: center !important;
+    }
+}
+
+/* ============================================================
+   CORRECCIONES ESPECÍFICAS POR COMPONENTE
+   ============================================================ */
+
+/* SweetAlert2 responsive */
+@media (max-width: 767px) {
+    .swal2-popup {
+        width: 90% !important;
+        font-size: 0.875rem;
+    }
+    
+    .swal2-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Toastr responsive */
+@media (max-width: 767px) {
+    .toast {
+        width: 90% !important;
+    }
+}
+
+/* Calendar/Agenda responsive */
+@media (max-width: 767px) {
+    #calendar {
+        font-size: 0.875rem;
+    }
+    
+    .fc-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .fc-toolbar-chunk {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* File upload responsive */
+@media (max-width: 767px) {
+    .file-container {
+        padding: 1rem !important;
+    }
+}
+
+/* Organigrama responsive */
+@media (max-width: 767px) {
+    /* Ajustar márgenes del contenido de organigramas */
+    #contenidoOrganigramas {
+        margin-left: 0.5rem !important;
+        margin-right: 0.5rem !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Forzar que las cards de organigrama se adapten */
+    #contenidoOrganigramas .card {
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+
+    #contenidoOrganigramas .card-body {
+        padding: 0.75rem;
+    }
+
+    /* Ajustar texto dentro de organigramas */
+    #contenidoOrganigramas .card-title {
+        font-size: 1rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .FondoOrg {
+        width: 100% !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .FondoOrg > svg {
+        max-width: 100%;
+        height: auto !important;
+    }
+    
+    [data-n-id] text {
+        font-size: 10px !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Tablets - Organigramas */
+    #contenidoOrganigramas {
+        margin-left: 1.5rem !important;
+        margin-right: 1.5rem !important;
+    }
+}
+
+/* ============================================================
+   CORRECCIONES ESPECÍFICAS PARA VISTAS PROBLEMÁTICAS
+   ============================================================ */
+
+/* LineaEtica.php - Texto naranja y dropdowns */
+@media (max-width: 767px) {
+    /* Mensajes de alerta/info naranjas */
+    .text-warning,
+    [class*="text-orange"],
+    .alert-warning {
+        font-size: 0.8rem !important;
+        padding: 0.5rem !important;
+        margin: 0.5rem 0 !important;
+        word-break: break-word;
+    }
+
+    /* Dropdowns en LineaEtica */
+    #CatalogoLineaEica select,
+    #CatalogoLineaEica .form-select {
+        width: 100% !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Salud.php - Dropdowns responsive */
+@media (max-width: 767px) {
+    /* Inputs y selects en formularios de salud */
+    #FormUpdateDatos select,
+    #FormUpdateDatos .form-control,
+    #FormUpdateDatos .form-select {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Grupos de campos en columnas */
+    #FormUpdateDatos .row > div {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Personal.php - Dropdowns responsive */
+@media (max-width: 767px) {
+    /* Modal de detalles de empleado */
+    #DetallesPrincipalEmpleado select,
+    #DetallesPrincipalEmpleado .form-select,
+    #DetallesMasDetallesEmpleado select,
+    #ModalAsignarHijo select {
+        width: 100% !important;
+    }
+}
+
+/* DataTables en múltiples vistas - Fix definitivo para BUSCAR */
+@media (max-width: 767px) {
+    /* Capacitacion.php, SolicitudesVacacionesFinales.php, Puestos.php, etc. */
+    #tableCapacitacion_wrapper,
+    #TableSolicitudes_wrapper,
+    #tableHistorico_wrapper,
+    #tablePuestos_wrapper,
+    #tblFeed_wrapper,
+    #tableEventos_wrapper,
+    #tableControl_wrapper {
+        overflow-x: visible !important;
+    }
+
+    /* Forzar que los controles de DataTables no se desborden */
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length {
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+
+    /* Asegurar que BUSCAR no se salga */
+    .dataTables_filter label {
+        white-space: normal !important;
+        text-align: center !important;
+    }
+
+    .dataTables_length label {
+        white-space: normal !important;
+        text-align: center !important;
+    }
+
+    /* Input de búsqueda al 100% */
+    .dataTables_wrapper input[type="search"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    /* Dropdowns de "registros por página" */
+    .dataTables_wrapper select {
+        width: auto !important;
+        min-width: 60px;
+        max-width: 100px;
+    }
+}
+
+/* Puestos.php - Dropdowns específicos */
+@media (max-width: 767px) {
+    select[name="division"],
+    select[id*="division"],
+    select[id*="Division"] {
+        width: 100% !important;
+    }
+}
+
+/* ListadoFeed.php y Eventos.php - DataTables */
+@media (max-width: 767px) {
+    #tblFeed_filter label,
+    #tableEventos_filter label {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    #tblFeed_filter input,
+    #tableEventos_filter input {
+        margin-top: 0.5rem !important;
+    }
+}
+
+/* ControlOrganigrama.php - DataTables */
+@media (max-width: 767px) {
+    #tableControl_filter label {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    #tableControl_filter input {
+        margin-top: 0.5rem !important;
+    }
+}
+
+/* LineaEticaUs.php - Badge de advertencia y formulario */
+@media (max-width: 767px) {
+    /* Badge de advertencia naranja */
+    .badge-warning.rounded-pill {
+        font-size: 0.75rem !important;
+        padding: 0.5rem 0.75rem !important;
+        max-width: 95% !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
+
+    /* Dropdowns del formulario */
+    #formLineaEtica select,
+    #formLineaEtica .form-select {
+        width: 100% !important;
+    }
+
+    /* Textarea responsive */
+    #formLineaEtica textarea {
+        min-height: 120px !important;
+        font-size: 0.875rem;
+    }
+
+    /* Botón de envío */
+    #formLineaEtica .btn {
+        width: 100% !important;
+        max-width: 300px !important;
+    }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        page-break-inside: avoid;
+    }
+}
