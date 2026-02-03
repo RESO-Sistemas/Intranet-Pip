@@ -7,6 +7,11 @@ $(document).ready(function () {
   // $('.js-example-basic-single').select2();
 });
 
+// Ocultar preloader cuando todo esté listo
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const Organigrama = urlParams.get("Org");
@@ -36,7 +41,7 @@ async function loadOrganigrama() {
   } catch (error) {
     console.log(error);
   } finally {
-    console.log(respuesta);
+    // console.log(respuesta); // Comentado - array de organigrama
     if (respuesta.length > 0) {
       respuesta.forEach((d) => {
         if (d.idDetalleOrganigramaPadre == 0) {

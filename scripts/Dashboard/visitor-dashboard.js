@@ -1,5 +1,10 @@
 ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
+// Ocultar preloader cuando todo esté listo
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 const principal_v = {
   dateIni: document.getElementById('date_Ini'),
   dateEnd: document.getElementById('date_End'),

@@ -57,6 +57,12 @@ class Empleados extends Conexiones
     function autorizaPermisoPagina($URL) {
       $URL = explode('/',$URL);
       $URL = $URL[1];
+      
+      // Remover parámetros GET (todo lo que esté después de ?)
+      if (strpos($URL, '?') !== false) {
+        $URL = explode('?', $URL)[0];
+      }
+      
       $idPuesto = (SessionManager::get("idSPuesto"));
       $q = "SELECT M.URL FROM MenusPermisos AS MP
               INNER JOIN menus as M ON M.id_menu = MP.id_menu
