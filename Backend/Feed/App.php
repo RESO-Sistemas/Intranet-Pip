@@ -2,7 +2,29 @@
   ob_start(); // Iniciar buffer de salida
   include("Feed.php");
   $Feed = new Feed();
-  $op = $_POST["op"] ?? '';
+  $op = $_POST["op"] ?? $_GET["op"] ?? '';
+
+  // Endpoint para obtener archivo BLOB de la BD (permitir GET para acceso directo por URL)
+  if ($op == "getArchivoFeed") {
+    $idArchivo = $_POST["idArchivo"] ?? $_GET["idArchivo"] ?? null;
+    if ($idArchivo) {
+      $archivo = $Feed->getArchivoFeedBlob($idArchivo);
+      if ($archivo && $archivo['Content']) {
+        // Limpiar TODO el buffer antes de enviar la imagen
+        ob_end_clean();
+        
+        header("Content-Type: " . $archivo['ContentType']);
+        header("Content-Length: " . strlen($archivo['Content']));
+        header("Content-Disposition: inline; filename=\"" . $archivo['Archivo'] . "\"");
+        echo $archivo['Content'];
+        exit;
+      }
+    }
+    ob_end_clean();
+    http_response_code(404);
+    echo "Archivo no encontrado";
+    exit;
+  }
 
   if ($op == "newFeed") {
     $nTitulo = $_POST["txtTitulo"];
@@ -151,8 +173,7 @@
       // Limpiar cualquier salida previa
       ob_clean();
       
-      $difWebp = 0;
-      $actDate = date('d-m-Y_H-i-s'); // Cambiado d-m-Y H:i:s a d-m-Y_H-i-s para usar como parte del nombre del archivo
+      $actDate = date('d-m-Y_H-i-s');
       $mnf_title = $_POST["mnf_title"] ?? '';
       $mnf_desc = nl2br($_POST["mnf_desc"] ?? '');
       $mnf_url = $_POST["mnf_url"] ?? '';
@@ -173,44 +194,35 @@
       }
       
       $idGen = $resInsert["f_idFeed"];
-      $folder = "../../Archivos/Feed/$idGen/";
 
+      // Procesar archivos y guardarlos como BLOB en la BD (sin crear carpetas)
       if (isset($_FILES['filesFeedForm']) && !empty($_FILES['filesFeedForm']['name'][0])) {
-          $cantFiles = count($_FILES['filesFeedForm']['name']);
-          $NameFile = "";
-          $countFile = 0;
+          try {
+              $cantFiles = count($_FILES['filesFeedForm']['name']);
+              $countFile = 0;
 
-          // Crear la carpeta si no existe
-          if (!file_exists($folder)) {
-              mkdir($folder, 0777, true);
-          }
+              for ($i = 0; $i < $cantFiles; $i++) {
+                  if (isset($_FILES['filesFeedForm']['name'][$i]) && $_FILES['filesFeedForm']['name'][$i] != '') {
+                      $file_tmp = $_FILES['filesFeedForm']['tmp_name'][$i];
+                      $namefile = $_FILES['filesFeedForm']['name'][$i];
+                      $file_extension = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
+                      $countFile++;
 
-          for ($i = 0; $i < $cantFiles; $i++) {
-              if (isset($_FILES['filesFeedForm']['name'][$i]) && $_FILES['filesFeedForm']['name'][$i] != '') {
-                  $file_tmp = $_FILES['filesFeedForm']['tmp_name'][$i];
-                  $namefile = $_FILES['filesFeedForm']['name'][$i];
-                  $file_extension = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-                  $countFile++;
+                      // Obtener metadatos del archivo
+                      $fileName = $idGen . '_' . $actDate . '_' . $countFile . "." . $file_extension;
+                      $contentType = $_FILES['filesFeedForm']['type'][$i];
+                      
+                      // Leer el contenido binario del archivo
+                      $content = file_get_contents($file_tmp);
 
-                  // Generar nombre único para el archivo
-                  $nameFileS = $idGen . '_' . $actDate . '_' . $countFile . "." . $file_extension;
-                  $path = $folder . $nameFileS;
-
-                  // Mover el archivo al directorio de destino
-                  if (move_uploaded_file($file_tmp, $path)) {
-                      $NameFile .= $nameFileS . ',';
-                  } else {
-                      continue; // Saltar a la siguiente iteración si hay un error
+                      // Guardar en la base de datos como BLOB
+                      $insUpdateFile = new Feed();
+                      $insUpdateFile->AddArchivoFeedBlob($idGen, $fileName, $contentType, $content);
                   }
               }
+          } catch (Exception $e) {
+              error_log("Error procesando archivos: " . $e->getMessage());
           }
-
-          // Eliminar la última coma de la cadena $NameFile
-          $NameFile = rtrim($NameFile, ',');
-
-          // Actualizar nombre de archivos en la base de datos
-          $insUpdateNameFile = new Feed();
-          $insUpdateNameFile->AddNombreArchivoFeed($idGen, $NameFile);
       }
       
       // Respuesta JSON de éxito (siempre responder)
