@@ -161,7 +161,6 @@
 
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php"); ?>
-  <?php include("scripts.php"); ?>
 
   <script type="text/javascript">
     const myKeysValues = window.location.search;

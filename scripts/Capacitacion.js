@@ -1,3 +1,8 @@
+// Ocultar preloader cuando la página termine de cargar
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 const _URL = "Backend/Capacitacion/App.php";
 const _IMG = "../assets/images/previewsFolders/ppt.png";
 let div_view_file = $("#viewFile");

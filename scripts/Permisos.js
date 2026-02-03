@@ -1,3 +1,8 @@
+// Ocultar preloader cuando la página termine de cargar
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const puesto = urlParams.get("Puesto");

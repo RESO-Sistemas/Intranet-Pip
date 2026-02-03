@@ -1,3 +1,8 @@
+// Ocultar preloader cuando la página termine de cargar
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 // $(document).ready(function() {
 //     $('.Slc2').select2();
 // });
@@ -8,8 +13,8 @@ const PSelected = document.getElementById("txtPSelected");
 const InpPSelected = document.getElementById("inpPSelected");
 
 let table;
-loadAllFunctions();
-async function loadAllFunctions() {
+loadPuestosData();
+async function loadPuestosData() {
   await loadDivisiones();
   await getListPuestos();
 }

@@ -1,3 +1,8 @@
+// Ocultar preloader cuando la página termine de cargar
+$(window).on('load', function() {
+  $(".preloader").fadeOut();
+});
+
 $("#NuevoArchivo").click(function () {
   $("#inpArchivo").click();
 });
