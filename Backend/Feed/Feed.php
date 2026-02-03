@@ -83,6 +83,34 @@
       return "1";
     }
 
+    // Función para guardar archivo binario (BLOB) directamente en la BD
+    function AddArchivoFeedBlob($idFeed, $fileName, $contentType, $content){
+      try {
+        $conn = new Conexiones();
+        $sql = "INSERT INTO ArchivosFeed (idFeed, Archivo, ContentType, Content) VALUES (?, ?, ?, ?)";
+        $params = [$idFeed, $fileName, $contentType, $content];
+        $result = $conn->ExecuteWithLob($sql, $params, 3);
+        error_log("AddArchivoFeedBlob - idFeed: $idFeed, fileName: $fileName, result: " . ($result ? $result : "false"));
+        return $result ? "1" : "0";
+      } catch (Exception $e) {
+        error_log("Error guardando archivo Feed: " . $e->getMessage());
+        return "0";
+      }
+    }
+
+    // Función para obtener archivo binario de la BD
+    function getArchivoFeedBlob($idArchivosFeed){
+      try {
+        $conn = new Conexiones();
+        $sql = "SELECT Archivo, ContentType, Content FROM ArchivosFeed WHERE idArchivosFeed = ?";
+        $result = $conn->SelectWithLob($sql, [$idArchivosFeed]);
+        return $result ? $result : null;
+      } catch (Exception $e) {
+        error_log("Error obteniendo archivo Feed: " . $e->getMessage());
+        return null;
+      }
+    }
+
     function getImgEventosBirthday () {
         $ArrRetorno = [];
         $NombreArchivo = "";
@@ -207,12 +235,26 @@
                   "TipoReaccion" => $ArrRegistros[$j]["idTipoReaccion"]
                 ]);
               }
+              
+              // Obtener los IDs de archivos para construir URLs
+              $Conexiones4 = new Conexiones();
+              $q4 = "SELECT idArchivosFeed, Archivo FROM ArchivosFeed WHERE idFeed = '$idFeed'";
+              $cons4 = $Conexiones4->Select($q4,array());
+              $ArrayArchivos = [];
+              for ($j=0; $j < sizeof($cons4); $j++) {
+                array_push($ArrayArchivos,[
+                  "idArchivosFeed" => $cons4[$j]["idArchivosFeed"],
+                  "Archivo" => $cons4[$j]["Archivo"]
+                ]);
+              }
+              
                 array_push($ArrayRetorno,[
                 "idFeed" => $cons[$i]["idFeed"],
                 "Titulo" => $cons[$i]["Titulo"],
                 "Descripcion" => $cons[$i]["Descripcion"],
                 "Registro" => $cons[$i]["Registro"],
                 "Archivo" => $cons[$i]["Archivo"],
+                "ArrayArchivos" => $ArrayArchivos, // IDs de archivos para construir URLs
                 "Nombre" => $cons[$i]["Nombre"],
                 "NoEmpleado" => $cons[$i]["NoEmpleado"],
                 "Imagen" => $cons[$i]["Imagen"],

@@ -1387,126 +1387,67 @@ $(document).on("click", ".btnUpdateDF", async function () {
 
 
 async function getMeses() {
-
-  let datos = await {
-
+  let datos = {
     op: "getMeses",
-
   };
-
   let respuesta = [];
-
   try {
-
     respuesta = await $.ajax({
-
       type: "post",
-
       url: "Backend/Configuracion/App.php",
-
       data: datos,
-
       dataType: "json",
-
     });
-
+    console.log("Meses cargados:", respuesta);
   } catch (e) {
-
-    console.log(e);
-
-  } finally {
-
-    globalMeses = [...respuesta];
-
-    $("#mesSelected").append(`
-
-      <option value="" selected >Listado de Meses</option>
-
-    `);
-
-    globalMeses.forEach((meses) => {
-
-      $("#mesSelected").append(`
-
-        <option value="${meses.idMes}">${meses.Mes}</option>
-
-      `);
-
-    });
-
-    $("#mesSelectedUpdate").append(`
-
-      <option value="" selected >Listado de Meses</option>
-
-    `);
-
-    globalMeses.forEach((meses) => {
-
-      $("#mesSelectedUpdate").append(`
-
-        <option value="${meses.idMes}">${meses.Mes}</option>
-
-      `);
-
-    });
-
+    console.log("Error cargando meses:", e);
+    return;
   }
-
+  
+  if (!respuesta || respuesta.length === 0) {
+    console.log("No se obtuvieron meses");
+    return;
+  }
+  
+  globalMeses = [...respuesta];
+  
+  // Limpiar y cargar select de meses
+  $("#mesSelected").html(`<option value="" selected>Listado de Meses</option>`);
+  globalMeses.forEach((mes) => {
+    $("#mesSelected").append(`<option value="${mes.idMes}">${mes.Mes}</option>`);
+  });
+  
+  $("#mesSelectedUpdate").html(`<option value="" selected>Listado de Meses</option>`);
+  globalMeses.forEach((mes) => {
+    $("#mesSelectedUpdate").append(`<option value="${mes.idMes}">${mes.Mes}</option>`);
+  });
 }
 
-
-
-$(document).on("change", "#mesSelected", async function () {
-
-  $("#diaSelected").html("");
-
+$(document).on("change", "#mesSelected", function () {
+  $("#diaSelected").html('<option value="">Seleccione un día</option>');
   let val = $(this).val();
-
-  const mesSelected = globalMeses.filter((datos) => {
-
-    return datos.idMes == val;
-
-  });
-
-  mesSelected[0].Dias.forEach((dias) => {
-
-    $("#diaSelected").append(`
-
-      <option value="${dias}">${dias}</option>
-
-    `);
-
-  });
-
+  if (!val) return;
+  
+  const mesSelected = globalMeses.find((m) => m.idMes == val);
+  if (mesSelected && mesSelected.Dias) {
+    mesSelected.Dias.forEach((dia) => {
+      $("#diaSelected").append(`<option value="${dia}">${dia}</option>`);
+    });
+  }
 });
 
-
-
-$(document).on("change", "#mesSelectedUpdate", async function () {
-
-  $("#diaSelectedUpdate").html("");
-
+$(document).on("change", "#mesSelectedUpdate", function () {
+  $("#diaSelectedUpdate").html('<option value="">Seleccione un día</option>');
   let val = $(this).val();
-
-  const mesSelected = globalMeses.filter((datos) => {
-
-    return datos.idMes == val;
-
-  });
-
-  mesSelected[0].Dias.forEach((dias) => {
-
-    $("#diaSelectedUpdate").append(`
-
-      <option value="${dias}">${dias}</option>
-
-    `);
-
-  });
-
+  if (!val) return;
+  
+  const mesSelected = globalMeses.find((m) => m.idMes == val);
+  if (mesSelected && mesSelected.Dias) {
+    mesSelected.Dias.forEach((dia) => {
+      $("#diaSelectedUpdate").append(`<option value="${dia}">${dia}</option>`);
+    });
+  }
 });
-
-
 
 // $(document).on("click", "#btnUpdateDF", async function () {
 

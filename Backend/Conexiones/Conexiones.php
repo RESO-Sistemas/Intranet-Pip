@@ -122,6 +122,41 @@ class Conexiones{
 	function ConnClose(){
 		$this->dbh = null;
 	}
+
+	// Método para insertar datos binarios (BLOB)
+	function ExecuteWithLob($q, $params, $lobIndex){
+		try {
+			$stmt = $this->dbh->prepare($q);
+			
+			// Bind de parámetros normales y LOB
+			$stmt->bindValue(1, $params[0]); // idFeed
+			$stmt->bindValue(2, $params[1]); // Archivo (nombre)
+			$stmt->bindValue(3, $params[2]); // ContentType
+			$stmt->bindParam(4, $params[3], PDO::PARAM_LOB); // Content (BLOB)
+			
+			$stmt->execute();
+			$lastId = $this->dbh->lastInsertId();
+			$this->dbh = null;
+			return $lastId;
+		} catch (PDOException $e) {
+			error_log('PDOException LOB - ' . $e->getMessage(), 0);
+			return false;
+		}
+	}
+
+	// Método para obtener datos binarios (BLOB)
+	function SelectWithLob($q, $params = []){
+		try {
+			$stmt = $this->dbh->prepare($q);
+			$stmt->execute($params);
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			return $result;
+		} catch (PDOException $e) {
+			error_log('PDOException LOB Select - ' . $e->getMessage(), 0);
+			return null;
+		}
+	}
+
 	//Respuestas
 		 function responseSuccess($res, $r = false)
 		 {
