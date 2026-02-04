@@ -41,32 +41,84 @@
     }
 
     function addCapacitacion ($nDescripcion,$nFechaInicio,$nFechaFin,$nHoraInicio,$nHoraFin,$dias,$tipo,$NoEmpleado) {
-      $NoEmpleado = substr($NoEmpleado, 0, -1);
+      $NoEmpleado = substr($NoEmpleado, 0, -1); // Quitar la última coma
+      $empleadosArray = explode(",", $NoEmpleado); // Separar por comas
+      
       if ($tipo == "DIA") {
         if ($dias != "") {
-            $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
-            $this->Procedure($q,array());
-            $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
-            $cons = $this->SelectNotClose($q2);
-            $last_id = $cons[0]["id"];
-            $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$NoEmpleado')";
-
-            $result = $this->ExecuteQuery($q3,array());
-            return $last_id;
+            try {
+              // Insertar directamente usando prepare/execute sin cerrar conexión
+              $q = "INSERT INTO Capacitacion (Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Dias, Tipo, Status, archivo) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, '')";
+              $stmt = $this->dbh->prepare($q);
+              $stmt->execute([$nDescripcion, $nFechaInicio, $nFechaFin, $nHoraInicio, $nHoraFin, $dias, $tipo]);
+              
+              // Obtener el ID insertado
+              $last_id = $this->dbh->lastInsertId();
+              
+              if (!$last_id || $last_id <= 0) {
+                return "Error: No se pudo obtener el ID de la capacitación creada";
+              }
+              
+              // Insertar cada empleado en CapacitacionDetalle
+              $insertados = 0;
+              foreach ($empleadosArray as $emp) {
+                $emp = trim($emp);
+                if (!empty($emp)) {
+                  $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion, NoEmpleado) VALUES (?, ?)";
+                  $stmt3 = $this->dbh->prepare($q3);
+                  $stmt3->execute([$last_id, $emp]);
+                  $insertados++;
+                }
+              }
+              
+              if ($insertados === 0) {
+                return "Error: No se insertaron empleados";
+              }
+              
+              return $last_id;
+            } catch (Exception $e) {
+              return "Error al crear capacitacion: " . $e->getMessage();
+            }
           }else {
             return "Agregue almenos un dia";
           }
       }elseif ($tipo == "PROL") {
-        $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
-        $this->Procedure($q,array());
-        $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
-        $cons = $this->SelectNotClose($q2);
-        $last_id = $cons[0]["id"];
-        $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$NoEmpleado')";
-        error_log($q3);
-        $result = $this->ExecuteQuery($q3,array());
-        return $last_id;
+        try {
+          // Insertar directamente usando prepare/execute sin cerrar conexión
+          $q = "INSERT INTO Capacitacion (Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Dias, Tipo, Status, archivo) 
+                VALUES (?, ?, ?, ?, ?, '', ?, 1, '')";
+          $stmt = $this->dbh->prepare($q);
+          $stmt->execute([$nDescripcion, $nFechaInicio, $nFechaFin, $nHoraInicio, $nHoraFin, $tipo]);
+          
+          // Obtener el ID insertado
+          $last_id = $this->dbh->lastInsertId();
+          
+          if (!$last_id || $last_id <= 0) {
+            return "Error: No se pudo obtener el ID de la capacitación creada";
+          }
+          
+          // Insertar cada empleado en CapacitacionDetalle
+          $insertados = 0;
+          foreach ($empleadosArray as $emp) {
+            $emp = trim($emp);
+            if (!empty($emp)) {
+              $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion, NoEmpleado) VALUES (?, ?)";
+              $stmt3 = $this->dbh->prepare($q3);
+              $stmt3->execute([$last_id, $emp]);
+              $insertados++;
+            }
+          }
+          
+          if ($insertados === 0) {
+            return "Error: No se insertaron empleados";
+          }
+          
+          return $last_id;
+        } catch (Exception $e) {
+          return "Error al crear capacitacion: " . $e->getMessage();
         }
+      }
     }
 
     function getCapacitacionDisponibles () {
@@ -75,7 +127,11 @@
             IF(C.Status = 1,'Activa','Inactiva') as Status
             FROM Capacitacion AS C INNER JOIN CapacitacionDetalle AS CD ON CD.id_capacitacion = C.idCapacitacion
             group by C.idCapacitacion;";
+      error_log("=== OBTENIENDO CAPACITACIONES ===");
+      error_log("Query: " . $q);
       $resp = $this->Select($q,array());
+      error_log("Total registros encontrados: " . sizeof($resp));
+      error_log("Datos: " . print_r($resp, true));
       $datos = [];
       for ($i=0; $i < sizeof($resp) ; $i++) {
         $TextDias = $resp[$i]["Dias"];

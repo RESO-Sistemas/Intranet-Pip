@@ -1,4 +1,9 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // No mostrar en pantalla
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/php_errors.log');
+
 include("Capacitacion.php");
 $Capacitacion = new Capacitacion();
 $carpeta = "../../Archivos/Capacitaciones/";
@@ -33,6 +38,11 @@ if($op == "addCapacitacionInputText"){
 
 
 if ($op == "addCapacitacion") {
+    // Log para debug
+    file_put_contents(__DIR__ . '/debug_capacitacion.log', 
+        date('Y-m-d H:i:s') . " - POST recibido:\n" . print_r($_POST, true) . "\n\n", 
+        FILE_APPEND);
+    
     $nDescripcion = $_POST["Desc"];
     $nFechaInicio = $_POST["fechaInicio"];
     $nFechaFin = $_POST["fechaFin"];
@@ -42,10 +52,34 @@ if ($op == "addCapacitacion") {
     $tipo = $_POST["tipoCapacitacion"];
     $existeFichero = $_POST["existeFichero"];
     $NoEmpleado = $_POST["NoEmpleado"];
+    
+    // Log de datos recibidos
+    file_put_contents(__DIR__ . '/debug_capacitacion.log', 
+        "Datos a insertar:\nDesc: $nDescripcion\nTipo: $tipo\nDias: $dias\nEmpleados: $NoEmpleado\n\n", 
+        FILE_APPEND);
+    
+    // Intentar crear la capacitación
     $respuesta = $Capacitacion->addCapacitacion($nDescripcion, $nFechaInicio, $nFechaFin, $nHoraInicio, $nHoraFin, $dias,$tipo,$NoEmpleado);
+    
+    // Log de respuesta
+    file_put_contents(__DIR__ . '/debug_capacitacion.log', 
+        "Respuesta de addCapacitacion: " . print_r($respuesta, true) . "\n\n", 
+        FILE_APPEND);
+    
+    // Validar que la respuesta es un ID numérico válido
+    if (!is_numeric($respuesta) || $respuesta <= 0) {
+        // Si no es numérico o es <= 0, es un mensaje de error
+        file_put_contents(__DIR__ . '/debug_capacitacion.log', 
+            "ERROR: Respuesta no es numérica o es <= 0\n\n", 
+            FILE_APPEND);
+        echo "ERROR: " . $respuesta;
+        exit;
+    }
+    
     $ContadorArchivos = 0;
     $fechaActual = date('d-m-Y H:i:s');
     $carpeta = "../../Archivos/Capacitaciones/$respuesta/";
+    
     if (sizeof($_FILES) > 0) {
       $NombreArchivo = "";
       for ($i=0; $i < sizeof($_FILES['ArrArchivos']['name']) ; $i++) {
@@ -70,10 +104,10 @@ if ($op == "addCapacitacion") {
       $NombreArchivo = substr($NombreArchivo, 0, -1);
       $Capacitacion2 = new Capacitacion();
       $Capacitacion2->updateNameArchivoCapacitacion($NombreArchivo,$respuesta);
-      echo "1";
-    } else {
-      echo "1";
     }
+    
+    // Si llegamos aquí, todo salió bien
+    echo "1";
 }
 
 if ($op == "UpdateCapacitacion") {
