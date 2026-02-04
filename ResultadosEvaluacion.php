@@ -379,27 +379,19 @@ $MenuP = $Conf->getMenusPadre();
     ${viewFinalReultsSF(data)}
             </script>
 
-
-  <?php include("scripts.php"); ?>
-
-
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>
   <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
   <script src="./neptune/js/pages/select2.js"></script>
   <!-- neptune Javascripts -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <!-- <script src="scripts/ResultadosEvaluacion/General.js" charset="utf-8" type="module"></script> -->
   <script src="scripts/ResultadosEvaluacion/data.js" charset="utf-8"></script>
   <script src="scripts/ResultadosEvaluacion/contentFunctions.js" charset="utf-8"></script>
   <script src="scripts/ResultadosEvaluacion/executeFunctions.js" charset="utf-8"></script>
-
 
 </body>
 
