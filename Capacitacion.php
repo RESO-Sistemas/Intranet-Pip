@@ -71,41 +71,42 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col">
+                            <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="card-title">Capacitaciones activas</div>
-                                        </div>
-                                        <div class="row mb-4">
-                                            <div class="col text-end">
-                                                <a class="btn btn-primary" href="AddCapacitacion.php">Nueva</a>
+                                        <div class="row mb-3">
+                                            <div class="col-12 col-md-6">
+                                                <div class="card-title mb-0">Capacitaciones activas</div>
+                                            </div>
+                                            <div class="col-12 col-md-6 text-center text-md-end mt-2 mt-md-0">
+                                                <a class="btn btn-primary w-100 w-md-auto px-4" href="AddCapacitacion.php" style="max-width: 200px;">Nueva</a>
                                             </div>
                                         </div>
 
                                         <div class="row">
-                                            <div class="table-responsive">
-                                                <table class="display align-middle text-center" id="tableCapacitacion">
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col">Descripción</th>
-                                                            <th scope="col">Días</th>
-                                                            <th scope="col">Fecha Inicio</th>
-                                                            <th scope="col">Fecha Fin</th>
-                                                            <th scope="col">Hora Inicio</th>
-                                                            <th scope="col">Hora Fin</th>
-                                                            <th scope="col">Estatus</th>
-                                                            <th scope="col">Editar</th>
-                                                            <th scope="col">Cambiar Status</th>
-                                                            <th scope="col">Eliminar</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <!-- Aquí van las filas generadas dinámicamente -->
-                                                    </tbody>
-                                                </table>
+                                            <div class="col-12">
+                                                <div class="table-responsive">
+                                                    <table class="display align-middle text-center" id="tableCapacitacion">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Descripción</th>
+                                                                <th scope="col">Días</th>
+                                                                <th scope="col">Fecha Inicio</th>
+                                                                <th scope="col">Fecha Fin</th>
+                                                                <th scope="col">Hora Inicio</th>
+                                                                <th scope="col">Hora Fin</th>
+                                                                <th scope="col">Estatus</th>
+                                                                <th scope="col">Editar</th>
+                                                                <th scope="col">Cambiar Status</th>
+                                                                <th scope="col">Eliminar</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- Aquí van las filas generadas dinámicamente -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
