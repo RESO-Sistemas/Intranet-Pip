@@ -39,7 +39,54 @@
 
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 
+    <style>
+        /* Estilos para selector de días de la semana */
+        .day-selector {
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
+        }
 
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 50px;
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .day-label:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        #contenidoDias {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 15px;
+        }
+    </style>
 
 </head>
 
@@ -493,9 +540,16 @@
 
 
 
-                                            <div class="col-12 col-lg-6" style="display: none;" id="divContenidoDias">
-
-
+                                            <div class="col-12 col-lg-8" style="display: none;" id="divContenidoDias">
+                                                <div class="mb-3">
+                                                    <h5 class="fw-bold text-center" style="color: #495057; margin-bottom: 15px;">
+                                                        <i class="material-icons" style="vertical-align: middle; font-size: 24px;">calendar_today</i>
+                                                        Días de la semana
+                                                    </h5>
+                                                    <p class="text-center text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                                                        Selecciona los días en que se impartirá la capacitación
+                                                    </p>
+                                                </div>
 
                                                 <div id="contenidoDias"></div>
 

@@ -1524,10 +1524,27 @@ class Empleados extends Conexiones
 
     function getJefesPosiblesSolicitud()
     {
-        $NoEmpleado = (SessionManager::get("NoEmpleado"));
-        // $IdSucursal = (SessionManager::get("IdSucursal"));
-        $q = "CALL spGetJefesPosiblesPuesto('$NoEmpleado')";
-        return json_encode($this->Procedure($q, array()));
+        try {
+            $NoEmpleado = (SessionManager::get("NoEmpleado"));
+            error_log("=== OBTENIENDO JEFES POSIBLES ===");
+            error_log("NoEmpleado: " . ($NoEmpleado ?? 'NULL'));
+            
+            if (!$NoEmpleado) {
+                error_log("ERROR: NoEmpleado es null");
+                return json_encode([]);
+            }
+            
+            $q = "CALL spGetJefesPosiblesPuesto('$NoEmpleado')";
+            error_log("Query: " . $q);
+            
+            $result = $this->Procedure($q);
+            error_log("Resultado: " . print_r($result, true));
+            
+            return json_encode($result);
+        } catch (\Exception $e) {
+            error_log("ERROR en getJefesPosiblesSolicitud: " . $e->getMessage());
+            return json_encode([]);
+        }
     }
 
     function asignarJefeEmpleado($EmpleadoPadre, $EmpleadoHijo)

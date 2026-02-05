@@ -753,6 +753,14 @@ $("#btnUpdateFeed").click(async function () {
 
       success: function (response) {
 
+        $.unblockUI(); // Quitar el overlay de carga
+        
+        // Limpiar la respuesta de espacios en blanco y saltos de línea
+        response = response.trim();
+        
+        console.log("=== RESPUESTA DEL BACKEND ===");
+        console.log("Response:", response);
+        console.log("Response type:", typeof response);
         console.log([...data]);
 
         if (response == "1") {
@@ -777,7 +785,7 @@ $("#btnUpdateFeed").click(async function () {
 
             window.location.href = `ListadoFeed.php`;
 
-          }, 3000);
+          }, 500);
 
         } else if (response == "0") {
 
@@ -805,7 +813,7 @@ $("#btnUpdateFeed").click(async function () {
 
              <span class="alert-title">Información!</span>
 
-              <span class="alert-text">${response}.</span>
+              <span class="alert-text">${response}</span>
 
         </div>`;
 
@@ -816,6 +824,10 @@ $("#btnUpdateFeed").click(async function () {
       },
 
       error: function (e) {
+
+        $.unblockUI(); // Quitar el overlay de carga en caso de error
+        
+        console.error("Error en la petición:", e);
 
         alert(e.responseText);
 

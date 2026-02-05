@@ -1,0 +1,29 @@
+2026-02-05 16:49:41 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba Capacitacion 05/02/2026
+    [fechaInicio] => 2026-02-12
+    [fechaFin] => 2026-02-19
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 4,6,7
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba Capacitacion 05/02/2026
+Tipo: PROL
+Dias: 4,6,7
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+

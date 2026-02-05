@@ -44,81 +44,79 @@
       $NoEmpleado = substr($NoEmpleado, 0, -1); // Quitar la última coma
       $empleadosArray = explode(",", $NoEmpleado); // Separar por comas
       
+      error_log("=== CREANDO CAPACITACION ===");
+      error_log("Tipo: " . $tipo);
+      error_log("Dias: " . $dias);
+      error_log("NoEmpleado original: " . $NoEmpleado);
+      error_log("Empleados array: " . print_r($empleadosArray, true));
+      
       if ($tipo == "DIA") {
         if ($dias != "") {
+            $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
+            error_log("Query SP: " . $q);
             try {
-              // Insertar directamente usando prepare/execute sin cerrar conexión
-              $q = "INSERT INTO Capacitacion (Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Dias, Tipo, Status, archivo) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, '')";
-              $stmt = $this->dbh->prepare($q);
-              $stmt->execute([$nDescripcion, $nFechaInicio, $nFechaFin, $nHoraInicio, $nHoraFin, $dias, $tipo]);
-              
-              // Obtener el ID insertado
-              $last_id = $this->dbh->lastInsertId();
-              
-              if (!$last_id || $last_id <= 0) {
-                return "Error: No se pudo obtener el ID de la capacitación creada";
-              }
-              
-              // Insertar cada empleado en CapacitacionDetalle
-              $insertados = 0;
-              foreach ($empleadosArray as $emp) {
-                $emp = trim($emp);
-                if (!empty($emp)) {
-                  $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion, NoEmpleado) VALUES (?, ?)";
-                  $stmt3 = $this->dbh->prepare($q3);
-                  $stmt3->execute([$last_id, $emp]);
-                  $insertados++;
-                }
-              }
-              
-              if ($insertados === 0) {
-                return "Error: No se insertaron empleados";
-              }
-              
-              return $last_id;
+              $result_sp = $this->Procedure($q);
+              error_log("Resultado SP: " . print_r($result_sp, true));
             } catch (Exception $e) {
+              error_log("ERROR en SP: " . $e->getMessage());
               return "Error al crear capacitacion: " . $e->getMessage();
             }
+            $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
+            $cons = $this->SelectNotClose($q2);
+            error_log("Consulta MAX: " . print_r($cons, true));
+            $last_id = $cons[0]["id"];
+            error_log("ID Capacitacion creado: " . $last_id);
+            
+            // Insertar cada empleado en CapacitacionDetalle
+            $insertados = 0;
+            foreach ($empleadosArray as $emp) {
+              $emp = trim($emp);
+              if (!empty($emp)) {
+                $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
+                error_log("Query detalle: " . $q3);
+                $result = $this->ExecuteQuery($q3,array());
+                error_log("Resultado insert: " . print_r($result, true));
+                $insertados++;
+              }
+            }
+            error_log("Total empleados insertados: " . $insertados);
+            
+            return $last_id;
           }else {
             return "Agregue almenos un dia";
           }
       }elseif ($tipo == "PROL") {
+        $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
+        error_log("Query SP PROL: " . $q);
         try {
-          // Insertar directamente usando prepare/execute sin cerrar conexión
-          $q = "INSERT INTO Capacitacion (Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Dias, Tipo, Status, archivo) 
-                VALUES (?, ?, ?, ?, ?, '', ?, 1, '')";
-          $stmt = $this->dbh->prepare($q);
-          $stmt->execute([$nDescripcion, $nFechaInicio, $nFechaFin, $nHoraInicio, $nHoraFin, $tipo]);
-          
-          // Obtener el ID insertado
-          $last_id = $this->dbh->lastInsertId();
-          
-          if (!$last_id || $last_id <= 0) {
-            return "Error: No se pudo obtener el ID de la capacitación creada";
-          }
-          
-          // Insertar cada empleado en CapacitacionDetalle
-          $insertados = 0;
-          foreach ($empleadosArray as $emp) {
-            $emp = trim($emp);
-            if (!empty($emp)) {
-              $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion, NoEmpleado) VALUES (?, ?)";
-              $stmt3 = $this->dbh->prepare($q3);
-              $stmt3->execute([$last_id, $emp]);
-              $insertados++;
-            }
-          }
-          
-          if ($insertados === 0) {
-            return "Error: No se insertaron empleados";
-          }
-          
-          return $last_id;
+          $result_sp = $this->Procedure($q);
+          error_log("Resultado SP PROL: " . print_r($result_sp, true));
         } catch (Exception $e) {
+          error_log("ERROR en SP PROL: " . $e->getMessage());
           return "Error al crear capacitacion: " . $e->getMessage();
         }
-      }
+        $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
+        $cons = $this->SelectNotClose($q2);
+        error_log("Consulta MAX PROL: " . print_r($cons, true));
+        $last_id = $cons[0]["id"];
+        error_log("ID Capacitacion PROL creado: " . $last_id);
+        
+        // Insertar cada empleado en CapacitacionDetalle
+        $insertados = 0;
+        foreach ($empleadosArray as $emp) {
+          $emp = trim($emp);
+          if (!empty($emp)) {
+            $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
+            error_log("Query detalle PROL: " . $q3);
+            $result = $this->ExecuteQuery($q3,array());
+            error_log("Resultado insert PROL: " . print_r($result, true));
+            $insertados++;
+          }
+        }
+        error_log("Total empleados insertados PROL: " . $insertados);
+        
+        return $last_id;
+        }
     }
 
     function getCapacitacionDisponibles () {

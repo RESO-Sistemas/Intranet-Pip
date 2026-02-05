@@ -117,9 +117,6 @@ async function enviarSolicitudVacaciones() {
             window.location.href = `SolicitudVacaciones.php`;
           }, 1000);
         } else if (response == "errorJefe") {
-          // toastr.info(
-          //   "Actualmente no puedes solicitar tus vacaciones porque ningún empleado puede aprobártelas."
-          // );
           const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Información!</span>
@@ -128,7 +125,7 @@ async function enviarSolicitudVacaciones() {
           showBootstrapAlert(messageContent, "top-right", 5000);
           setTimeout($.unblockUI, 1000);
           console.log("no hay jefes");
-          getJefesPosibles();
+          // No abrir modal si no hay jefes disponibles
         } else if (response == "errorFirma") {
           // toastr.info(
           //   "Actualiza tu firma Por Favor antes de enviar la solicitud."
@@ -292,7 +289,7 @@ async function getJefesPosibles() {
     if (jefeAsignado.length > 0) {
       $("#listadoJefesPosibles").val(jefeAsignado[0]["EmpleadoPadre"]);
     }
-    $("select").formSelect();
+    // Removed formSelect() - Materialize CSS method not compatible with Bootstrap
     console.log("se va a dar clikc");
     $("#openModalJefes").click();
     console.log("se dio clikc");

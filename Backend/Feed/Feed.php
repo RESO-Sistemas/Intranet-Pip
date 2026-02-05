@@ -28,6 +28,14 @@
   class Feed extends Conexiones {
     function newFeed ($nTitulo,$nDescripcion,$nHipervinculo) {
       $NoEmpleado = SessionManager::get("NoEmpleado");
+      error_log("=== newFeed ===");
+      error_log("NoEmpleado de sesion: " . ($NoEmpleado ?? 'NULL'));
+      
+      if (!$NoEmpleado) {
+        error_log("ERROR: NoEmpleado es null, sesion no iniciada");
+        throw new Exception("Sesión no válida. Por favor inicie sesión nuevamente.");
+      }
+      
       $q = "CALL sp_NuevoFeed (?,?,?,?)";
       $cons = $this->ProcedureWithParam($q,array($nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo));
       $MMensaje = $cons[0]["Titulo"];

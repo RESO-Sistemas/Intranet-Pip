@@ -49,6 +49,13 @@ $("#CrearFeed").click(function () {
       cache: false,
       timeout: 600000,
       success: function (response) {
+        // Limpiar la respuesta de espacios en blanco y saltos de línea
+        response = response.trim();
+        
+        console.log("=== RESPUESTA DEL BACKEND (Feed) ===");
+        console.log("Response:", response);
+        console.log("Response type:", typeof response);
+        
         if (response == "1") {
           // Swal.fire("Agregado", "Feed Agregado", "success");
           const messageContent = `
@@ -73,7 +80,7 @@ $("#CrearFeed").click(function () {
           const messageContent = `
             <div class="alert-content">
              <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Archivo no valido.</span>
+              <span class="alert-text">${response}</span>
             </div>`;
           showBootstrapAlertWar(messageContent, "top-right", 5000);
         }

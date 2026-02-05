@@ -454,21 +454,6 @@ $("#btnAgregar").click(async function () {
         console.log("Response:", response);
         console.log("Response type:", typeof response);
         console.log("FormData enviada:", [...data]);
-        
-        // Limpiar espacios y verificar si hay error
-        response = response.trim();
-        
-        if (response.startsWith("ERROR:")) {
-          const errorMsg = response.replace("ERROR: ", "");
-          console.error("Error del backend:", errorMsg);
-          const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Error!</span>
-              <span class="alert-text">${errorMsg}</span>
-          </div>`;
-          showBootstrapAlert(messageContent, "top-right", 8000);
-          return;
-        }
 
         if (response == "1") {
 
