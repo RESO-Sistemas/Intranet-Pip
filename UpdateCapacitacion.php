@@ -644,8 +644,6 @@
 
     <!-- neptune Javascripts -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
-
     <script src="assets/libs/toastr/build/toastr.min.js"></script>
 
     <script src="assets/extra-libs/toastr/toastr-init.js"></script>

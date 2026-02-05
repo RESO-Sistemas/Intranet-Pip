@@ -519,18 +519,35 @@
     }
 
     function eliminarFeed ($nidFeed) {
-      $nidFeed = base64_decode($nidFeed);
-      $q = "CALL spEliminarFeed('$nidFeed')";
-      $this->Procedure($q,array());
-      foreach(glob("../../Archivos/Feed/$nidFeed". "/*") as $archivos_carpeta){
-        if (is_dir($archivos_carpeta)){
-          rmDir_rf($archivos_carpeta);
-        } else {
-        unlink($archivos_carpeta);
+      try {
+        $nidFeed = base64_decode($nidFeed);
+        error_log("=== ELIMINANDO FEED ===");
+        error_log("idFeed: " . $nidFeed);
+        
+        $q = "CALL spEliminarFeed('$nidFeed')";
+        error_log("Query: " . $q);
+        
+        $this->Procedure($q);
+        
+        // Eliminar archivos asociados
+        $rutaArchivos = "../../Archivos/Feed/$nidFeed";
+        if (is_dir($rutaArchivos)) {
+          foreach(glob($rutaArchivos . "/*") as $archivos_carpeta){
+            if (is_dir($archivos_carpeta)){
+              rmDir_rf($archivos_carpeta);
+            } else {
+              unlink($archivos_carpeta);
+            }
+          }
+          rmdir($rutaArchivos);
+          error_log("Archivos eliminados correctamente");
         }
+        
+        return "1";
+      } catch (\Exception $e) {
+        error_log("ERROR en eliminarFeed: " . $e->getMessage());
+        return "0";
       }
-      rmdir("../../Archivos/Feed/$nidFeed");
-      return "1";
     }
 
     function getPostRequests(){
