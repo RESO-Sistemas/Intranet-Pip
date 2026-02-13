@@ -10,6 +10,7 @@ const url_m_Dashboard = "Backend/Dashboard/App.php";
 const url_m_Feed = "Backend/Feed/App.php";
 
 let prof_Name, prof_Email, prof_Img, prof_imgSmall;
+let prof_NameMobile, prof_EmailMobile, prof_ImgMobile;
 
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
@@ -23,6 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
   prof_Email = document.getElementById("PerfilCorreoEmp");
   prof_Img = document.getElementById("profileImg");
   prof_imgSmall = document.getElementById("imgSmallProfile");
+  
+  // Versiones mobile
+  prof_NameMobile = document.getElementById("PerfilNombreEmpMobile");
+  prof_EmailMobile = document.getElementById("PerfilCorreoEmpMobile");
+  prof_ImgMobile = document.getElementById("profileImgMobile");
   
   loadAllFunctions();
 });
@@ -47,6 +53,11 @@ class Empleado {
     prof_Name.textContent = this._name;
     prof_Email.textContent = this._email;
     prof_Img.src = this._image;
+    
+    // Sincronizar con versiones mobile
+    if (prof_NameMobile) prof_NameMobile.textContent = this._name;
+    if (prof_EmailMobile) prof_EmailMobile.textContent = this._email;
+    if (prof_ImgMobile) prof_ImgMobile.src = this._image;
     prof_imgSmall.src = this._image;
   }
 }
@@ -106,6 +117,7 @@ async function loadGblDataEmployee() {
 function getMensajeVistoLineaEtica() {
   $("#contenidoMensajes").html("");
   $("#notificacionesMenuLEtica").html("");
+  $("#notificacionesMenuLEticaMobile").html("");
 
   let datos = {
     op: "getMensajeVistoLineaEtica",
@@ -123,7 +135,8 @@ function getMensajeVistoLineaEtica() {
               <span class="alert-text">Tu mensaje de Linea de etica "${response[i]["Mensaje"]}" <b>fue revisado</b>.</span>
         </div>`;
         showBootstrapAlert(messageContent, "top-right", 5000);
-        $("#notificacionesMenuLEtica").append(`
+        
+        const notificationHTML = `
             <a href="#">
               <div class="notifications-dropdown-item" onclick="cerrarMensajeLineaEtica(${response[i]["idLineaEticaMensajes"]})">
                 <div class="notifications-dropdown-item-image">
@@ -136,7 +149,10 @@ function getMensajeVistoLineaEtica() {
                 </div>
               </div>
             </a>
-          `);
+          `;
+        
+        $("#notificacionesMenuLEtica").append(notificationHTML);
+        $("#notificacionesMenuLEticaMobile").append(notificationHTML);
       }
     },
     error: function (e) {},
@@ -250,6 +266,7 @@ async function getCantidadNotificaciones() {
 
 async function getMsgLineaEtica() {
   $("#notificacionesPendienteLEtica").empty();
+  $("#notificacionesPendienteLEticaMobile").empty();
   let datos = {
     op: "getNotifiLineaEticaPendientes",
   };
@@ -261,7 +278,8 @@ async function getMsgLineaEtica() {
               <span class="alert-text">Tienes mensajes de línea de ética pendientes por revisar.</span>
         </div>`;
     showBootstrapAlert(messageContent, "top-right", 5000);
-    $("#notificacionesPendienteLEtica").append(`
+    
+    const notificationHTML = `
         <a href="#" style="cursor:pointer;">
           <div class="notifications-dropdown-item">
               <div class="notifications-dropdown-item-image">
@@ -274,8 +292,10 @@ async function getMsgLineaEtica() {
               </div>
             </div>
         </a>
-
-      `);
+      `;
+    
+    $("#notificacionesPendienteLEtica").append(notificationHTML);
+    $("#notificacionesPendienteLEticaMobile").append(notificationHTML);
   }
 }
 
@@ -335,6 +355,7 @@ async function getMsgSolicitudesVacacionesRecibidas() {
   } finally {
     $("#contenidoMensajesSolicitudesVJefe").html("");
     $("#notificacionesMenuSVacaciones").html("");
+    $("#notificacionesMenuSVacacionesMobile").html("");
     if (respuesta.length > 0) {
       respuesta.forEach((msg) => {
         const messageContent = `
@@ -344,7 +365,7 @@ async function getMsgSolicitudesVacacionesRecibidas() {
         </div>`;
         showBootstrapAlert(messageContent, "top-right", 5000);
 
-        $("#notificacionesMenuSVacaciones").append(`
+        const notificationHTML = `
               <a id="msjSolicitudesVacacionesJefe${msg.idSolicitudesVacaciones}" style="cursor:pointer;" >
                 <div class="notifications-dropdown-item" onclick="cerrarMensajeSolicitudesJefe(${msg.idSolicitudesVacaciones})" href="SolicitudVacaciones.php">
                   <div class="notifications-dropdown-item-image">
@@ -357,7 +378,10 @@ async function getMsgSolicitudesVacacionesRecibidas() {
                 </div>
               </div>
               </a>
-          `);
+          `;
+        
+        $("#notificacionesMenuSVacaciones").append(notificationHTML);
+        $("#notificacionesMenuSVacacionesMobile").append(notificationHTML);
       });
     }
   }
@@ -449,6 +473,7 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
     console.log(error);
   } finally {
     $("#notificacionesMenuSVacacionesNomina").html("");
+    $("#notificacionesMenuSVacacionesNominaMobile").html("");
     if (respuesta[0]["Retorno"] == "Valido") {
       respuesta.map((retorno) => {
         retorno.Registros.map((registros) => {
@@ -458,7 +483,8 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
               <span class="alert-text">$${registros.Msg}</span>
           </div>`;
           showBootstrapAlert(messageContent, "top-right", 5000);
-          $("#notificacionesMenuSVacacionesNomina").append(`
+          
+          const notificationHTML = `
                 <a id="msjSolicitudesVacacionesNomina${registros.idSolicitudesVacaciones}" style="cursor:pointer;" >
                   <div class="notifications-dropdown-item" onclick="cerrarMensajeSolicitudesNomina(${registros.idSolicitudesVacaciones})">
                     <div class="notifications-dropdown-item-image">
@@ -471,7 +497,10 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
                   </div>
                   </div>
                 </a>
-          `);
+          `;
+          
+          $("#notificacionesMenuSVacacionesNomina").append(notificationHTML);
+          $("#notificacionesMenuSVacacionesNominaMobile").append(notificationHTML);
         });
       });
     }
@@ -785,6 +814,7 @@ async function getMensajeCapacitacionGlobal() {
     console.log(e);
   } finally {
     $("#notificacionesCapacitacion").html("");
+    $("#notificacionesCapacitacionMobile").html("");
     if (respuesta.length > 0) {
       respuesta.forEach((registros) => {
         const messageContent = `
@@ -794,7 +824,7 @@ async function getMensajeCapacitacionGlobal() {
         </div>`;
         showBootstrapAlert(messageContent, "top-right", 5000);
 
-        $("#notificacionesCapacitacion").append(`
+        const notificationHTML = `
                 <a id="msjCapacitacion${registros.idCapacitacion}" style="cursor:pointer;" >
                   <div class="notifications-dropdown-item" onclick="cerrarMensajeCapacitacion(${registros.idCapacitacion})">
                     <div class="notifications-dropdown-item-image">
@@ -807,7 +837,10 @@ async function getMensajeCapacitacionGlobal() {
                   </div>
                   </div>
               </a>
-         `);
+         `;
+        
+        $("#notificacionesCapacitacion").append(notificationHTML);
+        $("#notificacionesCapacitacionMobile").append(notificationHTML);
       });
     }
   }

@@ -40,44 +40,7 @@
       ?>
     </div>
     <div class="app-container">
-      <div class="app-header">
-        <nav class="navbar navbar-light navbar-expand-lg">
-          <div class="container-fluid">
-            <div class="navbar-nav" id="navbarNav">
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">first_page</i></a>
-                </li>
-              </ul>
-
-            </div>
-            <div class="d-flex">
-              <ul class="navbar-nav">
-
-                <!-- notifications -->
-                <li class="nav-item hidden-on-mobile">
-                  <!-- nav-notifications-toggle -->
-                  <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown"><i class="material-icons">notifications</i></a>
-                  <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
-                    <h6 class="dropdown-header">Notificaciones</h6>
-                    <div class="notifications-dropdown-list">
-                      <div id="notificacionesPendienteLEtica"></div>
-                      <div id="notificacionesMenuLEtica"></div>
-                      <div id="notificacionesMenuSVacaciones"></div>
-                      <div id="notificacionesMenuSVacacionesNomina"></div>
-                      <div id="notificacionesCapacitacion"></div>
-                    </div>
-                  </div>
-                </li>
-
-                <!--  Foto de perfil -->
-                <li class="nav-item hidden-on-mobile">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    id="notificationsDropDown"
-                    href="javascript:void(0);"
-                    data-bs-toggle="dropdown">
-                    <img
+      <?php include("includes/_Header.php"); ?>
                       id="imgSmallProfile"
                       alt="user"
                       class="rounded-circle"

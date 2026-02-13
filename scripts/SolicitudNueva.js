@@ -30,12 +30,29 @@ function cargarDatos() {
 }
 
 async function enviarSolicitudVacaciones() {
+  // Validar fechas antes de continuar
+  if (!validarFechas()) {
+    return false;
+  }
+  
   let resultV = await verifyInputs("card_contentVal");
   if (resultV) {
     let FechaInicio = $("#FechaInicio").val();
     // let diasDisponibles = $("#CantidadDiasDisp").val();
     let FechaFin = $("#FechaFin").val();
     let ComentariosSolicitud = $("#MotivoSolicitud").val();
+    
+    // Validación adicional de fechas vacías
+    if (!FechaInicio || !FechaFin) {
+      const messageContent = `
+        <div class="alert-content">
+          <span class="alert-title">Alerta!</span>
+          <span class="alert-text">Debes seleccionar las fechas de inicio y fin.</span>
+        </div>`;
+      showBootstrapAlertWar(messageContent, "top-right", 5000);
+      return false;
+    }
+    
     if (glbDiasDisponibles == 0) {
       // toastr.warning(
       //   "No puedes enviar tu solicitud debido a que no tienes disponibilidad de días restantes."
@@ -148,7 +165,53 @@ async function enviarSolicitudVacaciones() {
 
 $(document).on("change", "#daysBreak", function () {
   getDiasSeleccionados();
+  establecerFechaMinima();
 });
+
+// Establecer fecha mínima = hoy
+function establecerFechaMinima() {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('FechaInicio').setAttribute('min', hoy);
+  document.getElementById('FechaFin').setAttribute('min', hoy);
+}
+
+// Validar que las fechas sean lógicas
+function validarFechas() {
+  const fechaInicio = document.getElementById('FechaInicio').value;
+  const fechaFin = document.getElementById('FechaFin').value;
+  const hoy = new Date().toISOString().split('T')[0];
+  
+  // Validar que fecha inicio no sea menor a hoy
+  if (fechaInicio && fechaInicio < hoy) {
+    const messageContent = `
+      <div class="alert-content">
+        <span class="alert-title">Alerta!</span>
+        <span class="alert-text">La fecha de inicio no puede ser anterior al día de hoy.</span>
+      </div>`;
+    showBootstrapAlertWar(messageContent, "top-right", 5000);
+    document.getElementById('FechaInicio').value = '';
+    return false;
+  }
+  
+  // Si hay fecha inicio, actualizar el mínimo de fecha fin
+  if (fechaInicio) {
+    document.getElementById('FechaFin').setAttribute('min', fechaInicio);
+  }
+  
+  // Validar que fecha fin no sea menor a fecha inicio
+  if (fechaInicio && fechaFin && fechaFin < fechaInicio) {
+    const messageContent = `
+      <div class="alert-content">
+        <span class="alert-title">Alerta!</span>
+        <span class="alert-text">La fecha de fin no puede ser anterior a la fecha de inicio.</span>
+      </div>`;
+    showBootstrapAlertWar(messageContent, "top-right", 5000);
+    document.getElementById('FechaFin').value = '';
+    return false;
+  }
+  
+  return true;
+}
 
 function getDiasSeleccionados() {
   let diasValidos = [];

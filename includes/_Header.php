@@ -17,7 +17,7 @@
       <div class="d-flex">
         <ul class="navbar-nav">
 
-          <!-- NOTIFICACIONES -->
+          <!-- NOTIFICACIONES - Desktop -->
           <li class="nav-item hidden-on-mobile">
             <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">
               <i class="material-icons">notifications</i>
@@ -34,7 +34,7 @@
             </div>
           </li>
 
-          <!-- FOTO DE PERFIL Y MENÚ DE USUARIO -->
+          <!-- FOTO DE PERFIL Y MENÚ DE USUARIO - Desktop -->
           <li class="nav-item hidden-on-mobile">
             <a
               class="nav-link dropdown-toggle"
@@ -80,7 +80,54 @@
             </ul>
           </li>
 
+          <!-- MENÚ HAMBURGER - Mobile (visible solo < 1100px) -->
+          <li class="nav-item visible-on-mobile">
+            <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+              <i class="material-icons">menu</i>
+            </a>
+          </li>
+
         </ul>
+      </div>
+
+      <!-- OFFCANVAS MENU - Versión Mobile -->
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="mobileMenuLabel">Menú</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          
+          <!-- Perfil Usuario Mobile -->
+          <div class="mobile-user-profile mb-4 text-center" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
+            <img class="rounded-circle mb-2" id="profileImgMobile" alt="user" width="80px" height="80px">
+            <h5 id="PerfilNombreEmpMobile" class="mb-1"></h5>
+            <p id="PerfilCorreoEmpMobile" class="text-muted small"></p>
+          </div>
+
+          <hr>
+
+          <!-- Notificaciones Mobile -->
+          <h6 class="mb-3"><i class="material-icons align-middle">notifications</i> Notificaciones</h6>
+          <div class="notifications-mobile-list mb-4">
+            <div id="notificacionesPendienteLEticaMobile"></div>
+            <div id="notificacionesMenuLEticaMobile"></div>
+            <div id="notificacionesMenuSVacacionesMobile"></div>
+            <div id="notificacionesMenuSVacacionesNominaMobile"></div>
+            <div id="notificacionesCapacitacionMobile"></div>
+          </div>
+
+          <hr>
+
+          <!-- Links Mobile -->
+          <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="index.php">
+            <i class="material-icons me-2">home</i> Inicio
+          </a>
+          <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="logout.php">
+            <i class="material-icons me-2">exit_to_app</i> Salir
+          </a>
+
+        </div>
       </div>
     </div>
   </nav>
