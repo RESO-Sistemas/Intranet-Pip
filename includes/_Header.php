@@ -2,7 +2,7 @@
      HEADER - Notificaciones y Menú de Usuario
      ======================================== -->
 <div class="app-header">
-  <nav class="navbar navbar-light navbar-expand-lg">
+  <nav class="navbar navbar-light navbar-expand">
     <div class="container-fluid">
       <!-- Botón para toggle del sidebar -->
       <div class="navbar-nav" id="navbarNav">
@@ -80,55 +80,97 @@
             </ul>
           </li>
 
-          <!-- MENÚ HAMBURGER - Mobile (visible solo < 1100px) -->
+          <!-- MENÚ HAMBURGER - Mobile (visible solo en móviles) -->
           <li class="nav-item visible-on-mobile">
-            <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+            <a class="nav-link" href="#" id="mobileMenuToggle" onclick="event.preventDefault(); toggleMobileMenu();">
               <i class="material-icons">menu</i>
             </a>
           </li>
 
         </ul>
       </div>
-
-      <!-- OFFCANVAS MENU - Versión Mobile -->
-      <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="mobileMenuLabel">Menú</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-          
-          <!-- Perfil Usuario Mobile -->
-          <div class="mobile-user-profile mb-4 text-center" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-            <img class="rounded-circle mb-2" id="profileImgMobile" alt="user" width="80px" height="80px">
-            <h5 id="PerfilNombreEmpMobile" class="mb-1"></h5>
-            <p id="PerfilCorreoEmpMobile" class="text-muted small"></p>
-          </div>
-
-          <hr>
-
-          <!-- Notificaciones Mobile -->
-          <h6 class="mb-3"><i class="material-icons align-middle">notifications</i> Notificaciones</h6>
-          <div class="notifications-mobile-list mb-4">
-            <div id="notificacionesPendienteLEticaMobile"></div>
-            <div id="notificacionesMenuLEticaMobile"></div>
-            <div id="notificacionesMenuSVacacionesMobile"></div>
-            <div id="notificacionesMenuSVacacionesNominaMobile"></div>
-            <div id="notificacionesCapacitacionMobile"></div>
-          </div>
-
-          <hr>
-
-          <!-- Links Mobile -->
-          <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="index.php">
-            <i class="material-icons me-2">home</i> Inicio
-          </a>
-          <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="logout.php">
-            <i class="material-icons me-2">exit_to_app</i> Salir
-          </a>
-
-        </div>
-      </div>
     </div>
   </nav>
 </div>
+
+<!-- PANEL MOBILE - Fuera del navbar para evitar conflictos -->
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu-panel" id="mobileMenuPanel">
+  <div class="mobile-menu-header">
+    <h5>Menú</h5>
+    <button type="button" class="btn-close" onclick="closeMobileMenu()" aria-label="Close"></button>
+  </div>
+  <div class="mobile-menu-body">
+    
+    <!-- Perfil Usuario Mobile -->
+    <div class="mobile-user-profile mb-4 text-center" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
+      <img class="rounded-circle mb-2" id="profileImgMobile" alt="user" width="80px" height="80px">
+      <h5 id="PerfilNombreEmpMobile" class="mb-1"></h5>
+      <p id="PerfilCorreoEmpMobile" class="text-muted small"></p>
+    </div>
+
+    <hr>
+
+    <!-- Notificaciones Mobile -->
+    <h6 class="mb-3"><i class="material-icons align-middle">notifications</i> Notificaciones</h6>
+    <div class="notifications-mobile-list mb-4">
+      <div id="notificacionesPendienteLEticaMobile"></div>
+      <div id="notificacionesMenuLEticaMobile"></div>
+      <div id="notificacionesMenuSVacacionesMobile"></div>
+      <div id="notificacionesMenuSVacacionesNominaMobile"></div>
+      <div id="notificacionesCapacitacionMobile"></div>
+      <p id="noNotificationsMobile" class="text-muted small text-center" style="padding: 10px 0;">Sin notificaciones nuevas</p>
+    </div>
+
+    <hr>
+
+    <!-- Links Mobile -->
+    <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="index.php" onclick="closeMobileMenu()">
+      <i class="material-icons me-2">home</i> Inicio
+    </a>
+    <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="logout.php">
+      <i class="material-icons me-2">exit_to_app</i> Salir
+    </a>
+
+  </div>
+</div>
+
+<script>
+function toggleMobileMenu() {
+  var panel = document.getElementById('mobileMenuPanel');
+  var backdrop = document.getElementById('mobileMenuBackdrop');
+  if (panel.classList.contains('open')) {
+    closeMobileMenu();
+  } else {
+    // Mostrar/ocultar el mensaje "Sin notificaciones" según si hay contenido
+    checkMobileNotifications();
+    panel.classList.add('open');
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobileMenu() {
+  var panel = document.getElementById('mobileMenuPanel');
+  var backdrop = document.getElementById('mobileMenuBackdrop');
+  panel.classList.remove('open');
+  backdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function checkMobileNotifications() {
+  var containers = [
+    'notificacionesPendienteLEticaMobile',
+    'notificacionesMenuLEticaMobile',
+    'notificacionesMenuSVacacionesMobile',
+    'notificacionesMenuSVacacionesNominaMobile',
+    'notificacionesCapacitacionMobile'
+  ];
+  var hasNotifications = containers.some(function(id) {
+    var el = document.getElementById(id);
+    return el && el.innerHTML.trim().length > 0;
+  });
+  var noNotiMsg = document.getElementById('noNotificationsMobile');
+  if (noNotiMsg) {
+    noNotiMsg.style.display = hasNotifications ? 'none' : 'block';
+  }
+}
+</script>

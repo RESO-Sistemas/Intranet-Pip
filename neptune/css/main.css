@@ -6892,7 +6892,7 @@ span.flatpickr-weekday {
     }
 }
 
-@media (max-width: 1099px) {
+@media (max-width: 575px) {
     .hidden-on-mobile {
         display: none!important;
     }
@@ -6901,13 +6901,22 @@ span.flatpickr-weekday {
     }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 576px) {
     .visible-on-mobile {
         display: none!important;
     }
 }
 
-/* Estilos del offcanvas mobile menu */
+/* Asegurar que el header mantenga su altura */
+.app-header {
+    min-height: 60px;
+}
+
+.app-header .navbar {
+    min-height: 60px;
+}
+
+/* Estilos del panel mobile menu custom */
 .mobile-user-profile {
     padding: 20px 0;
 }
@@ -6917,9 +6926,90 @@ span.flatpickr-weekday {
     overflow-y: auto;
 }
 
-.offcanvas-body a:hover {
+.notifications-mobile-list .notifications-dropdown-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notifications-mobile-list .notifications-dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.notifications-mobile-list .notifications-dropdown-item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notifications-mobile-list .notifications-dropdown-item-text p {
+    margin: 0;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+}
+
+.notifications-mobile-list a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.mobile-menu-body a:hover {
     background-color: #f8f9fa;
     border-radius: 5px;
+}
+
+/* Panel deslizante custom (reemplaza offcanvas de Bootstrap) */
+.mobile-menu-panel {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100%;
+    background: #fff;
+    z-index: 1050;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.15);
+}
+
+.mobile-menu-panel.open {
+    right: 0;
+}
+
+.mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.mobile-menu-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.mobile-menu-body {
+    padding: 20px;
+}
+
+.mobile-menu-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040;
+}
+
+.mobile-menu-backdrop.open {
+    display: block;
 }
 
 @media (max-width: 576px) {
