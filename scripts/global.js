@@ -876,8 +876,10 @@ async function pAjaxAsync(url, datos, pcarga) {
       data: datos,
       dataType: "json",
     });
+    console.log('pAjaxAsync - Respuesta del servidor:', respuesta);
   } catch (e) {
-    console.log(e);
+    console.error('pAjaxAsync - Error en la petición:', e);
+    console.error('pAjaxAsync - Response Text:', e.responseText);
   } finally {
     if (pcarga == 1) {
       QuitarCargando();

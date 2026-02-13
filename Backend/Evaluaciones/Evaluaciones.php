@@ -231,11 +231,12 @@
 
     function getListCompetencias($typeCompetence){
       try {
-        // if ($typeCompetence != ""){
-        //   $CompWhere = "WHERE TO_BASE64(TipoCompetencia) = '$typeCompetence'";
-        // } else {
-        //   $CompWhere = "";
-        // }
+        // Definir $CompWhere para filtrar por tipo de competencia
+        if ($typeCompetence != ""){
+          $CompWhere = "WHERE TO_BASE64(TipoCompetencia) = '$typeCompetence'";
+        } else {
+          $CompWhere = "";
+        }
         $q = "SELECT C.Competencia, TC.Descripcion AS Tipo, IF(C.Estatus = 0,'Inactivo','Activo') AS StatusCom,
               TO_BASE64(C.idCompetencias) AS idCompetencia
               FROM Competencias AS C
@@ -1758,9 +1759,16 @@
                FROM PreguntasConfiguracion
                WHERE idPreguntasEvaluacion = '$question';";
         $resExpected = $Con2->Select($q2,array());
+        
+        // Validar si hay resultados en PreguntasConfiguracion
+        $expectedData = null;
+        if (is_array($resExpected) && count($resExpected) > 0) {
+          $expectedData = $resExpected[0];
+        }
+        
         return [
           "answers" => $resAnswers,
-          "expected" => $resExpected[0]
+          "expected" => $expectedData
         ];
       } catch (\Exception $e) {
         return $e;
@@ -2132,16 +2140,61 @@
 
     function saveQuestionsConfig($evaluation,$data){
       try {
+        // Log para debugging
+        error_log("saveQuestionsConfig - evaluation: " . $evaluation);
+        error_log("saveQuestionsConfig - data raw: " . $data);
+        
         $evaluation = base64_decode($evaluation);
+        error_log("saveQuestionsConfig - evaluation decoded: " . $evaluation);
+        
+        // Decodificar JSON (devuelve array de objetos)
         $data = json_decode($data);
-        for ($i=0; $i < sizeof($data) ; $i++) {
+        
+        // Verificar que la decodificación JSON fue exitosa
+        if ($data === null) {
+          $jsonError = json_last_error_msg();
+          error_log("saveQuestionsConfig - Error JSON: " . $jsonError);
+          $arrReturn = [
+            "Resultado" => false,
+            "Siguiente" => false,
+            "ConMsg" => true,
+            "Msg" => "Error al decodificar los datos JSON: " . $jsonError
+          ];
+          return json_encode($arrReturn);
+        }
+        
+        // Convertir a array si es necesario
+        if (!is_array($data)) {
+          $data = [$data]; // Si es un solo objeto, convertir a array
+        }
+        
+        // Verificar que hay datos
+        if (count($data) === 0) {
+          error_log("saveQuestionsConfig - No hay preguntas para guardar");
+          $arrReturn = [
+            "Resultado" => false,
+            "Siguiente" => false,
+            "ConMsg" => true,
+            "Msg" => "No hay preguntas para guardar"
+          ];
+          return json_encode($arrReturn);
+        }
+        
+        error_log("saveQuestionsConfig - data decoded count: " . count($data));
+        
+        for ($i=0; $i < count($data) ; $i++) {
           $typeQuestionDec = base64_decode($data[$i]->typeQuestion);
           $competenceDec = base64_decode($data[$i]->competence);
           $titleQuestion = $data[$i]->titleQuestion;
           $descriptionQuestion = $data[$i]->descriptionQuestion;
+          
+          // Usar stored procedure
           $q = "CALL sp_AddNuevaPregunta('$evaluation','$typeQuestionDec','$competenceDec','$titleQuestion','$descriptionQuestion');";
+          error_log("saveQuestionsConfig - Ejecutando query: " . $q);
           $resProc = $this->Procedure($q,array());
-          if (sizeof($resProc) > 0) {
+          error_log("saveQuestionsConfig - Resultado procedimiento: " . print_r($resProc, true));
+          
+          if ($resProc !== null && is_array($resProc) && count($resProc) > 0) {
             $QuestionGenId = $resProc[0]["IdPreguntaGen"];
             $InstConfigQuestion = new Evaluaciones();
             if ($typeQuestionDec == 1) {
@@ -2174,7 +2227,7 @@
               }
             }
           } else {
-
+            error_log("saveQuestionsConfig - Error: El procedimiento sp_AddNuevaPregunta no devolvió resultados para la pregunta " . ($i+1));
           }
         }
         $arrReturn = [
@@ -2185,7 +2238,14 @@
         ];
         return json_encode($arrReturn);
       } catch (\Exception $e) {
-        return $e;
+        error_log("saveQuestionsConfig - Exception: " . $e->getMessage());
+        $arrReturn = [
+          "Resultado" => false,
+          "Siguiente" => false,
+          "ConMsg" => true,
+          "Msg" => "Error al guardar: " . $e->getMessage()
+        ];
+        return json_encode($arrReturn);
       }
     }
 
@@ -2202,19 +2262,25 @@
 
     function addAnswerAnExpetedValue($answers, $expectedVal, $idQuestion){
       try {
+        // Validar que $answers sea un array
+        if (!is_array($answers) || count($answers) === 0) {
+          error_log("addAnswerAnExpetedValue - answers no es un array válido: " . print_r($answers, true));
+          return false;
+        }
+        
         $answerExpected = "";
-        for ($i=0; $i < sizeof($answers) ; $i++) {
+        for ($i=0; $i < count($answers) ; $i++) {
           $NewCon = new Conexiones();
           $q = "CALL sp_AddRespuestaPregunta('$idQuestion','$answers[$i]')";
           $res = $NewCon->Procedure($q,array());
-          if (sizeof($res) > 0) {
+          if (is_array($res) && count($res) > 0) {
             $IdRespuesta = $res[0]["IdRespuesta"];
             if ($expectedVal == $i) {
               $answerExpected = $IdRespuesta;
             }
           } else {
+            error_log("addAnswerAnExpetedValue - El procedimiento sp_AddRespuestaPregunta no devolvió resultados");
             return false;
-            break;
           }
         }
         $Con2 = new Conexiones();
@@ -2222,20 +2288,33 @@
         $Con2->ExecuteQuery($q2,array());
         return true;
       } catch (\Exception $e) {
+        error_log("addAnswerAnExpetedValue - Exception: " . $e->getMessage());
         return $e;
       }
     }
 
     function addAnswerExpetedValue($answers, $expectedVal, $idQuestion){
       try {
+        // Validar que $answers sea un array
+        if (!is_array($answers) || count($answers) === 0) {
+          error_log("addAnswerExpetedValue - answers no es un array válido: " . print_r($answers, true));
+          return false;
+        }
+        
+        // Validar que $expectedVal sea un array
+        if (!is_array($expectedVal) || count($expectedVal) === 0) {
+          error_log("addAnswerExpetedValue - expectedVal no es un array válido: " . print_r($expectedVal, true));
+          return false;
+        }
+        
         $arrRespuestasEsperadas = [];
-        for ($i=0; $i < sizeof($answers) ; $i++) {
+        for ($i=0; $i < count($answers) ; $i++) {
           $NewCon = new Conexiones();
           $q = "CALL sp_AddRespuestaPregunta('$idQuestion','$answers[$i]')";
           $res = $NewCon->Procedure($q,array());
-          if (sizeof($res) > 0) {
+          if (is_array($res) && count($res) > 0) {
             $IdRespuesta = $res[0]["IdRespuesta"];
-            for ($j=0; $j < sizeof($expectedVal) ; $j++) {
+            for ($j=0; $j < count($expectedVal) ; $j++) {
               if ($expectedVal[$j]->answer == $i) {
                 array_push($arrRespuestasEsperadas,[
                   "IdRespuesta" => $IdRespuesta,
@@ -2244,10 +2323,16 @@
               }
             }
           } else {
+            error_log("addAnswerExpetedValue - El procedimiento sp_AddRespuestaPregunta no devolvió resultados");
             return false;
-            break;
           }
         }
+        
+        if (count($arrRespuestasEsperadas) === 0) {
+          error_log("addAnswerExpetedValue - No se encontraron respuestas esperadas");
+          return false;
+        }
+        
         $ContentExpected = "";
         foreach ($arrRespuestasEsperadas as $esperada) {
           $ContentExpected = "$ContentExpected('$idQuestion','$esperada[IdRespuesta]','$esperada[NivelEsperado]'),";
@@ -2258,6 +2343,7 @@
         $Con2->ExecuteQuery($q2,array());
         return true;
       } catch (\Exception $e) {
+        error_log("addAnswerExpetedValue - Exception: " . $e->getMessage());
         return $e;
       }
     }

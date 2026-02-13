@@ -119,6 +119,20 @@ class Conexiones{
 		}
 	}
 
+	// Método para insertar y obtener el ID generado
+	function InsertAndGetId($q, $parametros = array()){
+		try {
+			$sth = $this->dbh->prepare($q);
+			$sth->execute($parametros);
+			$lastId = $this->dbh->lastInsertId();
+			$this->dbh = null;
+			return $lastId;
+		} catch(PDOException $e) {
+			error_log('PDOException InsertAndGetId - ' . $e->getMessage(), 0);
+			return false;
+		}
+	}
+
 	function ConnClose(){
 		$this->dbh = null;
 	}

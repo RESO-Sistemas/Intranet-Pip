@@ -1,4 +1,4 @@
-// Ocultar preloader cuando la p�gina termine de cargar
+﻿// Ocultar preloader cuando la página termine de cargar
 $(window).on('load', function() {
   $(".preloader").fadeOut();
 });
@@ -351,13 +351,11 @@ $(document).on("blur", ".changeRangeSV", function (element) {
 
 $(document).on("click", ".deleteNoSaved", function (element) {
 
-  const button = element.target.closest('.deleteNoSaved');
-  
-  if (button && button.dataset.question !== undefined) {
+  if (element.target.dataset.question !== undefined) {
 
-    if (button.dataset.typequestion == "new") {
+    if (element.target.dataset.typequestion == "new") {
 
-      const dv = parseInt(button.dataset.question);
+      const dv = element.target.dataset.question;
 
       _dataQuestions.splice(dv, 1);
 
@@ -451,7 +449,7 @@ $(document).on("blur", ".contentAnswerSVOld", function (element) {
 
 //   $("#txQuestionPerUpdateCompetence").html(
 
-//     `<h6><b>Pregunta seleccionada:</b>�${
+//     `<h6><b>Pregunta seleccionada:</b> ${
 
 //       Number(element.target.dataset.question) + 1
 
@@ -473,7 +471,7 @@ $(document).on("blur", ".contentAnswerSVOld", function (element) {
 
 //   openMMinNoMaximizable(
 
-//     "Actualizaci�n de la competencia seleccionada para la pregunta",
+//     "Actualización de la competencia seleccionada para la pregunta",
 
 //     "dv_UpdateCompetence",
 
@@ -503,7 +501,7 @@ $(document).on("click", ".changeCompetenceSV", function (element) {
 
 
 
-  // Mostrar el n�mero de la pregunta
+  // Mostrar el número de la pregunta
 
   $("#txQuestionPerUpdateCompetence").html(
 
@@ -559,7 +557,7 @@ $(document).on("click", ".changeCompetenceSV", function (element) {
 
 
 
-// Bot�n actualizar
+// Botón actualizar
 
 $(document).on("click", "#btn_updateCompetenceOld", async function () {
 
