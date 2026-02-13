@@ -1,0 +1,404 @@
+2026-02-05 16:49:41 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba Capacitacion 05/02/2026
+    [fechaInicio] => 2026-02-12
+    [fechaFin] => 2026-02-19
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 4,6,7
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba Capacitacion 05/02/2026
+Tipo: PROL
+Dias: 4,6,7
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 15:31:20 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Pruebas
+    [fechaInicio] => 2026-02-13
+    [fechaFin] => 2026-02-20
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 2
+    [slctPuesto] => 20
+    [slctSucursal] => 55
+    [op] => addCapacitacion
+    [dias] => 7,6,5
+    [NoEmpleado] => 6968,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Pruebas
+Tipo: PROL
+Dias: 7,6,5
+Empleados: 6968,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 15:50:48 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-13
+    [fechaFin] => 2026-02-20
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 2
+    [op] => addCapacitacion
+    [dias] => 7,1,6
+    [NoEmpleado] => 4699,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 7,1,6
+Empleados: 4699,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 16:05:00 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => prueba
+    [fechaInicio] => 2026-02-19
+    [fechaFin] => 2026-02-20
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 3
+    [slctPuesto] => 77
+    [slctSucursal] => 58
+    [op] => addCapacitacion
+    [dias] => 5
+    [NoEmpleado] => 10470,12970,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: prueba
+Tipo: PROL
+Dias: 5
+Empleados: 10470,12970,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 16:36:02 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-06
+    [fechaFin] => 2026-02-13
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 2
+    [slctPuesto] => 128
+    [slctSucursal] => 
+    [op] => addCapacitacion
+    [dias] => 5,4,2
+    [NoEmpleado] => 12478,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 5,4,2
+Empleados: 12478,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 19:27:29 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-06
+    [fechaFin] => 2026-02-19
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 
+    [slctPuesto] => 
+    [slctSucursal] => 
+    [op] => addCapacitacion
+    [dias] => 6,7,5
+    [NoEmpleado] => 515,571,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 6,7,5
+Empleados: 515,571,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-06 20:18:45 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-13
+    [fechaFin] => 2026-02-20
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 3
+    [op] => addCapacitacion
+    [dias] => 7
+    [NoEmpleado] => 6502,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 7
+Empleados: 6502,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 15:20:20 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-16
+    [fechaFin] => 2026-02-23
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 1,2,3
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 1,2,3
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 18:49:45 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Pruebas
+    [fechaInicio] => 2026-02-11
+    [fechaFin] => 2026-02-18
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 2,5,6
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Pruebas
+Tipo: PROL
+Dias: 2,5,6
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 19:06:43 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-11
+    [fechaFin] => 2026-02-18
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 2
+    [slctPuesto] => 
+    [slctSucursal] => 57
+    [op] => addCapacitacion
+    [dias] => 2,5,6
+    [NoEmpleado] => 11935,13306,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 2,5,6
+Empleados: 11935,13306,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 19:10:20 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Pruebas
+    [fechaInicio] => 2026-02-10
+    [fechaFin] => 2026-02-17
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 1,4,5
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Pruebas
+Tipo: PROL
+Dias: 1,4,5
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 19:16:51 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-10
+    [fechaFin] => 2026-02-17
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 2
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 4,5
+    [NoEmpleado] => 6082,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 4,5
+Empleados: 6082,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-09 20:15:55 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-10
+    [fechaFin] => 2026-02-17
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 2
+    [slctPuesto] => 17
+    [slctSucursal] => 55
+    [op] => addCapacitacion
+    [dias] => 
+    [NoEmpleado] => 6993,9119,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 
+Empleados: 6993,9119,
+
+Respuesta de addCapacitacion: Error al crear capacitacion: SQLSTATE[42000]: Syntax error or access violation: 1370 execute command denied to user 'klynet_usrdatos'@'%' for routine 'klynet_datosdemo.sp_NuevaCapacitacion2'
+
+ERROR: Respuesta no es numérica o es <= 0
+
+2026-02-12 17:28:37 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-02-12
+    [fechaFin] => 2026-02-19
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 2
+    [slctPuesto] => 81
+    [slctSucursal] => 59
+    [op] => addCapacitacion
+    [dias] => 4,3,5,6
+    [NoEmpleado] => 11318,
+    [existeFichero] => false
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 4,3,5,6
+Empleados: 11318,
+
+Respuesta de addCapacitacion: 141
+

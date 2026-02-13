@@ -96,7 +96,9 @@ class Conexiones{
 			}
 			return $array;
 		} catch (\Exception $e) {
-			error_log($e);
+			error_log("ERROR en Procedure: " . $e->getMessage());
+			error_log("Query: " . $q);
+			throw $e;
 		}
 	}
 

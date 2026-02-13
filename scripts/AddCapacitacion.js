@@ -244,6 +244,17 @@ function getDiasArray() {
         }
 
         let numeroDia = "";
+        let nombreDiaEspanol = "";
+
+        const diasTraduccion = {
+          "Sunday": "Domingo",
+          "Monday": "Lunes",
+          "Tuesday": "Martes",
+          "Wednesday": "Miércoles",
+          "Thursday": "Jueves",
+          "Friday": "Viernes",
+          "Saturday": "Sábado"
+        };
 
         for (var i = 0; i < diasUnicos.length; i++) {
 
@@ -277,34 +288,22 @@ function getDiasArray() {
 
           }
 
-          // Contenedor padre
+          // Traducir día al español
+          nombreDiaEspanol = diasTraduccion[diasUnicos[i]] || diasUnicos[i];
 
-          $("#contenidoDias")
-
-            .parent()
-
-            .addClass("d-flex justify-content-center flex-wrap");
-
-
-
-          // Append de los switches
-
+          // Append de los días con diseño mejorado
           $("#contenidoDias").append(`
+            <label class="day-selector" for="check${numeroDia}">
+              <input class="day-checkbox" type="checkbox" id="check${numeroDia}" onclick="diasSemanaSelected(${numeroDia})">
+              <span class="day-label">${nombreDiaEspanol}</span>
+            </label>
+          `);
 
-  <div class="col-auto text-center m-1">
+        }
 
-    <div class="form-check form-switch">
-
-      <input class="form-check-input" type="checkbox" id="check${numeroDia}" onclick="diasSemanaSelected(${numeroDia})">
-
-      <label class="form-check-label" for="check${numeroDia}">${diasUnicos[i]}</label>
-
-    </div>
-
-  </div>
-
-`);
-
+        // Mostrar el div de días si hay elementos
+        if (diasUnicos.length > 0) {
+          $("#divContenidoDias").fadeIn();
         }
 
       },
@@ -451,7 +450,10 @@ $("#btnAgregar").click(async function () {
 
       success: function (response) {
 
-        console.log([...data]);
+        console.log("=== RESPUESTA DEL BACKEND ===");
+        console.log("Response:", response);
+        console.log("Response type:", typeof response);
+        console.log("FormData enviada:", [...data]);
 
         if (response == "1") {
 

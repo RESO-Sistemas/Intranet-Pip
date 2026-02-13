@@ -39,7 +39,54 @@
 
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 
+    <style>
+        /* Estilos para selector de días de la semana */
+        .day-selector {
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
+        }
 
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 50px;
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .day-label:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        #contenidoDias {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 15px;
+        }
+    </style>
 
 </head>
 
@@ -79,159 +126,7 @@
 
         <div class="app-container">
 
-            <div class="app-header">
-
-                <nav class="navbar navbar-light navbar-expand-lg">
-
-                    <div class="container-fluid">
-
-                        <div class="navbar-nav" id="navbarNav">
-
-                            <ul class="navbar-nav">
-
-                                <li class="nav-item">
-
-                                    <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">first_page</i></a>
-
-                                </li>
-
-                            </ul>
-
-
-
-                        </div>
-
-                        <div class="d-flex">
-
-                            <ul class="navbar-nav">
-
-
-
-                                <!-- notifications -->
-
-                                <li class="nav-item hidden-on-mobile">
-
-                                    <!-- nav-notifications-toggle -->
-
-                                    <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown"><i class="material-icons">notifications</i></a>
-
-                                    <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
-
-                                        <h6 class="dropdown-header">Notificaciones</h6>
-
-                                        <div class="notifications-dropdown-list">
-
-                                            <div id="notificacionesPendienteLEtica"></div>
-
-                                            <div id="notificacionesMenuLEtica"></div>
-
-                                            <div id="notificacionesMenuSVacaciones"></div>
-
-                                            <div id="notificacionesMenuSVacacionesNomina"></div>
-
-                                            <div id="notificacionesCapacitacion"></div>
-
-                                        </div>
-
-                                    </div>
-
-                                </li>
-
-
-
-                                <!--  Foto de perfil -->
-
-                                <li class="nav-item hidden-on-mobile">
-
-                                    <a
-
-                                        class="nav-link dropdown-toggle"
-
-                                        id="notificationsDropDown"
-
-                                        href="javascript:void(0);"
-
-                                        data-bs-toggle="dropdown">
-
-                                        <img
-
-                                            id="imgSmallProfile"
-
-                                            alt="user"
-
-                                            class="rounded-circle"
-
-                                            width="30"
-
-                                            height="30" />
-
-                                    </a>
-
-                                    <ul
-
-                                        id="user_dropdown"
-
-                                        class="dropdown-menu dropdown-menu-end"
-
-                                        aria-labelledby="addDropdownLink">
-
-                                        <li>
-
-                                            <!-- <a class="dropdown-item" href="#">New Workspace</a> -->
-
-                                            <div class="dropdown-item " style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-
-                                                <div class="u-img" style="padding-bottom: 10px; padding-top:10px; "><img class="rounded-circle " id="profileImg" alt="user" width="60px" height="60px"></div>
-
-                                                <div class="u-text">
-
-                                                    <h4 id="PerfilNombreEmp"></h4>
-
-                                                    <p id="PerfilCorreoEmp"></p>
-
-                                                    <!-- <a class="waves-effect waves-light btn-small red white-text" href="index.php">Perfil</a> -->
-
-                                                </div>
-
-                                            </div>
-
-                                        </li>
-
-                                        <li>
-
-                                            <a
-
-                                                class="dropdown-item d-flex align-items-center"
-
-                                                href="index.php"><i class="material-icons me-2">home</i>Inicio</a>
-
-                                        </li>
-
-                                        <li>
-
-                                            <a
-
-                                                class="dropdown-item d-flex align-items-center"
-
-                                                href="logout.php"><i class="material-icons me-2">exit_to_app</i>Salir</a>
-
-                                        </li>
-
-                                    </ul>
-
-                                </li>
-
-
-
-                            </ul>
-
-                        </div>
-
-                    </div>
-
-                </nav>
-
-            </div>
+            <?php include("includes/_Header.php"); ?>
 
             <div class="app-content">
 
@@ -493,9 +388,16 @@
 
 
 
-                                            <div class="col-12 col-lg-6" style="display: none;" id="divContenidoDias">
-
-
+                                            <div class="col-12 col-lg-8" style="display: none;" id="divContenidoDias">
+                                                <div class="mb-3">
+                                                    <h5 class="fw-bold text-center" style="color: #495057; margin-bottom: 15px;">
+                                                        <i class="material-icons" style="vertical-align: middle; font-size: 24px;">calendar_today</i>
+                                                        Días de la semana
+                                                    </h5>
+                                                    <p class="text-center text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                                                        Selecciona los días en que se impartirá la capacitación
+                                                    </p>
+                                                </div>
 
                                                 <div id="contenidoDias"></div>
 

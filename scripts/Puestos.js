@@ -86,7 +86,8 @@ async function getListPuestos() {
       ],
       order: [[1, "asc"]],
     });
-    let contHtmlJ;
+    
+    let contHtmlJ = '';
     contHtmlJ += `<option value="">Sin Jefe asignado</option>`;
     respuesta.forEach((r) => {
       let decode = atob(r.IdPuesto);
@@ -94,11 +95,13 @@ async function getListPuestos() {
           <option value="${decode}">${r.Puesto}</option>
        `;
     });
+    
+    // Destruir Select2 si ya existe
+    if ($('#slctJefes').hasClass('select2-hidden-accessible')) {
+      $('#slctJefes').select2('destroy');
+    }
+    
     SlctJefes.innerHTML = contHtmlJ;
-    // $('.SlcMultiple').select2();
-    // $("[name='TablePuestos_length']").select2({
-    //   minimumResultsForSearch: Infinity,
-    // });
   }
 }
 
@@ -106,7 +109,25 @@ async function openListJefes(idp, name) {
   PSelected.innerHTML = `<h6>Puesto seleccionado: ${name}</h6>`;
   InpPSelected.value = idp;
 
+  // Destruir Select2 si existe antes de cargar datos
+  if ($('#slctJefes').hasClass('select2-hidden-accessible')) {
+    $('#slctJefes').select2('destroy');
+  }
+
   await loadJefesAsigPuesto();
+  
+  // Inicializar Select2 después de cargar los datos
+  $('#slctJefes').select2({
+    dropdownParent: $('#modalListPuestos'),
+    width: '100%',
+    placeholder: 'Seleccione jefes',
+    multiple: true,
+    language: {
+      noResults: function() {
+        return "No se encontraron resultados";
+      }
+    }
+  });
 
   const modal = new bootstrap.Modal(
     document.getElementById("modalListPuestos")
@@ -123,10 +144,16 @@ async function loadJefesAsigPuesto() {
   const ajaxResponse = await pAjaxAsync(url_m_puestos, datos, 0);
   if (ajaxResponse !== undefined) {
     const dataResponse = ajaxResponse.Datos;
-    $("#slctJefes").val(dataResponse[0].IdJefesPuesto);
-    // $('.Slc2').select2();
+    $("#slctJefes").val(dataResponse[0].IdJefesPuesto).trigger('change');
   }
 }
+
+// Limpiar Select2 cuando se cierra el modal
+$('#modalListPuestos').on('hidden.bs.modal', function () {
+  if ($('#slctJefes').hasClass('select2-hidden-accessible')) {
+    $('#slctJefes').select2('destroy');
+  }
+});
 
 $(document).on("click", "#updateJefes", async function () {
   let arrSelected = $("#slctJefes").val();

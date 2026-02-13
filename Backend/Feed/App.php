@@ -31,8 +31,30 @@
     $nDescripcion = nl2br($_POST["txtDescripcion"]);
     $nHipervinculo = $_POST["txtHV"];
     $ContadorArchivos = 0;
-    $cons = $Feed->newFeed($nTitulo,$nDescripcion,$nHipervinculo);
-    $LAST_ID_FEED = $cons[0]["LAST_ID_FEED"];
+    
+    error_log("=== CREANDO FEED ===");
+    error_log("Titulo: " . $nTitulo);
+    error_log("Descripcion: " . $nDescripcion);
+    error_log("Hipervinculo: " . $nHipervinculo);
+    
+    try {
+      $cons = $Feed->newFeed($nTitulo,$nDescripcion,$nHipervinculo);
+      error_log("Resultado newFeed: " . print_r($cons, true));
+      
+      if (!$cons || !isset($cons[0]["LAST_ID_FEED"])) {
+        error_log("ERROR: No se obtuvo LAST_ID_FEED");
+        echo "0";
+        exit;
+      }
+      
+      $LAST_ID_FEED = $cons[0]["LAST_ID_FEED"];
+      error_log("LAST_ID_FEED: " . $LAST_ID_FEED);
+    } catch (Exception $e) {
+      error_log("ERROR en newFeed: " . $e->getMessage());
+      echo "Error al crear feed: " . $e->getMessage();
+      exit;
+    }
+    
     $fechaActual = date('d-m-Y H:i:s');
 
     $carpeta = "../../Archivos/Feed/$LAST_ID_FEED/";

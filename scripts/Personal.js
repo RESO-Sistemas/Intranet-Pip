@@ -3,6 +3,37 @@ $(window).on('load', function() {
   $(".preloader").fadeOut();
 });
 
+// Cargar datos del usuario en el header
+document.addEventListener('DOMContentLoaded', function() {
+  loadUserDataHeader();
+});
+
+async function loadUserDataHeader() {
+  try {
+    const response = await $.ajax({
+      type: "post",
+      url: "Backend/Empleados/App.php",
+      data: { op: "loadGblDataEmployee" },
+      dataType: "json"
+    });
+    
+    if (response && response.Datos && response.Datos.length > 0) {
+      const userData = response.Datos[0];
+      const profileName = document.getElementById("PerfilNombreEmp");
+      const profileEmail = document.getElementById("PerfilCorreoEmp");
+      const profileImg = document.getElementById("profileImg");
+      const profileImgSmall = document.getElementById("imgSmallProfile");
+      
+      if (profileName) profileName.textContent = userData.NameEmployee;
+      if (profileEmail) profileEmail.textContent = userData.EmailEmployee;
+      if (profileImg) profileImg.src = userData.ImgEmployee;
+      if (profileImgSmall) profileImgSmall.src = userData.ImgEmployee;
+    }
+  } catch (error) {
+    console.error("Error al cargar datos del usuario:", error);
+  }
+}
+
 ej.base.registerLicense(
   "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
 );
@@ -929,6 +960,7 @@ async function getJefesPosibles(empleado, sucursal) {
   $("#listadoJefesPosibles").html("");
 
   let respuesta = [];
+  let error = false;
   try {
     respuesta = await $.ajax({
       type: "post",
@@ -936,17 +968,21 @@ async function getJefesPosibles(empleado, sucursal) {
       data: datos,
       dataType: "json",
     });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    // Agregar la opción por defecto
-    $("#listadoJefesPosibles").append(`
-      <option value="" selected disabled>Jefes posibles</option>
-    `);
+  } catch (err) {
+    console.error("Error al obtener jefes posibles:", err);
+    error = true;
+    respuesta = [];
+  }
 
-    console.log(JSON.stringify(respuesta));
+  // Agregar la opción por defecto
+  $("#listadoJefesPosibles").append(`
+    <option value="" selected disabled>Jefes posibles</option>
+  `);
 
-    // Agregar opciones dinámicas
+  console.log("Respuesta getJefesPosibles:", JSON.stringify(respuesta));
+
+  // Agregar opciones dinámicas solo si respuesta es un array válido
+  if (Array.isArray(respuesta) && respuesta.length > 0) {
     for (let i = 0; i < respuesta.length; i++) {
       $("#listadoJefesPosibles").append(`
         <option value="${respuesta[i]["NoEmpleado"]}">
@@ -954,19 +990,53 @@ async function getJefesPosibles(empleado, sucursal) {
         </option>
       `);
     }
-
-    // Obtener jefe asignado y seleccionarlo
-    let jefeAsignado = await getJefeAsignado(empleado);
-    if (jefeAsignado.length > 0) {
-      $("#listadoJefesPosibles").val(jefeAsignado[0]["EmpleadoPadre"]);
-    }
-
-    // Mostrar modal
-    const modal = new bootstrap.Modal(
-      document.getElementById("ModalAsignarHijo")
-    );
-    modal.show();
+  } else if (!error) {
+    // Si no hay error pero tampoco hay resultados
+    $("#listadoJefesPosibles").append(`
+      <option value="" disabled>No hay jefes disponibles</option>
+    `);
+  } else {
+    // Si hubo un error
+    $("#listadoJefesPosibles").append(`
+      <option value="" disabled>Error al cargar jefes</option>
+    `);
   }
+
+  // Mostrar modal
+  const modal = new bootstrap.Modal(
+    document.getElementById("ModalAsignarHijo")
+  );
+  modal.show();
+
+  // Inicializar Select2 después de mostrar el modal con mejor configuración
+  setTimeout(function() {
+    $('#listadoJefesPosibles').select2({
+      dropdownParent: $('#ModalAsignarHijo'),
+      width: '100%',
+      placeholder: 'Selecciona un jefe',
+      allowClear: false,
+      language: {
+        noResults: function() {
+          return "No se encontraron resultados";
+        },
+        searching: function() {
+          return "Buscando...";
+        }
+      },
+      minimumResultsForSearch: 0
+    });
+    
+    // Actualizar el valor después de inicializar Select2
+    if (Array.isArray(respuesta) && respuesta.length > 0) {
+      getJefeAsignado(empleado).then(jefeAsignado => {
+        if (Array.isArray(jefeAsignado) && jefeAsignado.length > 0) {
+          $('#listadoJefesPosibles').val(jefeAsignado[0]["EmpleadoPadre"]).trigger('change');
+        }
+      }).catch(err => {
+        console.error("Error al obtener jefe asignado:", err);
+      });
+    }
+  }, 150);
 }
 
 async function getJefeAsignado(valor) {
@@ -1467,6 +1537,22 @@ async function abrirDetallesEmpleado(name, NoEmpleado) {
     document.getElementById("DetallesMasDetallesEmpleado")
   );
   modalMasDetalles.show();
+
+  // Inicializar Select2 en los selects del modal después de que se muestra
+  setTimeout(function() {
+    $('#slctDivisionActual').select2({
+      dropdownParent: $('#DetallesMasDetallesEmpleado'),
+      width: '100%'
+    });
+    $('#slctPuestoActual').select2({
+      dropdownParent: $('#DetallesMasDetallesEmpleado'),
+      width: '100%'
+    });
+    $('#slctSucursalActual').select2({
+      dropdownParent: $('#DetallesMasDetallesEmpleado'),
+      width: '100%'
+    });
+  }, 100);
 }
 
 // Botón actualizar cambios
@@ -1740,3 +1826,17 @@ async function descargaEsquemaSalud() {
     btnExcel.click();
   }
 }
+
+// Limpiar Select2 cuando el modal se cierra
+$('#DetallesMasDetallesEmpleado').on('hidden.bs.modal', function () {
+  $('#slctDivisionActual').select2('destroy');
+  $('#slctPuestoActual').select2('destroy');
+  $('#slctSucursalActual').select2('destroy');
+});
+
+// Limpiar Select2 cuando el modal de jefe se cierra
+$('#ModalAsignarHijo').on('hidden.bs.modal', function () {
+  if ($('#listadoJefesPosibles').hasClass('select2-hidden-accessible')) {
+    $('#listadoJefesPosibles').select2('destroy');
+  }
+});

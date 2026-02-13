@@ -237,18 +237,21 @@ function getOpcionesLineaEtica() {
       data: datasend,
       success: function (response) {
         let StatusTexto = "";
+        let statusBadge = "";
         let b64Catalogo = "";
         tableCatalogoLiniaEtica.fnClearTable();
         for (var i = 0; i < response.length; i++) {
           b64Catalogo = btoa(response[i]["idCatalogoLineaEtica"]);
           if (response[i]["Status"] == 0) {
             StatusTexto = "Inactivo";
+            statusBadge = `<span class="badge bg-danger">Inactivo</span>`;
           } else {
             StatusTexto = "Activado";
+            statusBadge = `<span class="badge bg-success">Activado</span>`;
           }
           tableCatalogoLiniaEtica.fnAddData([
             response[i]["Descripcion"],
-            StatusTexto,
+            statusBadge,
             `<a class="btn btn-warning" onclick="updateCatalogoStatus('${b64Catalogo}')"><span class="material-symbols-outlined">autorenew</span></a>`,
           ]);
         }

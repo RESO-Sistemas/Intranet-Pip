@@ -20,9 +20,23 @@ class Organigramas extends Conexiones
         $ArrRetorno = [];
         $Datos = [];
         try {
+            error_log("=== CREANDO ORGANIGRAMA ===");
+            error_log("Titulo: " . $nTitulo);
+            
             $q = "CALL spNewOrganigrama('$nTitulo')";
-            $respuesta = $this->Procedure($q, array());
+            error_log("Query: " . $q);
+            
+            $respuesta = $this->Procedure($q);
+            error_log("Respuesta SP: " . print_r($respuesta, true));
+            
+            if (!$respuesta || !isset($respuesta[0]["lastIdOrg"])) {
+                error_log("ERROR: No se obtuvo lastIdOrg");
+                return "0";
+            }
+            
             $lastIdOrg = $respuesta[0]["lastIdOrg"];
+            error_log("lastIdOrg: " . $lastIdOrg);
+            
             $Organigramab24 = base64_encode($lastIdOrg);
             $Datos = [
                 "Organigrama" => $Organigramab24,
@@ -31,6 +45,7 @@ class Organigramas extends Conexiones
             array_push($ArrRetorno, $Datos);
             return json_encode($ArrRetorno);
         } catch (\Exception $e) {
+            error_log("ERROR en addOrganigrama: " . $e->getMessage());
             return "0";
         }
     }

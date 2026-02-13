@@ -1457,4 +1457,40 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   list-style-position: inside; /* Asegura que el punto esté dentro del área de padding */
 }
 
+/* Fix para dropdowns dentro de modals - permitir que el contenido se desborde */
+.modal-dialog {
+  overflow: visible !important;
+}
+
+.modal-content {
+  overflow: visible !important;
+}
+
+.modal-body {
+  overflow: visible !important;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal {
+  z-index: 1050 !important;
+  overflow: visible !important;
+}
+
+/* Para select2 dentro de modals */
+.select2-container {
+  z-index: 99999 !important;
+}
+
+.select2-dropdown {
+  z-index: 99999 !important;
+}
+
+/* Para otros dropdowns dentro de modals */
+.modal .dropdown-menu {
+  z-index: 10000 !important;
+}
+
 </style>

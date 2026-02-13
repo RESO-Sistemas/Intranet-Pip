@@ -97,6 +97,7 @@ $MenuP = $Conf->getMenusPadre();
 
     <div class="app-container">
 
+<<<<<<< HEAD
       <div class="app-header">
 
         <nav class="navbar navbar-light navbar-expand-lg">
@@ -250,6 +251,9 @@ $MenuP = $Conf->getMenusPadre();
         </nav>
 
       </div>
+=======
+      <?php include("includes/_Header.php"); ?>
+>>>>>>> origin/Guillermo
 
       <div class="app-content">
 
@@ -527,7 +531,11 @@ $MenuP = $Conf->getMenusPadre();
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+<<<<<<< HEAD
   <!-- global-csoriginal.js removed - global.js already loaded by neptune_js.php -->
+=======
+  <script src="scripts/global-csoriginal.js" charset="utf-8"></script>
+>>>>>>> origin/Guillermo
 
   <script src="assets/libs/toastr/build/toastr.min.js"></script>
 

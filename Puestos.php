@@ -149,15 +149,15 @@
         </div>
 
         <!-- Modal Listar Jefes -->
-        <div class="modal fade" id="modalListPuestos" tabindex="-1" aria-labelledby="modalListPuestosLabel" aria-hidden="true">
-          <div class="modal-dialog modal-md">
-            <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+        <div class="modal fade" id="modalListPuestos" tabindex="-1" aria-labelledby="modalListPuestosLabel" aria-hidden="true" style="overflow: visible !important;">
+          <div class="modal-dialog modal-md" style="overflow: visible !important;">
+            <div class="modal-content" style="max-height: 80vh; overflow: visible !important;">
               <div class="modal-header">
                 <h5 class="modal-title" id="modalListPuestosLabel">Asignar Jefes al Puesto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
 
-              <div class="modal-body">
+              <div class="modal-body" style="overflow: visible !important;">
                 <input type="hidden" id="inpPSelected">
 
                 <div class="container-fluid">
