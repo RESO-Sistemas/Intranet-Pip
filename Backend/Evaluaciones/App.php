@@ -1,4 +1,9 @@
 <?php
+  // Habilitar reporte de errores para debugging
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+  
   include("Evaluaciones.php");
 
   // Cargar SessionManager
@@ -9,7 +14,7 @@
   }
 
   $Evaluaciones = new Evaluaciones();
-  $op = $_POST["op"];
+  $op = isset($_POST["op"]) ? $_POST["op"] : "";
   if ($op == "getEvaluacionesDisponibles") {
     echo trim($Evaluaciones->getEvaluacionesDisponibles());
   }
@@ -330,8 +335,20 @@
     }
 
     if ($op == "saveQuestionsConfig") {
-      $evaluation = $_POST["evaluation"];
-      $data = $_POST["data"];
+      $evaluation = isset($_POST["evaluation"]) ? $_POST["evaluation"] : null;
+      $data = isset($_POST["data"]) ? $_POST["data"] : null;
+      
+      // Validar que los datos requeridos existan
+      if (!$evaluation || !$data) {
+        echo json_encode([
+          "Resultado" => false,
+          "Siguiente" => false,
+          "ConMsg" => true,
+          "Msg" => "Datos incompletos: evaluation=" . ($evaluation ? "OK" : "NULL") . ", data=" . ($data ? "OK" : "NULL")
+        ]);
+        exit;
+      }
+      
       echo trim($Evaluaciones->saveQuestionsConfig($evaluation,$data));
     }
 

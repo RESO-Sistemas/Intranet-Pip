@@ -97,7 +97,163 @@ $MenuP = $Conf->getMenusPadre();
 
     <div class="app-container">
 
+<<<<<<< HEAD
+      <div class="app-header">
+
+        <nav class="navbar navbar-light navbar-expand-lg">
+
+          <div class="container-fluid">
+
+            <div class="navbar-nav" id="navbarNav">
+
+              <ul class="navbar-nav">
+
+                <li class="nav-item">
+
+                  <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">first_page</i></a>
+
+                </li>
+
+              </ul>
+
+
+
+            </div>
+
+            <div class="d-flex">
+
+              <ul class="navbar-nav">
+
+
+
+                <!-- notifications -->
+
+                <li class="nav-item hidden-on-mobile">
+
+                  <!-- nav-notifications-toggle -->
+
+                  <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown"><i class="material-icons">notifications</i></a>
+
+                  <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
+
+                    <h6 class="dropdown-header">Notificaciones</h6>
+
+                    <div class="notifications-dropdown-list">
+
+                      <div id="notificacionesPendienteLEtica"></div>
+
+                      <div id="notificacionesMenuLEtica"></div>
+
+                      <div id="notificacionesMenuSVacaciones"></div>
+
+                      <div id="notificacionesMenuSVacacionesNomina"></div>
+
+                      <div id="notificacionesCapacitacion"></div>
+
+                    </div>
+
+                  </div>
+
+                </li>
+
+
+
+                <!--  Foto de perfil -->
+
+                <li class="nav-item hidden-on-mobile">
+
+                  <a
+
+                    class="nav-link dropdown-toggle"
+
+                    id="notificationsDropDown"
+
+                    href="javascript:void(0);"
+
+                    data-bs-toggle="dropdown">
+
+                    <img
+
+                      id="imgSmallProfile"
+
+                      alt="user"
+
+                      class="rounded-circle"
+
+                      width="30"
+
+                      height="30" />
+
+                  </a>
+
+                  <ul
+
+                    id="user_dropdown"
+
+                    class="dropdown-menu dropdown-menu-end"
+
+                    aria-labelledby="addDropdownLink">
+
+                    <li>
+
+                      <!-- <a class="dropdown-item" href="#">New Workspace</a> -->
+
+                      <div class="dropdown-item " style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
+
+                        <div class="u-img" style="padding-bottom: 10px; padding-top:10px; "><img class="rounded-circle " id="profileImg" alt="user" width="60px" height="60px"></div>
+
+                        <div class="u-text">
+
+                          <h4 id="PerfilNombreEmp"></h4>
+
+                          <p id="PerfilCorreoEmp"></p>
+
+                          <!-- <a class="waves-effect waves-light btn-small red white-text" href="index.php">Perfil</a> -->
+
+                        </div>
+
+                      </div>
+
+                    </li>
+
+                    <li>
+
+                      <a
+
+                        class="dropdown-item d-flex align-items-center"
+
+                        href="index.php"><i class="material-icons me-2">home</i>Inicio</a>
+
+                    </li>
+
+                    <li>
+
+                      <a
+
+                        class="dropdown-item d-flex align-items-center"
+
+                        href="logout.php"><i class="material-icons me-2">exit_to_app</i>Salir</a>
+
+                    </li>
+
+                  </ul>
+
+                </li>
+
+
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </nav>
+
+      </div>
+=======
       <?php include("includes/_Header.php"); ?>
+>>>>>>> origin/Guillermo
 
       <div class="app-content">
 
@@ -375,7 +531,7 @@ $MenuP = $Conf->getMenusPadre();
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  <script src="scripts/global-csoriginal.js" charset="utf-8"></script>
+  <!-- global-csoriginal.js removed - global.js already loaded by neptune_js.php -->
 
   <script src="assets/libs/toastr/build/toastr.min.js"></script>
 

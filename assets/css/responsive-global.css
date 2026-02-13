@@ -252,6 +252,11 @@ html, body {
         width: 100% !important;
     }
 
+    /* Fix para que no se junten los textos en DataTables */
+    .dataTables_wrapper .row > div[class*="col-"] {
+        margin-bottom: 0.5rem;
+    }
+
     .dataTables_info {
         font-size: 0.75rem;
         text-align: center !important;
@@ -385,6 +390,84 @@ html, body {
 
     .table {
         font-size: 0.9rem;
+    }
+    
+    /* DataTables wrapper general - evitar que los controles se junten */
+    .dataTables_wrapper {
+        overflow: visible !important;
+        padding: 1rem 0 !important;
+    }
+
+    /* DataTables en tablets - mantener columnas para evitar que se junten */
+    .dataTables_wrapper .row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important; /* Espacio entre controles */
+    }
+
+    .dataTables_wrapper .row > div {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* MOSTRAR y BUSCAR en columna separada */
+    .dataTables_length {
+        text-align: center !important;
+        padding: 1rem 0 !important;
+        min-height: 80px !important; /* Altura mínima para evitar colapso */
+        display: flex !important;
+        justify-content: center !important; /* Centrar horizontalmente */
+    }
+
+    .dataTables_filter {
+        text-align: center !important;
+        padding: 1rem 0 !important;
+        min-height: 80px !important; /* Altura mínima para evitar colapso */
+        display: flex !important;
+        justify-content: center !important; /* Centrar horizontalmente */
+    }
+
+    .dataTables_length label {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.75rem !important; /* Espacio entre texto y select */
+        white-space: nowrap !important; /* Evitar que el texto se rompa */
+        width: 100% !important;
+        margin: 0 auto !important; /* Centrar el label */
+    }
+
+    .dataTables_filter label {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.75rem !important; /* Espacio entre texto y input */
+        white-space: nowrap !important; /* Evitar que el texto se rompa */
+        width: 100% !important;
+        margin: 0 auto !important; /* Centrar el label */
+    }
+
+    .dataTables_length select {
+        max-width: 200px !important;
+        width: 100% !important;
+        padding: 0.5rem !important;
+        font-size: 0.9rem !important;
+        margin: 0 auto !important; /* Centrar el select */
+    }
+
+    .dataTables_filter input {
+        width: 100% !important;
+        max-width: 350px !important;
+        padding: 0.5rem !important;
+        font-size: 0.9rem !important;
+        margin: 0 auto !important; /* Centrar el input */
+    }
+    
+    /* Asegurar separación vertical entre filtros y tabla */
+    .dataTables_wrapper .row:first-child {
+        margin-bottom: 1.5rem !important;
     }
 
     /* Mostrar elementos ocultos en mobile */
@@ -614,7 +697,7 @@ html, body {
 }
 
 /* DataTables en múltiples vistas - Fix definitivo para BUSCAR */
-@media (max-width: 767px) {
+@media (max-width: 991px) {
     /* Capacitacion.php, SolicitudesVacacionesFinales.php, Puestos.php, etc. */
     #tableCapacitacion_wrapper,
     #TableSolicitudes_wrapper,
@@ -656,6 +739,12 @@ html, body {
         width: auto !important;
         min-width: 60px;
         max-width: 100px;
+    }
+
+    /* Separación entre controles */
+    .dataTables_wrapper .row > div {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
 }
 
