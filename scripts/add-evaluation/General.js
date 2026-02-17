@@ -4,7 +4,45 @@ const title_c = document.getElementById('title_c'),
       inpRetroIni = document.getElementById('inpRetroIni'),
       inpRetroFin = document.getElementById('inpRetroFin'),
       inpPlanAIni = document.getElementById('inpPlanAIni'),
-      inpPlanAFin = document.getElementById('inpPlanAFin');
+      inpPlanAFin = document.getElementById('inpPlanAFin'),
+      tipoEvaluacion = document.getElementById('tipoEvaluacion'),
+      periodicidad = document.getElementById('periodicidad'),
+      divPeriodicidad = document.getElementById('divPeriodicidad'),
+      seccionRetroYPlan = document.getElementById('seccionRetroYPlan');
+
+// Event listener para cambio de tipo de evaluación usando jQuery
+$(document).on('change', '#tipoEvaluacion', function() {
+  const tipo = $(this).val();
+  console.log('Tipo seleccionado:', tipo);
+  
+  if (tipo === '1') {
+    // Evaluación 360 - NO tiene periodicidad
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+    // Hacer campos de retro y plan obligatorios para 360
+    $('#inpRetroIni').attr('required', 'required');
+    $('#inpRetroFin').attr('required', 'required');
+    $('#inpPlanAIni').attr('required', 'required');
+    $('#inpPlanAFin').attr('required', 'required');
+  } else if (tipo === '2') {
+    // Encuesta Normal - SÍ tiene periodicidad
+    $('#divPeriodicidad').show();
+    $('#periodicidad').attr('required', 'required');
+    // Hacer campos de retro y plan obligatorios para normal también
+    $('#inpRetroIni').attr('required', 'required');
+    $('#inpRetroFin').attr('required', 'required');
+    $('#inpPlanAIni').attr('required', 'required');
+    $('#inpPlanAFin').attr('required', 'required');
+  } else {
+    // Ninguno seleccionado
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+    $('#inpRetroIni').removeAttr('required');
+    $('#inpRetroFin').removeAttr('required');
+    $('#inpPlanAIni').removeAttr('required');
+    $('#inpPlanAFin').removeAttr('required');
+  }
+});
 
 // Función para validar fechas
 function validateDates() {
@@ -13,6 +51,8 @@ function validateDates() {
   
   const maxFutureDate = new Date();
   maxFutureDate.setFullYear(today.getFullYear() + 2); // Máximo 2 años en el futuro
+  
+  const tipo = tipoEvaluacion.value;
   
   // Obtener valores de fechas
   const fechaInicio = inpFechaInicio.value ? new Date(inpFechaInicio.value + 'T00:00:00') : null;
@@ -55,6 +95,7 @@ function validateDates() {
     }
   }
   
+  // Validaciones de retroalimentación y plan de acción (aplican para ambos tipos)
   // Validación 5: Retroalimentación debe iniciar después o el mismo día que termine la evaluación
   if (fechaFin && retroIni && retroIni < fechaFin) {
     toastr.error('La retroalimentación debe iniciar después de que termine la evaluación', 'Error de validación');
@@ -92,11 +133,26 @@ function validateDates() {
 }
 
 $(document).on("click","#btn_SaveData",async function(){
+  // Validar tipo de evaluación
+  if (!tipoEvaluacion.value) {
+    toastr.error('Debe seleccionar un tipo de cuestionario', 'Error de validación');
+    return;
+  }
+  
+  // Validar periodicidad si es encuesta normal
+  if (tipoEvaluacion.value === '2' && !periodicidad.value) {
+    toastr.error('Debe seleccionar una periodicidad para la encuesta normal', 'Error de validación');
+    return;
+  }
+  
   const resV = await verifyInputs('dv_DataGeneral');
   const resV2 = await verifyInputs('dv_Dates');
   
+  // Validar secciones de retro y plan para ambos tipos
+  const resV3 = await verifyInputs('seccionRetroYPlan');
+  
   // Validar fechas antes de guardar
-  if (resV && resV2) {
+  if (resV && resV2 && resV3) {
     if (!validateDates()) {
       return; // Detener si las validaciones de fecha fallan
     }
@@ -105,15 +161,27 @@ $(document).on("click","#btn_SaveData",async function(){
 });
 
 async function saveEvaluationNoE(){
+  const tipo = tipoEvaluacion.value;
+  
+  // Obtener empleados seleccionados
+  const empleadosSeleccionados = $('#slctEmpleados').val();
+  if (!empleadosSeleccionados || empleadosSeleccionados.length === 0) {
+    toastr.error('Debe seleccionar al menos un empleado participante', 'Error de validación');
+    return;
+  }
+  
   const dataSend = {
     op: "saveEvaluationNoE",
     inpTitulo: quitarEspaciosExtras(title_c.value).trim(),
+    tipoEvaluacion: tipo,
+    periodicidad: tipo === '2' ? periodicidad.value : null,
     inpFechaInicio: inpFechaInicio.value,
     inpFechaFin: inpFechaFin.value,
     inpRetroFechaIni: inpRetroIni.value,
     inpRetroFechaFin: inpRetroFin.value,
     inpPlanAFechaIni: inpPlanAIni.value,
     inpPlanAFechaFin: inpPlanAFin.value,
+    empleadosParticipantes: empleadosSeleccionados.join(','),
   };
   const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
   if (ajaxR !== undefined) {
@@ -122,3 +190,139 @@ async function saveEvaluationNoE(){
     }, 1500);
   }
 }
+
+// ========== SECCIÓN DE SELECCIÓN DE PARTICIPANTES ==========
+
+// Inicializar cuando el documento esté listo
+$(document).ready(function() {
+  // Inicializar Select2 para empleados
+  $('#slctEmpleados').select2({
+    placeholder: 'Seleccione los empleados participantes',
+    allowClear: true,
+    width: '100%'
+  });
+  
+  // Cargar datos iniciales
+  getDivisionesEvaluacion();
+  getPuestosEvaluacion();
+  getEmpleadosParaEvaluacion();
+});
+
+// Cargar divisiones
+async function getDivisionesEvaluacion() {
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: "Backend/Evaluaciones/App.php",
+      data: { op: "getDivisionesEvaluacion" }
+    });
+    
+    const result = JSON.parse(response.trim());
+    if (result.Resultado && result.Data) {
+      $('#slctDivision').html('<option value="">Todas las Divisiones</option>');
+      result.Data.forEach(function(div) {
+        $('#slctDivision').append(`<option value="${div.IdDivision}">${div.Division}</option>`);
+      });
+    }
+  } catch (error) {
+    console.error('Error al cargar divisiones:', error);
+  }
+}
+
+// Cargar sucursales por división
+async function getSucursalesXDivisionEvaluacion(IdDivision) {
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: "Backend/Evaluaciones/App.php",
+      data: { 
+        op: "getSucursalesXDivisionEvaluacion",
+        IdDivision: IdDivision 
+      }
+    });
+    
+    const result = JSON.parse(response.trim());
+    if (result.Resultado && result.Data) {
+      $('#slctSucursal').html('<option value="">Todas las Sucursales</option>');
+      result.Data.forEach(function(suc) {
+        $('#slctSucursal').append(`<option value="${suc.IdSucursal}">${suc.Sucursal}</option>`);
+      });
+    }
+  } catch (error) {
+    console.error('Error al cargar sucursales:', error);
+  }
+}
+
+// Cargar puestos
+async function getPuestosEvaluacion() {
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: "Backend/Evaluaciones/App.php",
+      data: { op: "getPuestosEvaluacion" }
+    });
+    
+    const result = JSON.parse(response.trim());
+    if (result.Resultado && result.Data) {
+      $('#slctPuesto').html('<option value="">Todos los Puestos</option>');
+      result.Data.forEach(function(puesto) {
+        $('#slctPuesto').append(`<option value="${puesto.IdPuesto}">${puesto.Puesto}</option>`);
+      });
+    }
+  } catch (error) {
+    console.error('Error al cargar puestos:', error);
+  }
+}
+
+// Cargar empleados filtrados
+async function getEmpleadosParaEvaluacion() {
+  try {
+    const IdDivision = $('#slctDivision').val() || '';
+    const IdSucursal = $('#slctSucursal').val() || '';
+    const IdPuesto = $('#slctPuesto').val() || '';
+    
+    const response = await $.ajax({
+      type: "POST",
+      url: "Backend/Evaluaciones/App.php",
+      data: { 
+        op: "getEmpleadosParaEvaluacion",
+        IdDivision: IdDivision,
+        IdSucursal: IdSucursal,
+        IdPuesto: IdPuesto
+      }
+    });
+    
+    const result = JSON.parse(response.trim());
+    if (result.Resultado && result.Data) {
+      // Guardar selección actual
+      const currentSelection = $('#slctEmpleados').val() || [];
+      
+      // Limpiar y repoblar
+      $('#slctEmpleados').html('');
+      result.Data.forEach(function(emp) {
+        const selected = currentSelection.includes(emp.NoEmpleado.toString()) ? 'selected' : '';
+        $('#slctEmpleados').append(`<option value="${emp.NoEmpleado}" ${selected}>${emp.Nombre} - ${emp.Puesto} (${emp.Sucursal})</option>`);
+      });
+      
+      // Actualizar Select2
+      $('#slctEmpleados').trigger('change');
+    }
+  } catch (error) {
+    console.error('Error al cargar empleados:', error);
+  }
+}
+
+// Event listeners para filtros en cascada
+$(document).on('change', '#slctDivision', function() {
+  const IdDivision = $(this).val();
+  getSucursalesXDivisionEvaluacion(IdDivision);
+  getEmpleadosParaEvaluacion();
+});
+
+$(document).on('change', '#slctSucursal', function() {
+  getEmpleadosParaEvaluacion();
+});
+
+$(document).on('change', '#slctPuesto', function() {
+  getEmpleadosParaEvaluacion();
+});

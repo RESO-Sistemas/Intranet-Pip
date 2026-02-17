@@ -303,14 +303,17 @@
 
     if ($op == "saveEvaluationNoE") {
       $inpTitulo = $_POST["inpTitulo"];
+      $tipoEvaluacion = $_POST["tipoEvaluacion"];
+      $periodicidad = isset($_POST["periodicidad"]) && $_POST["periodicidad"] !== 'null' ? $_POST["periodicidad"] : null;
       $inpFechaInicio = $_POST["inpFechaInicio"];
       $inpFechaFin = $_POST["inpFechaFin"];
-      $inpRetroFechaIni = $_POST["inpRetroFechaIni"];
-      $inpRetroFechaFin = $_POST["inpRetroFechaFin"];
-      $inpPlanAFechaIni = $_POST["inpPlanAFechaIni"];
-      $inpPlanAFechaFin = $_POST["inpPlanAFechaFin"];
-      echo trim($Evaluaciones->saveEvaluationNoE($inpTitulo,$inpFechaInicio,$inpFechaFin,$inpRetroFechaIni,$inpRetroFechaFin,
-        $inpPlanAFechaIni, $inpPlanAFechaFin
+      $inpRetroFechaIni = isset($_POST["inpRetroFechaIni"]) && $_POST["inpRetroFechaIni"] !== 'null' ? $_POST["inpRetroFechaIni"] : null;
+      $inpRetroFechaFin = isset($_POST["inpRetroFechaFin"]) && $_POST["inpRetroFechaFin"] !== 'null' ? $_POST["inpRetroFechaFin"] : null;
+      $inpPlanAFechaIni = isset($_POST["inpPlanAFechaIni"]) && $_POST["inpPlanAFechaIni"] !== 'null' ? $_POST["inpPlanAFechaIni"] : null;
+      $inpPlanAFechaFin = isset($_POST["inpPlanAFechaFin"]) && $_POST["inpPlanAFechaFin"] !== 'null' ? $_POST["inpPlanAFechaFin"] : null;
+      $empleadosParticipantes = isset($_POST["empleadosParticipantes"]) ? $_POST["empleadosParticipantes"] : "";
+      echo trim($Evaluaciones->saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, 
+        $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes
       ));
     }
 
@@ -467,5 +470,26 @@
 
     if ($op == "getListBranchNewEv") {
       echo trim($Evaluaciones->getListBranchNewEv());
+    }
+
+    // Rutas para selección de participantes
+    if ($op == "getDivisionesEvaluacion") {
+      echo trim($Evaluaciones->getDivisionesEvaluacion());
+    }
+
+    if ($op == "getSucursalesXDivisionEvaluacion") {
+      $IdDivision = isset($_POST["IdDivision"]) ? $_POST["IdDivision"] : "";
+      echo trim($Evaluaciones->getSucursalesXDivisionEvaluacion($IdDivision));
+    }
+
+    if ($op == "getPuestosEvaluacion") {
+      echo trim($Evaluaciones->getPuestosEvaluacion());
+    }
+
+    if ($op == "getEmpleadosParaEvaluacion") {
+      $IdDivision = isset($_POST["IdDivision"]) ? $_POST["IdDivision"] : "";
+      $IdSucursal = isset($_POST["IdSucursal"]) ? $_POST["IdSucursal"] : "";
+      $IdPuesto = isset($_POST["IdPuesto"]) ? $_POST["IdPuesto"] : "";
+      echo trim($Evaluaciones->getEmpleadosParaEvaluacion($IdDivision, $IdSucursal, $IdPuesto));
     }
  ?>

@@ -156,6 +156,34 @@ function printListEvaluations(data) {
 
       {
 
+        field: "TxTipoEvaluacion",
+
+        headerText: "Tipo",
+
+        width: 50,
+
+        textAlign: "Center",
+
+        filter: { type: "CheckBox" },
+
+      },
+
+      {
+
+        field: "TxPeriodicidad",
+
+        headerText: "Periodicidad",
+
+        width: 45,
+
+        textAlign: "Center",
+
+        filter: { type: "CheckBox" },
+
+      },
+
+      {
+
         field: "Restantes",
 
         headerText: "Restantes",

@@ -97,163 +97,7 @@ $MenuP = $Conf->getMenusPadre();
 
     <div class="app-container">
 
-<<<<<<< HEAD
-      <div class="app-header">
-
-        <nav class="navbar navbar-light navbar-expand-lg">
-
-          <div class="container-fluid">
-
-            <div class="navbar-nav" id="navbarNav">
-
-              <ul class="navbar-nav">
-
-                <li class="nav-item">
-
-                  <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">first_page</i></a>
-
-                </li>
-
-              </ul>
-
-
-
-            </div>
-
-            <div class="d-flex">
-
-              <ul class="navbar-nav">
-
-
-
-                <!-- notifications -->
-
-                <li class="nav-item hidden-on-mobile">
-
-                  <!-- nav-notifications-toggle -->
-
-                  <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown"><i class="material-icons">notifications</i></a>
-
-                  <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
-
-                    <h6 class="dropdown-header">Notificaciones</h6>
-
-                    <div class="notifications-dropdown-list">
-
-                      <div id="notificacionesPendienteLEtica"></div>
-
-                      <div id="notificacionesMenuLEtica"></div>
-
-                      <div id="notificacionesMenuSVacaciones"></div>
-
-                      <div id="notificacionesMenuSVacacionesNomina"></div>
-
-                      <div id="notificacionesCapacitacion"></div>
-
-                    </div>
-
-                  </div>
-
-                </li>
-
-
-
-                <!--  Foto de perfil -->
-
-                <li class="nav-item hidden-on-mobile">
-
-                  <a
-
-                    class="nav-link dropdown-toggle"
-
-                    id="notificationsDropDown"
-
-                    href="javascript:void(0);"
-
-                    data-bs-toggle="dropdown">
-
-                    <img
-
-                      id="imgSmallProfile"
-
-                      alt="user"
-
-                      class="rounded-circle"
-
-                      width="30"
-
-                      height="30" />
-
-                  </a>
-
-                  <ul
-
-                    id="user_dropdown"
-
-                    class="dropdown-menu dropdown-menu-end"
-
-                    aria-labelledby="addDropdownLink">
-
-                    <li>
-
-                      <!-- <a class="dropdown-item" href="#">New Workspace</a> -->
-
-                      <div class="dropdown-item " style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-
-                        <div class="u-img" style="padding-bottom: 10px; padding-top:10px; "><img class="rounded-circle " id="profileImg" alt="user" width="60px" height="60px"></div>
-
-                        <div class="u-text">
-
-                          <h4 id="PerfilNombreEmp"></h4>
-
-                          <p id="PerfilCorreoEmp"></p>
-
-                          <!-- <a class="waves-effect waves-light btn-small red white-text" href="index.php">Perfil</a> -->
-
-                        </div>
-
-                      </div>
-
-                    </li>
-
-                    <li>
-
-                      <a
-
-                        class="dropdown-item d-flex align-items-center"
-
-                        href="index.php"><i class="material-icons me-2">home</i>Inicio</a>
-
-                    </li>
-
-                    <li>
-
-                      <a
-
-                        class="dropdown-item d-flex align-items-center"
-
-                        href="logout.php"><i class="material-icons me-2">exit_to_app</i>Salir</a>
-
-                    </li>
-
-                  </ul>
-
-                </li>
-
-
-
-              </ul>
-
-            </div>
-
-          </div>
-
-        </nav>
-
-      </div>
-=======
       <?php include("includes/_Header.php"); ?>
->>>>>>> origin/Guillermo
 
       <div class="app-content">
 
@@ -333,15 +177,129 @@ $MenuP = $Conf->getMenusPadre();
 
                       <div class="col-12" id="dv_DataGeneral">
 
-                        <label class="form-label mb-0">Titulo:</label>
+                        <div class="row mb-3">
 
-                        <p class="card-text">
+                          <div class="col-12 col-lg-6 mb-3 mb-lg-0">
 
-                          <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" type="text" id="title_c" required>
+                            <label class="form-label mb-0">* Tipo de Cuestionario:</label>
 
-                          <p for="title_c" data-msg="El título del cuestionario es obligatorio"></p>
+                            <select class="form-select form-control-solid-bordered" id="tipoEvaluacion" required>
 
-                        </p>
+                              <option value="">Seleccione un tipo</option>
+
+                              <option value="1">Evaluación 360°</option>
+
+                              <option value="2">Encuesta Normal</option>
+
+                            </select>
+
+                            <p for="tipoEvaluacion" data-msg="El tipo de cuestionario es obligatorio"></p>
+
+                          </div>
+
+                          <div class="col-12 col-lg-6" id="divPeriodicidad" style="display: none;">
+
+                            <label class="form-label mb-0">* Periodicidad:</label>
+
+                            <select class="form-select form-control-solid-bordered" id="periodicidad">
+
+                              <option value="">Seleccione una periodicidad</option>
+
+                              <option value="1">Diario</option>
+
+                              <option value="2">Semanal</option>
+
+                              <option value="3">Mensual</option>
+
+                              <option value="4">Único</option>
+
+                            </select>
+
+                            <p for="periodicidad" data-msg="La periodicidad es obligatoria para encuestas normales"></p>
+
+                          </div>
+
+                        </div>
+
+                        <div class="row mb-3">
+
+                          <div class="col-12">
+
+                            <label class="form-label mb-0">* Titulo:</label>
+
+                            <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" type="text" id="title_c" required>
+
+                            <p for="title_c" data-msg="El título del cuestionario es obligatorio"></p>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    <!-- Sección de retroalimentación y plan de acción (solo para 360) -->
+
+                    <div id="seccion360Config" style="display: none;">
+
+                    </div>
+
+                    <!-- Sección de selección de participantes -->
+
+                    <div class="row align-items-center mb-4">
+
+                      <label class="card-title mb-0 text-center w-100">Selección de Participantes</label>
+
+                    </div>
+
+                    <div class="row mb-4" id="divParticipantes">
+
+                      <div class="col-12 col-md-6 col-lg-4 mb-3">
+
+                        <label class="form-label mb-0">División / Empresa:</label>
+
+                        <select class="form-select form-control-solid-bordered" id="slctDivision">
+
+                          <option value="">Todas las Divisiones</option>
+
+                        </select>
+
+                      </div>
+
+                      <div class="col-12 col-md-6 col-lg-4 mb-3">
+
+                        <label class="form-label mb-0">Sucursal / Departamento:</label>
+
+                        <select class="form-select form-control-solid-bordered" id="slctSucursal">
+
+                          <option value="">Todas las Sucursales</option>
+
+                        </select>
+
+                      </div>
+
+                      <div class="col-12 col-md-6 col-lg-4 mb-3">
+
+                        <label class="form-label mb-0">Puesto:</label>
+
+                        <select class="form-select form-control-solid-bordered" id="slctPuesto">
+
+                          <option value="">Todos los Puestos</option>
+
+                        </select>
+
+                      </div>
+
+                      <div class="col-12 mb-3">
+
+                        <label class="form-label mb-0">* Empleados Participantes:</label>
+
+                        <select class="form-select form-control-solid-bordered" id="slctEmpleados" multiple="multiple" style="width: 100%;">
+
+                        </select>
+
+                        <p for="slctEmpleados" data-msg="Debe seleccionar al menos un empleado participante"></p>
 
                       </div>
 
@@ -357,109 +315,91 @@ $MenuP = $Conf->getMenusPadre();
 
                       </div>
 
-                      <div class="row align-items-center mb-4">
+                      <div class="row mb-4">
 
-                        <div class="col">
+                        <div class="col-12 col-md-6 mb-3 mb-md-0">
 
                           <label class="form-label mb-0">* Inicio de la evaluación:</label>
 
-                          <p class="card-text">
+                          <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" id="inpFechaInicio" name="inpFechaInicio" type="date" required>
 
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" id="inpFechaInicio" name="inpFechaInicio" type="date" required="">
-
-                            <p for="inpFechaInicio" data-msg="Dato obligatorio"></p>
-
-                          </p>
+                          <p for="inpFechaInicio" data-msg="Dato obligatorio"></p>
 
                         </div>
 
-                        <div class="col">
+                        <div class="col-12 col-md-6">
 
                           <label class="form-label mb-0">* Final de la evaluación:</label>
 
-                          <p class="card-text">
+                          <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" id="inpFechaFin" name="inpFechaFin" type="date" required>
 
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" id="inpFechaFin" name="inpFechaFin" type="date" required="">
-
-                            <p for="inpFechaFin" data-msg="Dato obligatorio"></p>
-
-                          </p>
+                          <p for="inpFechaFin" data-msg="Dato obligatorio"></p>
 
                         </div>
 
                       </div>
 
-                      <div class="row align-items-center mb-4">
+                      <!-- Sección de retroalimentación (solo para 360) -->
 
-                        <label class="card-title mb-0 text-center w-100">Periodos para la retroalimentación</label>
+                      <div id="seccionRetroYPlan">
 
-                      </div>
+                        <div class="row align-items-center mb-4">
 
-                      <div class="row align-items-center mb-4">
+                          <label class="card-title mb-0 text-center w-100">Periodos para la retroalimentación</label>
 
-                        <div class="col">
+                        </div>
 
-                          <label class="form-label mb-0">* Inicio de la retroalimentación:</label>
+                        <div class="row mb-4">
 
-                          <p class="card-text">
+                          <div class="col-12 col-md-6 mb-3 mb-md-0">
 
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" type="date" id="inpRetroIni" name="inpRetroIni" required="">
+                            <label class="form-label mb-0">* Inicio de la retroalimentación:</label>
+
+                            <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" type="date" id="inpRetroIni" name="inpRetroIni" required>
 
                             <p for="inpRetroIni" data-msg="Dato obligatorio"></p>
 
-                          </p>
+                          </div>
 
-                        </div>
+                          <div class="col-12 col-md-6">
 
-                        <div class="col">
+                            <label class="form-label mb-0">* Final de la retroalimentación:</label>
 
-                          <label class="form-label mb-0">* Final de la retroalimentación:</label>
-
-                          <p class="card-text">
-
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" type="date" id="inpRetroFin" name="inpRetroFin" required="">
+                            <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" type="date" id="inpRetroFin" name="inpRetroFin" required>
 
                             <p for="inpRetroFin" data-msg="Dato obligatorio"></p>
 
-                          </p>
+                          </div>
 
                         </div>
 
-                      </div>
+                        <div class="row align-items-center mb-4">
 
-                      <div class="row align-items-center mb-4">
+                          <label class="card-title mb-0 text-center w-100">Fechas para la creación del plan de acción</label>
 
-                        <label class="card-title mb-0 text-center w-100">Fechas para la creación del plan de acción</label>
+                        </div>
 
-                      </div>
+                        <div class="row mb-4">
 
-                      <div class="row align-items-center mb-4">
+                          <div class="col-12 col-md-6 mb-3 mb-md-0">
 
-                        <div class="col">
+                            <label class="form-label mb-0">* Inicio del plan de acción:</label>
 
-                          <label class="form-label mb-0">* Inicio del plan de acción:</label>
-
-                          <p class="card-text">
-
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" type="date" id="inpPlanAIni" name="inpRetroIni" required="">
+                            <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" type="date" id="inpPlanAIni" name="inpPlanAIni" required>
 
                             <p for="inpPlanAIni" data-msg="Dato obligatorio"></p>
 
-                          </p>
+                          </div>
 
-                        </div>
+                          <div class="col-12 col-md-6">
 
-                        <div class="col">
+                            <label class="form-label mb-0">* Final del plan de acción:</label>
 
-                          <label class="form-label mb-0">* Final del plan de acción:</label>
-
-                          <p class="card-text">
-
-                            <input class="form-control form-control-solid-bordered " aria-describedby="transparentInputExample" type="date" id="inpPlanAFin" name="inpPlanAFin" required="">
+                            <input class="form-control form-control-solid-bordered" aria-describedby="transparentInputExample" type="date" id="inpPlanAFin" name="inpPlanAFin" required>
 
                             <p for="inpPlanAFin" data-msg="Dato obligatorio"></p>
 
-                          </p>
+                          </div>
 
                         </div>
 
@@ -467,9 +407,9 @@ $MenuP = $Conf->getMenusPadre();
 
                       <div class="row justify-content-center mb-4">
 
-                        <div class="col">
+                        <div class="col-12">
 
-                          <div class="d-flex justify-content-between mt-3">
+                          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-3">
 
                             <button type="button" class="btn btn-danger" onclick="window.location.href='ListadoEvaluaciones.php'">Regresar</button>
 
@@ -537,7 +477,7 @@ $MenuP = $Conf->getMenusPadre();
 
   <script src="assets/extra-libs/toastr/toastr-init.js"></script>
 
-  <script src="scripts/add-evaluation/General.js" charset="utf-8" type="module"></script>
+  <script src="scripts/add-evaluation/General.js" charset="utf-8"></script>
 
 
 

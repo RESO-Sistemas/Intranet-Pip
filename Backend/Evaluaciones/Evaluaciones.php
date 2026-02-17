@@ -1599,6 +1599,16 @@
             $q = "SELECT
                     TO_BASE64(EV.idEvaluaciones) AS idEvaluaciones,
                     EV.Titulo,
+                    EV.TipoEvaluacion,
+                    CASE WHEN EV.TipoEvaluacion = 1 THEN 'Evaluación 360°' ELSE 'Encuesta Normal' END AS TxTipoEvaluacion,
+                    EV.Periodicidad,
+                    CASE 
+                      WHEN EV.Periodicidad = 1 THEN 'Diario'
+                      WHEN EV.Periodicidad = 2 THEN 'Semanal'
+                      WHEN EV.Periodicidad = 3 THEN 'Mensual'
+                      WHEN EV.Periodicidad = 4 THEN 'Único'
+                      ELSE '-'
+                    END AS TxPeriodicidad,
                     EV.FechaInicio,
                     EV.FechaFin,
                     EV.RetroFechaIni,
@@ -1629,21 +1639,35 @@
           }
         }
 
-    function saveEvaluationNoE($inpTitulo,$inpFechaInicio,$inpFechaFin,$inpRetroFechaIni,$inpRetroFechaFin,$inpPlanAFechaIni,$inpPlanAFechaFin){
+    function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = ""){
       try {
-        $q = "INSERT INTO Evaluaciones(Titulo, FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin)
-	               VALUES ('$inpTitulo', '$inpFechaInicio', '$inpFechaFin', '$inpRetroFechaIni', '$inpRetroFechaFin', '$inpPlanAFechaIni',
-                         '$inpPlanAFechaFin');";
+        // Preparar valores para campos opcionales
+        $retroIni = $inpRetroFechaIni ? "'$inpRetroFechaIni'" : "NULL";
+        $retroFin = $inpRetroFechaFin ? "'$inpRetroFechaFin'" : "NULL";
+        $planAIni = $inpPlanAFechaIni ? "'$inpPlanAFechaIni'" : "NULL";
+        $planAFin = $inpPlanAFechaFin ? "'$inpPlanAFechaFin'" : "NULL";
+        $period = $periodicidad ? "'$periodicidad'" : "NULL";
+        
+        $q = "INSERT INTO Evaluaciones(Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin, EmpleadosParticipantes)
+	               VALUES ('$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', $retroIni, $retroFin, $planAIni, $planAFin, '$empleadosParticipantes');";
         $this->ExecuteQuery($q,array());
+        
+        // Mensaje según el tipo
+        $tipoMsg = $tipoEvaluacion == 1 ? "Evaluación 360°" : "Encuesta Normal";
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
           "ConMsg" => true,
-          "Msg" => "Evaluación registrada con éxito"
+          "Msg" => "$tipoMsg registrada con éxito"
         ];
         return json_encode($arrReturn);
       } catch (\Exception $e) {
-        return $e;
+        return json_encode([
+          "Resultado" => false,
+          "Siguiente" => false,
+          "ConMsg" => true,
+          "Msg" => "Error al registrar: " . $e->getMessage()
+        ]);
       }
     }
 
@@ -2888,6 +2912,113 @@
         return 1;
       } catch (\Exception $e) {
         return $e;
+      }
+    }
+
+    // Funciones para selección de participantes
+    function getDivisionesEvaluacion() {
+      try {
+        $q = "SELECT IdDivision, Division FROM Divisiones ORDER BY Division ASC;";
+        $res = $this->Select($q);
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $res
+        ]);
+      } catch (\Exception $e) {
+        return json_encode([
+          "Resultado" => false,
+          "Mensaje" => $e->getMessage()
+        ]);
+      }
+    }
+
+    function getSucursalesXDivisionEvaluacion($IdDivision) {
+      try {
+        if ($IdDivision == "" || $IdDivision == null) {
+          $q = "SELECT IdSucursal, Sucursal FROM SucursalDepto ORDER BY Sucursal ASC;";
+          $res = $this->Select($q);
+        } else {
+          $q = "SELECT IdSucursal, Sucursal FROM SucursalDepto WHERE IdDivision = ? ORDER BY Sucursal ASC;";
+          $res = $this->ExecuteQueryWithParam($q, [$IdDivision]);
+        }
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $res
+        ]);
+      } catch (\Exception $e) {
+        return json_encode([
+          "Resultado" => false,
+          "Mensaje" => $e->getMessage()
+        ]);
+      }
+    }
+
+    function getPuestosEvaluacion() {
+      try {
+        $q = "SELECT IdPuesto, Puesto FROM Puestos ORDER BY Puesto ASC;";
+        $res = $this->Select($q);
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $res
+        ]);
+      } catch (\Exception $e) {
+        return json_encode([
+          "Resultado" => false,
+          "Mensaje" => $e->getMessage()
+        ]);
+      }
+    }
+
+    function getEmpleadosParaEvaluacion($IdDivision = "", $IdSucursal = "", $IdPuesto = "") {
+      try {
+        $where = "WHERE E.Status = 1";
+        $params = [];
+        
+        if ($IdDivision != "" && $IdDivision != null) {
+          $where .= " AND E.IdDivision = ?";
+          $params[] = $IdDivision;
+        }
+        if ($IdSucursal != "" && $IdSucursal != null) {
+          $where .= " AND E.IdSucursal = ?";
+          $params[] = $IdSucursal;
+        }
+        if ($IdPuesto != "" && $IdPuesto != null) {
+          $where .= " AND E.IdPuesto = ?";
+          $params[] = $IdPuesto;
+        }
+
+        $q = "SELECT 
+                E.NoEmpleado, 
+                E.Nombre,
+                P.Puesto,
+                D.Division,
+                SD.Sucursal
+              FROM Empleados AS E
+              INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
+              INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
+              INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
+              $where
+              ORDER BY E.Nombre ASC;";
+        
+        if (count($params) > 0) {
+          $res = $this->ExecuteQueryWithParam($q, $params);
+        } else {
+          $res = $this->Select($q);
+        }
+
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $res
+        ]);
+      } catch (\Exception $e) {
+        return json_encode([
+          "Resultado" => false,
+          "Mensaje" => $e->getMessage()
+        ]);
       }
     }
 
