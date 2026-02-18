@@ -223,7 +223,25 @@ $MenuP = $Conf->getMenusPadre();
 
                         <div class="row mb-3">
 
-                          <div class="col-12">
+                          <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+
+                            <label class="form-label mb-0">* A quién va dirigido:</label>
+
+                            <select class="form-select form-control-solid-bordered" id="dirigidoA" required>
+
+                              <option value="">Seleccione el público objetivo</option>
+
+                              <option value="1">Empleados</option>
+
+                              <option value="2">Postulantes</option>
+
+                            </select>
+
+                            <p for="dirigidoA" data-msg="Debe especificar a quién va dirigido el cuestionario"></p>
+
+                          </div>
+
+                          <div class="col-12 col-lg-6">
 
                             <label class="form-label mb-0">* Titulo:</label>
 

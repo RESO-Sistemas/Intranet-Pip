@@ -184,6 +184,20 @@ function printListEvaluations(data) {
 
       {
 
+        field: "TxDirigidoA",
+
+        headerText: "Dirigido A",
+
+        width: 45,
+
+        textAlign: "Center",
+
+        filter: { type: "CheckBox" },
+
+      },
+
+      {
+
         field: "Restantes",
 
         headerText: "Restantes",

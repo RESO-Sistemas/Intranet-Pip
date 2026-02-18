@@ -1609,6 +1609,8 @@
                       WHEN EV.Periodicidad = 4 THEN 'Único'
                       ELSE '-'
                     END AS TxPeriodicidad,
+                    EV.DirigidoA,
+                    CASE WHEN EV.DirigidoA = 1 THEN 'Empleados' ELSE 'Postulantes' END AS TxDirigidoA,
                     EV.FechaInicio,
                     EV.FechaFin,
                     EV.RetroFechaIni,
@@ -1639,7 +1641,7 @@
           }
         }
 
-    function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = ""){
+    function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = "", $dirigidoA = 1){
       try {
         // Preparar valores para campos opcionales
         $retroIni = $inpRetroFechaIni ? "'$inpRetroFechaIni'" : "NULL";
@@ -1648,8 +1650,8 @@
         $planAFin = $inpPlanAFechaFin ? "'$inpPlanAFechaFin'" : "NULL";
         $period = $periodicidad ? "'$periodicidad'" : "NULL";
         
-        $q = "INSERT INTO Evaluaciones(Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin, EmpleadosParticipantes)
-	               VALUES ('$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', $retroIni, $retroFin, $planAIni, $planAFin, '$empleadosParticipantes');";
+        $q = "INSERT INTO Evaluaciones(Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin, EmpleadosParticipantes, DirigidoA)
+	               VALUES ('$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', $retroIni, $retroFin, $planAIni, $planAFin, '$empleadosParticipantes', '$dirigidoA');";
         $this->ExecuteQuery($q,array());
         
         // Mensaje según el tipo

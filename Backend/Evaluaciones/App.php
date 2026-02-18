@@ -304,6 +304,7 @@
     if ($op == "saveEvaluationNoE") {
       $inpTitulo = $_POST["inpTitulo"];
       $tipoEvaluacion = $_POST["tipoEvaluacion"];
+      $dirigidoA = $_POST["dirigidoA"];
       $periodicidad = isset($_POST["periodicidad"]) && $_POST["periodicidad"] !== 'null' ? $_POST["periodicidad"] : null;
       $inpFechaInicio = $_POST["inpFechaInicio"];
       $inpFechaFin = $_POST["inpFechaFin"];
@@ -312,7 +313,7 @@
       $inpPlanAFechaIni = isset($_POST["inpPlanAFechaIni"]) && $_POST["inpPlanAFechaIni"] !== 'null' ? $_POST["inpPlanAFechaIni"] : null;
       $inpPlanAFechaFin = isset($_POST["inpPlanAFechaFin"]) && $_POST["inpPlanAFechaFin"] !== 'null' ? $_POST["inpPlanAFechaFin"] : null;
       $empleadosParticipantes = isset($_POST["empleadosParticipantes"]) ? $_POST["empleadosParticipantes"] : "";
-      echo trim($Evaluaciones->saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, 
+      echo trim($Evaluaciones->saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $dirigidoA, $periodicidad, $inpFechaInicio, $inpFechaFin, 
         $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes
       ));
     }

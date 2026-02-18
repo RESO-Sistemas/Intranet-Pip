@@ -7,6 +7,7 @@ const title_c = document.getElementById('title_c'),
       inpPlanAFin = document.getElementById('inpPlanAFin'),
       tipoEvaluacion = document.getElementById('tipoEvaluacion'),
       periodicidad = document.getElementById('periodicidad'),
+      dirigidoA = document.getElementById('dirigidoA'),
       divPeriodicidad = document.getElementById('divPeriodicidad'),
       seccionRetroYPlan = document.getElementById('seccionRetroYPlan');
 
@@ -41,6 +42,38 @@ $(document).on('change', '#tipoEvaluacion', function() {
     $('#inpRetroFin').removeAttr('required');
     $('#inpPlanAIni').removeAttr('required');
     $('#inpPlanAFin').removeAttr('required');
+  }
+});
+
+// Event listener para cambio de "A quien va dirigido"
+$(document).on('change', '#dirigidoA', function() {
+  const dirigido = $(this).val();
+  console.log('Dirigido a:', dirigido);
+  
+  if (dirigido === '2') {
+    // Postulantes - Solo pueden usar Encuesta Normal
+    // Deshabilitar opción 360°
+    $('#tipoEvaluacion option[value="1"]').prop('disabled', true);
+    
+    // Si estaba seleccionada la evaluación 360°, resetear
+    if ($('#tipoEvaluacion').val() === '1') {
+      $('#tipoEvaluacion').val('');
+      // Ocultar periodicidad y quitar requisitos cuando se resetea
+      $('#divPeriodicidad').hide();
+      $('#periodicidad').val('').removeAttr('required');
+      $('#inpRetroIni').removeAttr('required');
+      $('#inpRetroFin').removeAttr('required');
+      $('#inpPlanAIni').removeAttr('required');
+      $('#inpPlanAFin').removeAttr('required');
+    }
+    
+    toastr.info('Para postulantes solo se permite la Encuesta Normal', 'Información');
+  } else if (dirigido === '1') {
+    // Empleados - Pueden usar cualquier tipo
+    $('#tipoEvaluacion option[value="1"]').prop('disabled', false);
+  } else {
+    // Ninguno seleccionado - Habilitar todas las opciones
+    $('#tipoEvaluacion option[value="1"]').prop('disabled', false);
   }
 });
 
@@ -139,6 +172,18 @@ $(document).on("click","#btn_SaveData",async function(){
     return;
   }
   
+  // Validar dirigido a
+  if (!dirigidoA.value) {
+    toastr.error('Debe especificar a quién va dirigido el cuestionario', 'Error de validación');
+    return;
+  }
+  
+  // Validar que los postulantes no puedan tener evaluación 360°
+  if (dirigidoA.value === '2' && tipoEvaluacion.value === '1') {
+    toastr.error('Los postulantes solo pueden tener Encuestas Normales, no Evaluaciones 360°', 'Error de validación');
+    return;
+  }
+  
   // Validar periodicidad si es encuesta normal
   if (tipoEvaluacion.value === '2' && !periodicidad.value) {
     toastr.error('Debe seleccionar una periodicidad para la encuesta normal', 'Error de validación');
@@ -174,6 +219,7 @@ async function saveEvaluationNoE(){
     op: "saveEvaluationNoE",
     inpTitulo: quitarEspaciosExtras(title_c.value).trim(),
     tipoEvaluacion: tipo,
+    dirigidoA: dirigidoA.value,
     periodicidad: tipo === '2' ? periodicidad.value : null,
     inpFechaInicio: inpFechaInicio.value,
     inpFechaFin: inpFechaFin.value,
