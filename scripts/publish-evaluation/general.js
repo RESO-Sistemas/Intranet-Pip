@@ -951,15 +951,87 @@ async function acceptPublicationOfTheEvaluation() {
 
   };
 
-  let ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  Cargando();
 
-  if (ajaxR !== undefined) {
+  try {
 
-    setTimeout(function () {
+    let respuesta = await $.ajax({
 
-      window.location.href = "ListadoEvaluaciones.php";
+      type: "post",
 
-    }, 1500);
+      url: url_m_Evaluaciones,
+
+      data: dataSend,
+
+      dataType: "json",
+
+      timeout: 60000,
+
+    });
+
+    console.log("acceptPublicationOfTheEvaluation - Respuesta:", respuesta);
+
+    QuitarCargando();
+
+    if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
+
+      const messageContent = `
+
+        <div class="alert-content">
+
+          <span class="alert-title">Completado!</span>
+
+          <span class="alert-text">${respuesta.Msg || "Evaluación publicada exitosamente."}.</span>
+
+        </div>`;
+
+      showBootstrapAlertSuc(messageContent, "top-right", 3000);
+
+      setTimeout(function () {
+
+        window.location.href = "ListadoEvaluaciones.php";
+
+      }, 1500);
+
+    } else {
+
+      const msg = respuesta && respuesta.Msg
+
+        ? respuesta.Msg
+
+        : "No se pudo publicar la evaluación.";
+
+      const messageContent = `
+
+        <div class="alert-content">
+
+          <span class="alert-title">Alerta!</span>
+
+          <span class="alert-text">${msg}</span>
+
+        </div>`;
+
+      showBootstrapAlertWar(messageContent, "top-right", 5000);
+
+    }
+
+  } catch (e) {
+
+    console.error("Error al publicar evaluación:", e);
+
+    QuitarCargando();
+
+    const messageContent =
+
+      '<div class="alert-content">' +
+
+      '<span class="alert-title">Error!</span>' +
+
+      '<span class="alert-text">No se pudo publicar la evaluación. Inténtelo de nuevo.</span>' +
+
+      '</div>';
+
+    showBootstrapAlert(messageContent, 'top-right', 5000);
 
   }
 

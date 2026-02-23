@@ -136,6 +136,10 @@ function printListEvaluations(data) {
 
     allowTextWrap: true,
 
+    allowPaging: true,
+
+    pageSettings: { pageSize: 10 },
+
     toolbar: ["Search"],
 
     columns: [
@@ -146,7 +150,7 @@ function printListEvaluations(data) {
 
         headerText: "Evaluación",
 
-        width: 70,
+        width: 100,
 
         textAlign: "Center",
 
@@ -160,7 +164,7 @@ function printListEvaluations(data) {
 
         headerText: "Tipo",
 
-        width: 50,
+        width: 70,
 
         textAlign: "Center",
 
@@ -174,41 +178,11 @@ function printListEvaluations(data) {
 
         headerText: "Periodicidad",
 
-        width: 45,
+        width: 60,
 
         textAlign: "Center",
 
         filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "TxDirigidoA",
-
-        headerText: "Dirigido A",
-
-        width: 45,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "Restantes",
-
-        headerText: "Restantes",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#RemainingTemplate",
 
       },
 
@@ -218,7 +192,7 @@ function printListEvaluations(data) {
 
         headerText: "Fecha Inicio",
 
-        width: 50,
+        width: 60,
 
         textAlign: "Center",
 
@@ -232,7 +206,7 @@ function printListEvaluations(data) {
 
         headerText: "Fecha Fin",
 
-        width: 50,
+        width: 60,
 
         textAlign: "Center",
 
@@ -244,7 +218,7 @@ function printListEvaluations(data) {
 
         field: "StatusActivado",
 
-        headerText: "Status Activado",
+        headerText: "Status",
 
         width: 80,
 
@@ -256,107 +230,195 @@ function printListEvaluations(data) {
 
       {
 
-        field: "TxStatus",
-
-        headerText: "Status",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-        template: "#statusTemplate",
-
-      },
-
-      {
-
         field: "idEvaluaciones",
 
-        headerText: "Preguntas",
+        headerText: "Acciones",
 
-        width: 40,
+        width: 50,
 
         textAlign: "Center",
 
         allowFiltering: false,
 
-        template: "#questTemplate",
-
-      },
-
-      {
-
-        field: "idEvaluaciones",
-
-        headerText: "Cambiar Status",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#updateStatusTemplate",
-
-      },
-
-      {
-
-        field: "idEvaluaciones",
-
-        headerText: "Ver Evaluados",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#viewEvTemplate",
-
-      },
-
-      {
-
-        field: "idEvaluaciones",
-
-        headerText: "Ver Resultados",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#viewResTemplate",
-
-      },
-
-      {
-
-        field: "idEvaluaciones",
-
-        headerText: "Publicar",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#shareTemplate",
+        template: "#verDetalleTemplate",
 
       },
 
     ],
+
+    dataBound: function () {
+
+      // Agregar botón de ayuda al header de "Status"
+
+      var headers = document.querySelectorAll("#table_Ev .e-headercelldiv");
+
+      headers.forEach(function (header) {
+
+        if (header.textContent.trim() === "Status" && !header.querySelector(".status-help-btn")) {
+
+          var helpBtn = document.createElement("span");
+
+          helpBtn.className = "material-symbols-outlined status-help-btn";
+
+          helpBtn.textContent = "help";
+
+          helpBtn.title = "¿Qué significa este status?";
+
+          helpBtn.style.cssText = "font-size:20px;cursor:pointer;vertical-align:middle;margin-left:6px;color:#0d6efd;background:#e7f1ff;border-radius:50%;padding:2px;transition:all 0.2s;";
+
+          helpBtn.addEventListener("click", function (e) {
+
+            e.stopPropagation();
+
+            showStatusHelpModal();
+
+          });
+
+          header.appendChild(helpBtn);
+
+        }
+
+      });
+
+    },
 
   });
 
   table_Ev.appendTo("#table_Ev");
 
 }
+
+
+
+function showStatusHelpModal() {
+
+  // Si ya existe el modal, solo abrirlo
+
+  let existing = document.getElementById("statusHelpModal");
+
+  if (!existing) {
+
+    let modalHTML = `
+
+    <div class="modal fade" id="statusHelpModal" tabindex="-1" aria-labelledby="statusHelpLabel" aria-hidden="true">
+
+      <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+          <div class="modal-header" style="background:#f8f9fa;border-bottom:1px solid #dee2e6;">
+
+            <h5 class="modal-title" id="statusHelpLabel" style="font-weight:600;">
+
+              <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:6px;color:#0d6efd;">info</span>
+
+              ¿Qué significa el Status?
+
+            </h5>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
+          </div>
+
+          <div class="modal-body" style="padding:1.5rem;">
+
+            <p style="margin-bottom:1rem;color:#555;">En esta tabla, la columna <strong>Status</strong> indica si la evaluación ha sido <strong>publicada</strong> o no:</p>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+
+              <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#28a745;"></span>
+
+              <div>
+
+                <strong style="color:#28a745;">Activado</strong>
+
+                <p style="margin:0;font-size:0.9rem;color:#666;">La evaluación ya fue publicada y está disponible para que los evaluadores la contesten.</p>
+
+              </div>
+
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+
+              <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#dc3545;"></span>
+
+              <div>
+
+                <strong style="color:#dc3545;">No Activado</strong>
+
+                <p style="margin:0;font-size:0.9rem;color:#666;">La evaluación aún no ha sido publicada. Debe configurarse y publicarse para que esté disponible.</p>
+
+              </div>
+
+            </div>
+
+            <hr style="margin:1rem 0;">
+
+            <p style="font-size:0.85rem;color:#888;margin:0;">
+
+              <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:4px;">lightbulb</span>
+
+              <em>Este status es diferente al de "Activo/Inactivo" que aparece en el detalle, el cual controla si la evaluación está habilitada o deshabilitada en el sistema.</em>
+
+            </p>
+
+          </div>
+
+          <div class="modal-footer" style="border-top:1px solid #dee2e6;">
+
+            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Entendido</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>`;
+
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+    existing = document.getElementById("statusHelpModal");
+
+  }
+
+  let modal = new bootstrap.Modal(existing);
+
+  modal.show();
+
+}
+
+window.verDetalleSY = function (e) {
+
+  let div = document.createElement("div");
+
+  let btn = document.createElement("a");
+
+  btn.className = "btn btn-sm btn-primary";
+
+  btn.href = "DetalleEvaluacion.php?EV=" + encodeURIComponent(e.idEvaluaciones);
+
+  btn.title = "Ver Detalle";
+
+  let icon = document.createElement("span");
+
+  icon.className = "material-symbols-outlined";
+
+  icon.textContent = "visibility";
+
+  icon.style.verticalAlign = "middle";
+
+  btn.appendChild(icon);
+
+  let text = document.createTextNode(" Detalle");
+
+  btn.appendChild(text);
+
+  div.appendChild(btn);
+
+  return div.outerHTML;
+
+};
 
 
 
@@ -895,10 +957,6 @@ async function acceptQuestionsEv(iEvaluation) {
 function openShareEvaluation(evaluation) {
 
   window.location.href = `publish-evaluation.php?EV=${evaluation}`;
-
-  // $("#evPerShare").val(evaluation);
-
-  // openMMinNoMaximizable('Publicar evaluación','contentUploadFile',false);
 
 }
 

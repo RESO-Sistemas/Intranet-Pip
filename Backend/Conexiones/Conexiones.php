@@ -21,9 +21,31 @@ class Conexiones{
 			while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
 				$array[] = $row;
 			}
+			// Consumir todos los result sets del SP para evitar que PDO se bloquee
+			while ($res->nextRowset()) {
+				// avanzar hasta que no haya más result sets
+			}
+			$res->closeCursor();
 			return $array;
 		} catch (\Exception $e) {
 			error_log($e);
+		}
+	}
+
+	// Ejecutar un SP sin intentar leer result sets (para SPs que solo hacen INSERT/UPDATE)
+	// Usa exec() en vez de prepare/execute para evitar que PDO se bloquee con los result sets
+	function ProcedureExec($q,$parametros){
+		try {
+			$sql = $q;
+			foreach ($parametros as $param) {
+				$quoted = $this->dbh->quote($param);
+				$sql = preg_replace('/\?/', $quoted, $sql, 1);
+			}
+			$this->dbh->exec($sql);
+			return true;
+		} catch (\Exception $e) {
+			error_log($e);
+			return false;
 		}
 	}
 

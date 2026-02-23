@@ -86,47 +86,11 @@
           <div class="chat-windows"></div>
         </div>
 
-        <div class="modal fade" id="faltantes" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true">
-          <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title h4" id="evSelectedF"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div id="t_unfinished_employees"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
-  <script type="text/x-jsrender" id="statusTemplate">
-    ${statusDetail(data)}
-    </script>
-  <script type="text/x-jsrender" id="updateStatusTemplate">
-    ${updateStatusSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="viewEvTemplate">
-    ${viewEvSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="viewResTemplate">
-    ${viewResSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="questTemplate">
-    ${questsSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="shareTemplate">
-    ${shareSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="RemainingTemplate">
-    ${RemainingSY(data)}
-    </script>
-  <script type="text/x-jsrender" id="t_unfinishedTemplate">
-    ${t_unfinishedSF(data)}
+  <script type="text/x-jsrender" id="verDetalleTemplate">
+    ${verDetalleSY(data)}
     </script>
 
   <!-- neptune Javascripts -->

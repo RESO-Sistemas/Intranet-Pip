@@ -1641,6 +1641,67 @@
           }
         }
 
+    function getEvaluationById($idEvaluacion){
+          try {
+            $idDecoded = base64_decode($idEvaluacion);
+            $q = "SELECT
+                    TO_BASE64(EV.idEvaluaciones) AS idEvaluaciones,
+                    EV.Titulo,
+                    EV.TipoEvaluacion,
+                    CASE WHEN EV.TipoEvaluacion = 1 THEN 'Evaluación 360°' ELSE 'Encuesta Normal' END AS TxTipoEvaluacion,
+                    EV.Periodicidad,
+                    CASE 
+                      WHEN EV.Periodicidad = 1 THEN 'Diario'
+                      WHEN EV.Periodicidad = 2 THEN 'Semanal'
+                      WHEN EV.Periodicidad = 3 THEN 'Mensual'
+                      WHEN EV.Periodicidad = 4 THEN 'Único'
+                      ELSE '-'
+                    END AS TxPeriodicidad,
+                    EV.DirigidoA,
+                    CASE WHEN EV.DirigidoA = 1 THEN 'Empleados' ELSE 'Postulantes' END AS TxDirigidoA,
+                    EV.FechaInicio,
+                    EV.FechaFin,
+                    EV.RetroFechaIni,
+                    EV.RetroFechaFin,
+                    EV.PlanAFechaIni,
+                    EV.PlanAFechaFin,
+                    EV.Status,
+                    EV.PreguntasAceptadas,
+                    CASE WHEN EV.Status = 0 THEN 'Inactivo' ELSE 'Activo' END AS TxStatus,
+                    CASE WHEN EV.Activado = 0 THEN 'Evaluación no activada' ELSE 'Evaluación activada' END AS StatusActivado,
+                    EV.Activado,
+                    EXISTS (SELECT 1 FROM PreguntasEvaluacion WHERE idEvaluaciones = EV.idEvaluaciones) AS ConPreguntas,
+                    (SELECT COUNT(*) FROM EvaluacionDetalle WHERE idEvaluaciones = EV.idEvaluaciones AND Status = 1 AND StatusEvaluado = 1) AS CantRespondidasM,
+                    ((SELECT COUNT(*) FROM EvaluacionDetalle WHERE idEvaluaciones = EV.idEvaluaciones AND Status = 1) - (SELECT COUNT(*) FROM EvaluacionDetalle WHERE idEvaluaciones = EV.idEvaluaciones AND Status = 1 AND StatusEvaluado = 1)) AS Restantes
+                FROM
+                    Evaluaciones AS EV
+                WHERE
+                    EV.idEvaluaciones = '$idDecoded'
+                LIMIT 1;";
+            $resultado = $this->Select($q);
+            if (count($resultado) > 0) {
+              $arrReturn = [
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado[0]
+              ];
+            } else {
+              $arrReturn = [
+                "Resultado" => false,
+                "Siguiente" => false,
+                "Msg" => "Evaluación no encontrada"
+              ];
+            }
+            return json_encode($arrReturn);
+          } catch (\Exception $e) {
+            return json_encode([
+              "Resultado" => false,
+              "Siguiente" => false,
+              "Msg" => $e->getMessage()
+            ]);
+          }
+        }
+
     function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = "", $dirigidoA = 1){
       try {
         // Preparar valores para campos opcionales
@@ -2686,9 +2747,50 @@
 
     function acceptPublicationOfTheEvaluation($ev){
       try {
-        $ev = base64_decode($ev);
+        // El SP puede tardar >10s, asegurar que PHP no corte la ejecución
+        set_time_limit(120);
+        
+        $evDecoded = base64_decode($ev);
+        
+        // Verificar que la evaluación no esté ya activada
+        $check = $this->SelectNotClose("SELECT Activado, PreguntasAceptadas FROM Evaluaciones WHERE idEvaluaciones = '$evDecoded'");
+        if (count($check) === 0) {
+          return json_encode([
+            "Resultado" => false,
+            "Siguiente" => false,
+            "ConMsg" => true,
+            "Msg" => "La evaluación no fue encontrada."
+          ]);
+        }
+        if ($check[0]['Activado'] == 1) {
+          return json_encode([
+            "Resultado" => true,
+            "Siguiente" => true,
+            "ConMsg" => true,
+            "Msg" => "La evaluación ya se encuentra activada."
+          ]);
+        }
+        if ($check[0]['PreguntasAceptadas'] != 1) {
+          return json_encode([
+            "Resultado" => false,
+            "Siguiente" => false,
+            "ConMsg" => true,
+            "Msg" => "Las preguntas de la evaluación aún no han sido aceptadas."
+          ]);
+        }
+
         $q = "CALL sp_PublicarEvaluacion(?)";
-        $this->ProcedureWithParam($q,array($ev));
+        $spResult = $this->ProcedureExec($q, array($evDecoded));
+        
+        if ($spResult === false) {
+          return json_encode([
+            "Resultado" => false,
+            "Siguiente" => false,
+            "ConMsg" => true,
+            "Msg" => "Error al ejecutar el procedimiento de publicación."
+          ]);
+        }
+
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
@@ -2697,7 +2799,13 @@
         ];
         return json_encode($arrReturn);
       } catch (\Exception $e) {
-        return $e;
+        error_log("Error en acceptPublicationOfTheEvaluation: " . $e->getMessage());
+        return json_encode([
+          "Resultado" => false,
+          "Siguiente" => false,
+          "ConMsg" => true,
+          "Msg" => "Error al publicar la evaluación: " . $e->getMessage()
+        ]);
       }
     }
 

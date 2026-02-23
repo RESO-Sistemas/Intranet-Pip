@@ -301,6 +301,11 @@
       echo trim($Evaluaciones->getListEvaluations());
     }
 
+    if ($op == "getEvaluationById") {
+      $idEvaluacion = $_POST["idEvaluacion"];
+      echo trim($Evaluaciones->getEvaluationById($idEvaluacion));
+    }
+
     if ($op == "saveEvaluationNoE") {
       $inpTitulo = $_POST["inpTitulo"];
       $tipoEvaluacion = $_POST["tipoEvaluacion"];

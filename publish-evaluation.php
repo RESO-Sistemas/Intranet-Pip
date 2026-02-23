@@ -399,72 +399,6 @@
 
         <div class="chat-windows"></div>
 
-
-
-        <div id="contentNewEvaluator" class="modal">
-
-          <div class="modal-content">
-
-            <div class="row">
-
-              <div class="col s12">
-
-                <h4>Agregar nuevo evaluador</h4>
-
-                <hr>
-
-              </div>
-
-              <div class="col s12">
-
-                <h6>Seleccione al evaluado</h6>
-
-                <select class="browser-default" style="width:100%" id="slct_newEvaluated"></select>
-
-                <hr>
-
-              </div>
-
-              <div class="col s12">
-
-                <h6>Seleccione al evaluador</h6>
-
-                <select class="browser-default" style="width:100%" id="slct_newEvaluator"></select>
-
-                <hr>
-
-              </div>
-
-              <div class="col s12">
-
-                <h6>Relación del empleado evaluador</h6>
-
-                <select id="typeNewEvaluator">
-
-                  <option value="1">JEFE</option>
-
-                  <option value="2">PAR</option>
-
-                  <option value="3">SUBORDINADO</option>
-
-                </select>
-
-                <hr>
-
-              </div>
-
-              <div class="col s12 col m6 offset-m3">
-
-                <button type="button" id="saveNewEvaluator" class="btn-actionGreen">Guardar nuevo evaluador</button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
 
     </div>
@@ -500,8 +434,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="assets/libs/toastr/build/toastr.min.js"></script>
   <script src="assets/extra-libs/toastr/toastr-init.js"></script>
-  <script src="scripts/publish-evaluation/data.js" charset="utf-8"></script>
-  <script src="scripts/publish-evaluation/general.js" charset="utf-8"></script>
+  <script src="scripts/publish-evaluation/data.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/publish-evaluation/general.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 
