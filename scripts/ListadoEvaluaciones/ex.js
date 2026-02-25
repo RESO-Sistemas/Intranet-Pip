@@ -828,6 +828,8 @@ window.questsSY = function (e) {
 
 window.shareSY = function (e) {
 
+  console.log("shareSY - Datos recibidos:", e, "TipoEvaluacion:", e.TipoEvaluacion);
+
   let div = document.createElement("div");
 
 
@@ -848,7 +850,7 @@ window.shareSY = function (e) {
 
       } else {
 
-        // Botón para compartir evaluación
+        // Botón para compartir evaluación - pasar TipoEvaluacion
 
         let iBtn = document.createElement("span");
 
@@ -858,7 +860,7 @@ window.shareSY = function (e) {
 
           "onclick",
 
-          `openShareEvaluation('${e.idEvaluaciones}')`
+          `openShareEvaluation('${e.idEvaluaciones}', ${e.TipoEvaluacion})`
 
         );
 
@@ -954,9 +956,141 @@ async function acceptQuestionsEv(iEvaluation) {
 
 
 
-function openShareEvaluation(evaluation) {
+// Función para abrir la configuración de evaluadores o publicar directamente
 
-  window.location.href = `publish-evaluation.php?EV=${evaluation}`;
+// tipoEvaluacion: 1 = Evaluación 360°, 2 = Encuesta Normal
+
+async function openShareEvaluation(evaluation, tipoEvaluacion) {
+
+  console.log("openShareEvaluation - evaluation:", evaluation, "tipoEvaluacion:", tipoEvaluacion, "tipo:", typeof tipoEvaluacion);
+
+  
+
+  // Convertir a número para asegurar comparación correcta
+
+  const tipo = parseInt(tipoEvaluacion);
+
+  
+
+  if (tipo === 1) {
+
+    // Evaluación 360° - Ir a la página de configuración de evaluadores
+
+    console.log("Redirigiendo a publish-evaluation.php (360°)");
+
+    window.location.href = `publish-evaluation.php?EV=${evaluation}`;
+
+  } else {
+
+    // Encuesta Normal - Publicar directamente sin configurar evaluadores
+
+    console.log("Publicando directamente (Encuesta Normal)");
+
+    let resultDial = await dialogConfirmSAlert(
+
+      "¿Desea publicar esta encuesta?",
+
+      "Al publicar, la encuesta estará disponible para que los empleados participantes la respondan."
+
+    );
+
+    if (resultDial) {
+
+      await publishNormalSurveyDirectly(evaluation);
+
+    }
+
+  }
+
+}
+
+
+
+// Función para publicar directamente una Encuesta Normal
+
+async function publishNormalSurveyDirectly(evaluation) {
+
+  let dataSend = {
+
+    op: "acceptPublicationOfTheEvaluation",
+
+    ev: evaluation,
+
+  };
+
+  
+
+  // Mostrar loader
+
+  $.blockUI({ 
+
+    message: '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><span class="ms-2">Publicando encuesta...</span></div>',
+
+    css: { 
+
+      border: 'none', 
+
+      padding: '15px', 
+
+      backgroundColor: '#fff', 
+
+      borderRadius: '10px',
+
+      opacity: .9 
+
+    }
+
+  });
+
+  
+
+  try {
+
+    let respuesta = await $.ajax({
+
+      type: "post",
+
+      url: url_m_Evaluaciones,
+
+      data: dataSend,
+
+      dataType: "json",
+
+      timeout: 60000,
+
+    });
+
+    
+
+    $.unblockUI();
+
+    
+
+    if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
+
+      toastr.success(respuesta.Msg || "Encuesta publicada exitosamente.", "¡Completado!");
+
+      // Recargar la lista de evaluaciones
+
+      getListEvaluations();
+
+    } else {
+
+      const msg = respuesta && respuesta.Msg ? respuesta.Msg : "No se pudo publicar la encuesta.";
+
+      toastr.warning(msg, "Alerta");
+
+    }
+
+  } catch (e) {
+
+    $.unblockUI();
+
+    console.error("Error al publicar encuesta:", e);
+
+    toastr.error("No se pudo publicar la encuesta. Inténtelo de nuevo.", "Error");
+
+  }
 
 }
 

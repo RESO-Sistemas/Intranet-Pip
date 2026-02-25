@@ -108,7 +108,7 @@
   <!-- Scripts específicos de esta página -->
   <script src="scripts/global.js" charset="utf-8"></script>
   <script src="scripts/ListadoEvaluaciones/General.js" charset="utf-8"></script>
-  <script src="scripts/ListadoEvaluaciones/ex.js" charset="utf-8"></script>
+  <script src="scripts/ListadoEvaluaciones/ex.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 

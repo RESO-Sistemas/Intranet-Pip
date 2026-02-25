@@ -965,7 +965,7 @@ async function acceptPublicationOfTheEvaluation() {
 
       dataType: "json",
 
-      timeout: 60000,
+      timeout: 30000, // Reducido a 30 segundos
 
     });
 
@@ -975,17 +975,7 @@ async function acceptPublicationOfTheEvaluation() {
 
     if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
 
-      const messageContent = `
-
-        <div class="alert-content">
-
-          <span class="alert-title">Completado!</span>
-
-          <span class="alert-text">${respuesta.Msg || "Evaluación publicada exitosamente."}.</span>
-
-        </div>`;
-
-      showBootstrapAlertSuc(messageContent, "top-right", 3000);
+      toastr.success(respuesta.Msg || "Evaluación publicada exitosamente.", "¡Completado!");
 
       setTimeout(function () {
 
@@ -1001,17 +991,7 @@ async function acceptPublicationOfTheEvaluation() {
 
         : "No se pudo publicar la evaluación.";
 
-      const messageContent = `
-
-        <div class="alert-content">
-
-          <span class="alert-title">Alerta!</span>
-
-          <span class="alert-text">${msg}</span>
-
-        </div>`;
-
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
+      toastr.warning(msg, "Alerta");
 
     }
 
@@ -1021,17 +1001,23 @@ async function acceptPublicationOfTheEvaluation() {
 
     QuitarCargando();
 
-    const messageContent =
+    
 
-      '<div class="alert-content">' +
+    let errorMsg = "No se pudo publicar la evaluación. Inténtelo de nuevo.";
 
-      '<span class="alert-title">Error!</span>' +
+    if (e.statusText === "timeout") {
 
-      '<span class="alert-text">No se pudo publicar la evaluación. Inténtelo de nuevo.</span>' +
+      errorMsg = "La operación tardó demasiado. Por favor verifique si la evaluación se publicó e intente de nuevo.";
 
-      '</div>';
+    } else if (e.responseText) {
 
-    showBootstrapAlert(messageContent, 'top-right', 5000);
+      console.error("Respuesta del servidor:", e.responseText);
+
+    }
+
+    
+
+    toastr.error(errorMsg, "Error");
 
   }
 

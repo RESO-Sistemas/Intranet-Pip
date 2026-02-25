@@ -303,8 +303,76 @@ async function acceptQuestionsEv(iEvaluation) {
   }
 }
 
-function openShareEvaluation(evaluation) {
-  window.location.href = "publish-evaluation.php?EV=" + evaluation;
+// Función para publicar - diferencia entre 360° y Encuesta Normal
+async function openShareEvaluation(evaluation) {
+  // Usar currentEvaluation que tiene los datos de la evaluación actual
+  const tipoEvaluacion = currentEvaluation ? currentEvaluation.TipoEvaluacion : null;
+  
+  console.log("openShareEvaluation - TipoEvaluacion:", tipoEvaluacion);
+  
+  if (tipoEvaluacion == 1) {
+    // Evaluación 360° - Ir a la página de configuración de evaluadores
+    console.log("Redirigiendo a publish-evaluation.php (360°)");
+    window.location.href = "publish-evaluation.php?EV=" + evaluation;
+  } else {
+    // Encuesta Normal (tipo 2) - Publicar directamente sin configurar evaluadores
+    console.log("Publicando directamente (Encuesta Normal)");
+    let resultDial = await dialogConfirmSAlert(
+      "¿Desea publicar esta encuesta?",
+      "Al publicar, la encuesta estará disponible para que los participantes la respondan."
+    );
+    if (resultDial) {
+      await publishNormalSurveyDirectly(evaluation);
+    }
+  }
+}
+
+// Función para publicar directamente una Encuesta Normal
+async function publishNormalSurveyDirectly(evaluation) {
+  let dataSend = {
+    op: "acceptPublicationOfTheEvaluation",
+    ev: evaluation,
+  };
+  
+  // Mostrar loader
+  $.blockUI({ 
+    message: '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><span class="ms-2">Publicando encuesta...</span></div>',
+    css: { 
+      border: 'none', 
+      padding: '15px', 
+      backgroundColor: '#fff', 
+      borderRadius: '10px',
+      opacity: .9 
+    }
+  });
+  
+  try {
+    let respuesta = await $.ajax({
+      type: "post",
+      url: url_m_Evaluaciones,
+      data: dataSend,
+      dataType: "json",
+      timeout: 30000,
+    });
+    
+    $.unblockUI();
+    
+    if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
+      toastr.success(respuesta.Msg || "Encuesta publicada exitosamente.", "¡Completado!");
+      // Recargar la página de detalle para reflejar cambios
+      setTimeout(function() {
+        const evId = getEVParam();
+        loadEvaluationDetail(evId);
+      }, 1500);
+    } else {
+      const msg = respuesta && respuesta.Msg ? respuesta.Msg : "No se pudo publicar la encuesta.";
+      toastr.warning(msg, "Alerta");
+    }
+  } catch (e) {
+    $.unblockUI();
+    console.error("Error al publicar encuesta:", e);
+    toastr.error("No se pudo publicar la encuesta. Inténtelo de nuevo.", "Error");
+  }
 }
 
 async function viewUnfinishedEmployees(ev, t) {
