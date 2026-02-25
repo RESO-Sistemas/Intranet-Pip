@@ -1,14 +1,44 @@
 <!-- ========================================
      HEADER - Notificaciones y Menú de Usuario
      ======================================== -->
+<style>
+  /* Asegurar que notificaciones y perfil estén siempre visibles a la derecha */
+  .navbar-nav .nav-item.d-flex {
+    display: flex !important;
+  }
+  
+  .navbar .d-flex {
+    margin-left: auto !important;
+  }
+  
+  /* Responsive - mantener visibles en todos los tamaños */
+  @media (max-width: 991px) {
+    .navbar-nav .nav-item.d-flex {
+      display: flex !important;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .navbar-nav .nav-item.d-flex {
+      display: flex !important;
+    }
+  }
+  
+  /* Asegurar posición a la derecha */
+  .navbar-nav {
+    flex-direction: row;
+    align-items: center;
+  }
+</style>
+
 <div class="app-header">
   <nav class="navbar navbar-light navbar-expand">
     <div class="container-fluid">
-      <!-- Botón para toggle del sidebar -->
-      <div class="navbar-nav" id="navbarNav">
+      <!-- Botón para toggle del sidebar (solo visible en pantallas pequeñas) -->
+      <div class="navbar-nav d-block d-lg-none" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">first_page</i></a>
+            <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">menu</i></a>
           </li>
         </ul>
       </div>
@@ -17,8 +47,8 @@
       <div class="d-flex">
         <ul class="navbar-nav">
 
-          <!-- NOTIFICACIONES - Desktop -->
-          <li class="nav-item hidden-on-mobile">
+          <!-- NOTIFICACIONES - Siempre visibles a la derecha -->
+          <li class="nav-item d-flex">
             <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">
               <i class="material-icons">notifications</i>
             </a>
@@ -34,8 +64,8 @@
             </div>
           </li>
 
-          <!-- FOTO DE PERFIL Y MENÚ DE USUARIO - Desktop -->
-          <li class="nav-item hidden-on-mobile">
+          <!-- FOTO DE PERFIL Y MENÚ DE USUARIO - Siempre visible a la derecha -->
+          <li class="nav-item d-flex">
             <a
               class="nav-link dropdown-toggle"
               id="userDropDown"
@@ -67,7 +97,7 @@
                 <a
                   class="dropdown-item d-flex align-items-center"
                   href="index.php">
-                  <i class="material-icons me-2">home</i>Inicioooooooooooooooo
+                  <i class="material-icons me-2">home</i>Inicio
                 </a>
               </li>
               <li>
@@ -80,12 +110,7 @@
             </ul>
           </li>
 
-          <!-- MENÚ HAMBURGER - Mobile (visible solo en móviles) -->
-          <li class="nav-item visible-on-mobile">
-            <a class="nav-link" href="#" id="mobileMenuToggle" onclick="event.preventDefault(); toggleMobileMenu();">
-              <i class="material-icons">menu</i>
-            </a>
-          </li>
+
 
         </ul>
       </div>
