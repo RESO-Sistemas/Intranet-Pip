@@ -1014,7 +1014,7 @@ async function dialogConfirmSAlert(title, text = "", icon = "warning") {
       text: `${text}`,
       icon: `${icon}`,
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#F7DC6F",
       cancelButtonColor: "#d33",
       confirmButtonText: "Aceptar",
       cancelButtonText: "Cancelar",

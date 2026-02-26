@@ -117,7 +117,7 @@ $("#to-recover").click(function () {
 //       "-webkit-border-radius": "10px",
 //       "-moz-border-radius": "10px",
 //       opacity: 0.5,
-//       color: "#2269f5",
+//       color: "#F7DC6F",
 //     },
 //   });
 //   let email = await $("#txtEmailRecuperarPass").val();
@@ -157,7 +157,7 @@ $("#idEnviaEmail").click(async function () {
       "-webkit-border-radius": "10px",
       "-moz-border-radius": "10px",
       opacity: 0.5,
-      color: "#2269f5",
+      color: "#F7DC6F",
     },
   });
 

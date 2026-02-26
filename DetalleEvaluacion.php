@@ -19,7 +19,7 @@
 
   <style>
     .detail-card {
-      border-left: 4px solid #5b73e8;
+      border-left: 4px solid #F7DC6F;
       margin-bottom: 1rem;
     }
     .detail-label {
@@ -52,7 +52,7 @@
       font-size: 0.85rem;
     }
     .badge-activo {
-      background-color: #5b73e8;
+      background-color: #F7DC6F;
       color: #fff;
       padding: 0.35em 0.65em;
       border-radius: 0.25rem;

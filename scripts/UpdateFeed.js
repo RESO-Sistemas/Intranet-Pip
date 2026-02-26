@@ -615,7 +615,7 @@ async function eliminarArchivoFeedSelected(archivo) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#3085d6",
+    confirmButtonColor: "#F7DC6F",
 
     cancelButtonColor: "#d33",
 

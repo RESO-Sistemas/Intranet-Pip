@@ -129,7 +129,7 @@ async function updateStatusSolicitud(Val,Solicitud){
     text: "",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
+    confirmButtonColor: '#F7DC6F',
     cancelButtonColor: '#d33',
     cancelButtonText: 'Cancelar',
     confirmButtonText: 'Aceptar'

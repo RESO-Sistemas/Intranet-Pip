@@ -264,7 +264,7 @@ function printListEvaluations(data) {
 
           helpBtn.title = "¿Qué significa este status?";
 
-          helpBtn.style.cssText = "font-size:20px;cursor:pointer;vertical-align:middle;margin-left:6px;color:#0d6efd;background:#e7f1ff;border-radius:50%;padding:2px;transition:all 0.2s;";
+          helpBtn.style.cssText = "font-size:20px;cursor:pointer;vertical-align:middle;margin-left:6px;color:#F7DC6F;background:#FFF8E1;border-radius:50%;padding:2px;transition:all 0.2s;";
 
           helpBtn.addEventListener("click", function (e) {
 
@@ -310,7 +310,7 @@ function showStatusHelpModal() {
 
             <h5 class="modal-title" id="statusHelpLabel" style="font-weight:600;">
 
-              <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:6px;color:#0d6efd;">info</span>
+              <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:6px;color:#F7DC6F;">info</span>
 
               ¿Qué significa el Status?
 

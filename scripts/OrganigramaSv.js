@@ -118,7 +118,7 @@ function clickElement(args) {
       icon: "question",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      confirmButtonColor: "#F7DC6F",
       denyButtonColor: "#d33",
       confirmButtonText: "Editar",
       denyButtonText: `Eliminar`,
