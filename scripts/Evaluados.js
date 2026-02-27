@@ -523,7 +523,7 @@ async function verificaDeleteEvaluador(val, name) {
 
     cancelButtonText: "No, mantener",
 
-    confirmButtonColor: "#F7DC6F", // azul (Bootstrap primary)
+    confirmButtonColor: "#ffc407", // azul (Bootstrap primary)
 
     cancelButtonColor: "#dc3545", // rojo (Bootstrap danger)
 
@@ -1033,7 +1033,7 @@ async function addEmpleadoEvaluador(val, empleado) {
 
     cancelButtonText: "Cancelar",
 
-    confirmButtonColor: "#F7DC6F", // azul (Bootstrap primary)
+    confirmButtonColor: "#ffc407", // azul (Bootstrap primary)
 
     cancelButtonColor: "#dc3545", // rojo (Bootstrap danger)
 

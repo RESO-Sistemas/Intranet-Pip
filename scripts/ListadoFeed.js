@@ -136,7 +136,7 @@ async function eliminarFeed(feed) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
 
     cancelButtonColor: "#d33",
 

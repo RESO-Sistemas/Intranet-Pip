@@ -162,7 +162,7 @@ async function insertaEmpleadosExcel () {
   text: "",
   icon: 'warning',
   showCancelButton: true,
-  confirmButtonColor: '#F7DC6F',
+  confirmButtonColor: '#ffc407',
   cancelButtonColor: '#d33',
   cancelButtonText: 'Cancelar',
   confirmButtonText: 'Agregar Empleados'
@@ -782,7 +782,7 @@ function deshabilitarEmpleado (val) {
   text: "",
   icon: 'warning',
   showCancelButton: true,
-  confirmButtonColor: '#F7DC6F',
+  confirmButtonColor: '#ffc407',
   cancelButtonColor: '#d33',
   confirmButtonText: 'Deshabilitar'
   }).then((result) => {
@@ -893,7 +893,7 @@ async function insertaDiasVacaciones () {
   text: "",
   icon: 'warning',
   showCancelButton: true,
-  confirmButtonColor: '#F7DC6F',
+  confirmButtonColor: '#ffc407',
   cancelButtonColor: '#d33',
   cancelButtonText: 'Cancelar',
   confirmButtonText: 'Asignar Vacaciones'

@@ -19,7 +19,7 @@
 
   <style>
     .detail-card {
-      border-left: 4px solid #F7DC6F;
+      border-left: 4px solid #ffc407;
       margin-bottom: 1rem;
     }
     .detail-label {
@@ -52,18 +52,26 @@
       font-size: 0.85rem;
     }
     .badge-activo {
-      background-color: #F7DC6F;
+      background-color: #28a745;
       color: #fff;
       padding: 0.35em 0.65em;
       border-radius: 0.25rem;
       font-size: 0.85rem;
     }
     .badge-inactivo {
-      background-color: #6c757d;
+      background-color: #dc3545;
       color: #fff;
       padding: 0.35em 0.65em;
       border-radius: 0.25rem;
       font-size: 0.85rem;
+    }
+    .btn-back {
+      background-color: #F8F6F2 !important;
+      border-color: #F8F6F2 !important;
+    }
+    .btn-back:hover {
+      background-color: #EDE9E0 !important;
+      border-color: #EDE9E0 !important;
     }
     .badge-dirigido {
       display: inline-block;
@@ -119,21 +127,14 @@
               </div>
             </div>
 
-            <!-- Breadcrumb / Back -->
-            <div class="row mb-2">
-              <div class="col">
-                <a href="ListadoEvaluaciones.php" class="btn btn-outline-secondary btn-sm">
-                  <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">arrow_back</span>
+            <!-- Page Heading -->
+            <div class="page-description d-flex align-items-center justify-content-between">
+              <h1 id="pageTitle" class="mb-0">Detalle de Evaluación</h1>
+              <div class="page-description-actions">
+                <a href="ListadoEvaluaciones.php" class="btn btn-light btn-rounded btn-back">
+                  <i class="material-icons-two-tone" style="vertical-align: middle; font-size: 20px;">arrow_back</i>
                   Volver al Listado
                 </a>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col">
-                <div class="page-description">
-                  <h1 id="pageTitle">Detalle de Evaluación</h1>
-                </div>
               </div>
             </div>
 

@@ -156,7 +156,7 @@ async function updateStatusSolicitud(Val, Solicitud) {
     text: "",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Aceptar",
@@ -210,7 +210,7 @@ async function getDetalleSolicitud(estado, solicitud) {
     html: contHTML,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
     cancelButtonColor: "#d33",
     confirmButtonText: "Aceptar",
     cancelButtonText: "Cancelar",
@@ -248,7 +248,7 @@ async function getDetalleSolicitud(estado, solicitud) {
       title: "Cancelado",
       text: "No se realizó ninguna acción",
       icon: "info",
-      confirmButtonColor: "#F7DC6F",
+      confirmButtonColor: "#ffc407",
       confirmButtonText: "Ok",
     });
   }
@@ -490,7 +490,7 @@ async function regresarEstadoSolicitudJefe(val) {
     `,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
     cancelButtonColor: "#d33",
     confirmButtonText: "Aceptar",
     cancelButtonText: "Cancelar",
@@ -519,7 +519,7 @@ async function regresarEstadoSolicitudJefe(val) {
         title: "Éxito",
         text: 'Estado de solicitud regresado a "Solicitud pendiente de revisar".',
         showConfirmButton: true,
-        confirmButtonColor: "#F7DC6F",
+        confirmButtonColor: "#ffc407",
       });
       await getMisSolicitudesPorRevisar();
       await getMisSolicitudesVacacionesEstadoNomina();
@@ -538,7 +538,7 @@ async function regresarEstadoSolicitudJefe(val) {
       title: "Cancelado",
       text: "No se realizó ninguna acción.",
       showConfirmButton: true,
-      confirmButtonColor: "#F7DC6F",
+      confirmButtonColor: "#ffc407",
       confirmButtonText: "Aceptar",
     });
   }

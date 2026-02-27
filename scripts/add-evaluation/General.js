@@ -55,7 +55,7 @@ $(document).on('change', '#dirigidoA', function() {
     // Deshabilitar opción 360°
     $('#tipoEvaluacion option[value="1"]').prop('disabled', true);
     
-    // Si estaba seleccionada la evaluación 360°, resetear
+    // Si estaba seleccionada la evaluación 360°, resetear y avisar
     if ($('#tipoEvaluacion').val() === '1') {
       $('#tipoEvaluacion').val('');
       // Ocultar periodicidad y quitar requisitos cuando se resetea
@@ -65,9 +65,8 @@ $(document).on('change', '#dirigidoA', function() {
       $('#inpRetroFin').removeAttr('required');
       $('#inpPlanAIni').removeAttr('required');
       $('#inpPlanAFin').removeAttr('required');
+      toastr.info('Para postulantes solo se permite la Encuesta Normal', 'Información');
     }
-    
-    toastr.info('Para postulantes solo se permite la Encuesta Normal', 'Información');
   } else if (dirigido === '1') {
     // Empleados - Pueden usar cualquier tipo
     $('#tipoEvaluacion option[value="1"]').prop('disabled', false);

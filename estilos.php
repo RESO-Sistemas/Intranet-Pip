@@ -100,10 +100,10 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 
 
     .AgregarBtnBlue {
-        background-image: linear-gradient(-180deg, #F7DC6F 0%, #D4B830 100%);
+        background-image: linear-gradient(-180deg, #ffc407 0%, #d4a800 100%);
         border-radius: .5rem;
         box-sizing: border-box;
-        color: #FFFFFF;
+        color: #333FFF;
         display: flex;
         font-size: 16px;
         justify-content: center;
@@ -509,10 +509,10 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 }
 
 .btnUpdate5{
-  background: linear-gradient(to bottom right, #D4B830 ,#F7DC6F);
+  background: linear-gradient(to bottom right, #d4a800 ,#ffc407);
   border: 0;
   border-radius: 12px;
-  color: #FFFFFF;
+  color: #333FFF;
   cursor: pointer;
   display: inline-block;
   font-family: -apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -590,20 +590,20 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 }
 
 .textRevisado {
-   /* color: linear-gradient(to right, #E8C840 0%, #D4B830  51%, #E8C840  100%); */
+   /* color: linear-gradient(to right, #e6b200 0%, #d4a800  51%, #e6b200  100%); */
   font-size: 2em;
-  background: -webkit-linear-gradient(#E8C840, #D4B830);
+  background: -webkit-linear-gradient(#e6b200, #d4a800);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
  }
 
  .btn-ViewUpdateSm {
   align-items: center;
-  background-color: #F7DC6F;
+  background-color: #ffc407;
   border: 0;
   border-radius: 100px;
   box-sizing: border-box;
-  color: #ffffff;
+  color: #333fff;
   cursor: pointer;
   display: inline-flex;
   font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -628,8 +628,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 
  .btn-ViewUpdateSm:hover,
  .btn-ViewUpdateSm:focus {
-  background-color: #D4B830;
-  color: #ffffff;
+  background-color: #d4a800;
+  color: #333fff;
  }
 
  .btn-ViewUpdateSm:active {
@@ -658,8 +658,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
    z-index: 0;
    background: #fff;
    overflow: hidden;
-   border: 1px solid #F7DC6F;
-   color: #F7DC6F;
+   border: 1px solid #ffc407;
+   color: #ffc407;
  }
  .btn-ViewDetail:hover {
    color: #fff;
@@ -676,7 +676,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
    top: 0;
    width: 0;
    height: 100%;
-   background: #F7DC6F;
+   background: #ffc407;
  }
 
  .btn-true {
@@ -730,8 +730,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
    z-index: 0;
    background: #fff;
    overflow: hidden;
-   border: 1px solid #F7DC6F;
-   color: #F7DC6F;
+   border: 1px solid #ffc407;
+   color: #ffc407;
  }
  .btn-change:hover {
    color: #fff;
@@ -748,7 +748,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
    top: 0;
    width: 0;
    height: 100%;
-   background: #F7DC6F;
+   background: #ffc407;
  }
 
 
@@ -803,7 +803,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   overflow: hidden;
   transition-duration: .3s;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-  background: linear-gradient(144deg,#E8C840,#F7DC6F 50%,#F7DC6F);
+  background: linear-gradient(144deg,#e6b200,#ffc407 50%,#ffc407);
 }
 
 /* plus sign */
@@ -916,8 +916,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   z-index: 0;
   background: #fff;
   overflow: hidden;
-  border: 1px solid #F7DC6F;
-  color: #F7DC6F;
+  border: 1px solid #ffc407;
+  color: #ffc407;
   margin: 0 auto;
   display: block;
 }
@@ -936,7 +936,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   top: 0;
   width: 0;
   height: 100%;
-  background: #F7DC6F;
+  background: #ffc407;
 }
 
 .btn-actionBlue1 {
@@ -954,8 +954,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   z-index: 0;
   background: #fff;
   overflow: hidden;
-  border: 1px solid #D4B830;
-  color: #D4B830;
+  border: 1px solid #d4a800;
+  color: #d4a800;
   margin: 0 auto;
   display: block;
 }
@@ -974,7 +974,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   top: 0;
   width: 0;
   height: 100%;
-  background: #D4B830;
+  background: #d4a800;
 }
 
 .btn-actionRed {
