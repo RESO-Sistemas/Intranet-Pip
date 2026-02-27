@@ -66,8 +66,8 @@
       font-size: 0.85rem;
     }
     .btn-back {
-      background-color: #F8F6F2 !important;
-      border-color: #F8F6F2 !important;
+      background-color: #ffffff !important;
+      border-color: #ffffff !important;
     }
     .btn-back:hover {
       background-color: #EDE9E0 !important;

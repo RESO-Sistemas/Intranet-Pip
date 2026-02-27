@@ -20,7 +20,7 @@ html {
 
 body {
 
-  background-color: #F8F6F2;
+  background-color: #ffffff;
 
   font-weight: 400;
 
@@ -1012,13 +1012,13 @@ h6 {
 
     180deg,
 
-    rgba(248, 246, 242, 0.8) 0,
+    rgba(255, 255, 255, 0.8) 0,
 
-    #F8F6F2 40%,
+    #ffffff 40%,
 
-    #F8F6F2 78%,
+    #ffffff 78%,
 
-    rgba(248, 246, 242, 0) 100%
+    rgba(255, 255, 255, 0) 100%
 
   );
 
