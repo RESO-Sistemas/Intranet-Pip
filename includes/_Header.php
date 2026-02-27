@@ -34,8 +34,8 @@
 <div class="app-header">
   <nav class="navbar navbar-light navbar-expand">
     <div class="container-fluid">
-      <!-- Botón para toggle del sidebar (solo visible en pantallas pequeñas) -->
-      <div class="navbar-nav d-block d-lg-none" id="navbarNav">
+      <!-- Botón para toggle del sidebar -->
+      <div class="navbar-nav" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link hide-sidebar-toggle-button" href="#"><i class="material-icons">menu</i></a>

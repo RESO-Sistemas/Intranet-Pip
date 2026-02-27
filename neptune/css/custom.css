@@ -596,5 +596,39 @@ FIN Preloader
 
 /* FIN INDEX */
 
+/* ============================================= */
+/* SIDEBAR MENU - YELLOW INDICATOR EFFECTS     */
+/* Solo subcategorías - fondo: #fff9e6, letras: #ffc407 */
+/* ============================================= */
+
+/* Sub-menu items (subcategorías) */
+.app-sidebar .app-menu .sub-menu li {
+  position: relative;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+  margin-left: 0;
+}
+
+.app-sidebar .app-menu .sub-menu li:hover {
+  border-left: 3px solid #ffc407 !important;
+  background-color: #fff9e6 !important;
+}
+
+.app-sidebar .app-menu .sub-menu li:hover > a {
+  color: #ffc407 !important;
+}
+
+.app-sidebar .app-menu .sub-menu li.active {
+  border-left: 3px solid #ffc407 !important;
+  background-color: #fff9e6 !important;
+}
+
+.app-sidebar .app-menu .sub-menu li.active > a {
+  color: #ffc407 !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================= */
+
 
 
