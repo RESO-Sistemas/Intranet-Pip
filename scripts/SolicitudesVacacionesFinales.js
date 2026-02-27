@@ -204,7 +204,7 @@ function realizarAccionSolicitud(solicitud, accion) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
 
     cancelButtonColor: "#d33",
 
@@ -564,7 +564,7 @@ async function regresarEstadoSolicitudNomina(val) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
 
     cancelButtonColor: "#d33",
 

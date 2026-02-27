@@ -220,7 +220,7 @@ function updateDatosEmpleado() {
     text: "",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Actualizar Datos",
@@ -1302,7 +1302,7 @@ const getCommentsFeedSelected = async (content) => {
     let cant = ajaxR.Data.length;
     let colorReaction = "black";
     if (ajaxR.Data[0].inReaction) {
-      colorReaction = "#F7DC6F";
+      colorReaction = "#ffc407";
     }
     let btnComm = document.getElementById(`btnComment${content}`);
     if (btnComm) {
@@ -1483,7 +1483,7 @@ const viewAllCommentsFeed = async (feed) => {
       }
       console.log(dataFeed.commentsData[i].inReaction);
       if (dataFeed.commentsData[i].inReaction) {
-        colorReaction = "#F7DC6F";
+        colorReaction = "#ffc407";
       }
       if (dataFeed.commentsData[i].TypeCommentUs == 1) {
         contentComments += `
@@ -1657,7 +1657,7 @@ const reactsToComment = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#F7DC6F";
+            icon.style.color = "#ffc407";
           } else {
             icon.style.color = "black";
           }
@@ -1702,7 +1702,7 @@ const reactsToCommentM = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#F7DC6F";
+            icon.style.color = "#ffc407";
           } else {
             icon.style.color = "black";
           }

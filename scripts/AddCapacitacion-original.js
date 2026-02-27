@@ -309,7 +309,7 @@ function cancelarCapacitacion(val) {
     text: "",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#F7DC6F",
+    confirmButtonColor: "#ffc407",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Aceptar",

@@ -55,7 +55,7 @@
 
     #tCommentsRequests .e-checkbox-wrapper .e-frame {
 
-      border: 2px solid #F7DC6F;
+      border: 2px solid #ffc407;
 
       background-color: #e0f0ff;
 
@@ -83,7 +83,7 @@
 
     #tCommentsAccepted .e-checkbox-wrapper .e-frame {
 
-      border: 2px solid #F7DC6F;
+      border: 2px solid #ffc407;
 
       background-color: #e0f0ff;
 
