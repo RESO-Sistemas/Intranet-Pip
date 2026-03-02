@@ -651,5 +651,1295 @@ FIN Preloader
 
 /* ============================================= */
 
+/* =============================================
+   DARK MODE - Modo Oscuro
+   Activar con clase "dark-mode" en el body
+   Colores: Fondo #121212, Sidebar/Navbar #1e1e1e, Acento #ffc407
+   ============================================= */
+
+/* Variables del modo oscuro */
+body.dark-mode {
+  --dm-bg-primary: #121212;
+  --dm-bg-secondary: #1e1e1e;
+  --dm-bg-card: #252525;
+  --dm-bg-input: #2a2a2a;
+  --dm-text-primary: #e8e8e8;
+  --dm-text-secondary: #a0a0a0;
+  --dm-border: #333333;
+  --dm-accent: #ffc407;
+  --dm-accent-hover: #e6b200;
+}
+
+/* ── Body y Wrapper Principal ── */
+body.dark-mode,
+body.dark-mode .app-wrapper {
+  background-color: var(--dm-bg-primary) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .app-container {
+  background-color: var(--dm-bg-primary) !important;
+}
+
+/* ── Sidebar ── */
+body.dark-mode .app-sidebar {
+  background-color: var(--dm-bg-secondary) !important;
+  border-right: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .app-sidebar .logo {
+  background-color: var(--dm-bg-secondary) !important;
+  border-bottom: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .app-sidebar .logo .logo-text {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .accordion-menu > li > a {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .accordion-menu > li > a:hover {
+  color: var(--dm-accent) !important;
+  background-color: rgba(255, 196, 7, 0.1) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .accordion-menu > li > a i {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .accordion-menu > li > a:hover i {
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .sub-menu {
+  background-color: var(--dm-bg-primary) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .sub-menu li > a {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .sub-menu li:hover {
+  background-color: rgba(255, 196, 7, 0.15) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .sub-menu li:hover > a {
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .app-sidebar .app-menu .sub-menu li.active {
+  background-color: rgba(255, 196, 7, 0.2) !important;
+}
+
+/* ── Header / Navbar ── */
+body.dark-mode .app-header,
+body.dark-mode .app-header .navbar,
+body.dark-mode .app-header nav,
+body.dark-mode .app-header nav.navbar {
+  background-color: var(--dm-bg-secondary) !important;
+  border-bottom: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .app-header .container-fluid {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .app-header .navbar-nav .nav-link {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .app-header .navbar-nav .nav-link:hover {
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .app-header .navbar-nav .nav-link i {
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Cards y Paneles ── */
+body.dark-mode .card,
+body.dark-mode .widget,
+body.dark-mode .panel {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .card-header {
+  background-color: var(--dm-bg-secondary) !important;
+  border-bottom: 1px solid var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .card-body {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .card-footer {
+  background-color: var(--dm-bg-secondary) !important;
+  border-top: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .card-title,
+body.dark-mode .card-text {
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Formularios ── */
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="time"],
+body.dark-mode textarea {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .form-control::placeholder,
+body.dark-mode .form-select::placeholder,
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-accent) !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 196, 7, 0.25) !important;
+}
+
+body.dark-mode .form-label,
+body.dark-mode label {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .form-check-label {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .input-group-text {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Select2 Dark Mode ── */
+body.dark-mode .select2-container--default .select2-selection--single,
+body.dark-mode .select2-container--default .select2-selection--multiple {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .select2-dropdown {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .select2-container--default .select2-results__option {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--dm-accent) !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .select2-search__field {
+  background-color: var(--dm-bg-input) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Tablas ── */
+body.dark-mode .table {
+  color: var(--dm-text-primary) !important;
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .table thead th {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .table tbody tr {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .table tbody tr:nth-of-type(odd) {
+  background-color: var(--dm-bg-primary) !important;
+}
+
+body.dark-mode .table tbody tr:hover {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .table td,
+body.dark-mode .table th {
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .table-bordered {
+  border-color: var(--dm-border) !important;
+}
+
+/* ── DataTables Dark Mode ── */
+body.dark-mode .dataTables_wrapper {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_length,
+body.dark-mode .dataTables_wrapper .dataTables_filter,
+body.dark-mode .dataTables_wrapper .dataTables_info,
+body.dark-mode .dataTables_wrapper .dataTables_paginate {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_filter input {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* Paginación DataTables - MODO CLARO */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  margin: 0 3px !important;
+  color: #333 !important;
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+  background-color: #f5f5f5 !important;
+  border-color: #bbb !important;
+  color: #000 !important;
+  transform: scale(1.05) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #1f1f1f !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  color: #bbb !important;
+  cursor: not-allowed !important;
+  opacity: 0.4 !important;
+  background-color: #fafafa !important;
+  border-color: #e0e0e0 !important;
+  transform: none !important;
+}
+
+/* Paginación DataTables - MODO OSCURO */
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  margin: 0 3px !important;
+  color: #e0e0e0 !important;
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+  background-color: #3a3a3a !important;
+  border-color: #666 !important;
+  color: #fff !important;
+  transform: scale(1.05) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #1a1a2e !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.4) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  color: #555 !important;
+  cursor: not-allowed !important;
+  opacity: 0.4 !important;
+  background-color: #1a1a1a !important;
+  border-color: #333 !important;
+  transform: none !important;
+}
+
+/* ── Syncfusion Grid Dark Mode ── */
+body.dark-mode .e-grid {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-gridheader {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .e-grid .e-headercell {
+  background-color: var(--dm-bg-secondary) !important;
+  color: var(--dm-text-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+/* Syncfusion Grid - MODO CLARO */
+.e-grid .e-content {
+  background-color: #fff !important;
+}
+
+.e-grid .e-rowcell {
+  background-color: #fff !important;
+  color: #333 !important;
+  border-color: #e0e0e0 !important;
+}
+
+.e-grid .e-row:hover .e-rowcell {
+  background-color: #f5f5f5 !important;
+}
+
+.e-grid .e-altrow .e-rowcell {
+  background-color: #fafafa !important;
+}
+
+.e-grid .e-altrow:hover .e-rowcell {
+  background-color: #f0f0f0 !important;
+}
+
+/* Paginación Syncfusion - MODO CLARO */
+.e-pager .e-numericitem,
+.e-pager .e-prevpagenav,
+.e-pager .e-nextpagenav,
+.e-pager .e-firstpagenav,
+.e-pager .e-lastpagenav,
+.e-pager .e-pagercontainer .e-link {
+  color: #333 !important;
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  line-height: 34px !important;
+  text-align: center !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+.e-pager .e-numericitem:hover,
+.e-pager .e-prevpagenav:hover,
+.e-pager .e-nextpagenav:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #ccc !important;
+  color: #333 !important;
+}
+
+.e-pager .e-currentitem,
+.e-pager .e-currentitem:hover {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #1f1f1f !important;
+  font-weight: 600 !important;
+}
+
+.e-pager .e-disable,
+.e-pager .e-disable:hover {
+  color: #999 !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Syncfusion Grid - MODO OSCURO */
+body.dark-mode .e-grid .e-content {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .e-grid .e-rowcell {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-row:hover .e-rowcell {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .e-grid .e-altrow .e-rowcell {
+  background-color: var(--dm-bg-primary) !important;
+}
+
+body.dark-mode .e-grid .e-altrow:hover .e-rowcell {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* Paginación Syncfusion - MODO OSCURO */
+body.dark-mode .e-pager {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-pager .e-pagercontainer {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .e-pager .e-numericitem,
+body.dark-mode .e-pager .e-prevpagenav,
+body.dark-mode .e-pager .e-nextpagenav,
+body.dark-mode .e-pager .e-firstpagenav,
+body.dark-mode .e-pager .e-lastpagenav,
+body.dark-mode .e-pager .e-pagercontainer .e-link {
+  color: #e0e0e0 !important;
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  line-height: 34px !important;
+  text-align: center !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+body.dark-mode .e-pager .e-numericitem:hover,
+body.dark-mode .e-pager .e-prevpagenav:hover,
+body.dark-mode .e-pager .e-nextpagenav:hover {
+  background-color: #3a3a3a !important;
+  border-color: #555 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .e-pager .e-currentitem,
+body.dark-mode .e-pager .e-currentitem:hover {
+  background-color: var(--dm-accent) !important;
+  border-color: var(--dm-accent) !important;
+  color: #1a1a2e !important;
+  font-weight: 600 !important;
+}
+
+body.dark-mode .e-pager .e-disable,
+body.dark-mode .e-pager .e-disable:hover {
+  color: #666 !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode .e-grid .e-pager {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-pagercontainer {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .e-grid .e-toolbar {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-toolbar-item .e-tbar-btn {
+  background-color: transparent !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Modales ── */
+body.dark-mode .modal-content {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .modal-header {
+  background-color: var(--dm-bg-secondary) !important;
+  border-bottom: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .modal-title {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .modal-body {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .modal-footer {
+  background-color: var(--dm-bg-secondary) !important;
+  border-top: 1px solid var(--dm-border) !important;
+}
+
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ── Dropdowns ── */
+body.dark-mode .dropdown-menu {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .dropdown-item {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+  background-color: rgba(255, 196, 7, 0.15) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .dropdown-divider {
+  border-color: var(--dm-border) !important;
+}
+
+/* ── Tabs y Nav ── */
+body.dark-mode .nav-tabs {
+  border-bottom-color: var(--dm-border) !important;
+}
+
+body.dark-mode .nav-tabs .nav-link {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .nav-tabs .nav-link:hover {
+  border-color: var(--dm-border) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) var(--dm-border) var(--dm-bg-card) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .tab-content {
+  background-color: var(--dm-bg-card) !important;
+}
+
+/* ── Badges ── */
+body.dark-mode .badge.bg-secondary {
+  background-color: var(--dm-bg-secondary) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .badge.bg-light {
+  background-color: var(--dm-bg-input) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Alerts ── */
+body.dark-mode .alert {
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .alert-info {
+  background-color: rgba(255, 196, 7, 0.15) !important;
+  color: var(--dm-accent) !important;
+  border-color: var(--dm-accent) !important;
+}
+
+body.dark-mode .alert-warning {
+  background-color: rgba(255, 196, 7, 0.2) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .alert-danger {
+  background-color: rgba(220, 53, 69, 0.2) !important;
+}
+
+body.dark-mode .alert-success {
+  background-color: rgba(40, 167, 69, 0.2) !important;
+}
+
+/* ── List Groups ── */
+body.dark-mode .list-group-item {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .list-group-item:hover {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .list-group-item.active {
+  background-color: var(--dm-accent) !important;
+  border-color: var(--dm-accent) !important;
+  color: #1a1a2e !important;
+}
+
+/* ── Breadcrumb ── */
+body.dark-mode .breadcrumb {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .breadcrumb-item a {
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .breadcrumb-item.active {
+  color: var(--dm-text-secondary) !important;
+}
+
+/* ── Pagination ── */
+body.dark-mode .page-link {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .page-link:hover {
+  background-color: var(--dm-bg-secondary) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .page-item.active .page-link {
+  background-color: var(--dm-accent) !important;
+  border-color: var(--dm-accent) !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .page-item.disabled .page-link {
+  background-color: var(--dm-bg-primary) !important;
+  color: var(--dm-text-secondary) !important;
+}
+
+/* ── Textos y Títulos ── */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode p,
+body.dark-mode span:not(.badge),
+body.dark-mode div {
+  color: inherit;
+}
+
+body.dark-mode .text-muted {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .text-dark {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode a:not(.btn):not(.nav-link):not(.dropdown-item) {
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
+  color: var(--dm-accent-hover) !important;
+}
+
+/* ── Scrollbars ── */
+body.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+  background: var(--dm-bg-primary);
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: var(--dm-border);
+  border-radius: 4px;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--dm-accent);
+}
+
+/* ── Preloader Dark Mode ── */
+body.dark-mode .preloader {
+  background: var(--dm-bg-primary) !important;
+}
+
+/* ── Componentes específicos del sistema ── */
+body.dark-mode .info-user-welcome {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .img-background {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .widget-stats-title {
+  color: var(--dm-text-secondary) !important;
+}
+
+/* ── SweetAlert2 Dark Mode ── */
+body.dark-mode .swal2-popup {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .swal2-title {
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .swal2-html-container {
+  color: var(--dm-text-secondary) !important;
+}
+
+body.dark-mode .swal2-input {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Accordion Dark Mode ── */
+body.dark-mode .accordion-item {
+  background-color: var(--dm-bg-card) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .accordion-button {
+  background-color: var(--dm-bg-secondary) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .accordion-button:not(.collapsed) {
+  background-color: rgba(255, 196, 7, 0.15) !important;
+  color: var(--dm-accent) !important;
+}
+
+body.dark-mode .accordion-body {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* ── Borders generales ── */
+body.dark-mode .border,
+body.dark-mode [class*="border-"] {
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .border-primary {
+  border-color: var(--dm-accent) !important;
+}
+
+/* ── Botón Toggle Dark Mode ── */
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ffc407;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode-toggle i {
+  font-size: 24px;
+  color: #1a1a2e;
+}
+
+body.dark-mode .dark-mode-toggle {
+  background-color: var(--dm-bg-secondary);
+  border: 2px solid var(--dm-accent);
+}
+
+body.dark-mode .dark-mode-toggle i {
+  color: var(--dm-accent);
+}
+
+/* ── Header/Navbar - Forzar colores oscuros ── */
+body.dark-mode .app-header,
+body.dark-mode .app-header *,
+body.dark-mode div.app-header,
+body.dark-mode .app-header .navbar,
+body.dark-mode .app-header .navbar-light,
+body.dark-mode .app-header .navbar-expand,
+body.dark-mode .navbar.navbar-light.navbar-expand {
+  background-color: #1e1e1e !important;
+}
+
+body.dark-mode .app-header .navbar {
+  background: #1e1e1e !important;
+  border-bottom: 1px solid #333333 !important;
+}
+
+body.dark-mode .app-header .d-flex,
+body.dark-mode .app-header .navbar-nav,
+body.dark-mode .app-header #navbarNav {
+  background-color: transparent !important;
+}
+
+body.dark-mode .app-header .dropdown-menu {
+  background-color: #252525 !important;
+  border-color: #333333 !important;
+}
+
+body.dark-mode .app-header .dropdown-item {
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode .app-header .dropdown-item:hover {
+  background-color: rgba(255, 196, 7, 0.15) !important;
+  color: #ffc407 !important;
+}
+
+body.dark-mode .app-header .dropdown-header {
+  color: #a0a0a0 !important;
+}
+
+/* ── App Header ::before pseudo-elemento ── */
+body.dark-mode .app-header::before {
+  background-color: #1e1e1e !important;
+  background: #1e1e1e !important;
+}
+
+/* =============================================
+   CORRECCIONES ESPECÍFICAS MODO OSCURO
+   ============================================= */
+
+/* ── Botones de Paginación Bootstrap (Directorio, Capacitacion, etc.) ── */
+body.dark-mode .pagination .page-link {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode .pagination .page-link:hover {
+  background-color: #3d3d3d !important;
+  border-color: #505050 !important;
+  color: #ffc407 !important;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+  background-color: #ffc407 !important;
+  border-color: #ffc407 !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .pagination .page-item.disabled .page-link {
+  background-color: #1e1e1e !important;
+  border-color: #333333 !important;
+  color: #666666 !important;
+}
+
+/* Hacer botones de paginación más compactos */
+body.dark-mode .pagination .page-link {
+  padding: 0.4rem 0.7rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* ── Syncfusion Grid - Mejoras Completas ── */
+
+/* Search Input / Buscador */
+body.dark-mode .e-grid .e-toolbar .e-input-group,
+body.dark-mode .e-grid .e-toolbar .e-input-group input,
+body.dark-mode .e-grid .e-input-group,
+body.dark-mode .e-grid .e-input-group input.e-input,
+body.dark-mode .e-grid .e-toolbar .e-input,
+body.dark-mode .e-grid .e-filterbar .e-input-group input,
+body.dark-mode .e-input-group input.e-input,
+body.dark-mode .e-input-group.e-input-focus input.e-input {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border-color: #404040 !important;
+}
+
+body.dark-mode .e-grid .e-toolbar .e-input-group .e-input-group-icon,
+body.dark-mode .e-grid .e-input-group .e-input-group-icon,
+body.dark-mode .e-input-group .e-input-group-icon {
+  background-color: #2d2d2d !important;
+  color: #a0a0a0 !important;
+  border-color: #404040 !important;
+}
+
+body.dark-mode .e-grid .e-toolbar .e-search-icon,
+body.dark-mode .e-grid .e-search-icon::before {
+  color: #a0a0a0 !important;
+}
+
+/* Pager / Botones de Paginación Syncfusion */
+body.dark-mode .e-grid .e-pager .e-numericitem,
+body.dark-mode .e-grid .e-pager .e-numericcontainer a,
+body.dark-mode .e-pager .e-numericitem,
+body.dark-mode .e-pager .e-link,
+body.dark-mode .e-pager a.e-link {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border-color: #404040 !important;
+  border-radius: 4px !important;
+  margin: 0 2px !important;
+  padding: 4px 10px !important;
+}
+
+body.dark-mode .e-grid .e-pager .e-numericitem:hover,
+body.dark-mode .e-grid .e-pager .e-numericcontainer a:hover,
+body.dark-mode .e-pager .e-numericitem:hover,
+body.dark-mode .e-pager a.e-link:hover {
+  background-color: #3d3d3d !important;
+  color: #ffc407 !important;
+}
+
+body.dark-mode .e-grid .e-pager .e-currentitem,
+body.dark-mode .e-pager .e-currentitem,
+body.dark-mode .e-pager .e-numericitem.e-currentitem {
+  background-color: #ffc407 !important;
+  color: #1a1a2e !important;
+  border-color: #ffc407 !important;
+}
+
+/* ── Correcciones adicionales para DataTables ── */
+/* Asegurar que todos los elementos de DataTables tengan fondos correctos */
+body.dark-mode .dataTables_wrapper .dataTables_length select,
+body.dark-mode .dataTables_wrapper .dataTables_filter input {
+  background-color: var(--dm-bg-input) !important;
+  color: var(--dm-text-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_scroll {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_scrollBody {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_scrollHead {
+  background-color: var(--dm-bg-secondary) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable {
+  background-color: var(--dm-bg-card) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable thead th,
+body.dark-mode .dataTables_wrapper table.dataTable thead td {
+  background-color: var(--dm-bg-secondary) !important;
+  color: var(--dm-text-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable tbody td {
+  background-color: transparent !important;
+  color: var(--dm-text-primary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable.stripe tbody tr.odd,
+body.dark-mode .dataTables_wrapper table.dataTable.display tbody tr.odd {
+  background-color: var(--dm-bg-primary) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable.stripe tbody tr.even,
+body.dark-mode .dataTables_wrapper table.dataTable.display tbody tr.even {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr:hover {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr:hover > td {
+  background-color: transparent !important;
+}
+
+/* ── Correcciones adicionales para Syncfusion Grid ── */
+/* Asegurar que la búsqueda y toolbar tengan fondos correctos */
+body.dark-mode .e-grid .e-toolbar {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-toolbar .e-input-group {
+  background-color: var(--dm-bg-input) !important;
+  border-color: var(--dm-border) !important;
+}
+
+body.dark-mode .e-grid .e-toolbar .e-input-group input {
+  background-color: var(--dm-bg-input) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .e-grid .e-gridcontent {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .e-grid .e-table {
+  background-color: var(--dm-bg-card) !important;
+}
+
+body.dark-mode .e-grid .e-spinner-pane {
+  background-color: rgba(26, 26, 30, 0.8) !important;
+}
+
+/* Botones de acciones en las tablas */
+body.dark-mode .btn.btn-primary,
+body.dark-mode .btn-primary {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+  color: #1f1f1f !important;
+}
+
+body.dark-mode .btn.btn-primary:hover,
+body.dark-mode .btn-primary:hover {
+  background-color: #ffcd38 !important;
+  border-color: #ffcd38 !important;
+  color: #1f1f1f !important;
+}
+
+body.dark-mode .btn.btn-secondary {
+  background-color: var(--dm-bg-secondary) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+body.dark-mode .btn.btn-secondary:hover {
+  background-color: var(--dm-bg-primary) !important;
+  border-color: var(--dm-border) !important;
+  color: var(--dm-text-primary) !important;
+}
+
+/* Botones de navegación (First, Prev, Next, Last) */
+body.dark-mode .e-grid .e-pager .e-first,
+body.dark-mode .e-grid .e-pager .e-prev,
+body.dark-mode .e-grid .e-pager .e-next,
+body.dark-mode .e-grid .e-pager .e-last,
+body.dark-mode .e-pager .e-first,
+body.dark-mode .e-pager .e-prev,
+body.dark-mode .e-pager .e-next,
+body.dark-mode .e-pager .e-last,
+body.dark-mode .e-pager .e-icon-first,
+body.dark-mode .e-pager .e-icon-prev,
+body.dark-mode .e-pager .e-icon-next,
+body.dark-mode .e-pager .e-icon-last {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border-color: #404040 !important;
+}
+
+body.dark-mode .e-grid .e-pager .e-first:hover,
+body.dark-mode .e-grid .e-pager .e-prev:hover,
+body.dark-mode .e-grid .e-pager .e-next:hover,
+body.dark-mode .e-grid .e-pager .e-last:hover,
+body.dark-mode .e-pager .e-first:hover,
+body.dark-mode .e-pager .e-prev:hover,
+body.dark-mode .e-pager .e-next:hover,
+body.dark-mode .e-pager .e-last:hover {
+  background-color: #3d3d3d !important;
+  color: #ffc407 !important;
+}
+
+body.dark-mode .e-grid .e-pager .e-disable,
+body.dark-mode .e-pager .e-disable {
+  background-color: #1e1e1e !important;
+  color: #555555 !important;
+  border-color: #333333 !important;
+}
+
+/* Pager container y dropdown */
+body.dark-mode .e-grid .e-pager .e-pagesizes,
+body.dark-mode .e-pager .e-pagesizes,
+body.dark-mode .e-pager .e-pagerdropdown {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode .e-grid .e-pager .e-pagerconstant,
+body.dark-mode .e-pager .e-pagerconstant,
+body.dark-mode .e-pager .e-parentmsgbar {
+  color: #a0a0a0 !important;
+}
+
+/* Hover de filas - REDUCIR BRILLO */
+body.dark-mode .e-grid .e-row:hover .e-rowcell,
+body.dark-mode .e-grid .e-row.e-hover .e-rowcell,
+body.dark-mode .e-grid tr.e-row:hover td.e-rowcell {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+}
+
+/* Filas alternas más sutiles */
+body.dark-mode .e-grid .e-altrow .e-rowcell {
+  background-color: #1a1a1a !important;
+}
+
+/* ── DataTables - Mejoras Completas ── */
+
+/* Buscador DataTables */
+body.dark-mode .dataTables_wrapper .dataTables_filter input {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border: 1px solid #404040 !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_filter input:focus {
+  border-color: #ffc407 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(255, 196, 7, 0.2) !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_filter input::placeholder {
+  color: #888888 !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_length select {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border: 1px solid #404040 !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+}
+
+/* Botones de Paginación DataTables */
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border: 1px solid #404040 !important;
+  border-radius: 4px !important;
+  padding: 0.4rem 0.7rem !important;
+  margin: 0 2px !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background-color: #3d3d3d !important;
+  color: #ffc407 !important;
+  border-color: #505050 !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background-color: #ffc407 !important;
+  color: #1a1a2e !important;
+  border-color: #ffc407 !important;
+}
+
+body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  background-color: #1e1e1e !important;
+  color: #555555 !important;
+  border-color: #333333 !important;
+  cursor: not-allowed !important;
+}
+
+/* Hover de filas DataTables - REDUCIR BRILLO */
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr:hover {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr:hover td {
+  background-color: rgba(255, 196, 7, 0.08) !important;
+}
+
+/* Filas alternas DataTables */
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr.odd {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode .dataTables_wrapper table.dataTable tbody tr.even {
+  background-color: #252525 !important;
+}
+
+/* Header de tabla DataTables */
+body.dark-mode .dataTables_wrapper table.dataTable thead th {
+  background-color: #1e1e1e !important;
+  color: #e8e8e8 !important;
+  border-bottom: 2px solid #404040 !important;
+}
+
+/* Texto informativo DataTables */
+body.dark-mode .dataTables_wrapper .dataTables_info {
+  color: #a0a0a0 !important;
+}
+
+/* ── Botones de Paginación Personalizados (btn-outline) ── */
+body.dark-mode .btn-outline-secondary,
+body.dark-mode .btn-outline-primary {
+  background-color: #2d2d2d !important;
+  color: #e8e8e8 !important;
+  border-color: #404040 !important;
+}
+
+body.dark-mode .btn-outline-secondary:hover,
+body.dark-mode .btn-outline-primary:hover {
+  background-color: #3d3d3d !important;
+  color: #ffc407 !important;
+  border-color: #ffc407 !important;
+}
+
+/* ── Tabs (nav-tabs) en modo oscuro ── */
+body.dark-mode .nav-tabs .nav-link {
+  color: #a0a0a0 !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+body.dark-mode .nav-tabs .nav-link:hover {
+  color: #ffc407 !important;
+  border-color: transparent !important;
+}
+
+body.dark-mode .nav-tabs .nav-link.active {
+  color: #ffc407 !important;
+  background-color: transparent !important;
+  border-bottom: 2px solid #ffc407 !important;
+}
+
+/* ============================================= */
+
 
 
