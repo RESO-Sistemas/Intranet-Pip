@@ -49,6 +49,38 @@ if ($current_page !== 'login'):
 
 <link href="./neptune/css/main.css" rel="stylesheet">
 
+<style>
+  /* Sidebar — íconos siempre amarillos */
+  .app-menu > ul > li > a > i:not(.has-sub-menu).material-icons-two-tone {
+    filter: brightness(0) saturate(100%) invert(79%) sepia(82%) saturate(596%) hue-rotate(356deg) brightness(103%) contrast(101%) !important;
+  }
+
+  /* Sidebar — menús padre: texto gris por defecto, amarillo en hover/activo */
+  .app-menu > ul > li > a {
+    color: #9aa5b8 !important;
+  }
+  .app-menu > ul > li > a:hover,
+  .app-menu > ul > li.open > a,
+  .app-menu > ul > li.active-page > a {
+    color: #ffc407 !important;
+  }
+
+  /* Sidebar — menús hijo: texto gris por defecto, amarillo en hover/activo */
+  .app-menu > ul > li ul li a {
+    color: #9aa5b8 !important;
+  }
+  .app-menu > ul > li ul li a:hover,
+  .app-menu > ul > li ul li a.active {
+    color: #ffc407 !important;
+    font-weight: 500;
+  }
+
+  /* Sidebar — recuadro de sub-menú más oscuro */
+  .app-menu > ul > li ul {
+    background: #dde1e9 !important;
+  }
+</style>
+
 <link href="./neptune/css/custom.css" rel="stylesheet">
 
 <!-- Estilos Responsive Globales - Aplicados a todas las vistas -->

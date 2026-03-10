@@ -19,15 +19,24 @@
 
        <ul class="accordion-menu">
          <?php
+          $iconMap = [
+            'PRINCIPAL'      => 'home',
+            'EVALUACIONES'   => 'assignment',
+            'CATÁLOGOS'      => 'library_books',
+            'DASHBOARD'      => 'speed',
+            "MÓDULO KPI'S"   => 'bar_chart',
+            'CHECKLISTS'     => 'fact_check',
+          ];
           for ($i = 0; $i < sizeof($MenuP); $i++) {
             $id_menuP = $MenuP[$i]["id_menu"];
             $Descripcion = $MenuP[$i]["Descripcion"];
+            $icono = isset($iconMap[$Descripcion]) ? $iconMap[$Descripcion] : 'folder';
 
             $menusHijo = new Configuracion();
             $MenuH = $menusHijo->getMenusHijo($id_menuP);
           ?>
            <li>
-             <a href="javascript: void(0);"><i class="material-icons-two-tone">inbox</i><?php echo $Descripcion ?><i class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
+             <a href="javascript: void(0);"><i class="material-icons-two-tone"><?php echo $icono ?></i><?php echo $Descripcion ?><i class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
              <ul class="sub-menu">
                <?php
                 for ($j = 0; $j < sizeof($MenuH); $j++) {

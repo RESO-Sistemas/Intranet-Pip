@@ -27,11 +27,15 @@ if ($current_page !== 'login'):
 ?>
 <!-- Scripts específicos para páginas que NO son login -->
 <script src="./neptune/plugins/datatables/datatables.min.js"></script>
+<!-- Override con DataTables plain para renderizado consistente de paginación en todas las vistas -->
+<script src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/datatables.min.js"></script>
 <script src="./assets/libs/select2/dist/js/select2.full.min.js"></script>
 
 <!-- NO cargar dashboard.js en index.php -->
-<?php if ($current_page === 'dashboard'): ?>
+<?php if ($current_page === 'dashboard' || $current_page === 'index'): ?>
 <script src="./neptune/plugins/apexcharts/apexcharts.min.js"></script>
+<?php endif; ?>
+<?php if ($current_page === 'dashboard'): ?>
 <script src="./neptune/plugins/highlight/highlight.pack.js"></script>
 <script src="./neptune/js/pages/dashboard.js"></script>
 <?php endif; ?>
