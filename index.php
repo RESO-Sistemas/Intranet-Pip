@@ -47,6 +47,100 @@ $MenuP = $Conf->getMenusPadre();
   <!-- Moment.js necesario para FullCalendar -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
+  <style>
+    /* KPI Gauge cards */
+    .kpi-gauge-card {
+      min-width: 190px;
+      max-width: 240px;
+      flex: 0 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      padding: 8px 14px 6px;
+      text-align: center;
+    }
+    .kpi-gauge-card svg { display: block; margin: 0 auto; }
+    .kpi-gauge-card .kpi-name {
+      font-size: .8rem;
+      font-weight: 600;
+      color: #333;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kpi-gauge-card .kpi-fraction {
+      font-size: .72rem;
+      color: #888;
+      margin-top: -2px;
+    }
+    /* Evento item */
+    .evento-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .evento-item:last-child { border-bottom: none; }
+    .evento-date-box {
+      min-width: 42px;
+      text-align: center;
+      background: #6c757d;
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .evento-date-box .ev-day { font-size: 1.1rem; }
+    .evento-date-box .ev-month { font-size: .65rem; text-transform: uppercase; }
+    .evento-info .ev-title { font-size: .85rem; font-weight: 600; color: #333; }
+    .evento-info .ev-time { font-size: .75rem; color: #888; }
+    /* Checklist items */
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      background: #fffdf3;
+      border-left: 3px solid #ffc407;
+      border-radius: 6px;
+      transition: all .2s ease;
+    }
+    .checklist-item:hover { background: #fff8dc; box-shadow: 0 1px 4px rgba(255,196,7,.2); }
+    .checklist-item .chk-name { font-size: .84rem; color: #333; font-weight: 500; }
+    .checklist-item .chk-badge { font-size: .65rem; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
+    .checklist-item.ya-contestado { opacity: .55; border-left-color: #ccc; background: #f9f9f9; }
+    .checklist-item.ya-contestado .chk-name { text-decoration: line-through; color: #999 !important; }
+    .checklist-item.chk-respondido-si { border-left-color: #28a745; background: #f0faf3; }
+    .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #fef5f5; }
+    .chk-btn-group { display: flex; gap: 5px; flex-shrink: 0; align-self: center; }
+    .chk-btn-group .btn { width: 22px; height: 22px; padding: 0; border-radius: 4px; transition: all .2s; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+    .chk-btn-group .btn svg { width: 12px; height: 12px; display: block; }
+    .chk-btn-si { background: transparent; border: 1.5px solid #28a745; }
+    .chk-btn-si svg { stroke: #28a745; }
+    .chk-btn-si:hover { background: rgba(40,167,69,.1); }
+    .chk-btn-no { background: transparent; border: 1.5px solid #dc3545; }
+    .chk-btn-no svg { stroke: #dc3545; }
+    .chk-btn-no:hover { background: rgba(220,53,69,.1); }
+    .chk-btn-si.active { background: rgba(40,167,69,.15); pointer-events: none; }
+    .chk-btn-no.active { background: rgba(220,53,69,.15); pointer-events: none; }
+    .chk-btn-group .btn:disabled { opacity: .4; pointer-events: none; }
+
+    body.dark-mode .kpi-gauge-card { background: #1e1e2d; }
+    body.dark-mode .kpi-gauge-card .kpi-name { color: #ccc; }
+    body.dark-mode .evento-date-box { background: #555; color: #fff; }
+    body.dark-mode .evento-info .ev-title { color: #ccc; }
+    body.dark-mode .checklist-item { background: #1e1e2d; border-left-color: #ffc407; }
+    body.dark-mode .checklist-item:hover { background: #2a2a3d; box-shadow: 0 1px 4px rgba(255,196,7,.15); }
+    body.dark-mode .checklist-item .chk-name { color: #ddd; }
+    body.dark-mode .checklist-item.ya-contestado { background: #1a1a28; border-left-color: #555; }
+    body.dark-mode .checklist-item.chk-respondido-si { border-left-color: #28a745; background: #1a2e1f; }
+    body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
+  </style>
+
 </head>
 
 <body>
@@ -85,34 +179,31 @@ $MenuP = $Conf->getMenusPadre();
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-12">
-                <div class="page-description page-description-tabbed">
-                  <h1 class="text-center text-md-start">Inicio</h1>
-                  <ul class="nav nav-tabs mb-3 justify-content-center justify-content-md-start" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="hoaccountme" aria-selected="true">Novedades</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">Agenda</button>
-                    </li>
-                  </ul>
+                <div class="page-description" style="padding-top: 20px; padding-bottom: 20px; margin-bottom: 0;">
+                  <!-- GRÁFICAS KPIs - Carrusel -->
+                  <div id="kpiCarouselWrapper" style="position: relative;">
+                    <div id="kpiCarouselContainer" style="display: flex; overflow: hidden; gap: 12px; transition: transform .4s ease;">
+                      <!-- Se llena dinámicamente -->
+                    </div>
+                    <button id="kpiBtnPrev" class="btn btn-sm btn-light" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;display:none;border-radius:50%;width:32px;height:32px;padding:0;">
+                      <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="kpiBtnNext" class="btn btn-sm btn-light" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:2;display:none;border-radius:50%;width:32px;height:32px;padding:0;">
+                      <i class="fas fa-chevron-right"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- INFORMACION PERSONAL/AGENDA/COLABORADORES -->
-            <div class="row">
-              <div class="col">
-                <div class="tab-content" id="myTabContent">
-                  <!-- INFORMACION PERSONAL -->
-                  <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
-                    <div class="card">
-                      <div class="card-body">
-                        <!-- ULTIMAS NOVENDADES -->
-                        <div class="row">
-                          <div class="col">
-                            <div class="tab-content" id="myTabContent">
-                              <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
+
+            <!-- NOVEDADES + ESPACIO DERECHA -->
+            <div class="row g-3">
+              <!-- Novedades -->
+              <div class="col-12 col-lg-8">
+                <div class="card">
+                  <div class="card-body">
 
                                 <!-- MODAL -->
                                 <div class="row mb-3">
@@ -179,35 +270,34 @@ $MenuP = $Conf->getMenusPadre();
                                     </div>
                                   </div>
                                 </div>
+                </div><!-- /card-body -->
+                </div><!-- /card -->
+              </div><!-- /col novedades -->
 
-
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <!-- ULTIMAS NOVEDADES -->
-                      </div>
+              <!-- ESPACIO DERECHA: Eventos + Checklist -->
+              <div class="col-12 col-lg-4">
+                <!-- Próximos Eventos -->
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h6 class="card-title fw-bold mb-3"><i class="fas fa-calendar-alt me-2 text-primary"></i>Próximos Eventos</h6>
+                    <div id="listaEventos" style="max-height: 180px; overflow-y: auto;">
+                      <p class="text-muted small text-center">Cargando eventos...</p>
                     </div>
                   </div>
-                  <!-- AGENDA -->
-                  <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col-12" id="contenidoAgendaEventos"></div>
-                        </div>
-                        <div class="row">
-                          <div class="col-12">
-                            <div id="calendar" class="table-responsive"></div>
-                          </div>
-                        </div>
-                      </div>
+                </div>
+                <!-- Checklist del día -->
+                <div class="card">
+                  <div class="card-body">
+                    <h6 class="card-title fw-bold mb-3"><i class="fas fa-clipboard-check me-2" style="color: #ffc407;"></i>Mi Checklist del Día</h6>
+                    <div id="listaChecklist" style="max-height: 350px; overflow-y: auto;">
+                      <p class="text-muted small text-center">Cargando checklist...</p>
                     </div>
                   </div>
                 </div>
               </div>
+
             </div>
+            <!-- /NOVEDADES + ESPACIO DERECHA -->
             <div id="fullscreen-swiper"></div>
             <div id="fullscreen-swiper-backdrop"></div>
           </div>
@@ -232,6 +322,7 @@ $MenuP = $Conf->getMenusPadre();
   
   <!-- Scripts específicos de la página - SIEMPRE AL FINAL -->
   <script src="scripts/index.js" charset="utf-8"></script>
+  <script src="scripts/dashboard.js" charset="utf-8"></script>
 
 
 </body>
