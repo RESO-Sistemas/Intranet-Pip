@@ -1,4 +1,4 @@
-<?php include("AutorizaPagina.php"); ?>
+﻿<?php include("AutorizaPagina.php"); ?>
 <?php
 if (isset($_COOKIE["tipo_sesion"])) {
   if ($_COOKIE["tipo_sesion"] != "1") {
@@ -21,8 +21,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 
 <head>
   <meta charset="utf-8">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-  <title>Klyns Intranet</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+  <title>PIP Intranet</title>
 
 
   <!-- Styles neptune -->

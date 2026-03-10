@@ -50,6 +50,29 @@ if ($current_page !== 'login'):
 <link href="./neptune/css/main.css" rel="stylesheet">
 
 <style>
+  /* Sidebar — logo sin ícono azul del template */
+  .app-sidebar .logo .logo-icon {
+    background: none !important;
+    padding-left: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-left: 55px !important;
+  }
+  .app-sidebar .logo .logo-icon img {
+    max-height: 52px !important;
+    transition: transform 0.25s ease, filter 0.25s ease !important;
+  }
+  .app-sidebar .logo .logo-icon:hover {
+    padding-left: 55px !important;
+  }
+  .app-sidebar .logo .logo-icon:hover img {
+    transform: translateY(-3px) scale(1.06) !important;
+    filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0,0,0,0.25)) !important;
+  }
+
   /* Sidebar — íconos siempre amarillos */
   .app-menu > ul > li > a > i:not(.has-sub-menu).material-icons-two-tone {
     filter: brightness(0) saturate(100%) invert(79%) sepia(82%) saturate(596%) hue-rotate(356deg) brightness(103%) contrast(101%) !important;

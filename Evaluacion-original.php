@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (isset($_COOKIE["tipo_sesion"])) {
     if ($_COOKIE["tipo_sesion"] != "1") {
         echo '<meta http-equiv="refresh" content="0;url=logout.php">';
@@ -20,8 +20,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-    <title>Klyns Intranet</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+    <title>PIP Intranet</title>
     <link rel="stylesheet" href="assets/libs/smart-wizard/dist/css/smart_wizard_all.min.css">
     <link rel="stylesheet" href="assets/cssEvaluaciones/styles.css">
     <link rel="stylesheet" href="assets/libs/bs-stepper/src/css/bs-stepper.css">
@@ -200,7 +200,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
           <div class="container-fluid" style="z-index:5">
             <div class="row">
               <div class="col s12 m3 offset-m9" style="position:absolute;">
-                  <img src="assets/logoK.png" style="max-width:80%" alt="LogoKlyns">
+                  <img src="assets/images/logo-pip.png" style="max-width:80%" alt="LogoKlyns">
               </div>
               <div class="courses-container">
               	<div class="course">

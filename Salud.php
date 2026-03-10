@@ -1,4 +1,4 @@
-<?php include("AutorizaPagina.php"); ?>
+﻿<?php include("AutorizaPagina.php"); ?>
 <?php
 require_once("Backend/Empleados/Empleados.php");
 $ins = new Empleados();
@@ -16,8 +16,8 @@ $MenuP = $Conf->getMenusPadre();
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-  <title>Klyns Intranet</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+  <title>PIP Intranet</title>
   <!-- Styles neptune -->
 
   <?php include("neptune_styles.php");  ?>
@@ -42,7 +42,7 @@ $MenuP = $Conf->getMenusPadre();
     <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
-        <p class="loader__label">Klyns</p>
+        <p class="loader__label">PIP</p>
       </div>
     </div>
     <div id="Menu">

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (isset($_COOKIE["sesion"])) {
   if ($_COOKIE["sesion"] == "activa" && isset($_COOKIE["verificaSesion"])) {
     echo '<meta http-equiv="refresh" content="0;url=index.php">';
@@ -13,8 +13,8 @@ if (isset($_COOKIE["sesion"])) {
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-    <title>Klyns Intranet</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+    <title>PIP Intranet</title>
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
     <link href="dist/css/style.css" rel="stylesheet">
     <!-- This page CSS -->
@@ -43,7 +43,7 @@ if (isset($_COOKIE["sesion"])) {
             <div class="auth-box">
                 <div id="loginform">
                     <div class="logo">
-                        <span class="db"><img src="assets/images/lg1.png" style="width:35px !important"
+                        <span class="db"><img src="assets/images/logo-pip.png" style="width:35px !important"
                                 alt="logo" /></span>
                         <h5 class="font-medium m-b-20">Sign In to Admin</h5>
                     </div>
@@ -91,7 +91,7 @@ if (isset($_COOKIE["sesion"])) {
                   <h4>Recuperación de contraseña.</h4>
               </div>
               <div class="col s12 l12" style="text-align:center">
-              <img src="assets/logoK.png" alt="Logo Klyns" style="width:40%;">
+              <img src="assets/images/logo-pip.png" alt="Logo Klyns" style="width:40%;">
               </div>
               <div class="col s12 l12 " style="padding:3vh;">
                   <div class="row"

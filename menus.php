@@ -6,7 +6,7 @@
 
    <div class="app-sidebar">
      <div class="logo">
-       <a href="index.php" class="logo-icon"><span class="logo-text">Intranet</span></a>
+       <a href="index.php" class="logo-icon"><img src="assets/images/logo-pip.png" alt="Logo" style="max-height:40px;"></a>
        <!-- <div class="sidebar-user-switcher user-activity-online">
          <a href="javascript: void(0);" data-target="user_dropdown">
            <img id="imgSmallProfile" alt="user">

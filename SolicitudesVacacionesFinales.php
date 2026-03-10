@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $hoy = date('Y-m-d');
 $FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
 ?>
@@ -10,8 +10,8 @@ $FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-  <title>Klyns Intranet</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+  <title>PIP Intranet</title>
 
   <!-- Styles neptune -->
 
@@ -36,7 +36,7 @@ $FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
     <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
-        <p class="loader__label">Klyns</p>
+        <p class="loader__label">PIP</p>
       </div>
     </div>
     <div id="Menu">

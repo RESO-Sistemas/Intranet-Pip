@@ -1,4 +1,4 @@
-<?php include("AutorizaPagina.php"); ?>
+﻿<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 
 <html>
@@ -13,9 +13,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-    <title>Klyns Intranet</title>
+    <title>PIP Intranet</title>
 
 
     <?php include("neptune_styles.php"); ?>
@@ -94,7 +94,7 @@
 
                 <div class="loader__figure"></div>
 
-                <p class="loader__label">Klyns</p>
+                <p class="loader__label">PIP</p>
 
             </div>
 

@@ -1,4 +1,4 @@
-<?php include("AutorizaPagina.php"); ?>
+﻿<?php include("AutorizaPagina.php"); ?>
 <?php
 if (isset($_COOKIE["tipo_sesion"])) {
     if ($_COOKIE["tipo_sesion"] != "1") {
@@ -21,8 +21,8 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-    <title>Klyns Intranet</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+    <title>PIP Intranet</title>
     <link rel="stylesheet" href="assets/cssEvaluaciones/styles.css">
     <link href="assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
     <link href="assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css" rel="stylesheet">
@@ -58,7 +58,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
                           <a href="index.php" style="width:100%" class="btnReturn"><i class="fa-solid fa-arrow-left"></i> Regresar</a>
                         </div>
                         <div class="col s12 l12" style="text-align:center;">
-                            <img src="assets/logoK.png" style="max-width:15%" alt="LogoKlyns">
+                            <img src="assets/images/logo-pip.png" style="max-width:15%" alt="LogoKlyns">
                         </div>
                       </div>
                     </div>

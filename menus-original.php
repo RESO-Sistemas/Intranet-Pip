@@ -1,4 +1,4 @@
-<?php
+﻿<?php
   require_once("Backend/Configuracion/Configuracion.php");
   $Conf = new Configuracion();
   $MenuP = $Conf->getMenusPadre();
@@ -8,7 +8,7 @@
          <div class="nav-wrapper">
              <a href="index.php" class="brand-logo">
                  <span class="icon">
-                     <img class="dark-logo" width="35px" src="assets/images/lg1.png" >
+                     <img class="dark-logo" width="35px" src="assets/images/logo-pip.png" >
                  </span>
                  <span class="text">
                      <img class="light-logo" src="assets/images/logo-light-text.png">

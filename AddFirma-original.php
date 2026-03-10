@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -11,8 +11,8 @@
      <meta name="apple-mobile-web-app-capable" content="yes">
      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
      <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
-     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-     <title>Klyns Intranet</title>
+     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+     <title>PIP Intranet</title>
      <link href="dist/css/style.css" rel="stylesheet">
      <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
      <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />

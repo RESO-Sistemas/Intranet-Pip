@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-    <title>Klyns Intranet</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
+    <title>PIP Intranet</title>
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
     <link href="dist/css/style.css" rel="stylesheet">
     <!-- This page CSS -->
@@ -38,7 +38,7 @@
                         <h5>Actualización de contraseña.</h5>
                     </div>
                     <div class="col s12 l12" style="text-align: center;">
-                        <img src="assets/logoK.png" alt="Logo Klyns" style="width: 100%;">
+                        <img src="assets/images/logo-pip.png" alt="Logo Klyns" style="width: 100%;">
                     </div>
                     <div class="col s12 l12" style="text-align: center;">
                         <h5 id="nameEmpleado"></h5>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once("Backend/Session/SessionManager.php");
 
 // Si ya hay sesión activa, redirigir a index
@@ -20,7 +20,7 @@ if (SessionManager::isLoggedIn()) {
     <!-- The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
-    <title>Klyns Intranet</title>
+    <title>PIP Intranet</title>
 
     <!-- Styles -->
 
@@ -80,7 +80,7 @@ if (SessionManager::isLoggedIn()) {
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-3">
-                        <img src="assets/logoK.png" alt="Logo Klyns" style="width:40%;">
+                        <img src="assets/images/logo-pip.png" alt="Logo Klyns" style="width:40%;">
                     </div>
                     <div class="p-3">
                         <h6 class="text-center mb-3"><b>Ingrese el correo electrónico ingresado en su cuenta.</b></h6>

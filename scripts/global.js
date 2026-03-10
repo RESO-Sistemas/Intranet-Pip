@@ -980,7 +980,7 @@ function Cargando() {
   $.blockUI({
     message: `
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; height:100%; color:white;">
-        <img src="assets/logoK.png" alt="Logo" width="120"  margin-bottom:1rem;">
+        <img src="assets/images/logo-pip.png" alt="Logo" width="120" style="margin-bottom:1rem;">
       </div>
     `,
     css: {

@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
     <link href="assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
     <link href="assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css" rel="stylesheet">
     <link href="dist/css/style.css" rel="stylesheet">
     <link href="dist/css/pages/data-table.css" rel="stylesheet">
     <link href="dist/css/pages/dashboard1.css" rel="stylesheet">
-    <title>Klyns Intranet</title>
+    <title>PIP Intranet</title>
     <style media="screen">
       body {
         background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);

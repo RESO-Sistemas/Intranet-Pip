@@ -653,7 +653,7 @@ class Empleados extends Conexiones
                                                       <th style='background-color: #ecf0f1; text-align: left; padding: 0;'>
                                                           <div style='text-align: center; margin-top: 5vh;'>
                                                               <a href=''>
-                                                                  <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klynet.mx/assets/logoK.png' alt=''>
+                                                                  <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klynet.mx/assets/images/logo-pip.png' alt=''>
                                                               </a>
                                                            </div>
                                                       </th>
@@ -2001,7 +2001,7 @@ class Empleados extends Conexiones
                                                <td style='background-color: #ecf0f1; text-align: left; padding: 0;'>
                                                <div style='text-align: center; margin-top: 5vh;'>
                                                        <a href=''>
-                                                           <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klyns.resosistemas.mx/assets/logoK.png' alt=''>
+                                                           <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klyns.resosistemas.mx/assets/images/logo-pip.png' alt=''>
                                                        </a>
                                                </div>
                                                </td>

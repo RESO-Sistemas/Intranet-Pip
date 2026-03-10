@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require '../PHPMailer/src/Exception.php';
 require '../PHPMailer/src/PHPMailer.php';
 require '../PHPMailer/src/SMTP.php';
@@ -86,7 +86,7 @@ class SenderHelper {
             <div class='container'>
                 <div class='header'>
                     <a href=''>
-                        <img style='width: 20%; border-radius: 15px' src='https://klyns.resosistemas.mx/assets/logoK.png' alt=''>
+                        <img style='width: 20%; border-radius: 15px' src='https://klyns.resosistemas.mx/assets/images/logo-pip.png' alt=''>
                     </a>
                 </div>
                 <div class='content'>
@@ -208,7 +208,7 @@ class SenderHelper {
             <div class='container'>
                 <div class='header'>
                     <a href=''>
-                        <img style='width: 20%; border-radius: 15px' src='https://klyns.resosistemas.mx/assets/logoK.png' alt=''>
+                        <img style='width: 20%; border-radius: 15px' src='https://klyns.resosistemas.mx/assets/images/logo-pip.png' alt=''>
                     </a>
                 </div>
                 <div class='content'>

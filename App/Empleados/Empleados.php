@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (file_exists("../Conexiones/Conexiones.php")) {
     require_once("../Conexiones/Conexiones.php");
 } else {
@@ -1352,7 +1352,7 @@ class Empleados extends Conexiones
                                   <td style='background-color: #ecf0f1; text-align: left; padding: 0;'>
                                   <div style='text-align: center; margin-top: 5vh;'>
                                           <a href=''>
-                                              <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klyns.resosistemas.mx/assets/logoK.png' alt=''>
+                                              <img style='width: 20%; display: block; margin: auto; border-radius:15px' src='https://klyns.resosistemas.mx/assets/images/logo-pip.png' alt=''>
                                           </a>
                                   </div>
                                   </td>
