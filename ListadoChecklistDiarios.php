@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP - Listado Checklist Diarios</title>
+  <title>PIP by Lugo - Listado Checklist Diarios</title>
 
   <?php include("neptune_styles.php"); ?>
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">

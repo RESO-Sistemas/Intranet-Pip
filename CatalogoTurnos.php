@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP - Catálogo Turnos</title>
+  <title>PIP by Lugo - Catálogo Turnos</title>
 
   <?php include("neptune_styles.php"); ?>
 

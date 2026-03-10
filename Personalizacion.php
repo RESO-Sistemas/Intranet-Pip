@@ -16,7 +16,7 @@
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-    <title>PIP Intranet</title>
+    <title>PIP by Lugo</title>
 
     <!-- Styles neptune -->
 

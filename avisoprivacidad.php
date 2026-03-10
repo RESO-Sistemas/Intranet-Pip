@@ -11,7 +11,7 @@
     <link href="dist/css/style.css" rel="stylesheet">
     <link href="dist/css/pages/data-table.css" rel="stylesheet">
     <link href="dist/css/pages/dashboard1.css" rel="stylesheet">
-    <title>PIP Intranet</title>
+    <title>PIP by Lugo</title>
     <style media="screen">
       body {
         background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);

@@ -22,7 +22,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 <head>
   <meta charset="utf-8">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP Intranet</title>
+  <title>PIP by Lugo</title>
 
 
   <!-- Styles neptune -->

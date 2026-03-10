@@ -21,7 +21,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   <head>
     <meta charset="utf-8">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP Intranet</title>
+    <title>PIP by Lugo</title>
     <link rel="stylesheet" href="assets/libs/smart-wizard/dist/css/smart_wizard_all.min.css">
     <link rel="stylesheet" href="assets/cssEvaluaciones/styles.css">
     <link rel="stylesheet" href="assets/libs/bs-stepper/src/css/bs-stepper.css">
