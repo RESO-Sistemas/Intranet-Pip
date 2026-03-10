@@ -53,49 +53,7 @@
       opacity: 0.92;
     }
 
-    /* Select2 estilos para multi-select de puestos */
-    .select2-container--default .select2-selection--multiple {
-      border: 1px solid #ced4da;
-      border-radius: 0.375rem;
-      min-height: 80px;
-      padding: 6px 8px;
-      background-color: #fff;
-      overflow-y: auto;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-      background-color: #ffc407;
-      border: none;
-      color: #fff9e6;
-      border-radius: 4px;
-      padding: 5px 10px 5px 26px;
-      margin: 4px 6px 4px 0;
-      font-size: 0.85rem;
-      position: relative;
-      overflow: visible;
-      max-width: 100%;
-      line-height: 1.4;
-      display: inline-flex;
-      align-items: center;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-      color: #fff9e6;
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1rem;
-      border: none !important;
-      border-right: none !important;
-      padding: 0;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-      color: #fff;
-      background: transparent !important;
-    }
-    .select2-container--default .select2-selection--multiple .select2-search__field {
-      margin-top: 6px;
-    }
-    .select2-container--default.select2-container--focus .select2-selection--multiple {
+    .select2-container--default.select2-container--focus .select2-selection--single {
       border-color: #ffc407;
       box-shadow: 0 0 0 0.2rem rgba(255, 196, 7, 0.25);
     }
@@ -179,8 +137,9 @@
                         </div>
                       </div>
                       <div class="col-12 d-none" id="divPuestos">
-                        <label class="form-label fw-bold">Seleccione los puestos:</label>
-                        <select id="slctPuestos" class="form-select" multiple="multiple" style="width: 100%;">
+                        <label class="form-label fw-bold">Seleccione el puesto:</label>
+                        <select id="slctPuestos" class="form-select">
+                          <option value="" disabled selected>-- Seleccione un puesto --</option>
                         </select>
                       </div>
                     </div>
@@ -289,8 +248,10 @@
               </div>
             </div>
             <div class="col-12 d-none" id="modalDivPuestos">
-              <label class="form-label fw-bold">Seleccione los puestos:</label>
-              <select id="modalSlctPuestos" class="form-select" multiple="multiple" style="width: 100%;"></select>
+              <label class="form-label fw-bold">Seleccione el puesto:</label>
+              <select id="modalSlctPuestos" class="form-select">
+                <option value="" disabled selected>-- Seleccione un puesto --</option>
+              </select>
             </div>
           </div>
         </div>

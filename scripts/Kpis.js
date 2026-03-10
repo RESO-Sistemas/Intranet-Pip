@@ -8,10 +8,9 @@ document.addEventListener('DOMContentLoaded', async function () {
       $.ajax({ type: "post", url: url_m_Kpis, data: { op: "getKpis" }, dataType: "json" })
     ]);
     listaPuestos = puestos;
-    let options = '';
+    let options = '<option value="" disabled selected>-- Seleccione un puesto --</option>';
     puestos.forEach(function (p) { options += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
     $('#slctPuestos').html(options);
-    $('#slctPuestos').select2({ placeholder: "Seleccione puestos...", allowClear: true });
     _renderTablaKpis(kpis);
   } catch (e) {
     console.error("Error al inicializar:", e);
@@ -23,31 +22,7 @@ let editando = false;
 let tableKpis; // referencia a la tabla DataTable
 let listaPuestos = []; // cache de puestos para mostrar nombres
 
-/**
- * Cargar puestos en el multi-select
- */
-async function cargarPuestos() {
-  try {
-    const respuesta = await $.ajax({
-      type: "post",
-      url: url_m_Kpis,
-      data: { op: "getPuestos" },
-      dataType: "json",
-    });
-    listaPuestos = respuesta;
-    let options = '';
-    respuesta.forEach(function (p) {
-      options += `<option value="${p.IdPuesto}">${p.Puesto}</option>`;
-    });
-    $('#slctPuestos').html(options);
-    $('#slctPuestos').select2({
-      placeholder: "Seleccione puestos...",
-      allowClear: true
-    });
-  } catch (e) {
-    console.error("Error al cargar puestos:", e);
-  }
-}
+
 
 /**
  * Mostrar/ocultar el select de puestos
@@ -55,7 +30,7 @@ async function cargarPuestos() {
 function togglePuestosSelect() {
   if ($('#chkParaTodos').is(':checked')) {
     $('#divPuestos').addClass('d-none');
-    $('#slctPuestos').val(null).trigger('change');
+    $('#slctPuestos').val('');
   } else {
     $('#divPuestos').removeClass('d-none');
   }
@@ -341,8 +316,8 @@ async function guardarKpi() {
     toastr.warning("Seleccione la prioridad del KPI.");
     return;
   }
-  if (!paraTodos && (!puestosSeleccionados || puestosSeleccionados.length === 0)) {
-    toastr.warning("Seleccione al menos un puesto o marque 'Aplica para todos'.");
+  if (!paraTodos && !puestosSeleccionados) {
+    toastr.warning("Seleccione un puesto o marque 'Aplica para todos'.");
     return;
   }
 
@@ -355,7 +330,7 @@ async function guardarKpi() {
     return;
   }
 
-  const puestos = paraTodos ? 'TODOS' : puestosSeleccionados.join(',');
+  const puestos = paraTodos ? 'TODOS' : puestosSeleccionados;
 
   const dataSend = {
     op: "insertKpi",
@@ -386,7 +361,7 @@ function editarKpi(idEncoded, nombre, valorAlta, valorMedia, valorBaja, priorida
   $('#modalValorBaja').val(parseFloat(valorBaja));
 
   // Poblar opciones del select de puestos
-  let optionsHtml = '';
+  let optionsHtml = '<option value="" disabled selected>-- Seleccione un puesto --</option>';
   listaPuestos.forEach(function(p) {
     optionsHtml += `<option value="${p.IdPuesto}">${p.Puesto}</option>`;
   });
@@ -396,12 +371,9 @@ function editarKpi(idEncoded, nombre, valorAlta, valorMedia, valorBaja, priorida
   const puestosData = puestos;
   const prioridadData = prioridad;
 
-  // Destruir Select2 previos para reinicializar limpios
+  // Destruir Select2 previo de prioridad para reinicializar limpio
   if ($('#modalPrioridad').hasClass('select2-hidden-accessible')) {
     $('#modalPrioridad').select2('destroy');
-  }
-  if ($('#modalSlctPuestos').hasClass('select2-hidden-accessible')) {
-    $('#modalSlctPuestos').select2('destroy');
   }
 
   // Abrir modal
@@ -415,20 +387,14 @@ function editarKpi(idEncoded, nombre, valorAlta, valorMedia, valorBaja, priorida
       dropdownParent: $('#modalEditarKpi')
     }).val(prioridadData).trigger('change');
 
-    $('#modalSlctPuestos').select2({
-      placeholder: "Seleccione puestos...",
-      allowClear: true,
-      dropdownParent: $('#modalEditarKpi')
-    });
-
     if (!puestosData || puestosData === 'TODOS') {
       $('#modalChkParaTodos').prop('checked', true);
       $('#modalDivPuestos').addClass('d-none');
-      $('#modalSlctPuestos').val(null).trigger('change');
+      $('#modalSlctPuestos').val('');
     } else {
       $('#modalChkParaTodos').prop('checked', false);
       $('#modalDivPuestos').removeClass('d-none');
-      $('#modalSlctPuestos').val(puestosData.split(',')).trigger('change');
+      $('#modalSlctPuestos').val(puestosData.split(',')[0]);
     }
   });
 
@@ -504,7 +470,7 @@ async function toggleKpi(idEncoded, nuevoEstado) {
 function togglePuestosSelectModal() {
   if ($('#modalChkParaTodos').is(':checked')) {
     $('#modalDivPuestos').addClass('d-none');
-    $('#modalSlctPuestos').val(null).trigger('change');
+    $('#modalSlctPuestos').val('');
   } else {
     $('#modalDivPuestos').removeClass('d-none');
   }
@@ -526,13 +492,13 @@ async function guardarEdicionKpi() {
   if (!nombre) { toastr.warning("Ingrese el nombre del KPI."); return; }
   if (!valorAlta || !valorMedia || !valorBaja) { toastr.warning("Ingrese los tres valores de rango."); return; }
   if (!prioridad) { toastr.warning("Seleccione la prioridad."); return; }
-  if (!paraTodos && (!puestosSeleccionados || puestosSeleccionados.length === 0)) {
-    toastr.warning("Seleccione al menos un puesto o marque 'Aplica para todos'."); return;
+  if (!paraTodos && !puestosSeleccionados) {
+    toastr.warning("Seleccione un puesto o marque 'Aplica para todos'."); return;
   }
   if (parseFloat(valorAlta) <= parseFloat(valorMedia)) { toastr.warning("El valor Alta debe ser mayor que Media."); return; }
   if (parseFloat(valorMedia) <= parseFloat(valorBaja)) { toastr.warning("El valor Media debe ser mayor que Baja."); return; }
 
-  const puestos = paraTodos ? 'TODOS' : puestosSeleccionados.join(',');
+  const puestos = paraTodos ? 'TODOS' : puestosSeleccionados;
 
   const dataSend = {
     op: "updateKpi",
@@ -574,7 +540,7 @@ function limpiarFormulario() {
   $('#slctPrioridad').val('');
   $('#chkParaTodos').prop('checked', true);
   $('#divPuestos').addClass('d-none');
-  $('#slctPuestos').val(null).trigger('change');
+  $('#slctPuestos').val('');
 
   $('#formTitle').text('Nuevo KPI');
   $('#btnRegistrar').html('<i class="fas fa-plus me-1"></i>Registrar');
