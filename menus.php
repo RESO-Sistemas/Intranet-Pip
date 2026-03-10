@@ -20,12 +20,13 @@
        <ul class="accordion-menu">
          <?php
           $iconMap = [
-            'PRINCIPAL'      => 'home',
-            'EVALUACIONES'   => 'assignment',
-            'CATÁLOGOS'      => 'library_books',
-            'DASHBOARD'      => 'speed',
-            "MÓDULO KPI'S"   => 'bar_chart',
-            'CHECKLISTS'     => 'fact_check',
+            'PRINCIPAL'        => 'home',
+            'EVALUACIONES'     => 'assignment',
+            'CATÁLOGOS'        => 'library_books',
+            'DASHBOARD'        => 'speed',
+            "MÓDULO KPI'S"     => 'bar_chart',
+            'CHECKLISTS'       => 'fact_check',
+            'INCIDENCIAS'      => 'warning',
           ];
           for ($i = 0; $i < sizeof($MenuP); $i++) {
             $id_menuP = $MenuP[$i]["id_menu"];

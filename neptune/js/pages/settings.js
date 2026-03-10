@@ -2,6 +2,6 @@ $(document).ready(function() {
     
     "use strict";
     
-    $('select').select2();
+    $('select').not('.modal select').select2();
 
 });
