@@ -3,54 +3,54 @@ $(window).on('load', function() {
     $(".preloader").fadeOut();
 });
 
-let tableAreasTecnicas;
+let tableTipoDocumentacion;
 
 // Inicializar cuando el documento esté listo
 $(document).ready(function() {
-    loadAreasTecnicas();
+    loadTiposDocumentacion();
     
-    // Evento para agregar nueva área técnica
-    $('#btnAddAreaTecnica').on('click', function() {
-        addAreaTecnica();
+    // Evento para agregar nuevo tipo de documento
+    $('#btnAddTipoDocumento').on('click', function() {
+        addTipoDocumento();
     });
     
     // Evento para guardar edición
     $('#btnSaveEdit').on('click', function() {
-        updateAreaTecnica();
+        updateTipoDocumento();
     });
     
     // Limpiar modal editar al cerrarse
-    $('#modalEditAreaTecnica').on('hidden.bs.modal', function() {
-        $('#editIdAreaTecnica').val('');
-        $('#editNombreArea').val('');
-        $('#editDescripcion').val('');
+    $('#modalEditTipoDocumento').on('hidden.bs.modal', function() {
+        $('#editIdTipoDocumento').val('');
+        $('#editNombreDocumento').val('');
+        $('#editObligatorio').prop('checked', false);
     });
 
     // Limpiar modal agregar al cerrarse
-    $('#modalAddAreaTecnica').on('hidden.bs.modal', function() {
-        $('#txtNombreArea').val('');
-        $('#txtDescripcion').val('');
+    $('#modalAddTipoDocumento').on('hidden.bs.modal', function() {
+        $('#txtNombreDocumento').val('');
+        $('#chkObligatorio').prop('checked', false);
     });
 });
 
 /**
- * Cargar listado de áreas técnicas en DataTable
+ * Cargar listado de tipos de documentación en DataTable
  */
-async function loadAreasTecnicas() {
+async function loadTiposDocumentacion() {
     try {
         const respuesta = await $.ajax({
             type: "POST",
-            url: "Backend/AreasTecnicas/App.php",
-            data: { op: "getAreasTecnicas" },
+            url: "Backend/TipoDocumentacion/App.php",
+            data: { op: "getTiposDocumentacion" },
             dataType: "json"
         });
         
         // Destruir tabla si ya existe
-        if (tableAreasTecnicas) {
-            tableAreasTecnicas.destroy();
+        if (tableTipoDocumentacion) {
+            tableTipoDocumentacion.destroy();
         }
         
-        tableAreasTecnicas = $('#tableAreasTecnicas').DataTable({
+        tableTipoDocumentacion = $('#tableTipoDocumentacion').DataTable({
             destroy: true,
             language: {
                 lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
@@ -71,19 +71,20 @@ async function loadAreasTecnicas() {
             data: respuesta,
             columns: [
                 { 
-                    data: "IdAreaTecnica",
+                    data: "IdTipoDocumento",
                     render: function(data, type, row, meta) {
                         return meta.row + 1;
                     }
                 },
-                { data: "NombreArea" },
+                { data: "NombreDocumento" },
                 { 
-                    data: "Descripcion",
+                    data: "Obligatorio",
                     render: function(data, type, row) {
-                        if (data && data.length > 50) {
-                            return data.substring(0, 50) + '...';
+                        if (data == 1) {
+                            return '<span class="badge bg-info"><span class="material-symbols-outlined align-middle" style="font-size:14px;">check_circle</span> Obligatorio</span>';
+                        } else {
+                            return '<span class="badge bg-secondary"><span class="material-symbols-outlined align-middle" style="font-size:14px;">remove_circle</span> Opcional</span>';
                         }
-                        return data || '-';
                     }
                 },
                 { 
@@ -100,7 +101,7 @@ async function loadAreasTecnicas() {
                     data: null,
                     orderable: false,
                     render: function(data, type, row) {
-                        let idEncoded = btoa(row.IdAreaTecnica);
+                        let idEncoded = btoa(row.IdTipoDocumento);
                         let btnEdit = `<button class="btn btn-primary btn-sm me-1" onclick="openEditModal('${idEncoded}')" title="Editar">
                             <span class="material-symbols-outlined">edit</span>
                         </button>`;
@@ -116,7 +117,7 @@ async function loadAreasTecnicas() {
                             </button>`;
                         }
                         
-                        let btnDelete = `<button class="btn btn-danger btn-sm" onclick="deleteAreaTecnica('${idEncoded}')" title="Eliminar">
+                        let btnDelete = `<button class="btn btn-danger btn-sm" onclick="deleteTipoDocumento('${idEncoded}')" title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>`;
                         
@@ -124,47 +125,47 @@ async function loadAreasTecnicas() {
                     }
                 }
             ],
-            order: [[0, 'asc']]  // Ordenar por columna # (IdAreaTecnica)
+            order: [[0, 'asc']]
         });
         
     } catch (error) {
-        console.error("Error al cargar áreas técnicas:", error);
+        console.error("Error al cargar tipos de documentación:", error);
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudieron cargar las áreas técnicas.</span>
+                <span class="alert-text">No se pudieron cargar los tipos de documentación.</span>
             </div>`;
         showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
 }
 
 /**
- * Agregar nueva área técnica
+ * Agregar nuevo tipo de documento
  */
-async function addAreaTecnica() {
-    const nombreArea = $('#txtNombreArea').val().trim();
-    const descripcion = $('#txtDescripcion').val().trim();
+async function addTipoDocumento() {
+    const nombreDocumento = $('#txtNombreDocumento').val().trim();
+    const obligatorio = $('#chkObligatorio').is(':checked') ? 1 : 0;
     
     // Validaciones
-    if (nombreArea === '') {
+    if (nombreDocumento === '') {
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Información!</span>
-                <span class="alert-text">Debe ingresar el nombre del área técnica.</span>
+                <span class="alert-text">Debe ingresar el nombre del documento.</span>
             </div>`;
         showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtNombreArea').focus();
+        $('#txtNombreDocumento').focus();
         return;
     }
     
     try {
         const respuesta = await $.ajax({
             type: "POST",
-            url: "Backend/AreasTecnicas/App.php",
+            url: "Backend/TipoDocumentacion/App.php",
             data: {
-                op: "addAreaTecnica",
-                NombreArea: nombreArea,
-                Descripcion: descripcion
+                op: "addTipoDocumento",
+                NombreDocumento: nombreDocumento,
+                Obligatorio: obligatorio
             },
             dataType: "json"
         });
@@ -177,11 +178,11 @@ async function addAreaTecnica() {
                 </div>`;
             showBootstrapAlertSuc(messageContent, "top-right", 5000);
             // Cerrar modal y limpiar campos
-            bootstrap.Modal.getInstance(document.getElementById('modalAddAreaTecnica')).hide();
-            $('#txtNombreArea').val('');
-            $('#txtDescripcion').val('');
+            bootstrap.Modal.getInstance(document.getElementById('modalAddTipoDocumento')).hide();
+            $('#txtNombreDocumento').val('');
+            $('#chkObligatorio').prop('checked', false);
             // Recargar tabla
-            loadAreasTecnicas();
+            loadTiposDocumentacion();
         } else {
             const messageContent = `
                 <div class="alert-content">
@@ -192,11 +193,11 @@ async function addAreaTecnica() {
         }
         
     } catch (error) {
-        console.error("Error al agregar área técnica:", error);
+        console.error("Error al agregar tipo de documento:", error);
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo registrar el área técnica.</span>
+                <span class="alert-text">No se pudo registrar el tipo de documento.</span>
             </div>`;
         showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
@@ -209,21 +210,21 @@ async function openEditModal(idEncoded) {
     try {
         const respuesta = await $.ajax({
             type: "POST",
-            url: "Backend/AreasTecnicas/App.php",
+            url: "Backend/TipoDocumentacion/App.php",
             data: {
-                op: "getAreaTecnicaById",
-                IdAreaTecnica: idEncoded
+                op: "getTipoDocumentoById",
+                IdTipoDocumento: idEncoded
             },
             dataType: "json"
         });
         
         if (respuesta.Resultado && respuesta.Siguiente) {
-            $('#editIdAreaTecnica').val(idEncoded);
-            $('#editNombreArea').val(respuesta.Datos.NombreArea);
-            $('#editDescripcion').val(respuesta.Datos.Descripcion || '');
+            $('#editIdTipoDocumento').val(idEncoded);
+            $('#editNombreDocumento').val(respuesta.Datos.NombreDocumento);
+            $('#editObligatorio').prop('checked', respuesta.Datos.Obligatorio == 1);
             
             // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalEditAreaTecnica'));
+            const modal = new bootstrap.Modal(document.getElementById('modalEditTipoDocumento'));
             modal.show();
         } else {
             const messageContent = `
@@ -235,45 +236,45 @@ async function openEditModal(idEncoded) {
         }
         
     } catch (error) {
-        console.error("Error al obtener área técnica:", error);
+        console.error("Error al obtener tipo de documento:", error);
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo obtener la información del área técnica.</span>
+                <span class="alert-text">No se pudo obtener la información del tipo de documento.</span>
             </div>`;
         showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
 }
 
 /**
- * Actualizar área técnica
+ * Actualizar tipo de documento
  */
-async function updateAreaTecnica() {
-    const idAreaTecnica = $('#editIdAreaTecnica').val();
-    const nombreArea = $('#editNombreArea').val().trim();
-    const descripcion = $('#editDescripcion').val().trim();
+async function updateTipoDocumento() {
+    const idTipoDocumento = $('#editIdTipoDocumento').val();
+    const nombreDocumento = $('#editNombreDocumento').val().trim();
+    const obligatorio = $('#editObligatorio').is(':checked') ? 1 : 0;
     
     // Validaciones
-    if (nombreArea === '') {
+    if (nombreDocumento === '') {
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Información!</span>
-                <span class="alert-text">Debe ingresar el nombre del área técnica.</span>
+                <span class="alert-text">Debe ingresar el nombre del documento.</span>
             </div>`;
         showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#editNombreArea').focus();
+        $('#editNombreDocumento').focus();
         return;
     }
     
     try {
         const respuesta = await $.ajax({
             type: "POST",
-            url: "Backend/AreasTecnicas/App.php",
+            url: "Backend/TipoDocumentacion/App.php",
             data: {
-                op: "updateAreaTecnica",
-                IdAreaTecnica: idAreaTecnica,
-                NombreArea: nombreArea,
-                Descripcion: descripcion
+                op: "updateTipoDocumento",
+                IdTipoDocumento: idTipoDocumento,
+                NombreDocumento: nombreDocumento,
+                Obligatorio: obligatorio
             },
             dataType: "json"
         });
@@ -286,9 +287,9 @@ async function updateAreaTecnica() {
                 </div>`;
             showBootstrapAlertSuc(messageContent, "top-right", 5000);
             // Cerrar modal
-            bootstrap.Modal.getInstance(document.getElementById('modalEditAreaTecnica')).hide();
+            bootstrap.Modal.getInstance(document.getElementById('modalEditTipoDocumento')).hide();
             // Recargar tabla
-            loadAreasTecnicas();
+            loadTiposDocumentacion();
         } else {
             const messageContent = `
                 <div class="alert-content">
@@ -299,11 +300,11 @@ async function updateAreaTecnica() {
         }
         
     } catch (error) {
-        console.error("Error al actualizar área técnica:", error);
+        console.error("Error al actualizar tipo de documento:", error);
         const messageContent = `
             <div class="alert-content">
                 <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo actualizar el área técnica.</span>
+                <span class="alert-text">No se pudo actualizar el tipo de documento.</span>
             </div>`;
         showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
@@ -315,7 +316,7 @@ async function updateAreaTecnica() {
 async function toggleEstatus(idEncoded) {
     Swal.fire({
         title: 'Cambiar Estatus',
-        text: '¿Está seguro de cambiar el estatus de esta área técnica?',
+        text: '¿Está seguro de cambiar el estatus de este tipo de documento?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ffc107',
@@ -327,10 +328,10 @@ async function toggleEstatus(idEncoded) {
             try {
                 const respuesta = await $.ajax({
                     type: "POST",
-                    url: "Backend/AreasTecnicas/App.php",
+                    url: "Backend/TipoDocumentacion/App.php",
                     data: {
-                        op: "toggleEstatusAreaTecnica",
-                        IdAreaTecnica: idEncoded
+                        op: "toggleEstatusTipoDocumento",
+                        IdTipoDocumento: idEncoded
                     },
                     dataType: "json"
                 });
@@ -342,7 +343,7 @@ async function toggleEstatus(idEncoded) {
                             <span class="alert-text">${respuesta.Msg}</span>
                         </div>`;
                     showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                    loadAreasTecnicas();
+                    loadTiposDocumentacion();
                 } else {
                     const messageContent = `
                         <div class="alert-content">
@@ -356,7 +357,7 @@ async function toggleEstatus(idEncoded) {
                 const messageContent = `
                     <div class="alert-content">
                         <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">No se pudo cambiar el estatus del área técnica.</span>
+                        <span class="alert-text">No se pudo cambiar el estatus del tipo de documento.</span>
                     </div>`;
                 showBootstrapAlertWar(messageContent, "top-right", 5000);
             }
@@ -365,12 +366,12 @@ async function toggleEstatus(idEncoded) {
 }
 
 /**
- * Eliminar área técnica
+ * Eliminar tipo de documento
  */
-async function deleteAreaTecnica(idEncoded) {
+async function deleteTipoDocumento(idEncoded) {
     Swal.fire({
-        title: 'Eliminar Área Técnica',
-        text: '¿Está seguro de eliminar esta área técnica? Esta acción no se puede deshacer.',
+        title: 'Eliminar Tipo de Documento',
+        text: '¿Está seguro de eliminar este tipo de documento? Esta acción no se puede deshacer.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
@@ -382,10 +383,10 @@ async function deleteAreaTecnica(idEncoded) {
             try {
                 const respuesta = await $.ajax({
                     type: "POST",
-                    url: "Backend/AreasTecnicas/App.php",
+                    url: "Backend/TipoDocumentacion/App.php",
                     data: {
-                        op: "deleteAreaTecnica",
-                        IdAreaTecnica: idEncoded
+                        op: "deleteTipoDocumento",
+                        IdTipoDocumento: idEncoded
                     },
                     dataType: "json"
                 });
@@ -397,7 +398,7 @@ async function deleteAreaTecnica(idEncoded) {
                             <span class="alert-text">${respuesta.Msg}</span>
                         </div>`;
                     showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                    loadAreasTecnicas();
+                    loadTiposDocumentacion();
                 } else {
                     const messageContent = `
                         <div class="alert-content">
@@ -407,11 +408,11 @@ async function deleteAreaTecnica(idEncoded) {
                     showBootstrapAlertWar(messageContent, "top-right", 5000);
                 }
             } catch (error) {
-                console.error("Error al eliminar área técnica:", error);
+                console.error("Error al eliminar tipo de documento:", error);
                 const messageContent = `
                     <div class="alert-content">
                         <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">No se pudo eliminar el área técnica.</span>
+                        <span class="alert-text">No se pudo eliminar el tipo de documento.</span>
                     </div>`;
                 showBootstrapAlertWar(messageContent, "top-right", 5000);
             }
@@ -420,26 +421,27 @@ async function deleteAreaTecnica(idEncoded) {
 }
 
 /**
- * Función auxiliar para cargar áreas técnicas activas en un select
- * Útil para otros módulos que necesiten un combo de áreas
+ * Función auxiliar para cargar tipos de documentación activos en un select
+ * Útil para otros módulos que necesiten un combo de tipos
  */
-async function loadAreasTecnicasToSelect(selectId) {
+async function loadTiposDocumentacionToSelect(selectId) {
     try {
         const respuesta = await $.ajax({
             type: "POST",
-            url: "Backend/AreasTecnicas/App.php",
-            data: { op: "getAreasTecnicasActivas" },
+            url: "Backend/TipoDocumentacion/App.php",
+            data: { op: "getTiposDocumentacionActivos" },
             dataType: "json"
         });
         
-        let options = '<option value="" disabled selected>Seleccione un área técnica</option>';
-        respuesta.forEach(area => {
-            options += `<option value="${area.IdAreaTecnica}">${area.NombreArea}</option>`;
+        let options = '<option value="" disabled selected>Seleccione un tipo de documento</option>';
+        respuesta.forEach(tipo => {
+            const obligatorioLabel = tipo.Obligatorio == 1 ? ' (Obligatorio)' : '';
+            options += `<option value="${tipo.IdTipoDocumento}">${tipo.NombreDocumento}${obligatorioLabel}</option>`;
         });
         
         $(`#${selectId}`).html(options);
         
     } catch (error) {
-        console.error("Error al cargar áreas técnicas:", error);
+        console.error("Error al cargar tipos de documentación:", error);
     }
 }

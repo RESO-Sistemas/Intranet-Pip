@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/lg1.png">
-    <title>Procesos de Vacantes - Klyns Intranet</title>
+    <title>Tipo de Documentación - Klyns Intranet</title>
     
     <!-- Styles neptune -->
     <?php include("neptune_styles.php"); ?>
@@ -51,34 +51,34 @@
                         <div class="row">
                             <div class="col">
                                 <div class="page-description">
-                                    <h1>Catálogo de Procesos de Vacantes</h1>
-                                    <p class="text-muted">Administración de etapas y flujos del proceso de reclutamiento</p>
+                                    <h1>Catálogo de Tipo de Documentación</h1>
+                                    <p class="text-muted">Administración de documentos requeridos para empleados</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Tabla de procesos -->
+                        <!-- Tabla de tipos de documentación -->
                         <div class="row">
                             <div class="col">
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="card-title fw-bold mb-0">
-                                            <span class="material-symbols-outlined align-middle me-2">list</span>
-                                            Listado de Procesos de Vacantes
+                                            <span class="material-symbols-outlined align-middle me-2">description</span>
+                                            Listado de Tipos de Documento
                                         </h5>
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddProceso">
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddTipoDocumento">
                                             <span class="material-symbols-outlined align-middle me-1">add</span>
-                                            Nuevo Proceso
+                                            Nuevo Tipo de Documento
                                         </button>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table id="tableProcesosVacantes" class="table display text-center" style="width:100%">
+                                            <table id="tableTipoDocumentacion" class="table display text-center" style="width:100%">
                                                 <thead>
                                                     <tr>
                                                         <th>#</th>
-                                                        <th>Nombre del Proceso</th>
-                                                        <th>Descripción</th>
+                                                        <th>Nombre del Documento</th>
+                                                        <th>Obligatorio</th>
                                                         <th>Estatus</th>
                                                         <th>Acciones</th>
                                                     </tr>
@@ -98,25 +98,30 @@
         </div>
     </div>
     
-    <!-- Modal Agregar Proceso -->
-    <div class="modal fade" id="modalAddProceso" tabindex="-1" aria-labelledby="modalAddProcesoLabel" aria-hidden="true">
+    <!-- Modal Agregar Tipo de Documento -->
+    <div class="modal fade" id="modalAddTipoDocumento" tabindex="-1" aria-labelledby="modalAddTipoDocumentoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-success">
-                    <h5 class="modal-title" id="modalAddProcesoLabel">
+                    <h5 class="modal-title" id="modalAddTipoDocumentoLabel">
                         <span class="material-symbols-outlined align-middle me-2">add_circle</span>
-                        Nuevo Proceso de Vacante
+                        Nuevo Tipo de Documento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombre del Proceso: <span class="text-danger">*</span></label>
-                        <input id="txtNombreProceso" type="text" class="form-control" placeholder="Ej. Publicación, Entrevista, Selección">
+                        <label class="form-label fw-bold">Nombre del Documento: <span class="text-danger">*</span></label>
+                        <input id="txtNombreDocumento" type="text" class="form-control" placeholder="Ej. Acta de nacimiento, CURP, RFC">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Descripción:</label>
-                        <textarea id="txtDescripcion" class="form-control" rows="3" placeholder="Breve detalle del objetivo del proceso"></textarea>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="chkObligatorio">
+                            <label class="form-check-label fw-bold" for="chkObligatorio">
+                                ¿Es documento obligatorio?
+                            </label>
+                        </div>
+                        <small class="text-muted">Si está activado, el empleado debe entregar este documento obligatoriamente.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -124,7 +129,7 @@
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-success" id="btnAddProceso">
+                    <button type="button" class="btn btn-success" id="btnAddTipoDocumento">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Registrar
                     </button>
@@ -133,27 +138,31 @@
         </div>
     </div>
 
-
-    <!-- Modal Editar Proceso -->
-    <div class="modal fade" id="modalEditProceso" tabindex="-1" aria-labelledby="modalEditProcesoLabel" aria-hidden="true">
+    <!-- Modal Editar Tipo de Documento -->
+    <div class="modal fade" id="modalEditTipoDocumento" tabindex="-1" aria-labelledby="modalEditTipoDocumentoLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title" id="modalEditProcesoLabel">
+                    <h5 class="modal-title" id="modalEditTipoDocumentoLabel">
                         <span class="material-symbols-outlined align-middle me-2">edit</span>
-                        Editar Proceso
+                        Editar Tipo de Documento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="editIdProceso">
+                    <input type="hidden" id="editIdTipoDocumento">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombre del Proceso: <span class="text-danger">*</span></label>
-                        <input id="editNombreProceso" type="text" class="form-control" placeholder="Nombre del proceso">
+                        <label class="form-label fw-bold">Nombre del Documento: <span class="text-danger">*</span></label>
+                        <input id="editNombreDocumento" type="text" class="form-control" placeholder="Nombre del documento">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Descripción:</label>
-                        <textarea id="editDescripcion" class="form-control" rows="3" placeholder="Descripción del proceso"></textarea>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="editObligatorio">
+                            <label class="form-check-label fw-bold" for="editObligatorio">
+                                ¿Es documento obligatorio?
+                            </label>
+                        </div>
+                        <small class="text-muted">Si está activado, el empleado debe entregar este documento obligatoriamente.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -175,7 +184,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/ProcesosVacantes.js"></script>
+    <script src="scripts/TipoDocumentacion.js"></script>
 </body>
 
 </html>

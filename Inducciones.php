@@ -78,66 +78,19 @@
                             </div>
                         </div>
                         
-                        <!-- Formulario para agregar -->
-                        <div class="row">
-                            <div class="col">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title fw-bold mb-0">
-                                            <span class="material-symbols-outlined align-middle me-2">add_circle</span>
-                                            Nueva Inducción
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-12 col-md-6 mb-3">
-                                                <label class="form-label fw-bold">Nombre de la Inducción: <span class="text-danger">*</span></label>
-                                                <input id="txtNombreInduccion" type="text" class="form-control" placeholder="Ej. Inducción General, Capacitación Seguridad">
-                                            </div>
-                                            <div class="col-12 col-md-6 mb-3">
-                                                <label class="form-label fw-bold">Área Técnica:</label>
-                                                <select id="selectAreaTecnica" class="form-select">
-                                                    <option value="">Seleccione un área técnica</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12 col-md-6 mb-3">
-                                                <label class="form-label fw-bold">Puesto(s) Aplicable(s):</label>
-                                                <select id="selectPuestos" class="form-select" multiple="multiple" style="width: 100%;">
-                                                </select>
-                                            </div>
-                                            <div class="col-12 col-md-3 mb-3">
-                                                <label class="form-label fw-bold">Duración Estimada:</label>
-                                                <input id="txtDuracion" type="text" class="form-control" placeholder="Ej. 2 horas, 3 días">
-                                            </div>
-                                            <div class="col-12 col-md-3 d-flex align-items-end mb-3">
-                                                <button type="button" class="btn btn-success w-100" id="btnAddInduccion">
-                                                    <span class="material-symbols-outlined align-middle me-1">add</span>
-                                                    Registrar
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <label class="form-label fw-bold">Descripción:</label>
-                                                <textarea id="txtDescripcion" class="form-control" rows="2" placeholder="Objetivo y alcance del contenido"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Tabla de inducciones -->
                         <div class="row">
                             <div class="col">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="card-title fw-bold mb-0">
                                             <span class="material-symbols-outlined align-middle me-2">list</span>
                                             Listado de Inducciones
                                         </h5>
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddInduccion">
+                                            <span class="material-symbols-outlined align-middle me-1">add</span>
+                                            Nueva Inducción
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -167,6 +120,62 @@
         </div>
     </div>
     
+    <!-- Modal Agregar Inducción -->
+    <div class="modal fade" id="modalAddInduccion" tabindex="-1" aria-labelledby="modalAddInduccionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title" id="modalAddInduccionLabel">
+                        <span class="material-symbols-outlined align-middle me-2">add_circle</span>
+                        Nueva Inducción
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nombre de la Inducción: <span class="text-danger">*</span></label>
+                            <input id="txtNombreInduccion" type="text" class="form-control" placeholder="Ej. Inducción General, Capacitación Seguridad">
+                        </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">Área Técnica:</label>
+                            <select id="selectAreaTecnica" class="form-select">
+                                <option value="">Seleccione un área técnica</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-8 mb-3">
+                            <label class="form-label fw-bold">Puesto(s) Aplicable(s):</label>
+                            <select id="selectPuestos" class="form-select" multiple="multiple" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <label class="form-label fw-bold">Duración Estimada:</label>
+                            <input id="txtDuracion" type="text" class="form-control" placeholder="Ej. 2 horas, 3 días">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Descripción:</label>
+                            <textarea id="txtDescripcion" class="form-control" rows="3" placeholder="Objetivo y alcance del contenido"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span class="material-symbols-outlined align-middle me-1">close</span>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnAddInduccion">
+                        <span class="material-symbols-outlined align-middle me-1">save</span>
+                        Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Editar Inducción -->
     <div class="modal fade" id="modalEditInduccion" tabindex="-1" aria-labelledby="modalEditInduccionLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">

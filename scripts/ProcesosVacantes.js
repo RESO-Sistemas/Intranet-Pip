@@ -19,11 +19,17 @@ $(document).ready(function() {
         updateProcesoVacante();
     });
     
-    // Limpiar modal al cerrarse
+    // Limpiar modal editar al cerrarse
     $('#modalEditProceso').on('hidden.bs.modal', function() {
         $('#editIdProceso').val('');
         $('#editNombreProceso').val('');
         $('#editDescripcion').val('');
+    });
+
+    // Limpiar modal agregar al cerrarse
+    $('#modalAddProceso').on('hidden.bs.modal', function() {
+        $('#txtNombreProceso').val('');
+        $('#txtDescripcion').val('');
     });
 });
 
@@ -170,7 +176,8 @@ async function addProcesoVacante() {
                     <span class="alert-text">${respuesta.Msg}</span>
                 </div>`;
             showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            // Limpiar campos
+            // Cerrar modal y limpiar campos
+            bootstrap.Modal.getInstance(document.getElementById('modalAddProceso')).hide();
             $('#txtNombreProceso').val('');
             $('#txtDescripcion').val('');
             // Recargar tabla
@@ -306,96 +313,110 @@ async function updateProcesoVacante() {
  * Cambiar estatus (Activar/Desactivar)
  */
 async function toggleEstatus(idEncoded) {
-    const confirmed = confirm('¿Está seguro de cambiar el estatus de este proceso?');
-    
-    if (!confirmed) return;
-    
-    try {
-        const respuesta = await $.ajax({
-            type: "POST",
-            url: "Backend/ProcesosVacantes/App.php",
-            data: {
-                op: "toggleEstatusProcesoVacante",
-                IdProceso: idEncoded
-            },
-            dataType: "json"
-        });
-        
-        if (respuesta.Resultado && respuesta.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Completado!</span>
-                    <span class="alert-text">${respuesta.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            // Recargar tabla
-            loadProcesosVacantes();
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${respuesta.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+    Swal.fire({
+        title: 'Cambiar Estatus',
+        text: '¿Está seguro de cambiar el estatus de este proceso?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ffc107',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const respuesta = await $.ajax({
+                    type: "POST",
+                    url: "Backend/ProcesosVacantes/App.php",
+                    data: {
+                        op: "toggleEstatusProcesoVacante",
+                        IdProceso: idEncoded
+                    },
+                    dataType: "json"
+                });
+                
+                if (respuesta.Resultado && respuesta.Siguiente) {
+                    const messageContent = `
+                        <div class="alert-content">
+                            <span class="alert-title">Completado!</span>
+                            <span class="alert-text">${respuesta.Msg}</span>
+                        </div>`;
+                    showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                    loadProcesosVacantes();
+                } else {
+                    const messageContent = `
+                        <div class="alert-content">
+                            <span class="alert-title">Alerta!</span>
+                            <span class="alert-text">${respuesta.Msg}</span>
+                        </div>`;
+                    showBootstrapAlertWar(messageContent, "top-right", 5000);
+                }
+            } catch (error) {
+                console.error("Error al cambiar estatus:", error);
+                const messageContent = `
+                    <div class="alert-content">
+                        <span class="alert-title">Alerta!</span>
+                        <span class="alert-text">No se pudo cambiar el estatus del proceso.</span>
+                    </div>`;
+                showBootstrapAlertWar(messageContent, "top-right", 5000);
+            }
         }
-        
-    } catch (error) {
-        console.error("Error al cambiar estatus:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo cambiar el estatus del proceso.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
+    });
 }
 
 /**
  * Eliminar proceso
  */
 async function deleteProcesoVacante(idEncoded) {
-    const confirmed = confirm('Esta acción no se puede deshacer. ¿Está seguro de eliminar este proceso?');
-    
-    if (!confirmed) return;
-    
-    try {
-        const respuesta = await $.ajax({
-            type: "POST",
-            url: "Backend/ProcesosVacantes/App.php",
-            data: {
-                op: "deleteProcesoVacante",
-                IdProceso: idEncoded
-            },
-            dataType: "json"
-        });
-        
-        if (respuesta.Resultado && respuesta.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Completado!</span>
-                    <span class="alert-text">${respuesta.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            // Recargar tabla
-            loadProcesosVacantes();
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${respuesta.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+    Swal.fire({
+        title: 'Eliminar Proceso',
+        text: '¿Está seguro de eliminar este proceso? Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const respuesta = await $.ajax({
+                    type: "POST",
+                    url: "Backend/ProcesosVacantes/App.php",
+                    data: {
+                        op: "deleteProcesoVacante",
+                        IdProceso: idEncoded
+                    },
+                    dataType: "json"
+                });
+                
+                if (respuesta.Resultado && respuesta.Siguiente) {
+                    const messageContent = `
+                        <div class="alert-content">
+                            <span class="alert-title">Completado!</span>
+                            <span class="alert-text">${respuesta.Msg}</span>
+                        </div>`;
+                    showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                    loadProcesosVacantes();
+                } else {
+                    const messageContent = `
+                        <div class="alert-content">
+                            <span class="alert-title">Alerta!</span>
+                            <span class="alert-text">${respuesta.Msg}</span>
+                        </div>`;
+                    showBootstrapAlertWar(messageContent, "top-right", 5000);
+                }
+            } catch (error) {
+                console.error("Error al eliminar proceso:", error);
+                const messageContent = `
+                    <div class="alert-content">
+                        <span class="alert-title">Alerta!</span>
+                        <span class="alert-text">No se pudo eliminar el proceso.</span>
+                    </div>`;
+                showBootstrapAlertWar(messageContent, "top-right", 5000);
+            }
         }
-        
-    } catch (error) {
-        console.error("Error al eliminar proceso:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo eliminar el proceso.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
+    });
 }
 
 /**

@@ -57,47 +57,19 @@
                             </div>
                         </div>
                         
-                        <!-- Formulario para agregar -->
-                        <div class="row">
-                            <div class="col">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title fw-bold mb-0">
-                                            <span class="material-symbols-outlined align-middle me-2">add_circle</span>
-                                            Nueva Área Técnica
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-12 col-md-5">
-                                                <label class="form-label fw-bold">Nombre del Área Técnica: <span class="text-danger">*</span></label>
-                                                <input id="txtNombreArea" type="text" class="form-control" placeholder="Ej. Mantenimiento, Sistemas, Producción">
-                                            </div>
-                                            <div class="col-12 col-md-5">
-                                                <label class="form-label fw-bold">Descripción:</label>
-                                                <input id="txtDescripcion" type="text" class="form-control" placeholder="Breve descripción de la función del área">
-                                            </div>
-                                            <div class="col-12 col-md-2 d-flex align-items-end">
-                                                <button type="button" class="btn btn-success w-100 mt-3 mt-md-0" id="btnAddAreaTecnica">
-                                                    <span class="material-symbols-outlined align-middle me-1">add</span>
-                                                    Registrar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Tabla de áreas técnicas -->
                         <div class="row">
                             <div class="col">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5 class="card-title fw-bold mb-0">
                                             <span class="material-symbols-outlined align-middle me-2">list</span>
                                             Listado de Áreas Técnicas
                                         </h5>
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddAreaTecnica">
+                                            <span class="material-symbols-outlined align-middle me-1">add</span>
+                                            Nueva Área Técnica
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -126,6 +98,41 @@
         </div>
     </div>
     
+    <!-- Modal Agregar Área Técnica -->
+    <div class="modal fade" id="modalAddAreaTecnica" tabindex="-1" aria-labelledby="modalAddAreaTecnicaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title" id="modalAddAreaTecnicaLabel">
+                        <span class="material-symbols-outlined align-middle me-2">add_circle</span>
+                        Nueva Área Técnica
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre del Área Técnica: <span class="text-danger">*</span></label>
+                        <input id="txtNombreArea" type="text" class="form-control" placeholder="Ej. Mantenimiento, Sistemas, Producción">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Descripción:</label>
+                        <textarea id="txtDescripcion" class="form-control" rows="3" placeholder="Breve descripción de la función del área"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span class="material-symbols-outlined align-middle me-1">close</span>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnAddAreaTecnica">
+                        <span class="material-symbols-outlined align-middle me-1">save</span>
+                        Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Editar Área Técnica -->
     <div class="modal fade" id="modalEditAreaTecnica" tabindex="-1" aria-labelledby="modalEditAreaTecnicaLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
