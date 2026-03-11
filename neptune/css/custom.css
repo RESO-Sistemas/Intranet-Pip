@@ -683,6 +683,11 @@ FIN Preloader
   font-weight: 500 !important;
 }
 
+/* Contenedor de submenus - fondo modo claro */
+.app-sidebar .app-menu .sub-menu {
+  background-color: #f5f7fa !important;
+}
+
 /* ============================================= */
 
 /* =============================================
@@ -1522,42 +1527,87 @@ body.dark-mode .border-primary {
   border-color: var(--dm-accent) !important;
 }
 
-/* ── Botón Toggle Dark Mode ── */
+/* ── Botón Toggle Dark Mode (OCULTO - ahora está en el header) ── */
 .dark-mode-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #ffc407;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-  transition: all 0.3s ease;
-}
-
-.dark-mode-toggle:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.dark-mode-toggle i {
-  font-size: 24px;
-  color: #1a1a2e;
+  display: none !important; /* Ocultar el botón flotante */
 }
 
 body.dark-mode .dark-mode-toggle {
-  background-color: var(--dm-bg-secondary);
-  border: 2px solid var(--dm-accent);
+  display: none !important; /* Asegurar que esté oculto en modo oscuro también */
 }
 
-body.dark-mode .dark-mode-toggle i {
-  color: var(--dm-accent);
+/* ── Modo Oscuro para Login ── */
+body.dark-mode .app.app-auth-sign-in {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+body.dark-mode .app-auth-background {
+  background: 
+    linear-gradient(135deg, rgba(26, 26, 26, 0.7) 0%, rgba(45, 45, 45, 0.7) 100%), 
+    url('../images/backgrounds/sign-in.svg') no-repeat !important;
+  background-size: 60% !important;
+  background-position: center !important;
+}
+
+body.dark-mode .app-auth-container {
+  background: rgba(45, 45, 45, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 196, 7, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .auth-description {
+  color: #e9ecef;
+}
+
+body.dark-mode .form-label {
+  color: #e9ecef;
+}
+
+body.dark-mode .auth-forgot-password {
+  color: #ffc407 !important;
+}
+
+body.dark-mode .auth-forgot-password:hover {
+  color: #ffcd39 !important;
+}
+
+body.dark-mode .modal-content {
+  background-color: #2d2d2d;
+  border: 1px solid rgba(255, 196, 7, 0.2);
+}
+
+body.dark-mode .modal-header {
+  border-bottom: 1px solid rgba(255, 196, 7, 0.2);
+}
+
+body.dark-mode .modal-footer {
+  border-top: 1px solid rgba(255, 196, 7, 0.2);
+}
+
+/* ── Botón Modo Oscuro Móvil ── */
+#darkModeToggleMobile {
+  border-color: #ffc407;
+  color: #ffc407;
+  transition: all 0.3s ease;
+}
+
+#darkModeToggleMobile:hover {
+  background-color: #ffc407;
+  border-color: #ffc407;
+  color: #333;
+}
+
+body.dark-mode #darkModeToggleMobile {
+  border-color: #ffc407;
+  color: #ffc407;
+  background-color: transparent;
+}
+
+body.dark-mode #darkModeToggleMobile:hover {
+  background-color: #ffc407;
+  border-color: #ffc407;
+  color: #333;
 }
 
 /* ── Header/Navbar - Forzar colores oscuros ── */
@@ -2052,4 +2102,98 @@ body.dark-mode .nav-tabs .nav-link.active {
   .app-container {
     padding-top: 80px !important;
   }
+}
+
+/* =============================================
+   MODAL DETALLE VACANTES - MODO OSCURO
+   ============================================= */
+
+/* ── Secciones de detalle ── */
+body.dark-mode .detail-section {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode .detail-section h6 {
+  color: #ffffff !important;
+  border-bottom-color: #555 !important;
+}
+
+/* ── Items de requisitos, evaluaciones e inducciones ── */
+body.dark-mode .requisito-item,
+body.dark-mode .evaluacion-item, 
+body.dark-mode .induccion-item {
+  background-color: #333333 !important;
+  border-color: #555 !important;
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode .requisito-item:hover,
+body.dark-mode .evaluacion-item:hover,
+body.dark-mode .induccion-item:hover {
+  background-color: #3a3a3a !important;
+}
+
+/* ── Formularios de agregar dentro del modal de detalle ── */
+body.dark-mode #formAddRequisito,
+body.dark-mode #formAddEvaluacion,
+body.dark-mode #formAddInduccion {
+  background-color: #2a2a2a !important;
+  border: 1px solid #444 !important;
+  padding: 15px !important;
+  border-radius: 8px !important;
+}
+
+body.dark-mode #formAddRequisito .form-control,
+body.dark-mode #formAddEvaluacion .form-control,
+body.dark-mode #formAddInduccion .form-control,
+body.dark-mode #formAddRequisito .form-select,
+body.dark-mode #formAddEvaluacion .form-select,
+body.dark-mode #formAddInduccion .form-select {
+  background-color: #333333 !important;
+  border-color: #555 !important;
+  color: #e8e8e8 !important;
+}
+
+/* ── Textos específicos del modal de detalle ── */
+body.dark-mode #modalDetalleVacante .text-muted {
+  color: #a0a0a0 !important;
+}
+
+body.dark-mode #modalDetalleVacante .text-center {
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode #modalDetalleVacante p {
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode #modalDetalleVacante strong {
+  color: #ffffff !important;
+}
+
+/* ── Select2 específico para modal detalle ── */
+body.dark-mode #modalDetalleVacante .select2-container--default .select2-selection--single {
+  background-color: #333333 !important;
+  border-color: #555 !important;
+}
+
+body.dark-mode #modalDetalleVacante .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #e8e8e8 !important;
+}
+
+body.dark-mode #modalDetalleVacante .select2-dropdown {
+  background-color: #2a2a2a !important;
+  border-color: #555 !important;
+}
+
+body.dark-mode #modalDetalleVacante .select2-container--default .select2-results__option {
+  color: #e8e8e8 !important;
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode #modalDetalleVacante .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #ffc407 !important;
+  color: #1a1a2e !important;
 }

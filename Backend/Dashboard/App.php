@@ -36,5 +36,9 @@
     echo trim($Dashboard->getProximosEventos());
   }
 
+  if ($op == "getTurnos") {
+    echo trim($Dashboard->getTurnos());
+  }
+
 ?>
 

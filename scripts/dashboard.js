@@ -6,17 +6,63 @@
   let kpiCharts = [];      // { chart, idKpi, total, cumplidos }
   let kpiDataArr = [];     // datos crudos de KPIs
   let checklistsData = []; // datos de checklists para mapeo
+  let turnosData = [];     // datos de turnos para mapeo
   let kpiPage = 0;
   const KPI_VISIBLE = 3;
 
   // ─── Init ────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', async function () {
+    // Cargar turnos primero (se necesitan para mostrar nombres en checklists)
+    await _fetchTurnos();
+    
+    // Luego cargar el resto en paralelo
     Promise.all([
       _fetchKpis(),
       _fetchEventos(),
       _fetchChecklists()
     ]);
   });
+
+  // ─── Fetch Turnos ────────────────────────────────────────────────────────
+  async function _fetchTurnos() {
+    try {
+      const res = await $.ajax({ url: API_DASHBOARD, type: 'POST', data: { op: 'getTurnos' } });
+      turnosData = JSON.parse(res);
+    } catch (e) {
+      console.error('Error turnos dashboard:', e);
+      turnosData = [];
+    }
+  }
+
+  // ─── Helper: Obtener el turno actual según la hora ─────────────────────
+  function _getTurnoActual() {
+    var now = new Date();
+    var hh = now.getHours();
+    var mm = now.getMinutes();
+    var ss = now.getSeconds();
+    var currentSecs = hh * 3600 + mm * 60 + ss;
+
+    for (var i = 0; i < turnosData.length; i++) {
+      var t = turnosData[i];
+      if (!t.HoraInicio || !t.HoraFin) continue;
+      var inicio = _timeToSecs(t.HoraInicio);
+      var fin = _timeToSecs(t.HoraFin);
+
+      if (inicio <= fin) {
+        // Turno normal
+        if (currentSecs >= inicio && currentSecs <= fin) return t;
+      } else {
+        // Turno nocturno (cruza medianoche)
+        if (currentSecs >= inicio || currentSecs <= fin) return t;
+      }
+    }
+    return null;
+  }
+
+  function _timeToSecs(timeStr) {
+    var parts = timeStr.split(':');
+    return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + (parseInt(parts[2]) || 0);
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // KPI GAUGES con 3 zonas de color (rojo · amarillo · verde)
@@ -246,6 +292,13 @@
   async function _fetchChecklists() {
     try {
       const res = await $.ajax({ url: API_DASHBOARD, type: 'POST', data: { op: 'getChecklistsEmpleado' } });
+      
+      // Verificar si la respuesta es válida
+      if (!res || res === '') {
+        $('#listaChecklist').html('<p class="text-muted small text-center py-2">No hay checklists asignados a tu puesto</p>');
+        return;
+      }
+      
       checklistsData = JSON.parse(res);
       _renderChecklists(checklistsData);
     } catch (e) {
@@ -263,42 +316,49 @@
       return;
     }
 
-    var html = '';
+    // Mostrar encabezado del turno actual
+    var turnoActual = _getTurnoActual();
+    var turnoLabel = turnoActual ? turnoActual.Nombre : 'Turno actual';
+    var html = '<div class="turno-header">' +
+      '<i class="fas fa-clock me-2"></i>' + turnoLabel +
+    '</div>';
+
+    // Renderizar todos los checklists (ya vienen filtrados del servidor)
     checklists.forEach(function (chk) {
-      var yaContestado = parseInt(chk.YaContestado) === 1;
-      var disabledAttr = yaContestado ? ' disabled' : '';
-      var respuestaGuardada = parseInt(chk.RespuestaEmpleado);
-      var claseItem = 'checklist-item';
-      if (yaContestado) {
-        claseItem += ' ya-contestado';
-        claseItem += respuestaGuardada === 1 ? ' chk-respondido-si' : ' chk-respondido-no';
-      }
-      var badgeTipo = chk.Tipo === 'Critico'
-        ? '<span class="badge bg-danger chk-badge">Crítico</span>'
-        : '<span class="badge bg-secondary chk-badge">No Crítico</span>';
+        var yaContestado = parseInt(chk.YaContestado) === 1;
+        var disabledAttr = yaContestado ? ' disabled' : '';
+        var respuestaGuardada = parseInt(chk.RespuestaEmpleado);
+        var claseItem = 'checklist-item';
+        if (yaContestado) {
+          claseItem += ' ya-contestado';
+          claseItem += respuestaGuardada === 1 ? ' chk-respondido-si' : ' chk-respondido-no';
+        }
+        var badgeTipo = chk.Tipo === 'Critico'
+          ? '<span class="badge bg-danger chk-badge">Crítico</span>'
+          : '<span class="badge bg-secondary chk-badge">No Crítico</span>';
 
-      var activeSi = yaContestado && respuestaGuardada === 1 ? ' active' : '';
-      var activeNo = yaContestado && respuestaGuardada === 0 ? ' active' : '';
+        var activeSi = yaContestado && respuestaGuardada === 1 ? ' active' : '';
+        var activeNo = yaContestado && respuestaGuardada === 0 ? ' active' : '';
 
-      html += '<div class="' + claseItem + '" data-id="' + chk.IdChecklist + '">' +
-        '<div class="chk-btn-group">' +
-          '<button type="button" class="btn chk-btn-si' + activeSi + '"' + disabledAttr +
-            ' data-id="' + chk.IdChecklist + '"' +
-            ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
-            ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
-            ' data-respuesta="1"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg></button>' +
-          '<button type="button" class="btn chk-btn-no' + activeNo + '"' + disabledAttr +
-            ' data-id="' + chk.IdChecklist + '"' +
-            ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
-            ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
-            ' data-respuesta="0"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
-        '</div>' +
-        '<div class="flex-grow-1">' +
-          '<div class="chk-name">' + _escapeHtml(chk.Nombre) + '</div>' +
-        '</div>' +
-        badgeTipo +
-      '</div>';
-    });
+        html += '<div class="' + claseItem + '" data-id="' + chk.IdChecklist + '">' +
+          '<div class="chk-btn-group">' +
+            '<button type="button" class="btn chk-btn-si' + activeSi + '"' + disabledAttr +
+              ' data-id="' + chk.IdChecklist + '"' +
+              ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
+              ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
+              ' data-respuesta="1"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg></button>' +
+            '<button type="button" class="btn chk-btn-no' + activeNo + '"' + disabledAttr +
+              ' data-id="' + chk.IdChecklist + '"' +
+              ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
+              ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
+              ' data-respuesta="0"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
+          '</div>' +
+          '<div class="flex-grow-1">' +
+            '<div class="chk-name">' + _escapeHtml(chk.Nombre) + '</div>' +
+          '</div>' +
+          badgeTipo +
+        '</div>';
+      });
 
     el.innerHTML = html;
 

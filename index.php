@@ -128,6 +128,21 @@ $MenuP = $Conf->getMenusPadre();
     .chk-btn-si.active { background: rgba(40,167,69,.15); pointer-events: none; }
     .chk-btn-no.active { background: rgba(220,53,69,.15); pointer-events: none; }
     .chk-btn-group .btn:disabled { opacity: .4; pointer-events: none; }
+    /* Badge de turno */
+    .checklist-item .badge.bg-info { font-size: .6rem; padding: 2px 6px; background-color: #17a2b8 !important; }
+    /* Título/encabezado del turno */
+    .turno-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #17a2b8;
+      padding: 10px 12px 6px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      border-bottom: 2px solid #17a2b8;
+      display: flex;
+      align-items: center;
+    }
+    .turno-header:first-child { margin-top: 0; }
 
     body.dark-mode .kpi-gauge-card { background: #1e1e2d; }
     body.dark-mode .kpi-gauge-card .kpi-name { color: #ccc; }
@@ -138,6 +153,8 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .checklist-item .chk-name { color: #ddd; }
     body.dark-mode .checklist-item.ya-contestado { background: #1a1a28; border-left-color: #555; }
     body.dark-mode .checklist-item.chk-respondido-si { border-left-color: #28a745; background: #1a2e1f; }
+    body.dark-mode .checklist-item .badge.bg-info { background-color: #138496 !important; }
+    body.dark-mode .turno-header { color: #17a2b8; border-bottom-color: #17a2b8; }
     body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
   </style>
 

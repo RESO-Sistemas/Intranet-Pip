@@ -156,11 +156,84 @@ class Dashboard extends Conexiones{
   }
 
   function getChecklistsEmpleado() {
-    $idPuesto = SessionManager::get("idSPuesto");
-    $noEmpleado = SessionManager::get("NoEmpleado");
-    $q = "CALL spGetChecklistsByPuesto(?, ?)";
-    $resultado = $this->ProcedureWithParam($q, array($idPuesto, $noEmpleado));
-    return json_encode($resultado);
+    try {
+      $idPuesto = SessionManager::get("idSPuesto");
+      $noEmpleado = SessionManager::get("NoEmpleado");
+      
+      // Si no hay empleado en sesión, devolver array vacío
+      if ($noEmpleado === null || $noEmpleado === '') {
+        return json_encode([]);
+      }
+      
+      // Permitir idPuesto = 0 (es válido), solo rechazar si es NULL
+      if ($idPuesto === null) {
+        return json_encode([]);
+      }
+      
+      // Consulta directa para obtener checklists del puesto del empleado
+      // filtrados por turno actual según la hora del servidor
+      $q = "SELECT 
+              C.IdChecklist,
+              C.Nombre,
+              C.Tipo,
+              C.RespuestaEsperada,
+              C.IdKpi,
+              C.AbreIncidencia,
+              IFNULL(
+                (SELECT GROUP_CONCAT(CT.IdTurno) 
+                 FROM ChecklistTurnos CT 
+                 WHERE CT.IdChecklist = C.IdChecklist), 
+                ''
+              ) AS Turnos,
+              CASE 
+                WHEN EXISTS (
+                  SELECT 1 FROM ChecklistEmpleados CE 
+                  WHERE CE.IdChecklist = C.IdChecklist 
+                    AND CE.NoEmpleado = ? 
+                    AND DATE(CE.HoraRevision) = CURDATE()
+                ) THEN 1 
+                ELSE 0 
+              END AS YaContestado,
+              (SELECT CE.Respuesta 
+               FROM ChecklistEmpleados CE 
+               WHERE CE.IdChecklist = C.IdChecklist 
+                 AND CE.NoEmpleado = ? 
+                 AND DATE(CE.HoraRevision) = CURDATE()
+               LIMIT 1
+              ) AS RespuestaEmpleado
+            FROM Checklists C
+            WHERE C.IdPuesto = ?
+              AND (
+                -- Checklists sin turno asignado: mostrar siempre
+                NOT EXISTS (SELECT 1 FROM ChecklistTurnos CT WHERE CT.IdChecklist = C.IdChecklist)
+                OR
+                -- Checklists con turno activo según la hora actual
+                EXISTS (
+                  SELECT 1 
+                  FROM ChecklistTurnos CT 
+                  INNER JOIN Turnos T ON T.IdTurno = CT.IdTurno
+                  WHERE CT.IdChecklist = C.IdChecklist
+                    AND (
+                      (T.HoraInicio <= T.HoraFin AND CURTIME() BETWEEN T.HoraInicio AND T.HoraFin)
+                      OR
+                      (T.HoraInicio > T.HoraFin AND (CURTIME() >= T.HoraInicio OR CURTIME() <= T.HoraFin))
+                    )
+                )
+              )
+            ORDER BY C.Nombre ASC";
+      
+      $resultado = $this->ExecuteQueryWithParam($q, array($noEmpleado, $noEmpleado, $idPuesto));
+      
+      // Si el resultado está vacío, devolver array vacío
+      if (empty($resultado)) {
+        return json_encode([]);
+      }
+      
+      return json_encode($resultado);
+    } catch (Exception $e) {
+      error_log("Error en getChecklistsEmpleado: " . $e->getMessage());
+      return json_encode([]);
+    }
   }
 
   function responderChecklist($idChecklist, $respuesta) {
@@ -174,6 +247,11 @@ class Dashboard extends Conexiones{
     $q = "CALL spGetProximosEventos()";
     $resultado = $this->Procedure($q);
     return json_encode($resultado);
+  }
+
+  function getTurnos() {
+    $q = "SELECT IdTurno, Nombre, HoraInicio, HoraFin FROM Turnos ORDER BY HoraInicio ASC";
+    return json_encode($this->Select($q));
   }
 
 }

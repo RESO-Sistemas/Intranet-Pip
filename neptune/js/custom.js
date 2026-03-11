@@ -51,32 +51,56 @@ $(document).ready(function() {
     // DARK MODE TOGGLE CON COOKIES
     // ============================================
     
-    // Crear botón de toggle si no existe
-    if ($('.dark-mode-toggle').length === 0) {
-        $('body').append(
-            '<button class="dark-mode-toggle" id="darkModeToggle" title="Cambiar tema">' +
-            '<i class="material-icons" id="darkModeIcon">dark_mode</i>' +
-            '</button>'
-        );
-    }
-    
     // Verificar si hay preferencia guardada en cookie
     var savedTheme = getCookie('darkMode');
     if (savedTheme === 'enabled') {
         $('body').addClass('dark-mode');
-        $('#darkModeIcon').text('light_mode');
+        // Actualizar iconos si existen
+        if ($('#darkModeIconHeader').length > 0) {
+            $('#darkModeIconHeader').text('light_mode');
+        }
+        if ($('#darkModeIconMobile').length > 0) {
+            $('#darkModeIconMobile').text('light_mode');
+        }
+        // Actualizar icono del botón flotante si existe (para compatibilidad)
+        if ($('#darkModeIcon').length > 0) {
+            $('#darkModeIcon').text('light_mode');
+        }
     }
     
-    // Toggle dark mode al hacer clic
-    $('#darkModeToggle').on('click', function() {
+    // Función para toggle del modo oscuro
+    function toggleDarkMode() {
         $('body').toggleClass('dark-mode');
         
         if ($('body').hasClass('dark-mode')) {
-            setCookie('darkMode', 'enabled', 365); // Cookie válida por 1 año
+            setCookie('darkMode', 'enabled', 365);
+            // Actualizar todos los iconos
+            $('#darkModeIconHeader').text('light_mode');
+            $('#darkModeIconMobile').text('light_mode');
             $('#darkModeIcon').text('light_mode');
         } else {
             setCookie('darkMode', 'disabled', 365);
+            // Actualizar todos los iconos
+            $('#darkModeIconHeader').text('dark_mode');
+            $('#darkModeIconMobile').text('dark_mode');
             $('#darkModeIcon').text('dark_mode');
         }
+    }
+    
+    // Toggle dark mode para el botón del header
+    $(document).on('click', '#darkModeToggleHeader', function(e) {
+        e.preventDefault();
+        toggleDarkMode();
+    });
+    
+    // Toggle dark mode para el botón móvil
+    $(document).on('click', '#darkModeToggleMobile', function(e) {
+        e.preventDefault();
+        toggleDarkMode();
+    });
+    
+    // Toggle dark mode para el botón flotante (compatibilidad legacy)
+    $(document).on('click', '#darkModeToggle', function() {
+        toggleDarkMode();
     });
 });

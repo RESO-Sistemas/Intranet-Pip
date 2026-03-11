@@ -64,6 +64,13 @@
             </div>
           </li>
 
+          <!-- MODO OSCURO TOGGLE - Al lado de las notificaciones -->
+          <li class="nav-item d-flex">
+            <a class="nav-link" id="darkModeToggleHeader" href="#" title="Cambiar tema">
+              <i class="material-icons" id="darkModeIconHeader">dark_mode</i>
+            </a>
+          </li>
+
           <!-- FOTO DE PERFIL Y MENÚ DE USUARIO - Siempre visible a la derecha -->
           <li class="nav-item d-flex">
             <a
@@ -71,12 +78,7 @@
               id="userDropDown"
               href="javascript:void(0);"
               data-bs-toggle="dropdown">
-              <img
-                id="imgSmallProfile"
-                alt="user"
-                class="rounded-circle"
-                width="30"
-                height="30" />
+              <i class="fa fa-user" aria-hidden="true" id="imgSmallProfile" style="font-size: 20px; color: #666; padding: 5px; background: #f0f0f0; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"></i>
             </a>
             <ul
               id="user_dropdown"
@@ -84,9 +86,6 @@
               aria-labelledby="userDropDown">
               <li>
                 <div class="dropdown-item" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-                  <div class="u-img" style="padding-bottom: 10px; padding-top:10px;">
-                    <img class="rounded-circle" id="profileImg" alt="user" width="60px" height="60px">
-                  </div>
                   <div class="u-text">
                     <h4 id="PerfilNombreEmp"></h4>
                     <p id="PerfilCorreoEmp"></p>
@@ -129,7 +128,7 @@
     
     <!-- Perfil Usuario Mobile -->
     <div class="mobile-user-profile mb-4 text-center" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-      <img class="rounded-circle mb-2" id="profileImgMobile" alt="user" width="80px" height="80px">
+      <i class="fa fa-user mb-2" aria-hidden="true" id="profileImgMobile" style="font-size: 40px; color: #666; background: #f0f0f0; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;"></i>
       <h5 id="PerfilNombreEmpMobile" class="mb-1"></h5>
       <p id="PerfilCorreoEmpMobile" class="text-muted small"></p>
     </div>
@@ -145,6 +144,16 @@
       <div id="notificacionesMenuSVacacionesNominaMobile"></div>
       <div id="notificacionesCapacitacionMobile"></div>
       <p id="noNotificationsMobile" class="text-muted small text-center" style="padding: 10px 0;">Sin notificaciones nuevas</p>
+    </div>
+
+    <hr>
+
+    <!-- Modo Oscuro Toggle Mobile -->
+    <div class="text-center mb-4">
+      <button class="btn btn-outline-primary" id="darkModeToggleMobile" title="Cambiar tema">
+        <i class="material-icons" id="darkModeIconMobile">dark_mode</i>
+        <span class="ms-2">Cambiar Tema</span>
+      </button>
     </div>
 
     <hr>

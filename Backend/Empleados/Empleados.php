@@ -54,15 +54,18 @@ class Empleados extends Conexiones
     }
   }
 
-    function autorizaPermisoPagina($URL) {
-      $URL = explode('/',$URL);
-      $URL = $URL[1];
-      
+  function autorizaPermisoPagina($URL) {
+      // El método esperaba que la URL tuviera al menos un "/" y un segmento
+      // adicional. Asegurarse de que $URL sea una cadena y validar el índice.
+      $URL = is_string($URL) ? $URL : '';
+      $parts = explode('/', $URL);
+      $URL = isset($parts[1]) ? $parts[1] : '';
+
       // Remover parámetros GET (todo lo que esté después de ?)
-      if (strpos($URL, '?') !== false) {
+      if ($URL !== '' && strpos($URL, '?') !== false) {
         $URL = explode('?', $URL)[0];
       }
-      
+
       $idPuesto = (SessionManager::get("idSPuesto"));
       $q = "SELECT M.URL FROM MenusPermisos AS MP
               INNER JOIN menus as M ON M.id_menu = MP.id_menu
