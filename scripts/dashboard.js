@@ -286,11 +286,17 @@
             ' data-id="' + chk.IdChecklist + '"' +
             ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
             ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
+            ' data-abre-incidencia="' + (chk.AbreIncidencia || 0) + '"' +
+            ' data-id-tipo-incidencia="' + (chk.IdTipoIncidencia || '') + '"' +
+            ' data-nombre="' + _escapeHtml(chk.Nombre) + '"' +
             ' data-respuesta="1"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg></button>' +
           '<button type="button" class="btn chk-btn-no' + activeNo + '"' + disabledAttr +
             ' data-id="' + chk.IdChecklist + '"' +
             ' data-id-kpi="' + (chk.IdKpi || '') + '"' +
             ' data-respuesta-esperada="' + chk.RespuestaEsperada + '"' +
+            ' data-abre-incidencia="' + (chk.AbreIncidencia || 0) + '"' +
+            ' data-id-tipo-incidencia="' + (chk.IdTipoIncidencia || '') + '"' +
+            ' data-nombre="' + _escapeHtml(chk.Nombre) + '"' +
             ' data-respuesta="0"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>' +
         '</div>' +
         '<div class="flex-grow-1">' +
@@ -305,21 +311,52 @@
     // Bind click events for Sí/No buttons
     el.querySelectorAll('.chk-btn-si:not([disabled]), .chk-btn-no:not([disabled])').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var idChecklist = this.getAttribute('data-id');
-        var idKpi = this.getAttribute('data-id-kpi');
+        var idChecklist      = this.getAttribute('data-id');
+        var idKpi            = this.getAttribute('data-id-kpi');
         var respuestaEsperada = parseInt(this.getAttribute('data-respuesta-esperada'));
-        var respuesta = parseInt(this.getAttribute('data-respuesta'));
-        _responderChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, this);
+        var respuesta        = parseInt(this.getAttribute('data-respuesta'));
+        var abreIncidencia   = parseInt(this.getAttribute('data-abre-incidencia') || 0);
+        var idTipoIncidencia = this.getAttribute('data-id-tipo-incidencia') || '';
+        var nombre           = this.getAttribute('data-nombre') || '';
+        _responderChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, abreIncidencia, idTipoIncidencia, nombre, this);
       });
     });
   }
 
-  async function _responderChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, btnEl) {
-    var item = btnEl.closest('.checklist-item');
+  async function _responderChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, abreIncidencia, idTipoIncidencia, nombre, btnEl) {
+    var item     = btnEl.closest('.checklist-item');
     var btnGroup = item.querySelector('.chk-btn-group');
-    var allBtns = btnGroup.querySelectorAll('.btn');
+    var allBtns  = btnGroup.querySelectorAll('.btn');
+
+    // ── Si la respuesta es incorrecta y el checklist abre incidencia ────────
+    if (respuesta !== respuestaEsperada && abreIncidencia === 1) {
+      // Pre-llenar modal
+      $('#inc-id-checklist').val(idChecklist);
+      $('#inc-id-tipo-incidencia').val(idTipoIncidencia);
+      $('#inc-respuesta').val(respuesta);
+      $('#inc-descripcion').val('');
+      $('#inc-evidencia').val('');
+      $('#inc-preview-wrap').hide();
+      $('#inc-preview-img').attr('src', '');
+      $('#incidencia-alerta-texto').text(
+        '"' + nombre + '" requiere evidencia porque la respuesta no es la esperada.'
+      );
+
+      // Guardar referencia al botón/item activos para usarlos al confirmar
+      _incidenciaPendiente = { idChecklist, respuesta, respuestaEsperada, idKpi, btnEl, item, allBtns };
+
+      var modal = new bootstrap.Modal(document.getElementById('modalIncidencia'));
+      modal.show();
+      return; // No guardar todavía
+    }
+
+    // ── Respuesta normal (correcta o checklist sin incidencia) ──────────────
+    await _guardarRespuestaChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, btnEl, item, allBtns);
+  }
+
+  // Guarda la respuesta del checklist en la BD
+  async function _guardarRespuestaChecklist(idChecklist, respuesta, respuestaEsperada, idKpi, btnEl, item, allBtns) {
     try {
-      // Deshabilitar ambos botones
       allBtns.forEach(function (b) { b.disabled = true; });
 
       const res = await $.ajax({
@@ -331,14 +368,8 @@
       if (data.Resultado) {
         item.classList.add('ya-contestado');
         btnEl.classList.add('active');
+        item.classList.add(respuesta === 1 ? 'chk-respondido-si' : 'chk-respondido-no');
 
-        if (respuesta === 1) {
-          item.classList.add('chk-respondido-si');
-        } else {
-          item.classList.add('chk-respondido-no');
-        }
-
-        // Actualizar gráfica en tiempo real si la respuesta coincide con la esperada
         if (respuesta === respuestaEsperada && idKpi) {
           _updateKpiGauge(idKpi);
         }
@@ -351,6 +382,78 @@
       }
     }
   }
+
+  // Variable que guarda el checklist pendiente cuando se abre el modal
+  var _incidenciaPendiente = null;
+
+  // Preview de imagen en el modal
+  $(document).on('change', '#inc-evidencia', function () {
+    var file = this.files[0];
+    if (file && file.type.startsWith('image/')) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#inc-preview-img').attr('src', e.target.result);
+        $('#inc-preview-wrap').show();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      $('#inc-preview-wrap').hide();
+    }
+  });
+
+  // Guardar incidencia + respuesta al hacer clic en "Registrar Incidencia"
+  $(document).on('click', '#btnGuardarIncidencia', async function () {
+    var descripcion = $.trim($('#inc-descripcion').val());
+    if (!descripcion) {
+      $('#inc-descripcion').addClass('is-invalid').focus();
+      return;
+    }
+    $('#inc-descripcion').removeClass('is-invalid');
+
+    var $btn = $(this).prop('disabled', true).text('Guardando...');
+
+    try {
+      var formData = new FormData(document.getElementById('formIncidencia'));
+      formData.append('op', 'registrarIncidencia');
+      formData.append('noEmpleado', noEmpleado || '');
+
+      var res = await $.ajax({
+        url: 'Backend/Incidencias/App.php',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false
+      });
+      var data = JSON.parse(res);
+
+      if (data.Resultado && data.Siguiente) {
+        // Cerrar el modal
+        bootstrap.Modal.getInstance(document.getElementById('modalIncidencia')).hide();
+
+        // Ahora sí guardar la respuesta del checklist
+        if (_incidenciaPendiente) {
+          var p = _incidenciaPendiente;
+          _incidenciaPendiente = null;
+          await _guardarRespuestaChecklist(p.idChecklist, p.respuesta, p.respuestaEsperada, p.idKpi, p.btnEl, p.item, p.allBtns);
+        }
+
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'success', title: '¡Incidencia registrada!', text: data.Msg, timer: 2500, showConfirmButton: false });
+        }
+      } else {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire('Error', data.Msg || 'No se pudo registrar la incidencia.', 'error');
+        }
+      }
+    } catch (e) {
+      console.error('Error al registrar incidencia:', e);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire('Error', 'Error de comunicación con el servidor.', 'error');
+      }
+    } finally {
+      $btn.prop('disabled', false).html('<i class="icon-check"></i> Registrar Incidencia');
+    }
+  });
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
   function _escapeHtml(text) {
