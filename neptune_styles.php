@@ -50,6 +50,20 @@ if ($current_page !== 'login'):
 <link href="./neptune/css/main.css" rel="stylesheet">
 
 <style>
+  /* Login — quitar ícono azul del template */
+  .app-auth-container .logo a {
+    background: none !important;
+    padding-left: 0 !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+  .app-auth-container .logo {
+    text-align: center !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+
   /* Sidebar — logo sin ícono azul del template */
   .app-sidebar .logo .logo-icon {
     background: none !important;

@@ -50,8 +50,9 @@ if (SessionManager::isLoggedIn()) {
 
         </div>
         <div class="app-auth-container">
-            <div class="logo" style="text-align:center; padding: 10px 0;">
+            <div class="logo" style="text-align:center; padding: 10px 0; position: relative; left: -30px;">
                 <a href="index.html"><img src="assets/images/logo-pip.png" alt="PIP" style="max-height:60px;"></a>
+                <div style="font-size: 1.3rem; font-weight: 600; color: #222; letter-spacing: 1px; margin-top: 8px;">Intranet PIP</div>
             </div>
             <p class="auth-description">Bienvenido. Por favor inicia sesión con tu cuenta personal.</p>
 
