@@ -306,64 +306,6 @@ $MenuP = $Conf->getMenusPadre();
     </div>
   </div>
 
-  <!-- ============================================================ -->
-  <!-- MODAL REGISTRO DE INCIDENCIA (abierto desde checklist)     -->
-  <!-- ============================================================ -->
-  <div class="modal fade" id="modalIncidencia" tabindex="-1" aria-labelledby="labelModalIncidencia" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header" style="background:#ffc107; color:#333;">
-          <h5 class="modal-title" id="labelModalIncidencia">
-            <i class="icon-warning" style="margin-right:6px;"></i> Registrar Incidencia
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Aviso del ítem que la disparó -->
-          <div class="alert alert-warning py-2 px-3 mb-3" id="incidencia-alerta">
-            <small id="incidencia-alerta-texto"></small>
-          </div>
-
-          <form id="formIncidencia" enctype="multipart/form-data">
-            <!-- Campos ocultos -->
-            <input type="hidden" id="inc-id-checklist"       name="idChecklist">
-            <input type="hidden" id="inc-id-tipo-incidencia" name="idTipoIncidencia">
-            <input type="hidden" id="inc-respuesta"          name="respuesta">
-
-            <!-- Descripción -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold" for="inc-descripcion">
-                Descripción <span class="text-danger">*</span>
-              </label>
-              <textarea class="form-control" id="inc-descripcion" name="descripcion"
-                        rows="3" placeholder="Describe brevemente qué ocurrió..." required></textarea>
-            </div>
-
-            <!-- Evidencia (foto o PDF) -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold" for="inc-evidencia">
-                Evidencia <small class="text-muted">(foto o PDF, opcional)</small>
-              </label>
-              <input type="file" class="form-control" id="inc-evidencia" name="evidencia"
-                     accept="image/*,application/pdf">
-              <div id="inc-preview-wrap" class="mt-2" style="display:none;">
-                <img id="inc-preview-img" src="" alt="Vista previa"
-                     style="max-height:120px; border-radius:6px; border:1px solid #ddd;">
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-warning btn-sm fw-bold" id="btnGuardarIncidencia">
-            <i class="icon-check"></i> Registrar Incidencia
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- /MODAL REGISTRO DE INCIDENCIA -->
-
   <!-- neptune Javascripts (incluye jQuery, BlockUI y global.js) -->
   <?php include("neptune_js.php");  ?>
   <!-- neptune Javascripts -->

@@ -112,6 +112,9 @@
                     <div class="row mb-3">
                       <div class="col d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Listado de tipos de incidencias registrados.</label>
+                        <button class="btn btn-primary" onclick="mostrarForm()">
+                          <i class="fas fa-plus me-1"></i>Registrar nuevo tipo
+                        </button>
                       </div>
                     </div>
                     <div class="table-responsive">
