@@ -58,6 +58,118 @@
         .requisito-item:hover, .evaluacion-item:hover, .induccion-item:hover {
             background-color: #f1f1f1;
         }
+        
+        /* Fix para Select2 dentro de modales */
+        #modalDetalleVacante .modal-body {
+            overflow: visible;
+        }
+        #modalDetalleVacante .modal-content {
+            overflow: visible;
+        }
+        #modalDetalleVacante .modal-dialog {
+            overflow: visible;
+        }
+        #modalDetalleVacante .select2-container {
+            z-index: 1060;
+        }
+        #modalDetalleVacante .select2-container--open {
+            z-index: 1070;
+        }
+        #modalDetalleVacante .select2-dropdown {
+            z-index: 1070;
+        }
+        /* Asegurar que los forms de agregar tengan altura suficiente */
+        #formAddEvaluacion, #formAddInduccion, #formAddRequisito {
+            position: relative;
+            z-index: 10;
+        }
+        #formAddEvaluacion .input-group,
+        #formAddInduccion .input-group {
+            flex-wrap: nowrap;
+        }
+        #formAddEvaluacion .select2-container,
+        #formAddInduccion .select2-container {
+            flex: 1;
+            min-width: 150px;
+        }
+        /* Mejorar diseño de los input groups con Select2 */
+        .detail-section .input-group .select2-container--default .select2-selection--single {
+            height: 38px;
+            border-radius: 0;
+            border: 1px solid #ced4da;
+        }
+        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            padding-left: 12px;
+        }
+        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+        /* Primer select en el grupo */
+        .detail-section .input-group > .select2-container:first-child .select2-selection--single {
+            border-top-left-radius: 0.375rem;
+            border-bottom-left-radius: 0.375rem;
+        }
+        
+        /* Dark mode para modal detalle */
+        [data-theme="dark"] .detail-section {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+        }
+        [data-theme="dark"] .detail-section h6 {
+            border-bottom-color: #404040;
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .requisito-item,
+        [data-theme="dark"] .evaluacion-item,
+        [data-theme="dark"] .induccion-item {
+            background: #1e1e1e;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .requisito-item:hover,
+        [data-theme="dark"] .evaluacion-item:hover,
+        [data-theme="dark"] .induccion-item:hover {
+            background-color: #2a2a2a;
+        }
+        [data-theme="dark"] #modalDetalleVacante .modal-content {
+            background-color: #1e1e1e;
+            border-color: #404040;
+        }
+        [data-theme="dark"] #modalDetalleVacante .modal-body {
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] #modalDetalleVacante .modal-body p {
+            color: #b0b0b0;
+        }
+        [data-theme="dark"] #modalDetalleVacante .modal-footer {
+            border-top-color: #404040;
+        }
+        /* Dark mode para Select2 dentro del modal */
+        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single {
+            background-color: #2d2d2d;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .select2-dropdown {
+            background-color: #2d2d2d;
+            border-color: #404040;
+        }
+        [data-theme="dark"] .select2-container--default .select2-results__option {
+            color: #e0e0e0;
+        }
+        [data-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #f0b429;
+            color: #1e1e1e;
+        }
+        [data-theme="dark"] .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: #1e1e1e;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
     </style>
 </head>
 

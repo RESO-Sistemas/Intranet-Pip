@@ -1058,8 +1058,21 @@ async function loadEvaluacionesDetalle(idVacante) {
 }
 
 function showAddEvaluacionForm() {
-    $('#formAddEvaluacion').slideDown();
-    $('#cmbNuevaEvaluacion').focus();
+    $('#formAddEvaluacion').slideDown(200, function() {
+        // Reinicializar Select2 después de que el form sea visible
+        $('#cmbNuevaEvaluacion').select2('destroy').select2({
+            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            width: '100%',
+            placeholder: 'Seleccione evaluación...',
+            allowClear: true
+        });
+        $('#cmbProcesoEvaluacion').select2('destroy').select2({
+            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            width: '100%',
+            placeholder: 'Seleccione proceso...',
+            allowClear: true
+        });
+    });
 }
 
 function hideAddEvaluacionForm() {
@@ -1218,8 +1231,15 @@ async function loadInduccionesDetalle(idVacante) {
 }
 
 function showAddInduccionForm() {
-    $('#formAddInduccion').slideDown();
-    $('#cmbNuevaInduccion').focus();
+    $('#formAddInduccion').slideDown(200, function() {
+        // Reinicializar Select2 después de que el form sea visible
+        $('#cmbNuevaInduccion').select2('destroy').select2({
+            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            width: '100%',
+            placeholder: 'Seleccione inducción...',
+            allowClear: true
+        });
+    });
 }
 
 function hideAddInduccionForm() {
