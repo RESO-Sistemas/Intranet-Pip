@@ -50,15 +50,15 @@ class Empleado {
     this._image = image;
   }
   printEmpleado() {
-    prof_Name.textContent = this._name;
-    prof_Email.textContent = this._email;
-    prof_Img.src = this._image;
+    if (prof_Name) prof_Name.textContent = this._name;
+    if (prof_Email) prof_Email.textContent = this._email;
+    if (prof_Img) prof_Img.src = this._image;
     
     // Sincronizar con versiones mobile
     if (prof_NameMobile) prof_NameMobile.textContent = this._name;
     if (prof_EmailMobile) prof_EmailMobile.textContent = this._email;
     if (prof_ImgMobile) prof_ImgMobile.src = this._image;
-    prof_imgSmall.src = this._image;
+    if (prof_imgSmall) prof_imgSmall.src = this._image;
   }
 }
 

@@ -99,15 +99,15 @@
     </div>
     
     <!-- Modal Agregar Área Técnica -->
-    <div class="modal fade" id="modalAddAreaTecnica" tabindex="-1" aria-labelledby="modalAddAreaTecnicaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAddAreaTecnica" tabindex="-1" aria-labelledby="modalAddAreaTecnicaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalAddAreaTecnicaLabel">
                         <span class="material-symbols-outlined align-middle me-2">add_circle</span>
                         Nueva Área Técnica
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -134,15 +134,15 @@
     </div>
 
     <!-- Modal Editar Área Técnica -->
-    <div class="modal fade" id="modalEditAreaTecnica" tabindex="-1" aria-labelledby="modalEditAreaTecnicaLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditAreaTecnica" tabindex="-1" aria-labelledby="modalEditAreaTecnicaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalEditAreaTecnicaLabel">
                         <span class="material-symbols-outlined align-middle me-2">edit</span>
                         Editar Área Técnica
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editIdAreaTecnica">

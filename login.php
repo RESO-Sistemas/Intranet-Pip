@@ -20,7 +20,7 @@ if (SessionManager::isLoggedIn()) {
     <!-- The above 6 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
-    <title>PIP by Lugo</title>
+    <title>PIP Intranet</title>
 
     <!-- Styles -->
 
@@ -50,9 +50,11 @@ if (SessionManager::isLoggedIn()) {
 
         </div>
         <div class="app-auth-container">
-            <div class="logo" style="text-align:center; padding: 10px 0; position: relative; left: -30px;">
-                <a href="index.html"><img src="assets/images/logo-pip.png" alt="PIP" style="max-height:60px;"></a>
-                <div style="font-size: 1.3rem; font-weight: 600; color: #222; letter-spacing: 1px; margin-top: 8px;">Intranet PIP</div>
+            <div class="logo" style="padding: 10px 0; position: relative; left: -30px;">
+                <a href="index.html" class="d-flex align-items-center justify-content-center gap-3 text-decoration-none">
+                    <img src="assets/images/logo-pip.png" alt="PIP" style="max-height:60px;">
+                    <div style="font-size: 1.3rem; font-weight: 600; color: #222; letter-spacing: 1px;">Intranet PIP</div>
+                </a>
             </div>
             <p class="auth-description">Bienvenido. Por favor inicia sesión con tu cuenta personal.</p>
 

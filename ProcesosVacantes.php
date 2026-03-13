@@ -99,15 +99,15 @@
     </div>
     
     <!-- Modal Agregar Proceso -->
-    <div class="modal fade" id="modalAddProceso" tabindex="-1" aria-labelledby="modalAddProcesoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAddProceso" tabindex="-1" aria-labelledby="modalAddProcesoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalAddProcesoLabel">
                         <span class="material-symbols-outlined align-middle me-2">add_circle</span>
                         Nuevo Proceso de Vacante
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -135,15 +135,15 @@
 
 
     <!-- Modal Editar Proceso -->
-    <div class="modal fade" id="modalEditProceso" tabindex="-1" aria-labelledby="modalEditProcesoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditProceso" tabindex="-1" aria-labelledby="modalEditProcesoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalEditProcesoLabel">
                         <span class="material-symbols-outlined align-middle me-2">edit</span>
                         Editar Proceso
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editIdProceso">

@@ -99,15 +99,15 @@
     </div>
     
     <!-- Modal Agregar Tipo de Documento -->
-    <div class="modal fade" id="modalAddTipoDocumento" tabindex="-1" aria-labelledby="modalAddTipoDocumentoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAddTipoDocumento" tabindex="-1" aria-labelledby="modalAddTipoDocumentoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalAddTipoDocumentoLabel">
                         <span class="material-symbols-outlined align-middle me-2">add_circle</span>
                         Nuevo Tipo de Documento
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -139,15 +139,15 @@
     </div>
 
     <!-- Modal Editar Tipo de Documento -->
-    <div class="modal fade" id="modalEditTipoDocumento" tabindex="-1" aria-labelledby="modalEditTipoDocumentoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditTipoDocumento" tabindex="-1" aria-labelledby="modalEditTipoDocumentoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalEditTipoDocumentoLabel">
                         <span class="material-symbols-outlined align-middle me-2">edit</span>
                         Editar Tipo de Documento
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editIdTipoDocumento">

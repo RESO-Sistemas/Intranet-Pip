@@ -121,15 +121,15 @@
     </div>
     
     <!-- Modal Agregar Inducción -->
-    <div class="modal fade" id="modalAddInduccion" tabindex="-1" aria-labelledby="modalAddInduccionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAddInduccion" tabindex="-1" aria-labelledby="modalAddInduccionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-success">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalAddInduccionLabel">
                         <span class="material-symbols-outlined align-middle me-2">add_circle</span>
                         Nueva Inducción
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -177,15 +177,15 @@
     </div>
 
     <!-- Modal Editar Inducción -->
-    <div class="modal fade" id="modalEditInduccion" tabindex="-1" aria-labelledby="modalEditInduccionLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditInduccion" tabindex="-1" aria-labelledby="modalEditInduccionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalEditInduccionLabel">
                         <span class="material-symbols-outlined align-middle me-2">edit</span>
                         Editar Inducción
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editIdInduccion">

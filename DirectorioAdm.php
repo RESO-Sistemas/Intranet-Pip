@@ -144,7 +144,7 @@
                 </div>
             </div>
             <!-- Modal Bootstrap -->
-            <div class="modal fade" id="modalAddEmpleadosDirectorioEmTel" tabindex="-1" aria-labelledby="NameDirectorio" aria-hidden="true">
+            <div class="modal fade" id="modalAddEmpleadosDirectorioEmTel" tabindex="-1" aria-labelledby="NameDirectorio" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
 
@@ -237,7 +237,7 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="modalAddEmpleadosDirectorioExtensiones" tabindex="-1" aria-labelledby="NameDirectorioExtension" aria-hidden="true">
+            <div class="modal fade" id="modalAddEmpleadosDirectorioExtensiones" tabindex="-1" aria-labelledby="NameDirectorioExtension" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
 
@@ -321,7 +321,7 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="modalAddSucursalesDirectorio" tabindex="-1" aria-labelledby="TitleModalSucursales" aria-hidden="true">
+            <div class="modal fade" id="modalAddSucursalesDirectorio" tabindex="-1" aria-labelledby="TitleModalSucursales" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
 
