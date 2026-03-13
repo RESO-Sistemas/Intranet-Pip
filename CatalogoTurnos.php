@@ -68,17 +68,15 @@
               </div>
             </div>
   
-            <!-- Formulario de registro (oculto por defecto) -->
-            <div id="seccionFormTurno" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col text-center">
-                        <h5 class="fw-bold">Nuevo Turno</h5>
-                      </div>
-                    </div>
+            <!-- Modal Registrar Turno -->
+            <div class="modal fade" id="modalRegistrarTurno" tabindex="-1" aria-labelledby="modalRegistrarTurnoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color: #ffc407;">
+                    <h5 class="modal-title fw-bold" id="modalRegistrarTurnoLabel" style="color: #1f1f1f;">Registrar nuevo Turno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
                     <input type="hidden" id="txtIdTurno" value="">
                     <div class="row g-3">
                       <div class="col-12 col-md-6">
@@ -107,21 +105,17 @@
                         <input id="txtHoraFin" type="time" class="form-control form-control-solid-bordered">
                       </div>
                     </div>
-                    <div class="row mt-4">
-                      <div class="col d-flex gap-2">
-                        <button type="button" class="btn btn-primary" onclick="guardarTurno()">
-                          <i class="fas fa-plus me-1"></i>Registrar
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="ocultarFormTurno()">
-                          <i class="fas fa-times me-1"></i>Cancelar
-                        </button>
-                      </div>
-                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarTurno()">
+                      <i class="fas fa-plus me-1"></i>Registrar
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-            </div><!-- /seccionFormTurno -->
+            <!-- /Modal Registrar Turno -->
 
             <!-- Tabla de Turnos -->
             <div class="row">
@@ -131,7 +125,7 @@
                     <div class="row mb-3">
                       <div class="col d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Listado de turnos registrados en el sistema.</label>
-                        <button class="btn btn-primary" onclick="mostrarFormTurno()">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistrarTurno" onclick="limpiarFormularioTurno()">
                           <i class="fas fa-plus me-1"></i>Registrar nuevo turno
                         </button>
                       </div>
@@ -161,7 +155,7 @@
   </div>
 
   <!-- Modal Editar Turno -->
-  <div class="modal fade" id="modalEditarTurno" tabindex="-1" aria-labelledby="modalEditarTurnoLabel" aria-hidden="true">
+  <div class="modal fade" id="modalEditarTurno" tabindex="-1" aria-labelledby="modalEditarTurnoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background-color: #ffc407;">
@@ -212,6 +206,15 @@
   <?php include("scripts.php"); ?>
 
   <script src="scripts/Turnos.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script>
+    function limpiarFormularioTurno() {
+      $('#txtIdTurno').val('');
+      $('#slctNombreTurno').val('');
+      $('#slctPuesto').val('');
+      $('#txtHoraInicio').val('');
+      $('#txtHoraFin').val('');
+    }
+  </script>
 
 </body>
 

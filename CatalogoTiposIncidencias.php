@@ -47,62 +47,56 @@
               </div>
             </div>
 
-            <!-- Formulario de registro -->
-            <div id="seccionForm" style="display:none;">
-              <div class="row">
-                <div class="col">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col text-center">
-                          <h5 class="fw-bold" id="formTitle">Nuevo Tipo de Incidencia</h5>
-                        </div>
+            <!-- Modal Registrar Tipo de Incidencia -->
+            <div class="modal fade" id="modalRegistrarTipo" tabindex="-1" aria-labelledby="modalRegistrarTipoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color:#ffc407;">
+                    <h5 class="modal-title fw-bold" id="modalRegistrarTipoLabel" style="color:#1f1f1f;">Registrar nuevo tipo de incidencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input type="hidden" id="txtId" value="">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">Nombre del tipo:</label>
+                        <input id="txtNombre" type="text" class="form-control form-control-solid-bordered"
+                               placeholder="Ej. Falla Operativa, Riesgo de Seguridad...">
                       </div>
-                      <input type="hidden" id="txtId" value="">
-                      <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">Nombre del tipo:</label>
-                          <input id="txtNombre" type="text" class="form-control form-control-solid-bordered"
-                                 placeholder="Ej. Falla Operativa, Riesgo de Seguridad...">
-                        </div>
-                        <div class="col-12 col-md-3">
-                          <label class="form-label fw-bold">Nivel de severidad:</label>
-                          <select id="slctSeveridad" class="form-select">
-                            <option value="" disabled selected>Seleccione nivel</option>
-                            <option value="Baja">Baja</option>
-                            <option value="Media">Media</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Crítica">Crítica</option>
-                          </select>
-                        </div>
-                        <div class="col-12 col-md-3">
-                          <label class="form-label fw-bold">SLA (horas para atención):</label>
-                          <input id="txtSLA" type="number" min="1" class="form-control form-control-solid-bordered" placeholder="Ej. 24">
-                        </div>
+                      <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">Nivel de severidad:</label>
+                        <select id="slctSeveridad" class="form-select">
+                          <option value="" disabled selected>Seleccione nivel</option>
+                          <option value="Baja">Baja</option>
+                          <option value="Media">Media</option>
+                          <option value="Alta">Alta</option>
+                          <option value="Crítica">Crítica</option>
+                        </select>
                       </div>
-                      <div class="row g-3 mt-1">
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">Puesto responsable de atención:</label>
-                          <select id="slctPuesto" class="form-select">
-                            <option value="">— Todos los puestos —</option>
-                          </select>
-                        </div>
+                      <div class="col-12 col-md-3">
+                        <label class="form-label fw-bold">SLA (horas para atención):</label>
+                        <input id="txtSLA" type="number" min="1" class="form-control form-control-solid-bordered" placeholder="Ej. 24">
                       </div>
-                      <div class="row mt-4">
-                        <div class="col d-flex gap-2">
-                          <button type="button" class="btn btn-primary" id="btnRegistrar" onclick="guardar()">
-                            <i class="fas fa-plus me-1"></i>Registrar
-                          </button>
-                          <button type="button" class="btn btn-secondary" onclick="ocultarForm()">
-                            <i class="fas fa-times me-1"></i>Cancelar
-                          </button>
-                        </div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">Puesto responsable de atención:</label>
+                        <select id="slctPuesto" class="form-select">
+                          <option value="">— Todos los puestos —</option>
+                        </select>
                       </div>
                     </div>
                   </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnRegistrar" onclick="guardar()">
+                      <i class="fas fa-plus me-1"></i>Registrar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div><!-- /seccionForm -->
+            </div>
+            <!-- /Modal Registrar Tipo de Incidencia -->
 
             <!-- Tabla -->
             <div class="row">
@@ -112,7 +106,7 @@
                     <div class="row mb-3">
                       <div class="col d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Listado de tipos de incidencias registrados.</label>
-                        <button class="btn btn-primary" onclick="mostrarForm()">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo">
                           <i class="fas fa-plus me-1"></i>Registrar nuevo tipo
                         </button>
                       </div>
@@ -145,7 +139,7 @@
 
   <!-- Modal Editar -->
   <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-content">
         <div class="modal-header" style="background-color:#ffc407;">
           <h5 class="modal-title fw-bold" id="modalEditarLabel" style="color:#1f1f1f;">Editar Tipo de Incidencia</h5>

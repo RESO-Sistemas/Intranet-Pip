@@ -240,11 +240,24 @@ async function guardarTurno() {
   if (!horaFin)    { toastr.warning("Ingrese la hora de fin."); return; }
   if (!idPuesto)   { toastr.warning("Seleccione un puesto."); return; }
 
+  // Validar duplicado
+  const existe = tablaTurnosInstance
+    .rows()
+    .data()
+    .toArray()
+    .some(t => t.Nombre === nombre && t.IdPuesto == idPuesto);
+  if (existe) {
+    toastr.error("Ya existe un turno con ese nombre y puesto.");
+    return;
+  }
+
   const dataSend = { op: "insertTurno", nombre, horaInicio, horaFin, idPuesto };
   const ajaxR = await pAjaxAsync(url_m_Turnos, dataSend, 1);
   if (ajaxR && ajaxR.Resultado && ajaxR.Siguiente) {
-    limpiarFormTurno();
-    ocultarFormTurno();
+    limpiarFormularioTurno();
+    // Cerrar el modal de registro
+    bootstrap.Modal.getInstance(document.getElementById('modalRegistrarTurno')).hide();
+    // Actualizar la tabla de turnos
     getTurnos();
   }
 }
@@ -253,42 +266,17 @@ async function guardarTurno() {
  * Abrir modal de edición
  */
 function editarTurno(idEncoded, nombre, horaInicio, horaFin, idPuesto) {
-  const modalEl = document.getElementById('modalEditarTurno');
-
-  // Destruir Select2 anteriores si existen
-  if ($('#modalNombreTurno').hasClass('select2-hidden-accessible')) {
-    $('#modalNombreTurno').select2('destroy');
-  }
-  if ($('#modalSlctPuesto').hasClass('select2-hidden-accessible')) {
-    $('#modalSlctPuesto').select2('destroy');
-  }
-
-  // Setear valores fijos antes de abrir
+  // Poblar campos del modal
   $('#modalIdTurno').val(idEncoded);
-  $('#modalHoraInicio').val(horaInicio ? horaInicio.substring(0, 5) : '');
-  $('#modalHoraFin').val(horaFin ? horaFin.substring(0, 5) : '');
+  $('#modalNombreTurno').val(nombre);
+  $('#modalHoraInicio').val(horaInicio);
+  $('#modalHoraFin').val(horaFin);
+  $('#modalSlctPuesto').val(idPuesto);
 
-  // Inicializar Select2 y setear valores cuando el modal ya es visible
-  $(modalEl).off('shown.bs.modal.turno').on('shown.bs.modal.turno', function () {
-    // Turno con Select2
-    $('#modalNombreTurno').select2({
-      placeholder: 'Seleccione un turno',
-      dropdownParent: $(modalEl),
-      width: '100%',
-      minimumResultsForSearch: Infinity  // ocultar buscador (solo 3 opciones)
-    });
-    $('#modalNombreTurno').val(nombre).trigger('change');
-
-    // Puesto con Select2
-    $('#modalSlctPuesto').select2({
-      placeholder: 'Seleccione un puesto',
-      dropdownParent: $(modalEl),
-      width: '100%'
-    });
-    $('#modalSlctPuesto').val(idPuesto).trigger('change');
-  });
-
-  new bootstrap.Modal(modalEl).show();
+  // Abrir modal con opciones para que no se cierre por fuera ni con ESC
+  const modalEl = document.getElementById('modalEditarTurno');
+  const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+  modal.show();
 }
 
 /**
@@ -305,6 +293,18 @@ async function guardarEdicionTurno() {
   if (!horaInicio) { toastr.warning("Ingrese la hora de inicio."); return; }
   if (!horaFin)    { toastr.warning("Ingrese la hora de fin."); return; }
   if (!idPuesto)   { toastr.warning("Seleccione un puesto."); return; }
+
+  // Validar duplicado (ignorando el turno que se está editando)
+  const idTurnoDec = atob(idTurno);
+  const existe = tablaTurnosInstance
+    .rows()
+    .data()
+    .toArray()
+    .some(t => t.Nombre === nombre && t.IdPuesto == idPuesto && t.IdTurno != idTurnoDec);
+  if (existe) {
+    toastr.error("Ya existe un turno con ese nombre y puesto.");
+    return;
+  }
 
   const dataSend = { op: "updateTurno", idTurno, nombre, horaInicio, horaFin, idPuesto };
   const ajaxR = await pAjaxAsync(url_m_Turnos, dataSend, 1);

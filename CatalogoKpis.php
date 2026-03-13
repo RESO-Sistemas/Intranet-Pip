@@ -88,17 +88,15 @@
               </div>
             </div>
 
-            <!-- Formulario de registro (oculto por defecto) -->
-            <div id="seccionFormKpi" style="display:none;">
-            <div class="row">
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col text-center">
-                        <h5 class="fw-bold" id="formTitle">Nuevo KPI</h5>
-                      </div>
-                    </div>
+            <!-- Modal Registrar KPI -->
+            <div class="modal fade" id="modalRegistrarKpi" tabindex="-1" aria-labelledby="modalRegistrarKpiLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color: #ffc407;">
+                    <h5 class="modal-title fw-bold" id="modalRegistrarKpiLabel" style="color: #1f1f1f;">Registrar nuevo KPI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
                     <input type="hidden" id="txtIdKpi" value="">
                     <div class="row g-3">
                       <div class="col-12 col-md-6">
@@ -143,22 +141,17 @@
                         </select>
                       </div>
                     </div>
-                    <div class="row mt-4">
-                      <div class="col d-flex gap-2">
-                        <button type="button" class="btn btn-primary" id="btnRegistrar" onclick="guardarKpi()">
-                          <i class="fas fa-plus me-1"></i>Registrar
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="ocultarFormKpi()">
-                          <i class="fas fa-times me-1"></i>Cancelar
-                        </button>
-                      </div>
-                    </div>
-                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnRegistrar" onclick="guardarKpi()">
+                      <i class="fas fa-plus me-1"></i>Registrar
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-            </div><!-- /seccionFormKpi -->
+            <!-- /Modal Registrar KPI -->
 
             <!-- Tabla de KPIs -->
             <div class="row">
@@ -168,7 +161,7 @@
                     <div class="row mb-3">
                       <div class="col d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Listado de KPIs registrados en el sistema.</label>
-                        <button class="btn btn-primary" onclick="mostrarFormKpi()">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistrarKpi" onclick="limpiarFormulario()">
                           <i class="fas fa-plus me-1"></i>Registrar nuevo KPI
                         </button>
                       </div>
@@ -202,7 +195,7 @@
   </div>
 
   <!-- Modal Editar KPI -->
-  <div class="modal fade" id="modalEditarKpi" tabindex="-1" aria-labelledby="modalEditarKpiLabel" aria-hidden="true">
+  <div class="modal fade" id="modalEditarKpi" tabindex="-1" aria-labelledby="modalEditarKpiLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header" style="background-color: #ffc407;">
@@ -269,6 +262,19 @@
   <?php include("scripts.php"); ?>
 
   <script src="scripts/Kpis.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script>
+    function limpiarFormulario() {
+      $('#txtIdKpi').val('');
+      $('#txtNombreKpi').val('');
+      $('#txtValorAlta').val('');
+      $('#txtValorMedia').val('');
+      $('#txtValorBaja').val('');
+      $('#slctPrioridad').val('');
+      $('#chkParaTodos').prop('checked', true);
+      $('#divPuestos').addClass('d-none');
+      $('#slctPuestos').val('');
+    }
+  </script>
 
 </body>
 

@@ -33,6 +33,13 @@ class Turnos extends Conexiones {
       if (sizeof($respuesta) > 0) {
         $msgRetorno = $respuesta[0]["Retorno"];
         if ($msgRetorno == 1) {
+          // Obtener el IdTurno insertado (asumiendo que el SP lo regresa en el mismo result set)
+          $idTurnoNuevo = isset($respuesta[0]["IdTurno"]) ? $respuesta[0]["IdTurno"] : null;
+          if ($idTurnoNuevo) {
+            // Insertar en la tabla intermedia PuestoTurno
+            $q2 = "INSERT IGNORE INTO PuestoTurno (IdPuesto, IdTurno) VALUES (?, ?)";
+            $this->ExecuteQueryWithParam($q2, array($idPuesto, $idTurnoNuevo));
+          }
           $arrRetorno = [
             "Resultado" => true,
             "Siguiente" => true,
