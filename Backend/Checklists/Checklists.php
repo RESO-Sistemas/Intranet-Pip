@@ -13,6 +13,13 @@ if (file_exists("../Conexiones/Conexiones.php")) {
 
 class Checklists extends Conexiones {
 
+  // Obtener turnos asignados a un puesto
+  function getTurnosPorPuesto($idPuesto) {
+    $q = "CALL spGetTurnosPorPuesto(?)";
+    $parametros = array($idPuesto);
+    return json_encode($this->ProcedureWithParam($q, $parametros));
+  }
+
   function getChecklists() {
     $q = "CALL spGetChecklists()";
     $resultado = $this->Procedure($q);
@@ -30,7 +37,7 @@ class Checklists extends Conexiones {
   }
 
   function getKpis() {
-    $q = "SELECT IdKpi, Nombre FROM Kpis WHERE Activo = 1 ORDER BY Nombre ASC";
+    $q = "SELECT IdKpi, Nombre, Puestos FROM Kpis WHERE Activo = 1 ORDER BY Nombre ASC";
     return json_encode($this->Select($q));
   }
 

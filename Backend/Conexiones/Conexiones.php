@@ -12,7 +12,7 @@ class Conexiones{
 		];
 		$this->dbh = new PDO($dsn, 'klynet_usrdatosdemo', 'Us3rK1yns2@25', $options);
 	}
-
+	
 	function ProcedureWithParam($q,$parametros){
 		try {
 			$res = $this->dbh->prepare($q);

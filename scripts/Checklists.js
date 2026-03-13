@@ -24,17 +24,65 @@ document.addEventListener('DOMContentLoaded', async function () {
     puestos.forEach(function (p) { optsPuesto += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
     $('#slctPuestoChecklist').html(optsPuesto);
 
-    let optsKpi = '<option value="" disabled selected>Seleccione un KPI</option>';
-    kpis.forEach(function (k) { optsKpi += `<option value="${k.IdKpi}">${k.Nombre}</option>`; });
-    $('#slctKpiChecklist').html(optsKpi);
+    // Inicialmente deshabilitar turnos y kpis y ocultar mensajes de advertencia
+    $('#slctTurnosChecklist').prop('disabled', true);
+    $('#slctKpiChecklist').prop('disabled', true);
+    $('#msgTurnosChecklist').addClass('d-none');
+    $('#msgKpiChecklist').addClass('d-none');
 
-    let optsTurno = '';
-    turnos.forEach(function (t) { optsTurno += `<option value="${t.IdTurno}">${t.Nombre}</option>`; });
-    $('#slctTurnosChecklist').html(optsTurno);
-    $('#slctTurnosChecklist').select2({
-      placeholder: "Seleccione turnos...",
-      allowClear: true,
-      width: '100%'
+    // Eliminar select2, usar dropdown normal, selección única
+    $('#slctTurnosChecklist').prop('multiple', false);
+
+    // Evento: al cambiar puesto
+    $('#slctPuestoChecklist').on('change', async function () {
+      const idPuesto = $(this).val();
+      // --- Turnos ---
+      $('#slctTurnosChecklist').prop('disabled', true).html('<option value="" disabled selected>Seleccione un turno</option>');
+      $('#msgTurnosChecklist').addClass('d-none');
+      if (idPuesto) {
+        // AJAX para obtener turnos del puesto
+        const turnos = await $.ajax({
+          type: "post",
+          url: url_m_Checklists,
+          data: { op: "getTurnosPorPuesto", idPuesto },
+          dataType: "json"
+        });
+        if (Array.isArray(turnos) && turnos.length > 0) {
+          let optsTurno = '<option value="" disabled selected>Seleccione un turno</option>';
+          turnos.forEach(function (t) { optsTurno += `<option value="${t.IdTurno}">${t.Nombre}</option>`; });
+          $('#slctTurnosChecklist').html(optsTurno).prop('disabled', false);
+        } else {
+          $('#slctTurnosChecklist').html('<option value="" disabled selected>Sin turnos</option>').prop('disabled', true);
+          $('#msgTurnosChecklist').removeClass('d-none');
+        }
+        $('#slctTurnosChecklist').val('');
+      } else {
+        $('#slctTurnosChecklist').html('<option value="" disabled selected>Seleccione un turno</option>').prop('disabled', true);
+        $('#slctTurnosChecklist').val('');
+      }
+
+      // --- KPIs ---
+      $('#slctKpiChecklist').prop('disabled', true).empty();
+      $('#msgKpiChecklist').addClass('d-none');
+      if (idPuesto) {
+        let optsKpi = '<option value="" disabled selected>Seleccione un KPI</option>';
+        listaKpisChk.forEach(function (k) {
+          if (k.Puestos === 'TODOS' || k.Puestos == idPuesto) {
+            optsKpi += `<option value="${k.IdKpi}">${k.Nombre}</option>`;
+          }
+        });
+        $('#slctKpiChecklist').html(optsKpi);
+        if ($('#slctKpiChecklist option').length > 1) {
+          $('#slctKpiChecklist').prop('disabled', false);
+        } else {
+          $('#slctKpiChecklist').prop('disabled', true);
+          $('#msgKpiChecklist').removeClass('d-none');
+        }
+        $('#slctKpiChecklist').val('');
+      } else {
+        $('#slctKpiChecklist').html('<option value="" disabled selected>Seleccione un KPI</option>').prop('disabled', true);
+        $('#slctKpiChecklist').val('');
+      }
     });
 
     _renderTablaChecklists(checklists);
@@ -94,7 +142,7 @@ function _renderTablaChecklists(data) {
       { data: "Nombre", orderable: false },
       {
         data: "IdPuesto",
-        orderable: false,
+        orderable: true,
         render: function (data) {
           return getNombrePuestoChk(data);
         }
@@ -110,7 +158,7 @@ function _renderTablaChecklists(data) {
       },
       {
         data: "Tipo",
-        orderable: true,
+        orderable: false,
         render: function (data) {
           return data === 'Critico'
             ? '<span class="badge-critico">Crítico</span>'
@@ -128,7 +176,7 @@ function _renderTablaChecklists(data) {
       },
       {
         data: "IdKpi",
-        orderable: false,
+        orderable: true,
         render: function (data) {
           return '<small>' + getNombreKpiChk(data) + '</small>';
         }
@@ -179,7 +227,9 @@ function ocultarFormChecklist() {
 async function guardarChecklist() {
   const nombre            = $('#txtNombreChecklist').val().trim();
   const idPuesto          = $('#slctPuestoChecklist').val();
-  const turnos            = $('#slctTurnosChecklist').val();
+  let turnos = $('#slctTurnosChecklist').val();
+  // Si solo hay un turno seleccionado, .val() regresa un string, conviértelo a array
+  if (typeof turnos === 'string') turnos = [turnos];
   const tipo              = $('#slctTipoChecklist').val();
   const respuestaEsperada = $('#slctRespuestaChecklist').val();
   const idKpi             = $('#slctKpiChecklist').val();
@@ -207,9 +257,37 @@ async function guardarChecklist() {
   const ajaxR = await pAjaxAsync(url_m_Checklists, dataSend, 1);
   if (ajaxR && ajaxR.Resultado && ajaxR.Siguiente) {
     limpiarFormChecklist();
-    ocultarFormChecklist();
-    getChecklists();
+    // Cerrar el modal correctamente usando Bootstrap 5
+    if (window.bootstrap && bootstrap.Modal) {
+      const modalEl = document.getElementById('modalRegistrarChecklist');
+      if (modalEl) {
+        let modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (!modalInstance) modalInstance = new bootstrap.Modal(modalEl);
+        modalInstance.hide();
+      }
+    } else {
+      // Fallback: trigger close via jQuery
+      $('#modalRegistrarChecklist').modal('hide');
+    }
+    getChecklistsOrdenadoReciente();
   }
+
+// Refresca la tabla y ordena por el checklist más reciente arriba
+async function getChecklistsOrdenadoReciente() {
+  try {
+    const respuesta = await $.ajax({
+      type: "post", url: url_m_Checklists,
+      data: { op: "getChecklists" }, dataType: "json"
+    });
+    // Ordenar por IdChecklist descendente (más reciente primero)
+    if (Array.isArray(respuesta)) {
+      respuesta.sort((a, b) => Number(b.IdChecklist) - Number(a.IdChecklist));
+    }
+    _renderTablaChecklists(respuesta);
+  } catch (e) {
+    console.error("Error al refrescar checklists:", e);
+  }
+}
 }
 
 // ─── Editar: abrir modal ──────────────────────────────────────────────────────
@@ -240,20 +318,63 @@ function editarChecklist(idEncoded) {
     $('#modalSlctPuesto').select2({ placeholder: 'Seleccione un puesto', dropdownParent: modalJq, width: '100%' });
     $('#modalSlctPuesto').val(row.IdPuesto).trigger('change');
 
-    // Turnos (multi)
-    let optsTurno = '';
-    listaTurnosChk.forEach(function (t) { optsTurno += `<option value="${t.IdTurno}">${t.Nombre}</option>`; });
-    $('#modalSlctTurnos').html(optsTurno);
-    $('#modalSlctTurnos').select2({ placeholder: 'Seleccione turnos...', dropdownParent: modalJq, width: '100%', allowClear: true });
-    const turnosActuales = row.Turnos ? row.Turnos.split(',').map(function (id) { return id.trim(); }) : [];
-    $('#modalSlctTurnos').val(turnosActuales).trigger('change');
+    // Solución eficiente: poblar ambos dropdowns y seleccionar valores solo cuando ambos AJAX terminen
+    async function poblarTurnosYKpisAsync(idPuesto, turnoActual, kpiActual) {
+      $('#modalSlctTurnos').prop('multiple', false);
+      $('#modalSlctTurnos').prop('disabled', true).html('<option value="" disabled selected>Seleccione un turno</option>');
+      $('#modalSlctKpi').prop('disabled', true).empty();
+      if (!idPuesto) {
+        $('#modalSlctTurnos').html('<option value="" disabled selected>Seleccione un turno</option>').prop('disabled', true);
+        $('#modalSlctKpi').html('<option value="" disabled selected>Seleccione un KPI</option>').prop('disabled', true);
+        return;
+      }
+      // Promesas para turnos y kpis
+      const turnosPromise = $.ajax({
+        type: "post",
+        url: url_m_Checklists,
+        data: { op: "getTurnosPorPuesto", idPuesto },
+        dataType: "json"
+      });
+      const kpisPromise = new Promise(resolve => {
+        let optsKpi = '<option value="" disabled selected>Seleccione un KPI</option>';
+        listaKpisChk.forEach(function (k) {
+          if (k.Puestos === 'TODOS' || k.Puestos == idPuesto) {
+            optsKpi += `<option value="${k.IdKpi}">${k.Nombre}</option>`;
+          }
+        });
+        $('#modalSlctKpi').html(optsKpi);
+        resolve();
+      });
+      // Espera ambas
+      const [turnos] = await Promise.all([turnosPromise, kpisPromise]);
+      if (Array.isArray(turnos) && turnos.length > 0) {
+        let optsTurno = '<option value="" disabled selected>Seleccione un turno</option>';
+        turnos.forEach(function (t) { optsTurno += `<option value="${t.IdTurno}">${t.Nombre}</option>`; });
+        $('#modalSlctTurnos').html(optsTurno);
+        $('#modalSlctTurnos').prop('disabled', false);
+      } else {
+        $('#modalSlctTurnos').html('<option value="" disabled selected>Sin turnos</option>').prop('disabled', true);
+      }
+      // Habilita KPIs si hay opciones
+      if ($('#modalSlctKpi option').length > 1) {
+        $('#modalSlctKpi').prop('disabled', false);
+      } else {
+        $('#modalSlctKpi').prop('disabled', true);
+      }
+      // Selecciona valores
+      $('#modalSlctTurnos').val(turnoActual || '').trigger('change');
+      $('#modalSlctKpi').val(kpiActual || '').trigger('change');
+    }
 
-    // KPI
-    let optsKpi = '<option value="" disabled>Seleccione un KPI</option>';
-    listaKpisChk.forEach(function (k) { optsKpi += `<option value="${k.IdKpi}">${k.Nombre}</option>`; });
-    $('#modalSlctKpi').html(optsKpi);
-    $('#modalSlctKpi').select2({ placeholder: 'Seleccione un KPI', dropdownParent: modalJq, width: '100%' });
-    $('#modalSlctKpi').val(row.IdKpi).trigger('change');
+    // Inicializa ambos al abrir el modal
+    const turnoActual = row.Turnos ? row.Turnos.split(',').map(function (id) { return id.trim(); })[0] : '';
+    poblarTurnosYKpisAsync(row.IdPuesto, turnoActual, row.IdKpi);
+
+    // Al cambiar puesto, repoblar turnos y KPIs
+    $('#modalSlctPuesto').off('change.chk').on('change.chk', function () {
+      const nuevoPuesto = $(this).val();
+      poblarTurnosYKpisAsync(nuevoPuesto, '', '');
+    });
 
     // Tipo
     $('#modalSlctTipo').select2({ dropdownParent: modalJq, width: '100%', minimumResultsForSearch: Infinity });
@@ -268,7 +389,7 @@ function editarChecklist(idEncoded) {
     $('#modalSlctIncidencia').val(String(row.AbreIncidencia)).trigger('change');
   });
 
-  new bootstrap.Modal(modalEl).show();
+  new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false }).show();
 }
 
 // ─── Guardar edición ──────────────────────────────────────────────────────────

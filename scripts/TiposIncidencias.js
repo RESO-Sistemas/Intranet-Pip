@@ -132,9 +132,12 @@ function limpiarForm() {
   $('#slctSeveridad').val('');
   $('#slctPuesto').val('');
   $('#txtSLA').val('');
-  $('#formTitle').text('Nuevo Tipo de Incidencia');
+  // Si existe el título del modal, lo actualiza
+  if ($('#formTitle').length) {
+    $('#formTitle').text('Nuevo Tipo de Incidencia');
+  }
   $('#btnRegistrar').html('<i class="fas fa-plus me-1"></i>Registrar');
-  document.getElementById('seccionForm').style.display = 'none';
+  // Ya no se oculta 'seccionForm', porque el formulario está en el modal
 }
 
 // ── Guardar (insertar) ────────────────────────────────────────────────────────
@@ -154,8 +157,32 @@ async function guardar() {
   }, 1);
 
   if (ajaxR && ajaxR.Resultado && ajaxR.Siguiente) {
+    // Cerrar el modal correctamente usando Bootstrap 5
+    if (window.bootstrap && bootstrap.Modal) {
+      const modalEl = document.getElementById('modalRegistrarTipo');
+      if (modalEl) {
+        let modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (!modalInstance) modalInstance = new bootstrap.Modal(modalEl);
+        modalInstance.hide();
+      }
+    } else {
+      $('#modalRegistrarTipo').modal('hide');
+    }
     limpiarForm();
-    recargarTabla();
+    await recargarTablaOrdenada();
+  // Refresca la tabla y ordena por el registro más reciente arriba
+  async function recargarTablaOrdenada() {
+    try {
+      const data = await $.ajax({ type: "post", url: API_TI, data: { op: "getTiposIncidencias" }, dataType: "json" });
+      if (Array.isArray(data)) {
+        data.sort((a, b) => Number(b.IdTipoIncidencia) - Number(a.IdTipoIncidencia));
+        console.log('Datos recargados y ordenados:', data);
+      } else {
+        console.warn('La respuesta de getTiposIncidencias no es un array:', data);
+      }
+      _renderTabla(data);
+    } catch (e) { console.error('Error en recargarTablaOrdenada:', e); }
+  }
   }
 }
 
@@ -171,7 +198,11 @@ function abrirEdicion(id, nombre, severidad, idPuesto, slaHoras) {
   $('#modalSeveridad').val(severidad);
   $('#modalPuesto').val(idPuesto || '');
 
-  const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+  // Abrir el modal con opciones para que no se cierre por fondo ni ESC
+  const modal = new bootstrap.Modal(document.getElementById('modalEditar'), {
+    backdrop: 'static',
+    keyboard: false
+  });
   modal.show();
 }
 

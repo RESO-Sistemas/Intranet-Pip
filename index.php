@@ -158,6 +158,8 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
   </style>
 
+  <!-- Custom styles para KPI Carousel y flechas ahora en neptune/css/custom.css -->
+
 </head>
 
 <body>

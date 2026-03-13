@@ -12,6 +12,11 @@ switch ($op) {
     echo $obj->getChecklists();
     break;
 
+  case "getTurnosPorPuesto":
+    $idPuesto = isset($_POST["idPuesto"]) ? $_POST["idPuesto"] : "";
+    echo $obj->getTurnosPorPuesto($idPuesto);
+    break;
+
   case "getPuestos":
     echo $obj->getPuestos();
     break;

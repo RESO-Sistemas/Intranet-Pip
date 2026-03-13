@@ -376,9 +376,9 @@ function editarKpi(idEncoded, nombre, valorAlta, valorMedia, valorBaja, priorida
     $('#modalPrioridad').select2('destroy');
   }
 
-  // Abrir modal
+  // Abrir modal con opciones para que no se cierre por fuera ni con ESC
   const modalEl = document.getElementById('modalEditarKpi');
-  const modal = new bootstrap.Modal(modalEl);
+  const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
 
   // Inicializar Select2 DESPUÉS de que el modal esté completamente visible
   $(modalEl).one('shown.bs.modal', function () {
@@ -397,7 +397,6 @@ function editarKpi(idEncoded, nombre, valorAlta, valorMedia, valorBaja, priorida
       $('#modalSlctPuestos').val(puestosData.split(',')[0]);
     }
   });
-
   modal.show();
 }
 

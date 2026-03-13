@@ -87,82 +87,80 @@
               </div>
             </div>
 
-            <!-- Formulario de registro (oculto por defecto) -->
-            <div id="seccionFormChecklist" style="display:none;">
-              <div class="row">
-                <div class="col">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col text-center">
-                          <h5 class="fw-bold">Nuevo Checklist</h5>
-                        </div>
+            <!-- Modal Registrar Checklist -->
+            <div class="modal fade" id="modalRegistrarChecklist" tabindex="-1" aria-labelledby="modalRegistrarChecklistLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color: #ffc407;">
+                    <h5 class="modal-title fw-bold" id="modalRegistrarChecklistLabel" style="color: #1f1f1f;">Registrar nuevo Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">Nombre del checklist:</label>
+                        <input id="txtNombreChecklist" type="text" class="form-control form-control-solid-bordered" placeholder="Ej. Verificación de apertura...">
                       </div>
-                      <div class="row g-3 align-items-end">
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">Nombre del checklist:</label>
-                          <input id="txtNombreChecklist" type="text" class="form-control form-control-solid-bordered" placeholder="Ej. Verificación de apertura...">
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">Puesto:</label>
-                          <select id="slctPuestoChecklist" class="form-select">
-                            <option value="" disabled selected>Seleccione un puesto</option>
-                          </select>
-                        </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">Puesto:</label>
+                        <select id="slctPuestoChecklist" class="form-select">
+                          <option value="" disabled selected>Seleccione un puesto</option>
+                        </select>
                       </div>
-                      <div class="row g-3 mt-3 align-items-end">
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">Turnos aplicables:</label>
-                          <select id="slctTurnosChecklist" class="form-select" multiple></select>
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label fw-bold">KPI relacionado:</label>
-                          <select id="slctKpiChecklist" class="form-select">
-                            <option value="" disabled selected>Seleccione un KPI</option>
-                          </select>
-                        </div>
+                    </div>
+                    <div class="row g-3 mt-3 align-items-end">
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">Turnos aplicables:</label>
+                        <select id="slctTurnosChecklist" class="form-select" disabled>
+                          <option value="" disabled selected>Seleccione un turno</option>
+                        </select>
+                        <div id="msgTurnosChecklist" class="form-text text-danger d-none">Este puesto no tiene turnos asignados. Selecciona un puesto con turnos.</div>
                       </div>
-                      <div class="row g-3 mt-3 align-items-end">
-                        <div class="col-12 col-md-4">
-                          <label class="form-label fw-bold d-block">Tipo:</label>
-                          <select id="slctTipoChecklist" class="form-select">
-                            <option value="" disabled selected>Seleccione tipo</option>
-                            <option value="Critico">Crítico</option>
-                            <option value="No Critico">No Crítico</option>
-                          </select>
-                        </div>
-                        <div class="col-12 col-md-4">
-                          <label class="form-label fw-bold d-block">Respuesta esperada:</label>
-                          <select id="slctRespuestaChecklist" class="form-select">
-                            <option value="" disabled selected>Seleccione respuesta</option>
-                            <option value="1">Verdadero</option>
-                            <option value="0">Falso</option>
-                          </select>
-                        </div>
-                        <div class="col-12 col-md-4">
-                          <label class="form-label fw-bold d-block">¿Abre incidencia?</label>
-                          <select id="slctIncidenciaChecklist" class="form-select">
-                            <option value="" disabled selected>Seleccione</option>
-                            <option value="1">Sí</option>
-                            <option value="0">No</option>
-                          </select>
-                        </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold">KPI relacionado:</label>
+                        <select id="slctKpiChecklist" class="form-select">
+                          <option value="" disabled selected>Seleccione un KPI</option>
+                        </select>
+                        <div id="msgKpiChecklist" class="form-text text-danger d-none">Este puesto no tiene KPIs asignados. Selecciona un puesto con KPIs.</div>
                       </div>
-                      <div class="row mt-4">
-                        <div class="col d-flex gap-2">
-                          <button type="button" class="btn btn-primary" onclick="guardarChecklist()">
-                            <i class="fas fa-plus me-1"></i>Registrar
-                          </button>
-                          <button type="button" class="btn btn-secondary" onclick="ocultarFormChecklist()">
-                            <i class="fas fa-times me-1"></i>Cancelar
-                          </button>
-                        </div>
+                    </div>
+                    <div class="row g-3 mt-3 align-items-end">
+                      <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold d-block">Tipo:</label>
+                        <select id="slctTipoChecklist" class="form-select">
+                          <option value="" disabled selected>Seleccione tipo</option>
+                          <option value="Critico">Crítico</option>
+                          <option value="No Critico">No Crítico</option>
+                        </select>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold d-block">Respuesta esperada:</label>
+                        <select id="slctRespuestaChecklist" class="form-select">
+                          <option value="" disabled selected>Seleccione respuesta</option>
+                          <option value="1">Verdadero</option>
+                          <option value="0">Falso</option>
+                        </select>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold d-block">¿Abre incidencia?</label>
+                        <select id="slctIncidenciaChecklist" class="form-select">
+                          <option value="" disabled selected>Seleccione</option>
+                          <option value="1">Sí</option>
+                          <option value="0">No</option>
+                        </select>
                       </div>
                     </div>
                   </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarChecklist()">
+                      <i class="fas fa-plus me-1"></i>Registrar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div><!-- /seccionFormChecklist -->
+            </div>
+            <!-- /Modal Registrar Checklist -->
 
             <!-- Tabla -->
             <div class="row">
@@ -172,7 +170,7 @@
                     <div class="row mb-3">
                       <div class="col d-flex justify-content-between align-items-center">
                         <label class="form-label mb-0">Listado de checklists registrados en el sistema.</label>
-                        <button class="btn btn-primary" onclick="mostrarFormChecklist()">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistrarChecklist" onclick="limpiarFormularioChecklist()">
                           <i class="fas fa-plus me-1"></i>Registrar nuevo checklist
                         </button>
                       </div>
@@ -280,6 +278,17 @@
   <?php include("scripts.php"); ?>
 
   <script src="scripts/Checklists.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script>
+    function limpiarFormularioChecklist() {
+      $('#txtNombreChecklist').val('');
+      $('#slctPuestoChecklist').val('');
+      $('#slctTurnosChecklist').val(null).trigger('change');
+      $('#slctKpiChecklist').val('');
+      $('#slctTipoChecklist').val('');
+      $('#slctRespuestaChecklist').val('');
+      $('#slctIncidenciaChecklist').val('');
+    }
+  </script>
 
 </body>
 
