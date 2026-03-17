@@ -51,7 +51,7 @@
             <div class="modal fade" id="modalRegistrarTipo" tabindex="-1" aria-labelledby="modalRegistrarTipoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
               <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                  <div class="modal-header" style="background-color:#ffc407;">
+                  <div class="modal-header" style="background-color:#fff;">
                     <h5 class="modal-title fw-bold" id="modalRegistrarTipoLabel" style="color:#1f1f1f;">Registrar nuevo tipo de incidencia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
