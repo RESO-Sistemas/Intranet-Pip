@@ -307,7 +307,6 @@ $MenuP = $Conf->getMenusPadre();
                 <!-- Checklist del día -->
                 <div class="card">
                   <div class="card-body">
-                    <h6 class="card-title fw-bold mb-3"><i class="fas fa-clipboard-check me-2" style="color: #ffc407;"></i>Mi Checklist del Día</h6>
                     <div id="listaChecklist" style="max-height: 350px; overflow-y: auto;">
                       <p class="text-muted small text-center">Cargando checklist...</p>
                     </div>
