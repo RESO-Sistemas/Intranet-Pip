@@ -666,7 +666,7 @@
     </div>
 
     <!-- Modal Detalle Vacante -->
-    <div class="modal fade" id="modalDetalleVacante" tabindex="-1" aria-labelledby="modalDetalleVacanteLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetalleVacante" tabindex="-1" aria-labelledby="modalDetalleVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-info">
@@ -807,7 +807,7 @@
     </div>
     
     <!-- ====== MODAL POSTULANTES DE VACANTE ====== -->
-    <div class="modal fade" id="modalPostulantes" tabindex="-1" aria-labelledby="modalPostulantesLabel" aria-hidden="true">
+    <div class="modal fade" id="modalPostulantes" tabindex="-1" aria-labelledby="modalPostulantesLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
@@ -970,7 +970,7 @@
     </div>
 
     <!-- ====== MODAL DETALLE POSTULANTE ====== -->
-    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-info">
