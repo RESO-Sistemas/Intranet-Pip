@@ -410,14 +410,15 @@ class Postulantes extends Conexiones
     /**
      * Actualizar estatus de postulación
      */
-    function updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones)
+    function updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones, $UsuarioRegistro = 0)
     {
         try {
             $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
             $Observaciones = $this->sanitize($Observaciones);
             $ObservacionesSQL = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
+            $UsuarioRegistro = intval($UsuarioRegistro);
             
-            $q = "CALL spUpdateEstatusPostulacion('$IdPostulanteVacante', '$EstatusPostulacion', $ObservacionesSQL)";
+            $q = "CALL spUpdateEstatusPostulacion('$IdPostulanteVacante', '$EstatusPostulacion', $ObservacionesSQL, '$UsuarioRegistro')";
             $resultado = $this->Procedure($q);
             
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
@@ -756,7 +757,27 @@ class Postulantes extends Conexiones
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
-            $q = "CALL spGetProcesosPostulacion($IdPostulanteVacante)";
+            $q = "SELECT 
+                    ph.IdPostulanteHistorial,
+                    ph.IdPostulanteVacante,
+                    ph.IdProceso,
+                    ph.Fecha,
+                    ph.Observaciones,
+                    ph.Resultado,
+                    ph.UsuarioRegistro,
+                    pv.NombreProceso,
+                    IFNULL(
+                        e.Nombre,
+                        CASE WHEN ph.UsuarioRegistro IS NOT NULL AND ph.UsuarioRegistro > 0 
+                             THEN CONCAT('Usuario #', ph.UsuarioRegistro) 
+                             ELSE NULL 
+                        END
+                    ) AS NombreUsuario
+                  FROM PostulantesHistorial ph
+                  LEFT JOIN ProcesosVacantes pv ON pv.IdProceso = ph.IdProceso
+                  LEFT JOIN Empleados e ON e.NoEmpleado = ph.UsuarioRegistro
+                  WHERE ph.IdPostulanteVacante = $IdPostulanteVacante
+                  ORDER BY ph.Fecha ASC";
             $resultado = $this->Procedure($q);
             return json_encode([
                 "Resultado" => true,
@@ -769,7 +790,7 @@ class Postulantes extends Conexiones
                 "Resultado" => false,
                 "Siguiente" => false,
                 "Data" => [],
-                "Msg" => "Error al obtener procesos."
+                "Msg" => "Error al obtener procesos: " . $e->getMessage()
             ]);
         }
     }

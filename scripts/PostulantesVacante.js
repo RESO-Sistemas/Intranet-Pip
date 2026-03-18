@@ -512,6 +512,7 @@ async function loadHistorialPostulante(idPostulanteVacante) {
                             <div class="me-3">
                                 <p class="timeline-title">${h.NombreProceso || 'Proceso'} ${icon}</p>
                                 <p class="timeline-sub text-muted">${h.Observaciones || 'ninguna'}</p>
+                                ${h.NombreUsuario ? `<small class="text-primary"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">person</span> ${h.NombreUsuario}</small>` : ''}
                             </div>
                             <span class="timeline-time">${h.Fecha || ''}</span>
                         </div>

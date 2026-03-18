@@ -49,41 +49,6 @@
             color: white;
         }
 
-        .stats-postulantes {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        .stat-item {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 10px 15px;
-            text-align: center;
-            min-width: 80px;
-        }
-        .stat-item .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: block;
-        }
-        .stat-item .stat-label {
-            font-size: 0.75rem;
-            color: #6c757d;
-        }
-        .stat-item.total .stat-number {
-            color: #007bff;
-        }
-        .stat-item.proceso .stat-number {
-            color: #17a2b8;
-        }
-        .stat-item.aceptados .stat-number {
-            color: #28a745;
-        }
-        .stat-item.rechazados .stat-number {
-            color: #dc3545;
-        }
-
         #tablePostulantes th,
         #tablePostulantes td {
             vertical-align: middle;
@@ -222,22 +187,38 @@
                         <input type="hidden" id="postulantesIdVacante">
 
                         <!-- Estadísticas -->
-                        <div class="stats-postulantes" id="statsPostulantes">
-                            <div class="stat-item total">
-                                <span class="stat-number" id="statTotal">0</span>
-                                <span class="stat-label">Total</span>
+                        <div class="row mb-3" id="statsPostulantes">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body py-3">
+                                        <h3 class="mb-1 text-primary" id="statTotal">0</h3>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-item proceso">
-                                <span class="stat-number" id="statProceso">0</span>
-                                <span class="stat-label">En Proceso</span>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body py-3">
+                                        <h3 class="mb-1 text-info" id="statProceso">0</h3>
+                                        <small class="text-muted">En Proceso</small>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-item aceptados">
-                                <span class="stat-number" id="statAceptados">0</span>
-                                <span class="stat-label">Aceptados</span>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body py-3">
+                                        <h3 class="mb-1 text-success" id="statAceptados">0</h3>
+                                        <small class="text-muted">Aceptados</small>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-item rechazados">
-                                <span class="stat-number" id="statRechazados">0</span>
-                                <span class="stat-label">Rechazados</span>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body py-3">
+                                        <h3 class="mb-1 text-danger" id="statRechazados">0</h3>
+                                        <small class="text-muted">Rechazados</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

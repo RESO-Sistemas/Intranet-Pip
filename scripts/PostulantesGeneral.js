@@ -3,6 +3,16 @@ let postulantesGeneralData = [];
 let selectedPostulante = null;
 let selectedPostulaciones = [];
 
+function hasHistorialUI() {
+    return (
+        $('#pgSelectedPostulante').length > 0 &&
+        $('#pgSelectedPostulanteMeta').length > 0 &&
+        $('#listaPostulaciones').length > 0 &&
+        $('#timelineProcesos').length > 0 &&
+        $('#tituloProcesos').length > 0
+    );
+}
+
 function statusText(estatus) {
     switch (parseInt(estatus)) {
         case 1:
@@ -39,6 +49,14 @@ function initPostulantesGeneralTable() {
             {
                 data: 'UltimoEstatus',
                 render: (d) => safeText(statusText(d))
+            },
+            {
+                data: null,
+                render: function (data, type, row) {
+                    return `<a href="PostulanteDetalle.php?id=${row.IdPostulante}" class="btn btn-primary btn-sm"><i class="material-icons-outlined">visibility</i> Ver</a>`;
+                },
+                orderable: false,
+                searchable: false
             }
         ],
         language: {
@@ -51,7 +69,10 @@ function initPostulantesGeneralTable() {
     $('#tablePostulantesGeneral tbody').on('click', 'tr', function () {
         const rowData = tablePostulantesGeneral.row(this).data();
         if (!rowData) return;
-        onSelectPostulante(rowData);
+
+        if (hasHistorialUI()) {
+            onSelectPostulante(rowData);
+        }
 
         $('#tablePostulantesGeneral tbody tr').removeClass('selected');
         $(this).addClass('selected');
@@ -74,7 +95,9 @@ async function loadPostulantesGeneral() {
             if (postulantesGeneralData.length > 0) {
                 // auto seleccionar el primer registro
                 const first = postulantesGeneralData[0];
-                onSelectPostulante(first);
+                if (hasHistorialUI()) {
+                    onSelectPostulante(first);
+                }
                 $('#tablePostulantesGeneral tbody tr:eq(0)').addClass('selected');
             }
         } else {
@@ -88,6 +111,10 @@ async function loadPostulantesGeneral() {
 
 async function onSelectPostulante(postulante) {
     selectedPostulante = postulante;
+
+    if (!hasHistorialUI()) {
+        return;
+    }
 
     const nombre = safeText(postulante.NombreCompleto);
     const correo = safeText(postulante.CorreoElectronico, '');

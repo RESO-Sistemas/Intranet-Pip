@@ -223,7 +223,10 @@ async function openEditModal(idEncoded) {
             $('#editDescripcion').val(respuesta.Datos.Descripcion || '');
             
             // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalEditProceso'));
+            const modal = new bootstrap.Modal(document.getElementById('modalEditProceso'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             modal.show();
         } else {
             const messageContent = `

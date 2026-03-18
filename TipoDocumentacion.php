@@ -139,7 +139,7 @@
     </div>
 
     <!-- Modal Editar Tipo de Documento -->
-    <div class="modal fade" id="modalEditTipoDocumento" tabindex="-1" aria-labelledby="modalEditTipoDocumentoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEditTipoDocumento" tabindex="-1" aria-labelledby="modalEditTipoDocumentoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -184,7 +184,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/TipoDocumentacion.js"></script>
+    <script src="scripts/TipoDocumentacion.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

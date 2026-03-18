@@ -135,7 +135,7 @@
 
 
     <!-- Modal Editar Proceso -->
-    <div class="modal fade" id="modalEditProceso" tabindex="-1" aria-labelledby="modalEditProcesoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEditProceso" tabindex="-1" aria-labelledby="modalEditProcesoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -175,7 +175,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/ProcesosVacantes.js"></script>
+    <script src="scripts/ProcesosVacantes.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

@@ -34,6 +34,9 @@
         .vacancy-card.closed {
             border-left-color: #dc3545;
         }
+        .text-borrador {
+            color: #61ACFC !important;
+        }
         .detail-section {
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -386,7 +389,7 @@
                             <div class="col-md-3">
                                 <div class="card text-center">
                                     <div class="card-body py-3">
-                                        <h3 class="mb-1 text-secondary" id="vacantesborrador">0</h3>
+                                        <h3 class="mb-1 text-borrador" id="vacantesborrador">0</h3>
                                         <small class="text-muted">Borrador</small>
                                     </div>
                                 </div>
@@ -560,7 +563,7 @@
     </div>
 
     <!-- Modal Editar Vacante -->
-    <div class="modal fade" id="modalEditVacante" tabindex="-1" aria-labelledby="modalEditVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEditVacante" tabindex="-1" aria-labelledby="modalEditVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1107,7 +1110,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/Vacantes.js"></script>
+    <script src="scripts/Vacantes.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

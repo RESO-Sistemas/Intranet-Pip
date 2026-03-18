@@ -134,7 +134,7 @@
     </div>
 
     <!-- Modal Editar Área Técnica -->
-    <div class="modal fade" id="modalEditAreaTecnica" tabindex="-1" aria-labelledby="modalEditAreaTecnicaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEditAreaTecnica" tabindex="-1" aria-labelledby="modalEditAreaTecnicaLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -174,7 +174,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/AreasTecnicas.js"></script>
+    <script src="scripts/AreasTecnicas.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>
