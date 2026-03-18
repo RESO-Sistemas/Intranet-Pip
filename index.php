@@ -277,6 +277,7 @@ $MenuP = $Conf->getMenusPadre();
                                     </div>
                                   </div>
                                 </div>
+                                <?php include("components/modalIncidencia.html"); ?>
                                 <!-- MODAL -->
                                 <div class="row justify-content-center">
                                   <div class="col-auto">

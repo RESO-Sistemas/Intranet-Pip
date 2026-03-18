@@ -18,9 +18,13 @@
      <div class="app-menu">
 
        <ul class="accordion-menu">
+         <!-- Menú INICIO manual, siempre primero -->
+         <li>
+           <a href="index.php"><i class="material-icons-two-tone">home</i>INICIO</a>
+         </li>
          <?php
           $iconMap = [
-            'PRINCIPAL'        => 'home',
+            'PRINCIPAL'        => 'dashboard',
             'EVALUACIONES'     => 'assignment',
             'CATÁLOGOS'        => 'library_books',
             'DASHBOARD'        => 'speed',
@@ -35,7 +39,7 @@
 
             $menusHijo = new Configuracion();
             $MenuH = $menusHijo->getMenusHijo($id_menuP);
-          ?>
+         ?>
            <li>
              <a href="javascript: void(0);"><i class="material-icons-two-tone"><?php echo $icono ?></i><?php echo $Descripcion ?><i class="material-icons has-sub-menu">keyboard_arrow_right</i></a>
              <ul class="sub-menu">
@@ -45,33 +49,18 @@
                   $DescripcionH = $MenuH[$j]["Descripcion"];
                   $URLH = $MenuH[$j]["URL"];
                   $ArgumentosH = $MenuH[$j]["Argumentos"];
-                ?>
+               ?>
                  <li>
                    <a href="<?php echo $URLH ?>"><?php echo $DescripcionH ?></a>
                  </li>
                <?php
                 }
                 ?>
-               <!-- <li>
-                 <a href="pricing.html">Pricing</a>
-               </li>
-               <li>
-                 <a href="invoice.html">Invoice</a>
-               </li>
-               <li>
-                 <a href="settings.html">Settings</a>
-               </li>
-               <li>
-                 <a href="#">Authentication</a>
-               </li>
-               <li>
-                 <a href="error.html">Error</a>
-               </li> -->
              </ul>
            </li>
          <?php
           }
-          ?>
+         ?>
        </ul>
      </div>
    </div>

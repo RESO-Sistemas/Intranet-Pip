@@ -381,6 +381,8 @@
     var item = btnEl.closest('.checklist-item');
     var btnGroup = item.querySelector('.chk-btn-group');
     var allBtns = btnGroup.querySelectorAll('.btn');
+    // Buscar el checklist en checklistsData
+    var checklist = checklistsData.find(function(chk) { return chk.IdChecklist == idChecklist; });
     try {
       // Deshabilitar ambos botones
       allBtns.forEach(function (b) { b.disabled = true; });
@@ -390,7 +392,20 @@
         type: 'POST',
         data: { op: 'responderChecklist', idChecklist: idChecklist, respuesta: respuesta }
       });
-      var data = JSON.parse(res);
+      console.log('Respuesta backend:', res);
+      let data;
+      try {
+        data = JSON.parse(res);
+      } catch (jsonErr) {
+        console.error('Error al parsear JSON:', jsonErr, res);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire('Error', 'Respuesta inválida del servidor:<br><pre style="text-align:left">' + res + '</pre>', 'error');
+        } else {
+          alert('Respuesta inválida del servidor: ' + res);
+        }
+        allBtns.forEach(function (b) { b.disabled = false; });
+        return;
+      }
       if (data.Resultado) {
         item.classList.add('ya-contestado');
         btnEl.classList.add('active');
@@ -404,6 +419,16 @@
         // Actualizar gráfica en tiempo real si la respuesta coincide con la esperada
         if (respuesta === respuestaEsperada && idKpi) {
           _updateKpiGauge(idKpi);
+        }
+
+        // Abrir modal de evidencia solo si AbreIncidencia=1 y respuesta incorrecta
+        if (checklist && checklist.AbreIncidencia == 1 && respuesta !== respuestaEsperada) {
+          var modalEl = document.getElementById('modalIncidencia');
+          var modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+          });
+          modal.show();
         }
       }
     } catch (e) {

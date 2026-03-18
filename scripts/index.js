@@ -1,3 +1,52 @@
+// Inicializar fileUpload para el modal de incidencia
+$(document).ready(function () {
+  if ($('#fileUploadIncidencia').length && typeof $.fn.fileUpload === 'function') {
+    $('#fileUploadIncidencia').fileUpload({
+      id: 'filesIncidenciaForm',
+      multiple: false,
+    });
+  }
+
+  // Guardar incidencia
+  const btnIncidenciaGuardar = document.getElementById('btnIncidenciaGuardar');
+  if (btnIncidenciaGuardar) {
+    btnIncidenciaGuardar.addEventListener('click', async function () {
+      let desc = document.getElementById('incidencia_desc').value.trim();
+      let files = $('#filesIncidenciaForm')[0].files;
+      if (!desc) {
+        toastr.error('La descripción es obligatoria.');
+        return;
+      }
+      if (files.length === 0) {
+        toastr.error('Debes subir una imagen como evidencia.');
+        return;
+      }
+      // Construir FormData
+      let formData = new FormData();
+      formData.append('op', 'registrarIncidencia');
+      formData.append('descripcion', desc);
+      formData.append('evidencia', files[0]);
+      // Enviar a backend (AJAX)
+      try {
+        let response = await $.ajax({
+          url: 'Backend/Incidencias/App.php',
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+        });
+        if (response.Resultado) {
+          toastr.success('Incidencia registrada correctamente.');
+          $('#modalIncidencia').modal('hide');
+        } else {
+          toastr.error(response.Msg || 'Error al registrar la incidencia.');
+        }
+      } catch (e) {
+        toastr.error('Error al registrar la incidencia.');
+      }
+    });
+  }
+});
 // let modalComments = new tingle.modal({
 //   footer: true,
 //   stickyFooter: false,

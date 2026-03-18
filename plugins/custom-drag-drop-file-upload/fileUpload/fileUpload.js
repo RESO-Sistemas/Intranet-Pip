@@ -69,7 +69,26 @@
 
                 tableBody.empty();
                 if (clonedFiles.length > 0) {
+                    var validFiles = [];
+                    var invalidFiles = [];
                     $.each(clonedFiles, function(index, file) {
+                        if (!file.type.startsWith("image")) {
+                            invalidFiles.push(file.name);
+                        } else {
+                            validFiles.push(file);
+                        }
+                    });
+
+                    if (invalidFiles.length > 0) {
+                        // Mostrar mensaje de error
+                        if (typeof toastr !== 'undefined') {
+                            toastr.error("Solo se permiten imágenes. Archivos inválidos: " + invalidFiles.join(", "));
+                        } else {
+                            alert("Solo se permiten imágenes. Archivos inválidos: " + invalidFiles.join(", "));
+                        }
+                    }
+
+                    $.each(validFiles, function(index, file) {
                         var fileName = file.name;
                         var fileSize = (file.size / 1024).toFixed(2) + " KB";
                         var fileType = file.type;
