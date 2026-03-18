@@ -108,12 +108,15 @@ if ($op == "addPostulanteConPostulacion") {
 
 // Actualizar estatus de postulación
 if ($op == "updateEstatusPostulacion") {
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
     $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
     $EstatusPostulacion = $_POST["EstatusPostulacion"];
     $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : '';
+    $UsuarioRegistro = isset($_SESSION['NoEmpleado']) ? intval($_SESSION['NoEmpleado']) : 0;
     
-    echo trim($Postulantes->updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones));
+    echo trim($Postulantes->updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones, $UsuarioRegistro));
 }
+
 
 // Eliminar postulación
 if ($op == "deletePostulacion") {

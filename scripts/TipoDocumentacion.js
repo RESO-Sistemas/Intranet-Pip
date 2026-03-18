@@ -224,7 +224,10 @@ async function openEditModal(idEncoded) {
             $('#editObligatorio').prop('checked', respuesta.Datos.Obligatorio == 1);
             
             // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalEditTipoDocumento'));
+            const modal = new bootstrap.Modal(document.getElementById('modalEditTipoDocumento'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             modal.show();
         } else {
             const messageContent = `

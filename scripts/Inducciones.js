@@ -366,7 +366,10 @@ async function openEditModal(idEncoded) {
             $('#editPuestos').val(puestos).trigger('change');
             
             // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalEditInduccion'));
+            const modal = new bootstrap.Modal(document.getElementById('modalEditInduccion'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             modal.show();
         } else {
             const messageContent = `

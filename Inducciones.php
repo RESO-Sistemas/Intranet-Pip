@@ -177,7 +177,7 @@
     </div>
 
     <!-- Modal Editar Inducción -->
-    <div class="modal fade" id="modalEditInduccion" tabindex="-1" aria-labelledby="modalEditInduccionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEditInduccion" tabindex="-1" aria-labelledby="modalEditInduccionLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -333,7 +333,7 @@
     <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/Inducciones.js"></script>
+    <script src="scripts/Inducciones.js?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>
