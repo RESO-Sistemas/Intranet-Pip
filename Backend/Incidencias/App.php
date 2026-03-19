@@ -31,11 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once('Incidencias.php');
         $inc = new Incidencias();
         $ok = $inc->registrarIncidencia($descripcion, $fileName, $noEmpleado);
-        if ($ok) {
-            echo json_encode(['Resultado' => true, 'Msg' => 'Incidencia registrada', 'Evidencia' => $fileName]);
-        } else {
-            echo json_encode(['Resultado' => false, 'Msg' => 'Error al registrar en la base de datos']);
-        }
+            // Registrar también en el catálogo de tipos de incidencias
+            require_once('../TiposIncidencias/TiposIncidencias.php');
+            $tipos = new TiposIncidencias();
+            // Obtener puesto del usuario
+            $idPuesto = isset($_SESSION['idSPuesto']) ? $_SESSION['idSPuesto'] : null;
+            // Valores por defecto
+            $nombre = $descripcion;
+            $severidad = 'Media'; // Puedes ajustar el valor por defecto
+            $slaHoras = 2;
+            $respCatalogo = $tipos->insertTipoIncidencia($nombre, $severidad, $idPuesto, $slaHoras);
+            if ($ok) {
+                echo json_encode(['Resultado' => true, 'Msg' => 'Incidencia registrada', 'Evidencia' => $fileName, 'Catalogo' => json_decode($respCatalogo)]);
+            } else {
+                echo json_encode(['Resultado' => false, 'Msg' => 'Error al registrar en la base de datos']);
+            }
         exit;
     }
 }
