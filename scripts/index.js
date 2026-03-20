@@ -778,7 +778,20 @@ async function loadFeeds() {
           break;
         default:
           descriptionFinal = feed.Descripcion || '';
-          if (feed.Archivo) {
+          
+          if (feed.ArrayArchivos && feed.ArrayArchivos.length > 0) {
+            // Nuevo enfoque BLOB
+            for (let k = 0; k < feed.ArrayArchivos.length; k++) {
+              const archivoObj = feed.ArrayArchivos[k];
+              const fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
+              contentHtmlImg += `
+                                <img alt="Imagen Adjunta ${k+1}" src="${fUrl}"
+                                    data-image="${fUrl}"
+                                    data-description="${archivoObj.Archivo || 'Imagen Adjunta ' + (k+1)}"
+                                    style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+            }
+          } else if (feed.Archivo) {
+            // Enfoque antiguo por carpeta
             const arrFiles = feed.Archivo.split(",");
             for (let k = 0; k < arrFiles.length; k++) {
               const f = arrFiles[k];
