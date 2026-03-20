@@ -335,9 +335,9 @@ $MenuP = $Conf->getMenusPadre();
   <script src="plugins/tingle-master/dist/tingle.min.js" charset="utf-8"></script>
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-  <script src="/plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.js" charset="utf-8"></script>
-  <script src="/plugins/unitegallery-master/dist/js/unitegallery.min.js" charset="utf-8"></script>
-  <script src="/plugins/unitegallery-master/package/unitegallery/themes/slider/ug-theme-slider.js" charset="utf-8"></script>
+  <script src="plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.js" charset="utf-8"></script>
+  <script src="plugins/unitegallery-master/dist/js/unitegallery.min.js" charset="utf-8"></script>
+  <script src="plugins/unitegallery-master/package/unitegallery/themes/slider/ug-theme-slider.js" charset="utf-8"></script>
   
   <!-- Scripts específicos de la página - SIEMPRE AL FINAL -->
   <script src="scripts/index.js" charset="utf-8"></script>
