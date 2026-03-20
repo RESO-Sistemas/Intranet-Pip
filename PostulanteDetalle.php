@@ -1,6 +1,17 @@
 <?php 
 include("AutorizaPagina.php"); 
 $idPostulante = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Obtener nombre del postulante
+$nombrePostulante = '';
+if ($idPostulante > 0) {
+    require_once('Backend/Conexiones/Conexiones.php');
+    $conn = new Conexiones();
+    $datosPostulante = $conn->SelectNotClose("SELECT CONCAT(Nombre, ' ', ApellidoPaterno, ' ', IFNULL(ApellidoMaterno, '')) AS NombreCompleto FROM Postulantes WHERE IdPostulante = $idPostulante");
+    if (!empty($datosPostulante)) {
+        $nombrePostulante = trim($datosPostulante[0]['NombreCompleto']);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,7 +24,6 @@ $idPostulante = isset($_GET['id']) ? intval($_GET['id']) : 0;
     <title>Detalle de Postulante - PIP</title>
 
     <?php include("neptune_styles.php"); ?>
-
 </head>
 
 <body>
@@ -34,6 +44,19 @@ $idPostulante = isset($_GET['id']) ? intval($_GET['id']) : 0;
             <div class="app-content">
                 <div class="content-wrapper">
                     <div class="container-fluid">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <h4 class="mb-0">
+                                    <i class="material-icons-outlined align-middle" style="font-size: 28px; color: #f5a623;">person</i>
+                                    <?php echo htmlspecialchars($nombrePostulante ?: 'Postulante'); ?>
+                                </h4>
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <a href="PostulantesGeneral.php" class="btn btn-regresar-custom btn-sm">
+                                    <i class="material-icons-outlined align-middle" style="font-size: 18px;">arrow_back</i> Regresar
+                                </a>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col">
                                 <div class="card todo-container">

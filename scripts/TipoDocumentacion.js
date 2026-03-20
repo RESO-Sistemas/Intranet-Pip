@@ -117,11 +117,15 @@ async function loadTiposDocumentacion() {
                             </button>`;
                         }
                         
-                        let btnDelete = `<button class="btn btn-danger btn-sm" onclick="deleteTipoDocumento('${idEncoded}')" title="Eliminar">
+                        let btnDelete = `<button class="btn btn-danger btn-sm me-1" onclick="deleteTipoDocumento('${idEncoded}')" title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>`;
                         
-                        return btnEdit + btnToggle + btnDelete;
+                        let btnChecklist = `<button class="btn btn-info btn-sm" onclick="openChecklist('${idEncoded}', '${row.NombreDocumento.replace(/'/g, "\\'")}')" title="Ver entregas">
+                            <span class="material-symbols-outlined">checklist</span>
+                        </button>`;
+                        
+                        return btnEdit + btnToggle + btnDelete + btnChecklist;
                     }
                 }
             ],
@@ -446,5 +450,137 @@ async function loadTiposDocumentacionToSelect(selectId) {
         
     } catch (error) {
         console.error("Error al cargar tipos de documentación:", error);
+    }
+}
+
+// ==========================================
+// ENFOQUE 2: CHECKLIST DE ENTREGAS
+// ==========================================
+
+let tableChecklist;
+
+async function openChecklist(idEncoded, nombreDoc) {
+    $('#checklistIdTipoDocumento').val(idEncoded);
+    $('#checklistNombreDoc').text(nombreDoc);
+    
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalChecklistEntregas'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    modal.show();
+    
+    // Cargar datos
+    try {
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/DocumentacionEmpleados/App.php",
+            data: {
+                op: "getEntregasPorTipoDocumento",
+                IdTipoDocumento: idEncoded
+            },
+            dataType: "json"
+        });
+        
+        if (respuesta.Resultado && respuesta.Siguiente && Array.isArray(respuesta.Data)) {
+            renderChecklist(respuesta.Data, idEncoded);
+        } else {
+            renderChecklist([], idEncoded);
+        }
+    } catch (error) {
+        console.error("Error al cargar checklist:", error);
+        renderChecklist([], idEncoded);
+    }
+}
+
+function renderChecklist(data, idTipoEncoded) {
+    // Destruir DataTable existente
+    if (tableChecklist) {
+        tableChecklist.destroy();
+        tableChecklist = null;
+    }
+    
+    let html = '';
+    if (data.length === 0) {
+        html = '<tr><td colspan="5" class="text-muted">No hay empleados activos.</td></tr>';
+    } else {
+        data.forEach(function(emp, index) {
+            const esEntregado = emp.Estatus === 'Completo';
+            const badge = esEntregado 
+                ? '<span class="badge bg-success"><span class="material-symbols-outlined align-middle" style="font-size:14px;">check_circle</span> Entregado</span>'
+                : '<span class="badge bg-warning text-dark"><span class="material-symbols-outlined align-middle" style="font-size:14px;">pending</span> Pendiente</span>';
+            const fecha = emp.FechaCarga || '-';
+            
+            let btnAccion = '';
+            if (esEntregado) {
+                btnAccion = `<button class="btn btn-sm btn-outline-warning" onclick="toggleEntregaEmpleado(${emp.NoEmpleado}, '${idTipoEncoded}', 'Pendiente')" title="Marcar como pendiente">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">undo</span> Pendiente
+                </button>`;
+            } else {
+                btnAccion = `<button class="btn btn-sm btn-success" onclick="toggleEntregaEmpleado(${emp.NoEmpleado}, '${idTipoEncoded}', 'Completo')" title="Marcar como entregado">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Entregado
+                </button>`;
+            }
+            
+            html += `<tr>
+                <td>${index + 1}</td>
+                <td class="text-start">${emp.Nombre}</td>
+                <td>${badge}</td>
+                <td>${fecha}</td>
+                <td>${btnAccion}</td>
+            </tr>`;
+        });
+    }
+    
+    $('#tableChecklist tbody').html(html);
+    
+    if (data.length > 0) {
+        tableChecklist = $('#tableChecklist').DataTable({
+            destroy: true,
+            language: {
+                lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
+                zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
+                info: "PÁGINA _PAGE_ DE _PAGES_",
+                infoEmpty: "NO HAY DATOS PARA MOSTRAR",
+                infoFiltered: "",
+                search: "BUSCAR",
+                paginate: { previous: "ANTERIOR", next: "SIGUIENTE" }
+            },
+            pageLength: 25,
+            order: [[2, 'asc']],  // Pendientes primero
+            columnDefs: [
+                { orderable: false, targets: [4] }
+            ]
+        });
+    }
+}
+
+async function toggleEntregaEmpleado(noEmpleado, idTipoEncoded, nuevoEstatus) {
+    const fechaHoy = nuevoEstatus === 'Completo' ? new Date().toISOString().split('T')[0] : '';
+    
+    try {
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/DocumentacionEmpleados/App.php",
+            data: {
+                op: "marcarDocumentoEntregado",
+                NoEmpleado: btoa(String(noEmpleado)),
+                IdTipoDocumento: idTipoEncoded,
+                Estatus: nuevoEstatus,
+                FechaCarga: fechaHoy,
+                Observaciones: ''
+            },
+            dataType: "json"
+        });
+        
+        if (respuesta.Resultado && respuesta.Siguiente) {
+            // Recargar checklist
+            openChecklist(idTipoEncoded, $('#checklistNombreDoc').text());
+        } else {
+            Swal.fire('Atención', respuesta.Msg || 'Error al actualizar.', 'warning');
+        }
+    } catch (error) {
+        console.error("Error al toggle entrega:", error);
+        Swal.fire('Error', 'Error de conexión con el servidor.', 'error');
     }
 }

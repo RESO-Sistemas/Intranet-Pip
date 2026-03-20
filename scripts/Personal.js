@@ -422,6 +422,14 @@ async function getListadoPersonal() {
           allowFiltering: false,
           template: "#disabledTemplate",
         },
+        {
+          field: "",
+          headerText: "DOCUMENTACIÓN",
+          width: 80,
+          textAlign: "Center",
+          allowFiltering: false,
+          template: "#documentacionTemplate",
+        },
       ],
     });
 
@@ -432,6 +440,7 @@ async function getListadoPersonal() {
         tablePersonal.columns[8].visible = false;
         tablePersonal.columns[9].visible = false;
         tablePersonal.columns[10].visible = false;
+        tablePersonal.columns[11].visible = false;
         tablePersonal.excelExport();
       }
       if (args["item"].id === "TablePersonal_pdfexport") {
@@ -440,6 +449,7 @@ async function getListadoPersonal() {
         tablePersonal.columns[8].visible = false;
         tablePersonal.columns[9].visible = false;
         tablePersonal.columns[10].visible = false;
+        tablePersonal.columns[11].visible = false;
         tablePersonal.pdfExport();
       }
     };
@@ -486,6 +496,15 @@ window.disabledSF = function (e) {
   let btn = `<button class="btn btn-danger" onclick="deshabilitarEmpleado(${e.NoEmpleado})"><span class="material-symbols-outlined">
 block
 </span></button>`;
+  $(div).append(btn);
+  return div.outerHTML;
+};
+
+window.documentacionSF = function (e) {
+  let div = document.createElement("div");
+  let btn = `<a class="btn btn-info" href="DocumentacionEmpleados.php?NoEmpleado=${e.NoEmpleado}" title="Ver documentación"><span class="material-symbols-outlined">
+folder_shared
+</span></a>`;
   $(div).append(btn);
   return div.outerHTML;
 };
@@ -1532,6 +1551,9 @@ async function abrirDetallesEmpleado(name, NoEmpleado) {
 
   $("#tituloOtrosDetalles").html(`Otros detalles del empleado: ${name}`);
 
+  // Cargar documentos del empleado
+  loadDocumentosEnModal(NoEmpleado);
+
   // Abrir modal Bootstrap
   let modalMasDetalles = new bootstrap.Modal(
     document.getElementById("DetallesMasDetallesEmpleado")
@@ -1840,3 +1862,64 @@ $('#ModalAsignarHijo').on('hidden.bs.modal', function () {
     $('#listadoJefesPosibles').select2('destroy');
   }
 });
+
+// ==========================================
+// DOCUMENTOS EN MODAL MÁS DETALLES
+// ==========================================
+async function loadDocumentosEnModal(NoEmpleado) {
+  $('#listaDocumentosModal').html('<div class="text-center text-muted small py-2">Cargando documentos...</div>');
+
+  try {
+    const respuesta = await $.ajax({
+      type: "POST",
+      url: "Backend/DocumentacionEmpleados/App.php",
+      data: {
+        op: "getDocumentacionCompletaEmpleado",
+        NoEmpleado: btoa(String(NoEmpleado))
+      },
+      dataType: "json"
+    });
+
+    if (respuesta.Resultado && respuesta.Siguiente && Array.isArray(respuesta.Data) && respuesta.Data.length > 0) {
+      let html = '';
+      respuesta.Data.forEach(function(doc) {
+        let badgeClass = '';
+        let badgeIcon = '';
+        let badgeText = doc.Estatus;
+
+        switch (doc.Estatus) {
+          case 'Completo':
+            badgeClass = 'bg-success';
+            badgeIcon = 'check_circle';
+            break;
+          case 'Pendiente':
+            badgeClass = 'bg-warning text-dark';
+            badgeIcon = 'pending';
+            break;
+          case 'Vencido':
+            badgeClass = 'bg-danger';
+            badgeIcon = 'error';
+            break;
+          default:
+            badgeClass = 'bg-secondary';
+            badgeIcon = 'help';
+        }
+
+        const obligatorio = doc.Obligatorio == 1 ? '<span class="badge bg-info ms-1" style="font-size:10px;">Obligatorio</span>' : '';
+
+        html += `<div class="list-group-item d-flex justify-content-between align-items-center py-2">
+          <span>${doc.NombreDocumento}${obligatorio}</span>
+          <span class="badge ${badgeClass}">
+            <span class="material-symbols-outlined align-middle" style="font-size:14px;">${badgeIcon}</span> ${badgeText}
+          </span>
+        </div>`;
+      });
+      $('#listaDocumentosModal').html(html);
+    } else {
+      $('#listaDocumentosModal').html('<div class="text-center text-muted small py-2">No hay documentos configurados en el catálogo.</div>');
+    }
+  } catch (error) {
+    console.error("Error al cargar documentos:", error);
+    $('#listaDocumentosModal').html('<div class="text-center text-muted small py-2">Error al cargar documentos.</div>');
+  }
+}

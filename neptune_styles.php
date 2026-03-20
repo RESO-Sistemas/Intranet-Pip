@@ -50,6 +50,28 @@ if ($current_page !== 'login'):
 <link href="./neptune/css/main.css" rel="stylesheet">
 
 <style>
+  /* ====== BOTÓN REGRESAR PERSONALIZADO ====== */
+  .btn-regresar-custom {
+      background-color: #6c757d; /* Gris intermedio */
+      color: #ffffff;
+      border: 1px solid #5a6268;
+  }
+  .btn-regresar-custom:hover {
+      background-color: #5a6268; /* Gris intermedio más oscuro al hacer hover */
+      color: #ffffff;
+  }
+  
+  /* Soporte para modo oscuro */
+  [data-theme="dark"] .btn-regresar-custom {
+      background-color: #495057;
+      color: #e0e0e0;
+      border-color: #343a40;
+  }
+  [data-theme="dark"] .btn-regresar-custom:hover {
+      background-color: #343a40;
+      color: #ffffff;
+  }
+
   /* Login — quitar ícono azul del template */
   .app-auth-container .logo a {
     background: none !important;

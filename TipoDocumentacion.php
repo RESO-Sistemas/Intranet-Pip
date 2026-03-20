@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -173,6 +173,44 @@
                     <button type="button" class="btn btn-primary" id="btnSaveEdit">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Checklist de Entregas por Tipo de Documento -->
+    <div class="modal fade" id="modalChecklistEntregas" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span class="material-symbols-outlined align-middle me-2">checklist</span>
+                        Control de Entregas: <span id="checklistNombreDoc"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="checklistIdTipoDocumento">
+                    <div class="table-responsive">
+                        <table id="tableChecklist" class="table display text-center" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Empleado</th>
+                                    <th>Estatus</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span class="material-symbols-outlined align-middle me-1">close</span> Cerrar
                     </button>
                 </div>
             </div>

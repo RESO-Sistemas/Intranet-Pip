@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -311,6 +311,16 @@
                     </div>
                   </div>
                 </form>
+
+                <!-- Sección de Documentos -->
+                <hr class="my-3">
+                <h6 class="fw-bold mb-3">
+                  <span class="material-symbols-outlined align-middle me-1">description</span>
+                  Documentos
+                </h6>
+                <div id="listaDocumentosModal" class="list-group">
+                  <div class="text-center text-muted small py-2">Cargando documentos...</div>
+                </div>
               </div>
 
               <div class="modal-footer justify-content-center">
@@ -358,6 +368,9 @@
     </script>
   <script type="text/x-jsrender" id="disabledTemplate">
     ${disabledSF(data)}
+    </script>
+  <script type="text/x-jsrender" id="documentacionTemplate">
+    ${documentacionSF(data)}
     </script>
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>
