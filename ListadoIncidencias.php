@@ -14,10 +14,10 @@
 
   <style>
     /* ── Badges de estado ─────────────────────────────────────────────── */
-    .badge-estado-abierta    { background-color: #ffc107; color: #1a1a1a; font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; }
-    .badge-estado-proceso    { background-color: #0d6efd; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; }
-    .badge-estado-resuelta   { background-color: #28a745; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; }
-    .badge-estado-cerrada    { background-color: #6c757d; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; }
+    .badge-estado-abierta    { background-color: #ffc107; color: #1a1a1a; font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; white-space: nowrap; }
+    .badge-estado-proceso    { background-color: #0d6efd; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; white-space: nowrap; }
+    .badge-estado-resuelta   { background-color: #28a745; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; white-space: nowrap; }
+    .badge-estado-cerrada    { background-color: #6c757d; color: #fff;    font-size: .82rem; padding: 4px 12px; border-radius: .25rem; font-weight: 500; white-space: nowrap; }
 
     /* ── Badges de severidad ──────────────────────────────────────────── */
     .badge-sev-baja    { background-color: #28a745; color: #fff; font-size: .78rem; padding: 3px 9px; border-radius: .25rem; }
@@ -195,8 +195,8 @@
           <div id="detalleDescripcion" class="mt-3"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btnGuardarTipo" style="display:none;" onclick="guardarTipoIncidencia()">
-            <i class="fas fa-save me-1"></i> Guardar tipo
+          <button type="button" class="btn btn-primary" id="btnGuardarCambios" style="display:none;" onclick="guardarCambiosIncidencia()">
+            <i class="fas fa-save me-1"></i> Guardar cambios
           </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>

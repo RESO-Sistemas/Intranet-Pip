@@ -1,11 +1,8 @@
-// ══════════════════════════════════════════════════════════════════════════════
-//  ListadoIncidencias.js — Módulo de Incidencias
-// ══════════════════════════════════════════════════════════════════════════════
-
 const API_INC = "Backend/Incidencias/App.php";
 
 let tablaIncidencias;
 let listaTiposIncidencias = [];
+const ESTADOS_INCIDENCIA = ['Abierta', 'En proceso', 'Resuelta'];
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function () {
@@ -17,13 +14,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     ]);
     listaTiposIncidencias = tipos || [];
 
-    // Escuchar cambio en Select2 para mostrar/ocultar botón guardar
+    // Escuchar cambio en Select2 de tipo para mostrar/ocultar botón guardar
     $(document).on('change', '#slctTipoIncidenciaModal', function () {
       const val = $(this).val();
       if (val) {
-        $('#btnGuardarTipo').show();
-      } else {
-        $('#btnGuardarTipo').hide();
+        $('#btnGuardarCambios').show();
+      } else if (!$('#slctEstadoIncidenciaModal').val() || $('#slctEstadoIncidenciaModal').val() === $('#slctEstadoIncidenciaModal').data('original')) {
+        $('#btnGuardarCambios').hide();
+      }
+    });
+
+    // Escuchar cambio en Select2 de estado
+    $(document).on('change', '#slctEstadoIncidenciaModal', function () {
+      const val = $(this).val();
+      const original = $(this).data('original');
+      if (val && val !== original) {
+        $('#btnGuardarCambios').show();
+      } else if (!$('#slctTipoIncidenciaModal').val()) {
+        $('#btnGuardarCambios').hide();
       }
     });
   } catch (e) {
@@ -47,7 +55,7 @@ async function cargarListado() {
   }
 }
 
-// ── Render tabla ──────────────────────────────────────────────────────────────
+// Render tabla
 function renderTabla(data) {
   // Destruir tabla previa si existe
   if ($.fn.DataTable.isDataTable('#tblIncidencias')) {
@@ -139,7 +147,7 @@ function renderTabla(data) {
   });
 }
 
-// ── Generar opciones del select de tipos ──────────────────────────────────────
+//  Generar opciones del select de tipos
 function generarOpcionesTipos(idSeleccionado) {
   let opts = '<option value="">— Seleccione un tipo —</option>';
   listaTiposIncidencias.forEach(function (t) {
@@ -149,19 +157,33 @@ function generarOpcionesTipos(idSeleccionado) {
   return opts;
 }
 
-// ── Ver Detalle — abre modal con foto, descripción y Select2 de tipo ─────────
+//  Generar opciones del select de estados
+function generarOpcionesEstados(estadoActual) {
+  let opts = '';
+  ESTADOS_INCIDENCIA.forEach(function (e) {
+    const selected = (estadoActual && e === estadoActual) ? 'selected' : '';
+    opts += `<option value="${e}" ${selected}>${e}</option>`;
+  });
+  return opts;
+}
+
+// ── Ver Detalle — abre modal con foto, descripción
 async function verDetalle(idBase64) {
   // Resetear modal
   $('#detalleIdIncidencia').val(idBase64);
   $('#detalleInfoEmpleado').html('');
   $('#detalleEvidenciaContainer').html('<p class="text-muted py-4">Cargando...</p>');
   $('#detalleDescripcion').html('');
-  $('#btnGuardarTipo').hide();
+  $('#btnGuardarCambios').hide();
 
-  // Destruir Select2 previo si existe
+  // Destruir Select2 previos si existen
   if ($('#slctTipoIncidenciaModal').hasClass('select2-hidden-accessible')) {
     $('#slctTipoIncidenciaModal').select2('destroy');
     $('#slctTipoIncidenciaModal').remove();
+  }
+  if ($('#slctEstadoIncidenciaModal').hasClass('select2-hidden-accessible')) {
+    $('#slctEstadoIncidenciaModal').select2('destroy');
+    $('#slctEstadoIncidenciaModal').remove();
   }
 
   const modal = new bootstrap.Modal(document.getElementById('modalVerDetalle'), {
@@ -185,9 +207,9 @@ async function verDetalle(idBase64) {
 
     const inc = data[0];
 
-    // Info del empleado + Select2 inline para tipo
-    const estadoBadge = renderEstadoBadge(inc.Estado);
+    // Info del empleado + Select2 inline para tipo y estado
     const opcionesTipos = generarOpcionesTipos(inc.IdTipoIncidencia);
+    const opcionesEstados = generarOpcionesEstados(inc.Estado);
 
     $('#detalleInfoEmpleado').html(`
       <div class="detalle-info-row">
@@ -207,24 +229,36 @@ async function verDetalle(idBase64) {
         </span>
       </div>
       <div class="detalle-info-row">
+        <span class="detalle-label"><i class="fas fa-info-circle me-1"></i> Estado:</span>
+        <span class="detalle-value">
+          <select id="slctEstadoIncidenciaModal" class="form-select" style="width:100%">
+            ${opcionesEstados}
+          </select>
+        </span>
+      </div>
+      <div class="detalle-info-row">
         <span class="detalle-label"><i class="fas fa-calendar me-1"></i> Fecha:</span>
         <span class="detalle-value">${formatFecha(inc.FechaRegistro)}</span>
       </div>
-      <div class="detalle-info-row">
-        <span class="detalle-label"><i class="fas fa-info-circle me-1"></i> Estado:</span>
-        <span class="detalle-value">${estadoBadge}</span>
-      </div>
     `);
 
-    // Inicializar Select2 sobre el select recién creado
+    // Inicializar Select2 de tipo
     $('#slctTipoIncidenciaModal').select2({
       dropdownParent: $('#modalVerDetalle'),
       placeholder: '— Seleccione un tipo —',
       width: '100%'
     });
 
-    // Si ya tiene tipo asignado, ocultar botón; si no, también ocultar hasta que seleccione
-    $('#btnGuardarTipo').hide();
+    // Inicializar Select2 de estado
+    $('#slctEstadoIncidenciaModal').select2({
+      dropdownParent: $('#modalVerDetalle'),
+      width: '100%'
+    });
+    // Guardar valor original para detectar cambios
+    $('#slctEstadoIncidenciaModal').data('original', inc.Estado || 'Abierta');
+
+    // Ocultar botón guardar hasta que haya cambios
+    $('#btnGuardarCambios').hide();
 
     // Evidencia (imagen)
     if (inc.Evidencia) {
@@ -253,26 +287,48 @@ async function verDetalle(idBase64) {
   }
 }
 
-// ── Guardar tipo de incidencia ─────────────────────────────────────────
-async function guardarTipoIncidencia() {
+//  Guardar cambios (tipo y/o estado)
+async function guardarCambiosIncidencia() {
   const idBase64 = $('#detalleIdIncidencia').val();
   const idTipo = $('#slctTipoIncidenciaModal').val();
+  const estado = $('#slctEstadoIncidenciaModal').val();
+  const estadoOriginal = $('#slctEstadoIncidenciaModal').data('original');
 
-  if (!idTipo) {
-    toastr.warning('Seleccione un tipo de incidencia antes de guardar.');
+  let promesas = [];
+
+  // Guardar tipo si se seleccionó uno
+  if (idTipo) {
+    promesas.push(
+      $.ajax({
+        type: "POST", url: API_INC,
+        data: { op: "asignarTipoIncidencia", id: idBase64, idTipoIncidencia: idTipo },
+        dataType: "json"
+      })
+    );
+  }
+
+  // Guardar estado si cambió
+  if (estado && estado !== estadoOriginal) {
+    promesas.push(
+      $.ajax({
+        type: "POST", url: API_INC,
+        data: { op: "updateEstadoIncidencia", id: idBase64, estado: estado },
+        dataType: "json"
+      })
+    );
+  }
+
+  if (promesas.length === 0) {
+    toastr.warning('No hay cambios para guardar.');
     return;
   }
 
   try {
-    const resp = await $.ajax({
-      type: "POST",
-      url: API_INC,
-      data: { op: "asignarTipoIncidencia", id: idBase64, idTipoIncidencia: idTipo },
-      dataType: "json"
-    });
+    const resultados = await Promise.all(promesas);
+    const todoBien = resultados.every(r => r && r.Resultado && r.Siguiente);
 
-    if (resp && resp.Resultado && resp.Siguiente) {
-      toastr.success(resp.Msg);
+    if (todoBien) {
+      toastr.success('Cambios guardados con éxito.');
       // Cerrar modal
       const modalEl = document.getElementById('modalVerDetalle');
       const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -280,21 +336,21 @@ async function guardarTipoIncidencia() {
       // Recargar tabla
       await cargarListado();
     } else {
-      toastr.error(resp.Msg || 'Error al asignar el tipo.');
+      toastr.error('Hubo un error al guardar los cambios.');
     }
   } catch (e) {
-    console.error('Error al asignar tipo:', e);
-    toastr.error('Error al asignar el tipo de incidencia.');
+    console.error('Error al guardar cambios:', e);
+    toastr.error('Error al guardar los cambios.');
   }
 }
 
-// ── Seguimiento — placeholder ─────────────────────────────────────────────────
+// ── Seguimiento — placeholder ─
 function abrirSeguimiento(idBase64) {
   const modal = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
   modal.show();
 }
 
-// ── Plan de Acción — placeholder por definir ──────────────────────────────────
+// ── Plan de Acción —
 function irPlanAccion(idBase64) {
   Swal.fire({
     title: 'Plan de Acción',
@@ -305,7 +361,7 @@ function irPlanAccion(idBase64) {
   });
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──
 
 function renderEstadoBadge(estado) {
   const e = (estado || 'Abierta').trim();
