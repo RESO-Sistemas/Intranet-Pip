@@ -185,6 +185,8 @@
         <div class="modal-body">
           <!-- ID oculto de la incidencia -->
           <input type="hidden" id="detalleIdIncidencia" value="">
+          <!-- Detalles de Resolución -->
+          <div id="detalleResolucion"></div>
           <!-- Info del empleado -->
           <div id="detalleInfoEmpleado" class="mb-3"></div>
           <!-- Imagen evidencia -->

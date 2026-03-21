@@ -1142,15 +1142,9 @@ async function getAgenda() {
           },
         ]);
       });
-    } else {
-      // toastr.warning("No hay eventos en tu agenda.", "WARNING");
-      const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">No hay eventos en tu agenda..</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
+    // Se removió el else con showBootstrapAlertWar("No hay eventos en tu agenda..") 
+    // porque el usuario indicó que ya no hay agenda y generaba falsos positivos.
   }
 }
 

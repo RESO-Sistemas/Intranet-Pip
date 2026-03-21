@@ -132,14 +132,18 @@ function renderTabla(data) {
               onclick="verDetalle('${id}')">
               <span class="material-symbols-outlined">visibility</span>
             </button>
+            <!--
             <button class="btn btn-info btn-accion" title="Seguimiento (en desarrollo)"
               onclick="abrirSeguimiento('${id}')">
               <span class="material-symbols-outlined">forum</span>
             </button>
+            -->
+            <!--
             <button class="btn btn-warning btn-accion" title="Plan de acción"
               onclick="irPlanAccion('${id}')">
               <span class="material-symbols-outlined">assignment</span>
             </button>
+            -->
           </div>`;
         }
       }
@@ -174,6 +178,7 @@ async function verDetalle(idBase64) {
   $('#detalleInfoEmpleado').html('');
   $('#detalleEvidenciaContainer').html('<p class="text-muted py-4">Cargando...</p>');
   $('#detalleDescripcion').html('');
+  $('#detalleResolucion').html('');
   $('#btnGuardarCambios').hide();
 
   // Destruir Select2 previos si existen
@@ -257,6 +262,11 @@ async function verDetalle(idBase64) {
     // Guardar valor original para detectar cambios
     $('#slctEstadoIncidenciaModal').data('original', inc.Estado || 'Abierta');
 
+    if (inc.Estado === 'Resuelta') {
+      $('#slctTipoIncidenciaModal').prop('disabled', true);
+      $('#slctEstadoIncidenciaModal').prop('disabled', true);
+    }
+
     // Ocultar botón guardar hasta que haya cambios
     $('#btnGuardarCambios').hide();
 
@@ -280,6 +290,25 @@ async function verDetalle(idBase64) {
         <p class="mb-0" style="white-space: pre-wrap;">${escHtml(inc.Descripcion || 'Sin descripción')}</p>
       </div>
     `);
+
+    // Detalles de Resolución
+    if (inc.Estado === 'Resuelta' && (inc.FechaResuelto || inc.PuestoResponsable)) {
+      $('#detalleResolucion').html(`
+        <div class="p-3 mb-3" style="background:#eafaf1; border-radius:8px; border:1px solid #c3e6cb;">
+          <h6 class="fw-bold mb-2 text-success"><i class="fas fa-check-double me-1"></i> Incidencia Resuelta</h6>
+          <div class="detalle-info-row border-0 mb-2">
+            <span class="detalle-label"><i class="fas fa-briefcase text-success me-1"></i> Puesto responsable:</span>
+            <span class="detalle-value fw-semibold text-dark">${escHtml(inc.PuestoResponsable || '—')}</span>
+          </div>
+          <div class="detalle-info-row border-0">
+            <span class="detalle-label"><i class="fas fa-calendar-check text-success me-1"></i> Fecha resuelto:</span>
+            <span class="detalle-value">${formatFecha(inc.FechaResuelto)}</span>
+          </div>
+        </div>
+      `);
+    } else {
+      $('#detalleResolucion').html('');
+    }
 
   } catch (e) {
     console.error("Error al cargar detalle:", e);
@@ -352,13 +381,7 @@ function abrirSeguimiento(idBase64) {
 
 // ── Plan de Acción —
 function irPlanAccion(idBase64) {
-  Swal.fire({
-    title: 'Plan de Acción',
-    text: 'Esta funcionalidad está en desarrollo. Próximamente podrás crear y gestionar planes de acción para esta incidencia.',
-    icon: 'info',
-    confirmButtonColor: '#ffc407',
-    confirmButtonText: 'Entendido'
-  });
+  window.location.href = `PlanAccionIncidencia.php?id=${idBase64}`;
 }
 
 // ── Helpers ──
