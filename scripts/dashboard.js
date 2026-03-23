@@ -158,6 +158,7 @@
     kpis.forEach(function (kpi, i) {
       var total = parseInt(kpi.TotalChecklists) || 0;
       var cumplidos = parseInt(kpi.ChecklistsCumplidos) || 0;
+      var respondidos = parseInt(kpi.ChecklistsRespondidos) || 0;
       var pct = total > 0 ? Math.round((cumplidos / total) * 100) : 0;
 
       var card = document.createElement('div');
@@ -166,13 +167,14 @@
       card.innerHTML =
         '<div id="kpiChart' + i + '">' + _buildGaugeSVG(pct) + '</div>' +
         '<div class="kpi-name" title="' + _escapeHtml(kpi.NombreKpi) + '">' + _escapeHtml(kpi.NombreKpi) + '</div>' +
-        '<div class="kpi-fraction" id="kpiFraction' + i + '">' + cumplidos + ' / ' + total + ' tareas</div>';
+        '<div class="kpi-fraction" id="kpiFraction' + i + '">' + respondidos + ' de ' + total + ' checklists respondidos</div>';
       container.appendChild(card);
 
       kpiCharts.push({
         idKpi: kpi.IdKpi,
         total: total,
         cumplidos: cumplidos,
+        respondidos: respondidos,
         index: i
       });
     });
@@ -181,11 +183,15 @@
   }
 
   // Actualizar una gráfica en tiempo real
-  function _updateKpiGauge(idKpi) {
+  function _updateKpiGauge(idKpi, esCorrecta) {
     var entry = kpiCharts.find(function (c) { return c.idKpi == idKpi; });
     if (!entry) return;
 
-    entry.cumplidos++;
+    entry.respondidos = (entry.respondidos || 0) + 1;
+    if (esCorrecta) {
+      entry.cumplidos++;
+    }
+    
     var pct = entry.total > 0 ? Math.round((entry.cumplidos / entry.total) * 100) : 0;
 
     // Re-render SVG gauge
@@ -195,7 +201,7 @@
     // Actualizar texto
     var fractionEl = document.getElementById('kpiFraction' + entry.index);
     if (fractionEl) {
-      fractionEl.textContent = entry.cumplidos + ' / ' + entry.total + ' tareas';
+      fractionEl.textContent = entry.respondidos + ' de ' + entry.total + ' checklists respondidos';
     }
   }
 
@@ -416,9 +422,9 @@
           item.classList.add('chk-respondido-no');
         }
 
-        // Actualizar gráfica en tiempo real si la respuesta coincide con la esperada
-        if (respuesta === respuestaEsperada && idKpi) {
-          _updateKpiGauge(idKpi);
+        // Actualizar gráfica en tiempo real si el checklist pertenece a un KPI
+        if (idKpi) {
+          _updateKpiGauge(idKpi, respuesta === respuestaEsperada);
         }
 
         // Abrir modal de evidencia solo si AbreIncidencia=1 y respuesta incorrecta

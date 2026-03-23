@@ -11,6 +11,15 @@ if (file_exists("../Conexiones/Conexiones.php")) {
   }
 }
 
+// SessionManager
+if (file_exists("../Session/SessionManager.php")) {
+  require_once("../Session/SessionManager.php");
+} else if (file_exists("../../Session/SessionManager.php")) {
+  require_once("../../Session/SessionManager.php");
+} else if (file_exists("././Backend/Session/SessionManager.php")) {
+  require_once("././Backend/Session/SessionManager.php");
+}
+
 class Incidencias extends Conexiones {
 
   /**
@@ -53,8 +62,15 @@ class Incidencias extends Conexiones {
   function updateEstadoIncidencia($idIncidencia, $estado) {
     try {
       $idIncidencia = base64_decode($idIncidencia);
-      $q = "UPDATE Incidencias SET Estado = ? WHERE IdIncidencia = ?";
-      $parametros = array($estado, $idIncidencia);
+      $noEmpleado = SessionManager::get('NoEmpleado');
+      
+      if ($estado == 'Resuelta') {
+        $q = "UPDATE Incidencias SET Estado = ?, FechaResuelto = NOW(), NoEmpleadoResolutor = ? WHERE IdIncidencia = ?";
+        $parametros = array($estado, $noEmpleado, $idIncidencia);
+      } else {
+        $q = "UPDATE Incidencias SET Estado = ?, FechaResuelto = NULL, NoEmpleadoResolutor = NULL WHERE IdIncidencia = ?";
+        $parametros = array($estado, $idIncidencia);
+      }
       $this->ExecuteQuery($q, $parametros);
       return json_encode(["Resultado" => true, "Siguiente" => true, "ConMsg" => true,
                           "Msg" => "¡Estado actualizado con éxito!"]);
@@ -87,6 +103,93 @@ class Incidencias extends Conexiones {
     } catch (\Exception $e) {
       error_log($e);
       return json_encode(["Resultado" => false, "Msg" => "Error al asignar el tipo de incidencia"]);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // Plan de Acción para Incidencias
+  // ═══════════════════════════════════════════════════════════════════
+
+  /**
+   * Obtener info de la incidencia para encabezado del plan
+   */
+  function getInfoIncidenciaPlan($idIncidencia) {
+    try {
+      $idIncidencia = base64_decode($idIncidencia);
+      $q = "CALL spGetInfoIncidenciaPlan(?)";
+      $resultado = $this->ProcedureWithParam($q, array($idIncidencia));
+      return json_encode(["Resultado" => true, "Data" => $resultado[0] ?? []]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al obtener info de la incidencia"]);
+    }
+  }
+
+  /**
+   * Obtener actividades del plan de acción de una incidencia
+   */
+  function getActividadesPlanAccion($idIncidencia) {
+    try {
+      $idIncidencia = base64_decode($idIncidencia);
+      $q = "CALL spGetActividadesPlanAccion(?)";
+      $resultado = $this->ProcedureWithParam($q, array($idIncidencia));
+      return json_encode(["Resultado" => true, "Data" => $resultado]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al obtener actividades"]);
+    }
+  }
+
+  /**
+   * Agregar actividad al plan de acción
+   */
+  function addActividadPlanAccion($idIncidencia, $titulo, $descripcion, $fechaIni, $fechaFin, $usuario) {
+    try {
+      $idIncidencia = base64_decode($idIncidencia);
+      $q = "CALL spAddActividadPlanAccion(?, ?, ?, ?, ?, ?)";
+      $resultado = $this->ProcedureWithParam($q, array($idIncidencia, $titulo, $descripcion, $fechaIni, $fechaFin, $usuario));
+      return json_encode([
+        "Resultado" => true, "Siguiente" => true,
+        "ConMsg" => true, "Msg" => "Actividad registrada",
+        "Data" => $resultado[0] ?? []
+      ]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al agregar actividad"]);
+    }
+  }
+
+  /**
+   * Agregar avance a una actividad
+   */
+  function addAvancePlanAccion($idActividad, $nuevoAvance, $descripcion) {
+    try {
+      $q = "CALL spAddAvancePlanAccionInc(?, ?, ?)";
+      $resultado = $this->ProcedureWithParam($q, array($idActividad, $nuevoAvance, $descripcion));
+      if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
+        return json_encode(["Resultado" => true, "Siguiente" => true, "ConMsg" => true,
+                            "Msg" => $resultado[0]["MsgReturn"]]);
+      } else {
+        return json_encode(["Resultado" => true, "Siguiente" => false, "ConMsg" => true,
+                            "Msg" => $resultado[0]["MsgReturn"] ?? "Error al registrar avance"]);
+      }
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al registrar avance"]);
+    }
+  }
+
+  /**
+   * Obtener avances de una actividad
+   */
+  function getAvancesActividad($idActividad) {
+    try {
+      $q = "CALL spGetAvancesActividad(?)";
+      $resultado = $this->ProcedureWithParam($q, array($idActividad));
+      return json_encode(["Resultado" => true, "Data" => $resultado]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al obtener avances"]);
     }
   }
 }

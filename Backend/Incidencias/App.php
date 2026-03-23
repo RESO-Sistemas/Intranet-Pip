@@ -61,4 +61,41 @@ if ($op == "registrarIncidencia") {
   }
   exit;
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// Rutas Plan de Acción
+// ═══════════════════════════════════════════════════════════════════
+
+if ($op == "getInfoIncidenciaPlan") {
+  $id = $_POST["id"];
+  echo trim($obj->getInfoIncidenciaPlan($id));
+}
+
+if ($op == "getActividadesPlanAccion") {
+  $id = $_POST["id"];
+  echo trim($obj->getActividadesPlanAccion($id));
+}
+
+if ($op == "addActividadPlanAccion") {
+  $id = $_POST["id"];
+  $titulo = $_POST["titulo"];
+  $descripcion = $_POST["descripcion"];
+  $fechaIni = $_POST["fechaIni"];
+  $fechaFin = $_POST["fechaFin"];
+  session_start();
+  $usuario = $_SESSION['NoEmpleado'] ?? '';
+  echo trim($obj->addActividadPlanAccion($id, $titulo, $descripcion, $fechaIni, $fechaFin, $usuario));
+}
+
+if ($op == "addAvancePlanAccion") {
+  $idActividad = $_POST["idActividad"];
+  $nuevoAvance = $_POST["nuevoAvance"];
+  $descripcion = $_POST["descripcion"];
+  echo trim($obj->addAvancePlanAccion($idActividad, $nuevoAvance, $descripcion));
+}
+
+if ($op == "getAvancesActividad") {
+  $idActividad = $_POST["idActividad"];
+  echo trim($obj->getAvancesActividad($idActividad));
+}
 ?>
