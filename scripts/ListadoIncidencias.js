@@ -57,13 +57,15 @@ async function cargarListado() {
 
 // Render tabla
 function renderTabla(data) {
-  // Destruir tabla previa si existe
-  if ($.fn.DataTable.isDataTable('#tblIncidencias')) {
-    $('#tblIncidencias').DataTable().destroy();
+  const tableData = Array.isArray(data) ? data : [];
+
+  // Si la tabla ya existe, solo actualizar datos manteniendo página y orden actual
+  if ($.fn.DataTable.isDataTable('#tblIncidencias') && tablaIncidencias) {
+    tablaIncidencias.clear().rows.add(tableData).draw(false);
+    return;
   }
 
   tablaIncidencias = $('#tblIncidencias').DataTable({
-    destroy: true,
     language: {
       lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
       zeroRecords: "NO HAY INCIDENCIAS REGISTRADAS",
@@ -76,7 +78,7 @@ function renderTabla(data) {
     bSort: true,
     bInfo: true,
     order: [[3, 'desc']],
-    data: Array.isArray(data) ? data : [],
+    data: tableData,
     columns: [
       {
         data: "NombreEmpleado",
@@ -132,12 +134,10 @@ function renderTabla(data) {
               onclick="verDetalle('${id}')">
               <span class="material-symbols-outlined">visibility</span>
             </button>
-            <!--
-            <button class="btn btn-info btn-accion" title="Seguimiento (en desarrollo)"
-              onclick="abrirSeguimiento('${id}')">
+            <button class="btn btn-info btn-accion" title="Seguimiento"
+              onclick="abrirSeguimiento('${id}', '${row.Estado}')">
               <span class="material-symbols-outlined">forum</span>
             </button>
-            -->
             <!--
             <button class="btn btn-warning btn-accion" title="Plan de acción"
               onclick="irPlanAccion('${id}')">
@@ -191,11 +191,12 @@ async function verDetalle(idBase64) {
     $('#slctEstadoIncidenciaModal').remove();
   }
 
-  const modal = new bootstrap.Modal(document.getElementById('modalVerDetalle'), {
-    backdrop: 'static',
-    keyboard: false
-  });
-  modal.show();
+  const modalEl = document.getElementById('modalVerDetalle');
+  let modalInstance = bootstrap.Modal.getInstance(modalEl);
+  if (!modalInstance) {
+    modalInstance = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+  }
+  modalInstance.show();
 
   try {
     const data = await $.ajax({
@@ -373,10 +374,125 @@ async function guardarCambiosIncidencia() {
   }
 }
 
-// ── Seguimiento — placeholder ─
-function abrirSeguimiento(idBase64) {
-  const modal = new bootstrap.Modal(document.getElementById('modalSeguimiento'));
-  modal.show();
+// ── Seguimiento (Línea de Vida) ─
+function abrirSeguimiento(idBase64, estado) {
+  $('#segIdIncidencia').val(idBase64);
+  $('#txtNuevoTitulo').val('');
+  $('#txtNuevoMensaje').val('');
+  $('#timelineSeguimiento').html('<div class="text-muted small text-center"><i class="fas fa-spinner fa-spin me-2"></i>Cargando mensajes...</div>');
+  
+  if (estado === 'Resuelta') {
+    $('#nuevoMensajeSeccion').hide();
+    $('#mensajeResueltoAviso').show();
+  } else {
+    $('#nuevoMensajeSeccion').show();
+    $('#mensajeResueltoAviso').hide();
+  }
+
+  const modalEl = document.getElementById('modalSeguimiento');
+  let modalInstance = bootstrap.Modal.getInstance(modalEl);
+  if (!modalInstance) {
+    modalInstance = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+  }
+  modalInstance.show();
+
+  cargarTimelineSeguimiento(idBase64);
+}
+
+async function cargarTimelineSeguimiento(idBase64) {
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: API_INC,
+      data: { op: "getSeguimientoIncidencia", idIncidencia: idBase64 },
+      dataType: "json"
+    });
+
+    if (response && response.Resultado && Array.isArray(response.Data)) {
+      renderTimelineSeguimiento(response.Data);
+    } else {
+      $('#timelineSeguimiento').html('<div class="text-muted small text-center">No hay mensajes registrados.</div>');
+    }
+  } catch (error) {
+    console.error('Error al cargar seguimiento:', error);
+    $('#timelineSeguimiento').html('<div class="text-danger small text-center">Error al cargar el historial.</div>');
+  }
+}
+
+function renderTimelineSeguimiento(items) {
+  if (!items || items.length === 0) {
+    $('#timelineSeguimiento').html('<div class="text-muted small text-center">No hay mensajes registrados.</div>');
+    return;
+  }
+
+  let html = '<div class="timeline">';
+
+  items.forEach((h, index) => {
+    const isLast = (index === items.length - 1);
+    const tituloMsg = escHtml(h.Titulo || 'Mensaje de Seguimiento');
+    const obs = escHtml(h.Mensaje);
+    const fecha = formatFecha(h.FechaRegistro);
+
+    html += `
+        <div class="timeline-item d-flex ${!isLast ? 'mb-4' : 'mb-0'}">
+            <div class="timeline-marker me-3" style="min-width: 12px; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #0d6efd;"></div>
+                <div style="flex: 1; width: 2px; background-color: #e9ecef; margin-top: 4px;"></div>
+            </div>
+            <div class="timeline-content w-100 pb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="mb-1 text-dark fw-bold">${tituloMsg}</h5>
+                    <small class="text-muted">${fecha}</small>
+                </div>
+                <p class="mb-0 text-muted" style="white-space: pre-wrap;">${obs}</p>
+            </div>
+        </div>
+    `;
+  });
+
+  html += '</div>';
+  $('#timelineSeguimiento').html(html);
+}
+
+async function enviarMensajeSeguimiento() {
+  const idBase64 = $('#segIdIncidencia').val();
+  const titulo = $('#txtNuevoTitulo').val().trim();
+  const mensaje = $('#txtNuevoMensaje').val().trim();
+
+  if (!titulo) {
+    toastr.warning('Por favor, escribe un título.');
+    return;
+  }
+  if (!mensaje) {
+    toastr.warning('Por favor, escribe un mensaje.');
+    return;
+  }
+
+  const btn = $('#btnEnviarMensaje');
+  btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Enviando...');
+
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: API_INC,
+      data: { op: "addSeguimientoIncidencia", idIncidencia: idBase64, titulo: titulo, mensaje: mensaje },
+      dataType: "json"
+    });
+
+    if (response && response.Resultado) {
+      toastr.success('Mensaje enviado.');
+      $('#txtNuevoTitulo').val('');
+      $('#txtNuevoMensaje').val('');
+      cargarTimelineSeguimiento(idBase64);
+    } else {
+      toastr.error('Error al enviar el mensaje.');
+    }
+  } catch (error) {
+    console.error('Error al enviar seguimiento:', error);
+    toastr.error('Error al comunicarse con el servidor.');
+  } finally {
+    btn.prop('disabled', false).html('<i class="fas fa-paper-plane me-1"></i> Enviar');
+  }
 }
 
 // ── Plan de Acción —

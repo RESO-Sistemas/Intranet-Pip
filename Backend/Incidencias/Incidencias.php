@@ -192,4 +192,35 @@ class Incidencias extends Conexiones {
       return json_encode(["Resultado" => false, "Msg" => "Error al obtener avances"]);
     }
   }
+
+  /**
+   * Agregar mensaje de seguimiento
+   */
+  function addSeguimientoIncidencia($idIncidencia, $titulo, $mensaje) {
+    try {
+      $idIncidencia = base64_decode($idIncidencia);
+      $q = "CALL spAddSeguimientoIncidencia(?, ?, ?)";
+      $resultado = $this->ProcedureWithParam($q, array($idIncidencia, $titulo, $mensaje));
+      return json_encode(["Resultado" => true, "Siguiente" => true, "ConMsg" => true,
+                          "Msg" => "Mensaje agregado exitosamente"]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al agregar mensaje"]);
+    }
+  }
+
+  /**
+   * Obtener mensajes de seguimiento
+   */
+  function getSeguimientoIncidencia($idIncidencia) {
+    try {
+      $idIncidencia = base64_decode($idIncidencia);
+      $q = "CALL spGetSeguimientoIncidencia(?)";
+      $resultado = $this->ProcedureWithParam($q, array($idIncidencia));
+      return json_encode(["Resultado" => true, "Data" => $resultado]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error al cargar mensajes"]);
+    }
+  }
 }
