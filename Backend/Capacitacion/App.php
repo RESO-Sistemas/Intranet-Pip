@@ -40,7 +40,7 @@ if($op == "addCapacitacionInputText"){
 if ($op == "addCapacitacion") {
     // Log para debug
     file_put_contents(__DIR__ . '/debug_capacitacion.log', 
-        date('Y-m-d H:i:s') . " - POST recibido:\n" . print_r($_POST, true) . "\n\n", 
+        date('Y-m-d H:i:s') . " - POST recibido:\n" . print_r($_POST, true) . "\n\nFILES:\n" . print_r($_FILES, true) . "\n\n", 
         FILE_APPEND);
     
     $nDescripcion = $_POST["Desc"];
@@ -77,7 +77,7 @@ if ($op == "addCapacitacion") {
     }
     
     $ContadorArchivos = 0;
-    $fechaActual = date('d-m-Y H:i:s');
+    $fechaActual = date('Ymd_His');
     $carpeta = "../../Archivos/Capacitaciones/$respuesta/";
     
     if (sizeof($_FILES) > 0) {
@@ -122,7 +122,7 @@ if ($op == "UpdateCapacitacion") {
   $CantidadArchivosAct = $Capacitacion->GetCantidadArchivosActuales($idCapacitacion);
   $idCapacitacion = base64_decode($idCapacitacion);
   $NoEmpleado = $_POST["NoEmpleado"];
-  $fechaActual = date('d-m-Y H:i:s');
+  $fechaActual = date('Ymd_His');
 
   $carpeta = "../../Archivos/Capacitaciones/$idCapacitacion/";
   if (sizeof($_FILES) > 0) {

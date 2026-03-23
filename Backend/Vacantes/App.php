@@ -1,8 +1,16 @@
 <?php
 include("Vacantes.php");
 
-$op = $_POST["op"];
+$op = isset($_POST["op"]) ? $_POST["op"] : (isset($_GET["op"]) ? $_GET["op"] : "");
 $Vacantes = new Vacantes();
+
+// ==========================================
+// API GET PARA REQUISITOS DE DOCUMENTACION
+// ==========================================
+if ($op == "getRequisitosDocumentacionVacantes") {
+    echo trim($Vacantes->getRequisitosDocumentacionVacantes());
+    exit;
+}
 
 // ==========================================
 // CRUD PRINCIPAL DE VACANTES

@@ -402,6 +402,7 @@ DELIMITER ;
 -- =====================================================
 -- SP: Obtener historial de un postulante en una vacante
 -- =====================================================
+DROP PROCEDURE IF EXISTS spGetPostulanteHistorial;
 DELIMITER //
 CREATE PROCEDURE spGetPostulanteHistorial(
     IN pIdPostulanteVacante INT
@@ -416,15 +417,17 @@ BEGIN
         ph.Resultado,
         ph.UsuarioRegistro,
         pv.NombreProceso,
-        pv.Orden AS OrdenProceso,
-        CONCAT(e.Nombre, ' ', e.ApellidoPaterno) AS NombreUsuario
+        pv.IdProceso AS OrdenProceso,
+        e.Nombre AS NombreUsuario
     FROM PostulantesHistorial ph
     INNER JOIN ProcesosVacantes pv ON pv.IdProceso = ph.IdProceso
     LEFT JOIN Empleados e ON e.NoEmpleado = ph.UsuarioRegistro
     WHERE ph.IdPostulanteVacante = pIdPostulanteVacante
-    ORDER BY pv.Orden ASC, ph.Fecha DESC;
+    ORDER BY ph.Fecha ASC;
 END //
 DELIMITER ;
+
+
 
 -- =====================================================
 -- SP: Agregar historial de proceso
@@ -451,6 +454,7 @@ DELIMITER ;
 -- =====================================================
 -- SP: Obtener todos los postulantes (catálogo)
 -- =====================================================
+DROP PROCEDURE IF EXISTS spGetAllPostulantes;
 DELIMITER //
 CREATE PROCEDURE spGetAllPostulantes()
 BEGIN
@@ -472,6 +476,7 @@ BEGIN
     ORDER BY p.FechaRegistro DESC;
 END //
 DELIMITER ;
+
 
 -- =====================================================
 -- SP: Buscar postulante por correo o CURP
@@ -544,3 +549,35 @@ DELIMITER ;
 -- =====================================================
 -- FIN DE PROCEDIMIENTOS ALMACENADOS - POSTULANTES
 -- =====================================================
+DROP PROCEDURE IF EXISTS spGetAllPostulantesGeneral;
+DELIMITER //
+CREATE PROCEDURE spGetAllPostulantesGeneral()
+BEGIN
+    SELECT 
+        p.IdPostulante,
+        p.CURP,
+        CONCAT(p.Nombre, ' ', p.ApellidoPaterno, ' ', IFNULL(p.ApellidoMaterno, '')) AS NombreCompleto,
+        p.CorreoElectronico,
+        p.Telefono,
+        (SELECT MIN(pv.FechaPostulacion)
+         FROM PostulantesVacantes pv
+         WHERE pv.IdPostulante = p.IdPostulante) AS PrimeraPostulacion,
+        (SELECT v.NombreVacante
+         FROM PostulantesVacantes pv
+         INNER JOIN Vacantes v ON v.IdVacante = pv.IdVacante
+         WHERE pv.IdPostulante = p.IdPostulante
+         ORDER BY pv.FechaPostulacion DESC
+         LIMIT 1) AS UltimaVacante,
+        (SELECT pv.EstatusPostulacion
+         FROM PostulantesVacantes pv
+         WHERE pv.IdPostulante = p.IdPostulante
+         ORDER BY pv.FechaPostulacion DESC
+         LIMIT 1) AS UltimoEstatus,
+        (SELECT COUNT(*)
+         FROM PostulantesVacantes pv
+         WHERE pv.IdPostulante = p.IdPostulante) AS TotalPostulaciones
+    FROM Postulantes p
+    WHERE p.IdPostulante IN (SELECT DISTINCT IdPostulante FROM PostulantesVacantes)
+    ORDER BY p.FechaRegistro DESC;
+END //
+DELIMITER ;

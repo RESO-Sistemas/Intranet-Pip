@@ -53,33 +53,27 @@
       if ($tipo == "DIA") {
         if ($dias != "") {
             $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
-            error_log("Query SP: " . $q);
+            
             try {
               $result_sp = $this->Procedure($q);
-              error_log("Resultado SP: " . print_r($result_sp, true));
             } catch (Exception $e) {
-              error_log("ERROR en SP: " . $e->getMessage());
               return "Error al crear capacitacion: " . $e->getMessage();
             }
             $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
             $cons = $this->SelectNotClose($q2);
-            error_log("Consulta MAX: " . print_r($cons, true));
             $last_id = $cons[0]["id"];
-            error_log("ID Capacitacion creado: " . $last_id);
             
             // Insertar cada empleado en CapacitacionDetalle
             $insertados = 0;
             foreach ($empleadosArray as $emp) {
               $emp = trim($emp);
               if (!empty($emp)) {
+                $ConexionDetalle = new Conexiones();
                 $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
-                error_log("Query detalle: " . $q3);
-                $result = $this->ExecuteQuery($q3,array());
-                error_log("Resultado insert: " . print_r($result, true));
+                $result = $ConexionDetalle->ExecuteQuery($q3,array());
                 $insertados++;
               }
             }
-            error_log("Total empleados insertados: " . $insertados);
             
             return $last_id;
           }else {
@@ -87,33 +81,26 @@
           }
       }elseif ($tipo == "PROL") {
         $q = "CALL sp_NuevaCapacitacion2 ('$nDescripcion','$nFechaInicio','$nFechaFin','$nHoraInicio','$nHoraFin','$dias','$tipo')";
-        error_log("Query SP PROL: " . $q);
         try {
           $result_sp = $this->Procedure($q);
-          error_log("Resultado SP PROL: " . print_r($result_sp, true));
         } catch (Exception $e) {
-          error_log("ERROR en SP PROL: " . $e->getMessage());
           return "Error al crear capacitacion: " . $e->getMessage();
         }
         $q2 = "SELECT MAX(idCapacitacion) AS id FROM Capacitacion";
         $cons = $this->SelectNotClose($q2);
-        error_log("Consulta MAX PROL: " . print_r($cons, true));
         $last_id = $cons[0]["id"];
-        error_log("ID Capacitacion PROL creado: " . $last_id);
         
         // Insertar cada empleado en CapacitacionDetalle
         $insertados = 0;
         foreach ($empleadosArray as $emp) {
           $emp = trim($emp);
           if (!empty($emp)) {
+            $ConexionDetalle = new Conexiones();
             $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
-            error_log("Query detalle PROL: " . $q3);
-            $result = $this->ExecuteQuery($q3,array());
-            error_log("Resultado insert PROL: " . print_r($result, true));
+            $result = $ConexionDetalle->ExecuteQuery($q3,array());
             $insertados++;
           }
         }
-        error_log("Total empleados insertados PROL: " . $insertados);
         
         return $last_id;
         }

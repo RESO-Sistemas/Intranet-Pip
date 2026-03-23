@@ -60,6 +60,34 @@ class Vacantes extends Conexiones
     }
 
     /**
+     * API GET: Obtener todas las vacantes con requisitos de CV y Solicitud de Empleo
+     */
+    function getRequisitosDocumentacionVacantes()
+    {
+        $q = "SELECT v.*, 
+                     a.NombreArea,
+                     p.Puesto,
+                     s.Sucursal,
+                     CASE 
+                        WHEN v.BanderaCV = 1 AND v.BanderaSE = 1 THEN 'Ambas'
+                        WHEN v.BanderaCV = 1 AND v.BanderaSE = 0 THEN 'Curriculum Vitae (CV)'
+                        WHEN v.BanderaCV = 0 AND v.BanderaSE = 1 THEN 'Solicitud de Empleo'
+                        ELSE 'Ninguna'
+                     END AS RequisitoDocumentacion
+              FROM Vacantes v
+              LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica 
+              LEFT JOIN Puestos p ON v.IdPuesto = p.IdPuesto
+              LEFT JOIN SucursalDepto s ON v.IdSucursal = s.IdSucursal
+              WHERE v.Estatus = 2 AND v.Publicada = 1
+              ORDER BY v.NombreVacante ASC";
+        return json_encode([
+            "Resultado" => true,
+            "Siguiente" => true,
+            "Data" => $this->Select($q)
+        ]);
+    }
+
+    /**
      * Obtener una vacante por ID con toda su información
      */
     function getVacanteById($IdVacante)
