@@ -1,5 +1,6 @@
 <?php
 include("Postulantes.php");
+include("PostulantesArchivos.php");
 
 $op = isset($_POST["op"]) ? $_POST["op"] : (isset($_GET["op"]) ? $_GET["op"] : "");
 
@@ -166,8 +167,8 @@ if ($op == "publicApplyToVacante") {
 
     if (count($missingFields) > 0) {
         echo json_encode([
-            "success" => false, 
-            "message" => "Faltan campos obligatorios", 
+            "Resultado" => false, 
+            "Msg" => "Faltan campos obligatorios", 
             "missing" => $missingFields
         ]);
         exit;
@@ -187,47 +188,84 @@ if ($op == "publicApplyToVacante") {
     $Direccion = $_POST["Direccion"];
     $Estado = $_POST["Estado"];
     $Ciudad = $_POST["Ciudad"];
-    $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : 'Postulación desde portal público';
+    $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : 'Postulacion desde portal publico';
 
+    // Las rutas quedan vacias ya que los archivos se guardan como BLOB
     $RutaCV = '';
     $RutaSolicitudEmpleo = '';
 
-    // Manejo de archivos si se enviaron
-    $carpetaDestino = "../../Archivos/Postulantes/";
-    if (!file_exists($carpetaDestino)) {
-        mkdir($carpetaDestino, 0777, true);
-    }
-    
-    $timestamp = date("Ymd_His");
-    
-    if (isset($_FILES['CV']) && $_FILES['CV']['error'] == 0) {
-        $ext = strtolower(pathinfo($_FILES['CV']['name'], PATHINFO_EXTENSION));
-        $nombreArchivoCV = "CV_" . $CURP . "_" . $timestamp . "_" . rand(10, 99) . "." . $ext;
-        if (move_uploaded_file($_FILES['CV']['tmp_name'], $carpetaDestino . $nombreArchivoCV)) {
-            $RutaCV = "Archivos/Postulantes/" . $nombreArchivoCV;
-        }
-    }
-    
-    if (isset($_FILES['SolicitudEmpleo']) && $_FILES['SolicitudEmpleo']['error'] == 0) {
-        $ext = strtolower(pathinfo($_FILES['SolicitudEmpleo']['name'], PATHINFO_EXTENSION));
-        $nombreArchivoSE = "SE_" . $CURP . "_" . $timestamp . "_" . rand(10, 99) . "." . $ext;
-        if (move_uploaded_file($_FILES['SolicitudEmpleo']['tmp_name'], $carpetaDestino . $nombreArchivoSE)) {
-            $RutaSolicitudEmpleo = "Archivos/Postulantes/" . $nombreArchivoSE;
+    // Validar archivos antes de guardar el postulante
+    $PostulantesArchivos = new PostulantesArchivos();
+    $archivosParaGuardar = [];
+    $erroresArchivos = [];
+
+    // Validar CV si se envio
+    if (isset($_FILES['cv']) && $_FILES['cv']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $validacionCV = $PostulantesArchivos->validarArchivo($_FILES['cv']);
+        if (!$validacionCV['valido']) {
+            $erroresArchivos[] = "CV: " . $validacionCV['error'];
+        } else {
+            $archivosParaGuardar['CV'] = $_FILES['cv'];
         }
     }
 
-    // Insertar en Base de Datos
+    // Validar Solicitud de Empleo si se envio
+    if (isset($_FILES['solicitud_empleo']) && $_FILES['solicitud_empleo']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $validacionSE = $PostulantesArchivos->validarArchivo($_FILES['solicitud_empleo']);
+        if (!$validacionSE['valido']) {
+            $erroresArchivos[] = "Solicitud de Empleo: " . $validacionSE['error'];
+        } else {
+            $archivosParaGuardar['SolicitudEmpleo'] = $_FILES['solicitud_empleo'];
+        }
+    }
+
+    // Si hay errores en los archivos, retornar error
+    if (count($erroresArchivos) > 0) {
+        echo json_encode([
+            "Resultado" => false,
+            "Msg" => "Error en los archivos: " . implode(". ", $erroresArchivos)
+        ]);
+        exit;
+    }
+
+    // Insertar postulante y postulacion en Base de Datos
     $resultado = trim($Postulantes->addPostulanteConPostulacion($IdVacante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
                $CURP, $Telefono, $CorreoElectronico, $Direccion, $Estado, $Ciudad, 
                $RutaCV, $RutaSolicitudEmpleo, $Observaciones));
 
     $resObj = json_decode($resultado, true);
+    
     if (isset($resObj['Resultado']) && $resObj['Resultado'] === true && isset($resObj['Siguiente']) && $resObj['Siguiente'] === true) {
-        $successMsg = isset($resObj['Msg']) ? $resObj['Msg'] : "Postulación registrada exitosamente";
-        echo json_encode(["success" => true, "message" => $successMsg]);
+        // Obtener el IdPostulanteVacante para guardar los archivos
+        $IdPostulanteVacante = isset($resObj['IdPostulanteVacante']) ? $resObj['IdPostulanteVacante'] : null;
+        
+        if ($IdPostulanteVacante && count($archivosParaGuardar) > 0) {
+            $erroresGuardado = [];
+            
+            foreach ($archivosParaGuardar as $tipo => $archivo) {
+                $resultadoArchivo = $PostulantesArchivos->guardarArchivo($IdPostulanteVacante, $tipo, $archivo);
+                if (!$resultadoArchivo['Resultado']) {
+                    $erroresGuardado[] = $tipo . ": " . $resultadoArchivo['Msg'];
+                }
+            }
+            
+            if (count($erroresGuardado) > 0) {
+                // La postulacion se guardo pero hubo errores con los archivos
+                echo json_encode([
+                    "Resultado" => true,
+                    "Msg" => "Postulacion registrada, pero hubo errores al guardar algunos archivos: " . implode(". ", $erroresGuardado)
+                ]);
+            } else {
+                $successMsg = isset($resObj['Msg']) ? $resObj['Msg'] : "Postulacion registrada exitosamente";
+                echo json_encode(["Resultado" => true, "Msg" => $successMsg]);
+            }
+        } else {
+            $successMsg = isset($resObj['Msg']) ? $resObj['Msg'] : "Postulacion registrada exitosamente";
+            echo json_encode(["Resultado" => true, "Msg" => $successMsg]);
+        }
     } else {
         $errorMsg = isset($resObj['Msg']) ? $resObj['Msg'] : $resultado;
-        echo json_encode(["success" => false, "message" => "Error al registrar la postulación: " . $errorMsg]);
+        echo json_encode(["Resultado" => false, "Msg" => "Error al registrar la postulacion: " . $errorMsg]);
     }
     exit;
 }
@@ -323,4 +361,168 @@ if ($op == "getPostulanteHistorialCompleto") {
 if ($op == "getProcesosPostulacion") {
     $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
     echo trim($Postulantes->getProcesosPostulacion($IdPostulanteVacante));
+}
+
+// ==========================================
+// GESTIÓN DE ARCHIVOS (BLOB)
+// ==========================================
+
+$PostulantesArchivos = new PostulantesArchivos();
+
+// Obtener metadatos de archivos de una postulación (sin contenido binario)
+if ($op == "getArchivosMetadata") {
+    $IdPostulanteVacante = isset($_POST["IdPostulanteVacante"]) ? $_POST["IdPostulanteVacante"] : $_GET["IdPostulanteVacante"];
+    $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
+    echo json_encode($PostulantesArchivos->obtenerMetadatosArchivos($IdPostulanteVacante));
+}
+
+// Descargar archivo (CV o SolicitudEmpleo)
+if ($op == "downloadArchivo") {
+    // Soportar tanto token encriptado como parametros directos (para retrocompatibilidad)
+    $token = isset($_GET["token"]) ? $_GET["token"] : (isset($_POST["token"]) ? $_POST["token"] : '');
+    
+    if (!empty($token)) {
+        // Modo con token encriptado
+        $datosDesencriptados = $PostulantesArchivos->desencriptarToken($token);
+        
+        if ($datosDesencriptados === false) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Token invalido o expirado"]);
+            exit;
+        }
+        
+        // Parsear datos: formato "idPostulanteVacante|tipoArchivo"
+        $partes = explode('|', $datosDesencriptados);
+        if (count($partes) !== 2) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Formato de token invalido"]);
+            exit;
+        }
+        
+        $IdPostulanteVacante = $partes[0];
+        $TipoArchivo = $partes[1];
+    } else {
+        // Modo tradicional con parametros directos
+        $IdPostulanteVacante = isset($_POST["IdPostulanteVacante"]) ? $_POST["IdPostulanteVacante"] : (isset($_GET["IdPostulanteVacante"]) ? $_GET["IdPostulanteVacante"] : '');
+        $TipoArchivo = isset($_POST["TipoArchivo"]) ? $_POST["TipoArchivo"] : (isset($_GET["TipoArchivo"]) ? $_GET["TipoArchivo"] : '');
+        
+        if (empty($IdPostulanteVacante) || empty($TipoArchivo)) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Faltan parametros requeridos"]);
+            exit;
+        }
+        
+        // Decodificar si esta en base64
+        if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $IdPostulanteVacante) && strlen($IdPostulanteVacante) > 4) {
+            $decoded = base64_decode($IdPostulanteVacante, true);
+            if ($decoded !== false && is_numeric($decoded)) {
+                $IdPostulanteVacante = $decoded;
+            }
+        }
+    }
+    
+    $resultado = $PostulantesArchivos->obtenerArchivo($IdPostulanteVacante, $TipoArchivo);
+    
+    if ($resultado['Resultado'] && isset($resultado['Data'])) {
+        $archivo = $resultado['Data'];
+        
+        // Configurar headers para descarga
+        header('Content-Type: ' . $archivo['ContentType']);
+        header('Content-Disposition: attachment; filename="' . $archivo['NombreArchivo'] . '"');
+        header('Content-Length: ' . $archivo['TamanoBytes']);
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        
+        // Enviar contenido binario
+        echo $archivo['Contenido'];
+        exit;
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    }
+}
+
+// Ver archivo en el navegador (inline, para PDFs e imagenes)
+if ($op == "viewArchivo") {
+    // Soportar tanto token encriptado como parametros directos (para retrocompatibilidad)
+    $token = isset($_GET["token"]) ? $_GET["token"] : (isset($_POST["token"]) ? $_POST["token"] : '');
+    
+    if (!empty($token)) {
+        // Modo con token encriptado
+        $datosDesencriptados = $PostulantesArchivos->desencriptarToken($token);
+        
+        if ($datosDesencriptados === false) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Token invalido o expirado"]);
+            exit;
+        }
+        
+        // Parsear datos: formato "idPostulanteVacante|tipoArchivo"
+        $partes = explode('|', $datosDesencriptados);
+        if (count($partes) !== 2) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Formato de token invalido"]);
+            exit;
+        }
+        
+        $IdPostulanteVacante = $partes[0];
+        $TipoArchivo = $partes[1];
+    } else {
+        // Modo tradicional con parametros directos
+        $IdPostulanteVacante = isset($_POST["IdPostulanteVacante"]) ? $_POST["IdPostulanteVacante"] : (isset($_GET["IdPostulanteVacante"]) ? $_GET["IdPostulanteVacante"] : '');
+        $TipoArchivo = isset($_POST["TipoArchivo"]) ? $_POST["TipoArchivo"] : (isset($_GET["TipoArchivo"]) ? $_GET["TipoArchivo"] : '');
+        
+        if (empty($IdPostulanteVacante) || empty($TipoArchivo)) {
+            header('Content-Type: application/json');
+            echo json_encode(["Resultado" => false, "Msg" => "Faltan parametros requeridos"]);
+            exit;
+        }
+        
+        // Decodificar si esta en base64
+        if (preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $IdPostulanteVacante) && strlen($IdPostulanteVacante) > 4) {
+            $decoded = base64_decode($IdPostulanteVacante, true);
+            if ($decoded !== false && is_numeric($decoded)) {
+                $IdPostulanteVacante = $decoded;
+            }
+        }
+    }
+    
+    $resultado = $PostulantesArchivos->obtenerArchivo($IdPostulanteVacante, $TipoArchivo);
+    
+    if ($resultado['Resultado'] && isset($resultado['Data'])) {
+        $archivo = $resultado['Data'];
+        
+        // Configurar headers para ver en navegador (inline)
+        header('Content-Type: ' . $archivo['ContentType']);
+        header('Content-Disposition: inline; filename="' . $archivo['NombreArchivo'] . '"');
+        header('Content-Length: ' . $archivo['TamanoBytes']);
+        header('Cache-Control: no-cache, must-revalidate');
+        
+        // Enviar contenido binario
+        echo $archivo['Contenido'];
+        exit;
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    }
+}
+
+// Eliminar un archivo especifico
+if ($op == "deleteArchivo") {
+    $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
+    $TipoArchivo = $_POST["TipoArchivo"];
+    
+    $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
+    
+    echo json_encode($PostulantesArchivos->eliminarArchivo($IdPostulanteVacante, $TipoArchivo));
+}
+
+// Eliminar todos los archivos de una postulacion
+if ($op == "deleteAllArchivos") {
+    $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
+    $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
+    
+    echo json_encode($PostulantesArchivos->eliminarTodosArchivos($IdPostulanteVacante));
 }
