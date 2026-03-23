@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 
 <html>
@@ -87,120 +87,64 @@
           <div class="container">
 
             <div class="row">
-
-              <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
-
+              <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
                 <div class="row">
-
-                  <div class="col s12 l12" style="position: relative;">
-
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajes" style="margin-right:2vh"></div>
-
                   </div>
-
-                  <div class="col s12 l12" style="position: relative;">
-
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
-
                   </div>
-
-                  <div class="col s12 l12" style="position: relative;">
-
+                  <div class="col-12" style="position: relative;">
                     <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
-
                   </div>
-
                 </div>
-
               </div>
-
             </div>
 
             <div class="row">
-
-              <div class="col">
-
+              <div class="col-12">
                 <div class="page-description page-description-tabbed">
-
                   <h1>Evaluaciones pendientes</h1>
-
                 </div>
-
               </div>
-
             </div>
 
             <div class="row">
-
-              <div class="col">
-
+              <div class="col-12">
                 <div class="card">
-
                   <div class="card-body">
-
                     <label class="form-label">En este apartado se muestra un listado de todas las evaluaciones disponibles por completar.</label>
-
                     <div id="table_listEvaluations"></div>
-
-
-
                   </div>
-
                 </div>
-
               </div>
-
-            </div>
-
-            <div class="row justify-content-center mb-4">
-
-              <!-- MODAL -->
-
-              <div class="modal fade" id="modal_Evaluated" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true" style="display: none;">
-
-                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-
-
-
-                  <div class="modal-content">
-
-                    <div class="modal-header">
-
-                      <h5 class="modal-title" id="title_evaluation"></h5>
-
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                    </div>
-
-                    <div class="modal-body">
-
-                      <label class="form-label">Lista de evaluados</label>
-
-                      <div id="table_evaluated"></div>
-
-                    </div>
-
-                    <div class="modal-footer">
-
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-              <!-- MODAL -->
-
             </div>
 
           </div>
-
         </div>
-
       </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="modal_Evaluated" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title_evaluation"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <label class="form-label">Lista de evaluados</label>
+            <div id="table_evaluated"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MODAL END -->
 
     </div>
 

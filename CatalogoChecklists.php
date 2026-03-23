@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -228,7 +228,7 @@
           <div class="row g-3 mt-3 align-items-end">
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold">Turnos aplicables:</label>
-              <select id="modalSlctTurnos" class="form-select" multiple></select>
+              <select id="modalSlctTurnos" class="form-select"></select>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold">KPI relacionado:</label>

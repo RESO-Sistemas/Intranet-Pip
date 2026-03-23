@@ -173,7 +173,7 @@
   <!-- ══════════════════════════════════════════════════════════════════════
        Modal — Ver Detalle de Incidencia
        ══════════════════════════════════════════════════════════════════════ -->
-  <div class="modal fade" id="modalVerDetalle" tabindex="-1" aria-labelledby="modalVerDetalleLabel" aria-hidden="true">
+  <div class="modal fade" id="modalVerDetalle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalVerDetalleLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header" style="background-color:#fff;">
@@ -209,22 +209,41 @@
   <!-- ══════════════════════════════════════════════════════════════════════
        Modal — Seguimiento (placeholder)
        ══════════════════════════════════════════════════════════════════════ -->
-  <div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <div class="modal fade" id="modalSeguimiento" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header" style="background-color:#fff;">
           <h5 class="modal-title fw-bold" id="modalSeguimientoLabel" style="color:#1f1f1f;">
-            <i class="fas fa-comments me-2" style="color:#0d6efd;"></i>Seguimiento
+            <i class="fas fa-comments me-2" style="color:#0d6efd;"></i>Seguimiento de Incidencia
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body text-center py-5">
-          <i class="material-icons-two-tone" style="font-size:64px; color:#ccc;">construction</i>
-          <h5 class="mt-3 text-muted">Funcionalidad en desarrollo</h5>
-          <p class="text-muted">Esta sección estará disponible próximamente.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <div class="modal-body bg-light">
+          <!-- Campo oculto -->
+          <input type="hidden" id="segIdIncidencia" value="">
+          
+          <div id="mensajeResueltoAviso" class="alert alert-warning text-center rounded shadow-sm border mb-4 mt-2" style="display:none; color: #664d03; background-color: #fff3cd; border-color: #ffecb5;">
+            <i class="fas fa-lock me-1"></i> Esta incidencia ya fue resuelta. El seguimiento ha sido cerrado.
+          </div>
+
+          <div id="nuevoMensajeSeccion" class="bg-white p-3 rounded shadow-sm mb-4 border">
+            <h6 class="fw-bold mb-2">Nuevo Mensaje</h6>
+            <input type="text" id="txtNuevoTitulo" class="form-control mb-2 fw-bold text-dark" placeholder="Título del mensaje (ej. Avance de revisión)">
+            <textarea id="txtNuevoMensaje" class="form-control mb-2" rows="3" placeholder="Escribe el detalle del mensaje aquí..." style="resize: none;"></textarea>
+            <div class="text-end">
+              <button type="button" class="btn btn-primary" id="btnEnviarMensaje" onclick="enviarMensajeSeguimiento()">
+                <i class="fas fa-paper-plane me-1"></i> Enviar
+              </button>
+            </div>
+          </div>
+          
+          <div class="pt-2">
+            <h6 class="fw-bold mb-4 border-bottom pb-2">Historial de Comunicación</h6>
+            <div id="timelineSeguimiento">
+              <!-- La línea del tiempo se insertará dinámicamente -->
+              <div class="text-muted small text-center"><i class="fas fa-spinner fa-spin me-2"></i>Cargando...</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
