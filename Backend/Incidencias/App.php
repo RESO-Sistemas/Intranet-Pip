@@ -98,4 +98,16 @@ if ($op == "getAvancesActividad") {
   $idActividad = $_POST["idActividad"];
   echo trim($obj->getAvancesActividad($idActividad));
 }
+
+if ($op == "addSeguimientoIncidencia") {
+  $idIncidencia = $_POST["idIncidencia"];
+  $titulo = $_POST["titulo"];
+  $mensaje = $_POST["mensaje"];
+  echo trim($obj->addSeguimientoIncidencia($idIncidencia, $titulo, $mensaje));
+}
+
+if ($op == "getSeguimientoIncidencia") {
+  $idIncidencia = $_POST["idIncidencia"];
+  echo trim($obj->getSeguimientoIncidencia($idIncidencia));
+}
 ?>
