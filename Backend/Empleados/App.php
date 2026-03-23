@@ -292,6 +292,11 @@ if ($op == "deshabilitarEmpleado") {
   echo trim($Empleados->deshabilitarEmpleado($NoEmpleado));
 }
 
+if ($op == "habilitarEmpleado") {
+  $NoEmpleado = $_POST["NoEmpleado"];
+  echo trim($Empleados->habilitarEmpleado($NoEmpleado));
+}
+
 if ($op == "insertaDiasVacaciones") {
   $Datos = $_POST["Datos"];
   echo trim($Empleados->insertaDiasVacaciones($Datos));

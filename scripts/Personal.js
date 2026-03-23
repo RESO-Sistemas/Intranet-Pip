@@ -493,12 +493,81 @@ info_i
 
 window.disabledSF = function (e) {
   let div = document.createElement("div");
-  let btn = `<button class="btn btn-danger" onclick="deshabilitarEmpleado(${e.NoEmpleado})"><span class="material-symbols-outlined">
-block
-</span></button>`;
-  $(div).append(btn);
+  let isChecked = e.Status == 1 ? "checked" : "";
+  let switchHtml = `
+  <div class="form-check form-switch d-flex justify-content-center">
+    <input class="form-check-input" type="checkbox" role="switch" 
+           id="switch_status_${e.NoEmpleado}" 
+           ${isChecked} 
+           style="cursor: pointer; transform: scale(1.3);"
+           onchange="toggleStatusEmpleado(${e.NoEmpleado}, this.checked, this)">
+  </div>`;
+  $(div).append(switchHtml);
   return div.outerHTML;
 };
+
+function toggleStatusEmpleado(NoEmpleado, isChecked, element) {
+  let actionText = isChecked ? "habilitar" : "deshabilitar";
+  let opCall = isChecked ? "habilitarEmpleado" : "deshabilitarEmpleado";
+  
+  Swal.fire({
+    title: `¿Desea ${actionText} a este empleado?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#ffc407",
+    cancelButtonColor: "#d33",
+    cancelButtonText: "Cancelar",
+    confirmButtonText: `Sí, ${actionText}`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.blockUI({ message: "procesando..." });
+      $.ajax({
+        type: "post",
+        url: "Backend/Empleados/App.php",
+        data: {
+          op: opCall,
+          NoEmpleado: NoEmpleado,
+        },
+        success: function (response) {
+          $.unblockUI();
+          if (response.trim() === "1") {
+            const messageContent = `
+            <div class="alert-content">
+              <span class="alert-title">¡Éxito!</span>
+              <span class="alert-text">Empleado ${actionText}do correctamente.</span>
+            </div>`;
+            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            
+            // Refrescar el estado actual en el grid
+            getListadoPersonal();
+          } else {
+            // Revertir el estado visual si falla
+            element.checked = !isChecked;
+            const messageContent = `
+            <div class="alert-content">
+              <span class="alert-title">Error!</span>
+              <span class="alert-text">No se pudo procesar la solicitud.</span>
+            </div>`;
+            showBootstrapAlertDan(messageContent, "top-right", 5000);
+          }
+        },
+        error: function() {
+          $.unblockUI();
+          element.checked = !isChecked;
+          const messageContent = `
+          <div class="alert-content">
+            <span class="alert-title">Error!</span>
+            <span class="alert-text">Hubo un error de conexión.</span>
+          </div>`;
+          showBootstrapAlertDan(messageContent, "top-right", 5000);
+        }
+      });
+    } else {
+      // Revertir el toggle si se cancela la operación
+      element.checked = !isChecked;
+    }
+  });
+}
 
 window.documentacionSF = function (e) {
   let div = document.createElement("div");
@@ -734,20 +803,21 @@ async function updateDatosPrincipalEmpleado() {
   let NoEmp = $("#empleadoSeleccionado").val();
   let Nivel = $("#inpNivelDet").val();
 
-  if (
-    Nombre == "" ||
-    RFC == "" ||
-    CURP == "" ||
-    NoSeguro == "" ||
-    Email == "" ||
-    Movil == "" ||
-    Password == "" ||
-    Nivel == ""
-  ) {
+  let faltantes = [];
+  if (Nombre == "") faltantes.push("Nombre");
+  if (Email == "") faltantes.push("E-mail");
+  if (Password == "") faltantes.push("Password");
+  if (Movil == "") faltantes.push("Celular");
+  if (RFC == "") faltantes.push("RFC");
+  if (CURP == "") faltantes.push("CURP");
+  if (NoSeguro == "") faltantes.push("No. Seguro");
+  if (Nivel == "") faltantes.push("Nivel");
+
+  if (faltantes.length > 0) {
     const messageContent = `
   <div class="alert-content">
-    <span class="alert-title">Alerta!</span>
-    <span class="alert-text">Datos Incompletos.<br/> Por favor ingrese todos los datos. </span>
+    <span class="alert-title">Datos Incompletos!</span>
+    <span class="alert-text">Faltan los siguientes campos obligatorios:<br/><b>${faltantes.join(", ")}</b></span>
   </div>`;
     showBootstrapAlertWar(messageContent, "top-right", 5000);
   } else {

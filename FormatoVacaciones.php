@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -26,7 +26,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col text-center">
-          <img src="assets/Klyns.png" class="img-fluid" style="max-width: 50px;" alt="Logo">
+          <img src="assets/images/logo-pip.png" class="img-fluid" style="max-width: 150px;" alt="Logo">
         </div>
       </div>
       <div class="row mt-4">

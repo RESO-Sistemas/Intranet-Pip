@@ -241,35 +241,35 @@
                 <div class="container-fluid">
                   <div class="row g-3 justify-content-center">
                     <div class="col-12 col-md-6 text-center">
-                      <h6>Nombre</h6>
+                      <h6>Nombre <span class="text-danger">*</span></h6>
                       <input type="text" id="inpNombreDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
-                      <h6>E-mail</h6>
+                      <h6>E-mail <span class="text-danger">*</span></h6>
                       <input type="email" id="inpEmailDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
-                      <h6>Password</h6>
+                      <h6>Password <span class="text-danger">*</span></h6>
                       <input type="password" id="inpPasswordDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
-                      <h6>Celular</h6>
+                      <h6>Celular <span class="text-danger">*</span></h6>
                       <input type="text" id="inpMovilDet" class="form-control form-control-solid-bordered text-center" onkeypress="return onlynumber(event)" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
-                      <h6>RFC</h6>
+                      <h6>RFC <span class="text-danger">*</span></h6>
                       <input type="text" id="inpRFCDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
-                      <h6>CURP</h6>
+                      <h6>CURP <span class="text-danger">*</span></h6>
                       <input type="text" id="inpCURPDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 text-center">
-                      <h6>No Seguro</h6>
+                      <h6>No Seguro <span class="text-danger">*</span></h6>
                       <input type="text" id="inpNoSeguroDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 text-center">
-                      <h6>Nivel</h6>
+                      <h6>Nivel <span class="text-danger">*</span></h6>
                       <input type="number" id="inpNivelDet" class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 text-center">

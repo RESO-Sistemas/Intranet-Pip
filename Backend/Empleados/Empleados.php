@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (file_exists("../Conexiones/Conexiones.php")) {
     require_once("../Conexiones/Conexiones.php");
 } else {
@@ -242,52 +242,52 @@ class Empleados extends Conexiones
     function getPersonal($IdPuesto, $IdSucursal, $IdDivision)
         {
             if ($IdPuesto == "" && $IdSucursal == "" && $IdDivision == "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal WHERE Status = 1";
+                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal";
             } elseif ($IdPuesto != "" && $IdSucursal == "" && $IdDivision == "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto' and Status = 1";
+                  WHERE P.IdPuesto = '$IdPuesto'";
             } elseif ($IdPuesto == "" && $IdSucursal != "" && $IdDivision == "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal' and Status = 1";
+                  WHERE SD.IdSucursal = '$IdSucursal'";
             } elseif ($IdPuesto == "" && $IdSucursal == "" && $IdDivision != "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE D.IdDivision = '$IdDivision' and Status = 1";
+                  WHERE D.IdDivision = '$IdDivision'";
             } elseif ($IdPuesto != "" && $IdSucursal != "" && $IdDivision == "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto' AND SD.IdSucursal = '$IdSucursal' and Status = 1";
+                  WHERE P.IdPuesto = '$IdPuesto' AND SD.IdSucursal = '$IdSucursal'";
             } elseif ($IdPuesto != "" && $IdSucursal == "" && $IdDivision != "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto' AND D.IdDivision = '$IdDivision' and Status = 1";
+                  WHERE P.IdPuesto = '$IdPuesto' AND D.IdDivision = '$IdDivision'";
             } elseif ($IdPuesto == "" && $IdSucursal != "" && $IdDivision != "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision' and Status = 1";
+                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision'";
             } elseif ($IdPuesto != "" && $IdSucursal != "" && $IdDivision != "") {
-                $q = "SELECT E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
                   INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
                   INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
                   INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision' AND P.IdPuesto = '$IdPuesto' and Status = 1";
+                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision' AND P.IdPuesto = '$IdPuesto'";
             }
             return json_encode($this->Select($q));
         }
@@ -984,26 +984,34 @@ class Empleados extends Conexiones
               INNER JOIN SolicitudesVacaciones AS SV ON EM.NoEmpleado = SV.UsuarioFinalAutoriza
               WHERE SV.idSolicitudesVacaciones = '$idSolicitudesVacaciones';";
         $cons3 = $Con3->Select($q3, array());
+        
+        $firmaJefe = isset($cons2[0]["Firma"]) ? $cons2[0]["Firma"] : "";
+        $noJefe = isset($cons2[0]["EmpleadoPadre"]) ? $cons2[0]["EmpleadoPadre"] : "";
+        $nombreJefe = isset($cons2[0]["NombreJefe"]) ? $cons2[0]["NombreJefe"] : "";
+        
+        $firmaFinal = isset($cons3[0]["Firma"]) ? $cons3[0]["Firma"] : "";
+        $noFinalAutoriza = isset($cons3[0]["UsuarioFinalAutoriza"]) ? $cons3[0]["UsuarioFinalAutoriza"] : "";
+
         $Datos = [
-            "NombreSolicitante" => $cons[0]["Nombre"],
-            "FirmaSolicitante" => $cons[0]["Firma"],
-            "PuestoSolicitante" => $cons[0]["Puesto"],
-            "NoEmpleado" => $cons[0]["NoEmpleado"],
-            "Departamento" => $cons[0]["IdCentroCosto"],
-            "FechaInicio" => $cons[0]["FechaInicio"],
-            "Antiguedad" => $cons[0]["Antiguedad"],
-            "FechaRegistroSoli" => $cons[0]["Registro"],
-            "FechaFin" => $cons[0]["FechaFin"],
-            "DiasVacacionesRest" => $cons[0]["DiasVacacionesRest"],
-            "TotalDias" => $cons[0]["TotalDias"],
-            "FirmaJefe" => $cons2[0]["Firma"],
-            "NoJefe" => $cons2[0]["EmpleadoPadre"],
-            "Status" => $cons[0]["Status"],
-            "FirmaFinal" => $cons3[0]["Firma"],
-            "NoFinalAutoriza" => $cons3[0]["UsuarioFinalAutoriza"],
-            "NombreJefe" => $cons2[0]["NombreJefe"],
-            "Sucursal" => $cons[0]["Sucursal"],
-            "FechaRegreso" => $cons[0]["DiaRegreso"]
+            "NombreSolicitante" => isset($cons[0]["Nombre"]) ? $cons[0]["Nombre"] : "",
+            "FirmaSolicitante" => isset($cons[0]["Firma"]) ? $cons[0]["Firma"] : "",
+            "PuestoSolicitante" => isset($cons[0]["Puesto"]) ? $cons[0]["Puesto"] : "",
+            "NoEmpleado" => isset($cons[0]["NoEmpleado"]) ? $cons[0]["NoEmpleado"] : "",
+            "Departamento" => isset($cons[0]["IdCentroCosto"]) ? $cons[0]["IdCentroCosto"] : "",
+            "FechaInicio" => isset($cons[0]["FechaInicio"]) ? $cons[0]["FechaInicio"] : "",
+            "Antiguedad" => isset($cons[0]["Antiguedad"]) ? $cons[0]["Antiguedad"] : "",
+            "FechaRegistroSoli" => isset($cons[0]["Registro"]) ? $cons[0]["Registro"] : "",
+            "FechaFin" => isset($cons[0]["FechaFin"]) ? $cons[0]["FechaFin"] : "",
+            "DiasVacacionesRest" => isset($cons[0]["DiasVacacionesRest"]) ? $cons[0]["DiasVacacionesRest"] : "",
+            "TotalDias" => isset($cons[0]["TotalDias"]) ? $cons[0]["TotalDias"] : "",
+            "FirmaJefe" => $firmaJefe,
+            "NoJefe" => $noJefe,
+            "Status" => isset($cons[0]["Status"]) ? $cons[0]["Status"] : "",
+            "FirmaFinal" => $firmaFinal,
+            "NoFinalAutoriza" => $noFinalAutoriza,
+            "NombreJefe" => $nombreJefe,
+            "Sucursal" => isset($cons[0]["Sucursal"]) ? $cons[0]["Sucursal"] : "",
+            "FechaRegreso" => isset($cons[0]["DiaRegreso"]) ? $cons[0]["DiaRegreso"] : ""
         ];
         array_push($array, $Datos);
         return json_encode($array);
@@ -1047,8 +1055,8 @@ class Empleados extends Conexiones
                 $FechaFin = $respuesta1[0]["FechaFin"];
                 $MotivoSolicitud = $respuesta1[0]["ComentariosSolicitud"];
                 $TotalDias = $respuesta1[0]["TotalDias"];
-                $FechaAutorizado = $respuesta1[0]["FechaAutorizadoFinal"];
-                $Retorno = $respuesta1[0]["Retorno"];
+                $FechaAutorizado = isset($respuesta1[0]["FechaAutorizadoFinal"]) ? $respuesta1[0]["FechaAutorizadoFinal"] : date("Y-m-d H:i:s");
+                $Retorno = isset($respuesta1[0]["Retorno"]) ? $respuesta1[0]["Retorno"] : "1";
                 if ($Status == "1") {
                     try {
                       require '../PHPMailer/src/Exception.php';
@@ -1142,12 +1150,8 @@ class Empleados extends Conexiones
                         $mensajeBody = utf8_decode($mensajeBody);
                         $mail->Body = $mensajeBody;
                         $exito = $mail->Send();
-                        $intentos = 1;
-                        while ((!$exito) && ($intentos < 5)) {
-                            $mail->ErrorInfo;
-                            sleep(5);
-                            $exito = $mail->Send();
-                            $intentos = $intentos + 1;
+                        if (!$exito) {
+                            error_log("Error enviando correo de vacaciones: " . $mail->ErrorInfo);
                         }
 
                     } catch (\Exception $e) {
@@ -1458,6 +1462,18 @@ class Empleados extends Conexiones
     {
         try {
             $q = "UPDATE Empleados SET Status = 0
+              WHERE NoEmpleado = '$NoEmpleado';";
+            $this->ExecuteQuery($q, array());
+            return "1";
+        } catch (\Exception $e) {
+            return "0";
+        }
+    }
+
+    function habilitarEmpleado($NoEmpleado)
+    {
+        try {
+            $q = "UPDATE Empleados SET Status = 1
               WHERE NoEmpleado = '$NoEmpleado';";
             $this->ExecuteQuery($q, array());
             return "1";
