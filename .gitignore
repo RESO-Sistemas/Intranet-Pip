@@ -1,0 +1,15 @@
+# SEPOMEX Database and Cache
+resources/CPs MEXICO.xml
+resources/cache_cp.json
+
+# macOS
+.DS_Store
+resources/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+error_log
