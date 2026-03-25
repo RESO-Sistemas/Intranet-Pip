@@ -280,7 +280,8 @@
 
     // ── Init ──────────────────────────────────────────────────────────────
     $(document).ready(function () {
-      const hoy = new Date().toISOString().split('T')[0];
+      const offset = new Date().getTimezoneOffset() * 60000;
+      const hoy = new Date(Date.now() - offset).toISOString().split('T')[0];
       $('#txtFechaIni').val(hoy);
       $('#txtFechaFin').val(hoy);
       cargarListado();
@@ -295,18 +296,37 @@
         return;
       }
 
+      console.log('Buscando checklists de:', fechaIni, 'a', fechaFin);
+      
+      const btn = $('button[onclick="cargarListado()"]');
+      const originalHtml = btn.html();
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Buscando...');
+
       $.ajax({
         url: API,
         type: 'POST',
         data: { op: 'getListadoChecklistDiarios', fechaIni, fechaFin },
         success: function (data) {
+          btn.prop('disabled', false).html(originalHtml);
+          console.log('Respuesta recibida:', data);
+          
           if (!data.Resultado) {
             toastr.error('Error al cargar el listado.');
             return;
           }
           renderTabla(data.Data);
+          
+          if (data.Data && data.Data.length > 0) {
+            toastr.success(data.Data.length + ' registros encontrados.');
+          } else {
+            toastr.info('No se encontraron registros en este periodo.');
+          }
         },
-        error: function () { toastr.error('Error de conexión.'); }
+        error: function (xhr) { 
+          btn.prop('disabled', false).html(originalHtml);
+          console.error('Error AJAX:', xhr);
+          toastr.error('Error de conexión.'); 
+        }
       });
     }
 
