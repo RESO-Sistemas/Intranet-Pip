@@ -69,6 +69,13 @@ switch ($op) {
     echo $obj->getDetalleChecklistEmpleado($noEmpleado, $fecha);
     break;
 
+  case "getKpisHistorical":
+    $noEmpleado = isset($_POST["noEmpleado"]) ? $_POST["noEmpleado"] : "";
+    $fecha      = isset($_POST["fecha"])      ? $_POST["fecha"]      : date("Y-m-d");
+    $idTurno    = isset($_POST["idTurno"])    ? $_POST["idTurno"]    : null;
+    echo $obj->getKpisHistorical($noEmpleado, $fecha, $idTurno);
+    break;
+
   default:
     echo json_encode(["Resultado" => false, "Msg" => "Operación no reconocida"]);
     break;

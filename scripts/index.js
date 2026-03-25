@@ -37,6 +37,12 @@ $(document).ready(function () {
         });
         if (response.Resultado) {
           toastr.success('Incidencia registrada correctamente.');
+          
+          // Completar guardado del checklist si hay uno pendiente
+          if (window.dashboardChecklist && typeof window.dashboardChecklist.finalize === 'function') {
+            window.dashboardChecklist.finalize();
+          }
+
           $('#modalIncidencia').modal('hide');
         } else {
           toastr.error(response.Msg || 'Error al registrar la incidencia.');
@@ -773,7 +779,8 @@ async function loadFeeds() {
                                   feed.Tipo === "CMP"
                                     ? "Image 1 Description"
                                     : "Image Anniversary"
-                                }">`;
+                                }"
+                                style="max-width: 100%; max-height: 450px; height: auto; border-radius: 8px; object-fit: contain;">`;
           }
           break;
         default:
@@ -960,6 +967,7 @@ async function loadFeeds() {
         const f = allFeeds[i];
         $(f).unitegallery({
           gallery_skin: "alexis",
+          gallery_width: "100%",
           slider_scale_mode: "fit",
           slider_transition: "fade",
           thumb_overlay_color: "#363636",

@@ -162,5 +162,15 @@ class Checklists extends Conexiones {
       return json_encode(["Resultado" => false, "Msg" => "Error interno del servidor"]);
     }
   }
+  function getKpisHistorical($noEmpleado, $fecha, $idTurno) {
+    try {
+      $q = "CALL spGetKpisHistorical(?, ?, ?)";
+      $resultado = $this->ProcedureWithParam($q, array($noEmpleado, $fecha, $idTurno));
+      return json_encode(["Resultado" => true, "Data" => $resultado]);
+    } catch (\Exception $e) {
+      error_log($e);
+      return json_encode(["Resultado" => false, "Msg" => "Error interno del servidor"]);
+    }
+  }
 }
 ?>

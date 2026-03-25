@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <?php
 require_once("Backend/Empleados/Empleados.php");
 $ins = new Empleados();
@@ -50,8 +50,8 @@ $MenuP = $Conf->getMenusPadre();
   <style>
     /* KPI Gauge cards */
     .kpi-gauge-card {
-      min-width: 190px;
-      max-width: 240px;
+      min-width: 225px;
+      max-width: 285px;
       flex: 0 0 auto;
       background: #fff;
       border-radius: 10px;
@@ -61,18 +61,18 @@ $MenuP = $Conf->getMenusPadre();
     }
     .kpi-gauge-card svg { display: block; margin: 0 auto; }
     .kpi-gauge-card .kpi-name {
-      font-size: .8rem;
-      font-weight: 600;
+      font-size: .92rem;
+      font-weight: 700;
       color: #333;
-      margin-top: 2px;
+      margin-top: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .kpi-gauge-card .kpi-fraction {
-      font-size: .72rem;
+      font-size: .78rem;
       color: #888;
-      margin-top: -2px;
+      margin-top: 1px;
     }
     /* Evento item */
     .evento-item {
@@ -156,6 +156,22 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .checklist-item .badge.bg-info { background-color: #138496 !important; }
     body.dark-mode .turno-header { color: #17a2b8; border-bottom-color: #17a2b8; }
     body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
+
+    /* Ajustes agresivos para eliminar espacio superior */
+    .app-content { padding-top: 0 !important; }
+    .content-wrapper { padding-top: 5px !important; }
+    .container { padding-top: 0 !important; }
+    #kpiCarouselWrapper { margin-top: -5px !important; }
+
+    /* Ajustes para evitar que las imágenes se salgan del feed */
+    .galleryImgCl, .ug-gallery-wrapper { 
+      max-width: 100% !important; 
+      width: 100% !important; 
+    }
+    .galleryImgCl img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
   </style>
 
   <!-- Custom styles para KPI Carousel y flechas ahora en neptune/css/custom.css -->
@@ -200,7 +216,7 @@ $MenuP = $Conf->getMenusPadre();
             </div>
             <div class="row mb-3">
               <div class="col-12">
-                <div class="page-description" style="padding-top: 20px; padding-bottom: 20px; margin-bottom: 0;">
+                <div class="page-description" style="padding-top: 0px !important; padding-bottom: 5px; margin-top: -15px !important; margin-bottom: 0;">
                   <!-- GRÁFICAS KPIs - Carrusel -->
                   <div id="kpiCarouselWrapper" style="position: relative;">
                     <div id="kpiCarouselContainer" style="display: flex; overflow: hidden; gap: 12px; transition: transform .4s ease;">
