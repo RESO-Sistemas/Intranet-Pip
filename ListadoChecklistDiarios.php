@@ -194,10 +194,11 @@
                       <table id="tblListadoChecklist" class="table table-hover align-middle" style="width:100%">
                         <thead>
                           <tr>
+                            <th>Fecha</th>
                             <th>Empleado</th>
                             <th>Puesto</th>
                             <th>Turno</th>
-                            <th>Hora de revisión</th>
+                            <th>Hora</th>
                             <th>Checklist</th>
                             <th>Estatus</th>
                             <th class="text-center">Detalle</th>
@@ -335,7 +336,7 @@
       const tbody = document.getElementById('tbodyListado');
 
       if (!rows || rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Sin registros para el período seleccionado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">Sin registros para el período seleccionado.</td></tr>';
         // Destruir DataTable si existía para mostrar la fila vacía
         if ($.fn.DataTable.isDataTable('#tblListadoChecklist')) {
           $('#tblListadoChecklist').DataTable().destroy();
@@ -354,10 +355,11 @@
         else                                        badgeEstatus = '<span class="badge-incidencia">' + r.Estatus + '</span>';
 
         html += '<tr>' +
+          '<td><span class="fw-bold">' + fecha + '</span></td>' +
           '<td>' + escHtml(r.NombreEmpleado) + '</td>' +
           '<td>' + escHtml(r.Puesto) + '</td>' +
           '<td>' + escHtml(r.Turno) + '</td>' +
-          '<td>' + escHtml(r.HoraRevision || '—') + '</td>' +
+          '<td>' + hora + '</td>' +
           '<td><span class="fw-semibold">' + r.Correctas + '</span><span class="text-muted">/' + r.TotalItems + '</span></td>' +
           '<td>' + badgeEstatus + '</td>' +
           '<td class="text-center">' +
@@ -382,8 +384,8 @@
           search: 'Buscar:', zeroRecords: 'No se encontraron resultados',
           paginate: { first: 'Primero', last: 'Último', next: 'Siguiente', previous: 'Anterior' }
         },
-        order: [[3, 'desc']],
-        columnDefs: [{ orderable: false, targets: 6 }]
+        order: [[0, 'desc'], [4, 'desc']], // Por fecha y luego por hora
+        columnDefs: [{ orderable: false, targets: 7 }]
       });
     }
 
