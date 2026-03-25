@@ -26,7 +26,7 @@ $MenuP = $Conf->getMenusPadre();
 
   <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
   <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
-  <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+  <link href="assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="plugins/evo-calendar/css/evo-calendar.css" />
   <!-- <link rel="stylesheet" type="text/css" href="plugins/evo-calendar/css/evo-calendar.orange-coral.css" /> -->
@@ -45,7 +45,7 @@ $MenuP = $Conf->getMenusPadre();
   <link rel="stylesheet" href="/plugins/unitegallery-master/source/unitegallery/skins/alexis/alexis.css">
   
   <!-- Moment.js necesario para FullCalendar -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="assets/libs/moment/min/moment.min.js"></script>
 
   <style>
     /* KPI Gauge cards */

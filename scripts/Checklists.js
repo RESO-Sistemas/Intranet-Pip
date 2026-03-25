@@ -22,11 +22,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Poblar selects del formulario
     let optsPuesto = '<option value="" disabled selected>Seleccione un puesto</option>';
     puestos.forEach(function (p) { optsPuesto += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
-    $('#slctPuestoChecklist').html(optsPuesto);
+    $('#slctPuestoChecklist').html(optsPuesto).select2({
+      placeholder: 'Seleccione un puesto',
+      width: '100%',
+      dropdownParent: $('#modalRegistrarChecklist')
+    });
 
     // Inicialmente deshabilitar turnos y kpis y ocultar mensajes de advertencia
-    $('#slctTurnosChecklist').prop('disabled', true);
-    $('#slctKpiChecklist').prop('disabled', true);
+    $('#slctTurnosChecklist').prop('disabled', true).select2({ placeholder: 'Seleccione un turno', width: '100%', dropdownParent: $('#modalRegistrarChecklist') });
+    $('#slctKpiChecklist').prop('disabled', true).select2({ placeholder: 'Seleccione un KPI', width: '100%', dropdownParent: $('#modalRegistrarChecklist') });
     $('#msgTurnosChecklist').addClass('d-none');
     $('#msgKpiChecklist').addClass('d-none');
 
@@ -292,115 +296,99 @@ async function getChecklistsOrdenadoReciente() {
 
 // ─── Editar: abrir modal ──────────────────────────────────────────────────────
 function editarChecklist(idEncoded) {
-  // Buscar el row en la tabla
-  const row = tablaChecklistsInstance.rows().data().toArray().find(function (r) {
-    return btoa(r.IdChecklist) === idEncoded;
-  });
+  const row = tablaChecklistsInstance.rows().data().toArray().find(r => btoa(r.IdChecklist) === idEncoded);
   if (!row) return;
 
   const modalEl = document.getElementById('modalEditarChecklist');
+  const modalJq = $(modalEl);
 
-  // Destruir Select2 anteriores si existen
-  ['#modalSlctPuesto', '#modalSlctTurnos', '#modalSlctKpi', '#modalSlctTipo', '#modalSlctRespuesta', '#modalSlctIncidencia'].forEach(function (sel) {
-    if ($(sel).hasClass('select2-hidden-accessible')) $(sel).select2('destroy');
-  });
-
+  // 1. Pre-llenar campos de texto e ID
   $('#modalIdChecklist').val(idEncoded);
   $('#modalNombreChecklist').val(row.Nombre);
 
-  const modalJq = $(modalEl);
-
-  // Asegurar que poblamos una vez que el modal es visible para evitar bugs visuales de Select2
-  $(modalEl).off('shown.bs.modal.chk').on('shown.bs.modal.chk', function () {
-    // Puesto
-    let optsPuesto = '<option value="" disabled>Seleccione un puesto</option>';
-    listaPuestosChk.forEach(function (p) { optsPuesto += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
-    $('#modalSlctPuesto').html(optsPuesto);
-    
-    // Asignar el valor ANTES de incializar Select2 evita tener que llamar trigger('change')
-    $('#modalSlctPuesto').val(row.IdPuesto);
-    
-    // Desvincular eventos para cambios manuales
-    $('#modalSlctPuesto').off('change.chk');
-    $('#modalSlctPuesto').select2({ placeholder: 'Seleccione un puesto', dropdownParent: modalJq, width: '100%' });
-
-    // Carga de Turnos y KPIs
-    async function poblarTurnosYKpisAsync(idPuesto, turnoActual, kpiActual) {
-      console.log("Iniciando carga asíncrona de Turnos/KPI. Puesto:", idPuesto, "Turno:", turnoActual, "KPI:", kpiActual);
-      $('#modalSlctTurnos').prop('disabled', true).empty();
-      $('#modalSlctKpi').prop('disabled', true).empty();
-
-      if (!idPuesto) {
-        $('#modalSlctTurnos').html('<option value="" disabled selected>Seleccione un turno</option>').prop('disabled', true);
-        $('#modalSlctKpi').html('<option value="" disabled selected>Seleccione un KPI</option>').prop('disabled', true);
-        return;
-      }
-
-      try {
-        const turnosPromise = $.ajax({
-          type: "post",
-          url: url_m_Checklists,
-          data: { op: "getTurnosPorPuesto", idPuesto },
-          dataType: "json"
-        });
-        
-        const kpisPromise = new Promise(resolve => {
-          let optsKpi = '<option value="" disabled selected>Seleccione un KPI</option>';
-          listaKpisChk.forEach(function (k) {
-            const arrPuestos = k.Puestos ? String(k.Puestos).split(',').map(s => s.trim()) : [];
-            if (k.Puestos === 'TODOS' || arrPuestos.includes(String(idPuesto))) {
-              optsKpi += `<option value="${k.IdKpi}">${k.Nombre}</option>`;
-            }
-          });
-          $('#modalSlctKpi').html(optsKpi);
-          resolve();
-        });
-
-        const [turnos] = await Promise.all([turnosPromise, kpisPromise]);
-        
-        if (Array.isArray(turnos) && turnos.length > 0) {
-          let optsTurno = '<option value="" disabled selected>Seleccione un turno</option>';
-          turnos.forEach(function (t) { optsTurno += `<option value="${t.IdTurno}">${t.Nombre}</option>`; });
-          $('#modalSlctTurnos').html(optsTurno).prop('disabled', false);
-        } else {
-          $('#modalSlctTurnos').html('<option value="" disabled selected>Sin turnos</option>').prop('disabled', true);
-        }
-        
-        if ($('#modalSlctKpi option').length > 1) {
-          $('#modalSlctKpi').prop('disabled', false);
-        } else {
-          $('#modalSlctKpi').prop('disabled', true);
-        }
-
-        // Selección nativa sin select2:
-        if (turnoActual) $('#modalSlctTurnos').val(turnoActual);
-        if (kpiActual) $('#modalSlctKpi').val(kpiActual);
-
-      } catch (error) {
-        console.error("Error al cargar dependencias:", error);
-        $('#modalSlctTurnos').html('<option value="" disabled selected>Error de conexión</option>').prop('disabled', true);
-        $('#modalSlctKpi').html('<option value="" disabled selected>Error de conexión</option>').prop('disabled', true);
-      }
-    }
-
-    const turnoActual = row.Turnos ? row.Turnos.split(',').map(function (id) { return id.trim(); })[0] : '';
-    poblarTurnosYKpisAsync(row.IdPuesto, turnoActual, row.IdKpi);
-
-    // Evento manual
-    $('#modalSlctPuesto').on('change.chk', function () {
-      const nuevoPuesto = $(this).val();
-      poblarTurnosYKpisAsync(nuevoPuesto, '', '');
-    });
-
-    $('#modalSlctTipo').select2({ dropdownParent: modalJq, width: '100%', minimumResultsForSearch: Infinity });
-    $('#modalSlctTipo').val(row.Tipo).trigger('change');
-
-    $('#modalSlctRespuesta').select2({ dropdownParent: modalJq, width: '100%', minimumResultsForSearch: Infinity });
-    $('#modalSlctRespuesta').val(String(row.RespuestaEsperada)).trigger('change');
-
-    $('#modalSlctIncidencia').select2({ dropdownParent: modalJq, width: '100%', minimumResultsForSearch: Infinity });
-    $('#modalSlctIncidencia').val(String(row.AbreIncidencia)).trigger('change');
+  // 2. Destruir Select2 previos (si existen) para una inicialización limpia
+  ['#modalSlctPuesto', '#modalSlctTurnos', '#modalSlctKpi', '#modalSlctTipo', '#modalSlctRespuesta', '#modalSlctIncidencia'].forEach(s => {
+    if ($(s).hasClass('select2-hidden-accessible')) $(s).select2('destroy');
   });
+  
+  // Limpiar solo los dinámicos
+  ['#modalSlctPuesto', '#modalSlctTurnos', '#modalSlctKpi'].forEach(s => $(s).empty().prop('disabled', true));
+
+  // 3. Poblar Puesto (Síncrono, ya lo tenemos en listaPuestosChk)
+  let optsPuesto = '<option value="" disabled>Seleccione un puesto</option>';
+  listaPuestosChk.forEach(p => {
+    const selected = (p.IdPuesto == row.IdPuesto) ? 'selected' : '';
+    optsPuesto += `<option value="${p.IdPuesto}" ${selected}>${p.Puesto}</option>`;
+  });
+  $('#modalSlctPuesto').html(optsPuesto).prop('disabled', false);
+
+  // 4. Lógica de población de dependencias (Turnos y KPIs)
+  const cargarDependenciasSync = async (idPuesto, turnoSel, kpiSel) => {
+    $('#modalSlctTurnos').prop('disabled', true).html('<option value="" disabled selected>Cargando...</option>');
+    $('#modalSlctKpi').prop('disabled', true).html('<option value="" disabled selected>Cargando...</option>');
+
+    try {
+      const turnos = await $.ajax({
+        type: "post",
+        url: url_m_Checklists,
+        data: { op: "getTurnosPorPuesto", idPuesto },
+        dataType: "json"
+      });
+
+      let optsT = '<option value="" disabled selected>Seleccione un turno</option>';
+      if (Array.isArray(turnos) && turnos.length > 0) {
+        turnos.forEach(t => {
+          const isSel = (t.IdTurno == turnoSel) ? 'selected' : '';
+          optsT += `<option value="${t.IdTurno}" ${isSel}>${t.Nombre}</option>`;
+        });
+        $('#modalSlctTurnos').html(optsT).prop('disabled', false);
+      } else {
+        $('#modalSlctTurnos').html('<option value="" disabled selected>Sin turnos disponibles</option>').prop('disabled', true);
+      }
+
+      let optsK = '<option value="" disabled selected>Seleccione un KPI</option>';
+      let hayKpis = false;
+      listaKpisChk.forEach(k => {
+        const arrPuestos = k.Puestos ? String(k.Puestos).split(',').map(s => s.trim()) : [];
+        if (k.Puestos === 'TODOS' || arrPuestos.includes(String(idPuesto))) {
+          const isSel = (k.IdKpi == kpiSel) ? 'selected' : '';
+          optsK += `<option value="${k.IdKpi}" ${isSel}>${k.Nombre}</option>`;
+          hayKpis = true;
+        }
+      });
+      $('#modalSlctKpi').html(optsK).prop('disabled', !hayKpis);
+
+      // Notificar a Select2
+      $('#modalSlctTurnos, #modalSlctKpi').trigger('change');
+
+    } catch (e) {
+      console.error("Error al cargar dependencias:", e);
+    }
+  };
+
+  // 5. Vincular evento de cambio manual de puesto
+  $('#modalSlctPuesto').off('change.manual').on('change.manual', function() {
+    cargarDependenciasSync($(this).val(), '', '');
+  });
+
+  // 6. Preparar el modal para mostrarse
+  $(modalEl).off('shown.bs.modal.chk').on('shown.bs.modal.chk', async function () {
+    // Inicializar Select2 PRIMERO
+    modalJq.find('select').select2({ dropdownParent: modalJq, width: '100%' });
+    
+    // Cargar dependencias después de inicializar Select2
+    const primerTurno = row.Turnos ? row.Turnos.split(',')[0].trim() : '';
+    await cargarDependenciasSync(row.IdPuesto, primerTurno, row.IdKpi);
+    
+    // Forzar actualización de los estáticos que ya tienen valor
+    $('#modalSlctTipo, #modalSlctRespuesta, #modalSlctIncidencia').trigger('change');
+  });
+
+  // 7. Establecer valores de los campos estáticos
+  $('#modalSlctTipo').val(row.Tipo);
+  $('#modalSlctRespuesta').val(String(row.RespuestaEsperada));
+  $('#modalSlctIncidencia').val(String(row.AbreIncidencia));
+
   new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false }).show();
 }
 
@@ -468,10 +456,10 @@ async function eliminarChecklist(idEncoded) {
 // ─── Limpiar formulario ───────────────────────────────────────────────────────
 function limpiarFormChecklist() {
   $('#txtNombreChecklist').val('');
-  $('#slctPuestoChecklist').val('');
+  $('#slctPuestoChecklist').val('').trigger('change');
   $('#slctTurnosChecklist').val(null).trigger('change');
-  $('#slctTipoChecklist').val('');
-  $('#slctRespuestaChecklist').val('');
-  $('#slctKpiChecklist').val('');
-  $('#slctIncidenciaChecklist').val('');
+  $('#slctTipoChecklist').val('').trigger('change');
+  $('#slctRespuestaChecklist').val('').trigger('change');
+  $('#slctKpiChecklist').val('').trigger('change');
+  $('#slctIncidenciaChecklist').val('').trigger('change');
 }

@@ -12,7 +12,7 @@
   <?php include("neptune_styles.php"); ?>
 
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="assets/libs/select2/dist/css/select2.min.css" rel="stylesheet" />
 
   <style>
     .badge-activo   { background-color: #28a745; color: #fff; font-size: .85rem; padding: 4px 10px; border-radius: .25rem; }
@@ -281,12 +281,12 @@
   <script>
     function limpiarFormularioChecklist() {
       $('#txtNombreChecklist').val('');
-      $('#slctPuestoChecklist').val('');
+      $('#slctPuestoChecklist').val('').trigger('change');
       $('#slctTurnosChecklist').val(null).trigger('change');
-      $('#slctKpiChecklist').val('');
-      $('#slctTipoChecklist').val('');
-      $('#slctRespuestaChecklist').val('');
-      $('#slctIncidenciaChecklist').val('');
+      $('#slctKpiChecklist').val('').trigger('change');
+      $('#slctTipoChecklist').val('').trigger('change');
+      $('#slctRespuestaChecklist').val('').trigger('change');
+      $('#slctIncidenciaChecklist').val('').trigger('change');
     }
   </script>
 
