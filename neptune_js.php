@@ -4,7 +4,7 @@
 <script src="./neptune/plugins/jquery/jquery-3.5.1.min.js"></script>
 
 <!-- BlockUI - debe cargarse después de jQuery y antes de global.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+<script src="./assets/libs/block-ui/jquery.blockUI.js"></script>
 
 <!-- Bootstrap y dependencias -->
 <script src="./neptune/plugins/bootstrap/js/popper.min.js"></script>
@@ -28,7 +28,6 @@ if ($current_page !== 'login'):
 <!-- Scripts específicos para páginas que NO son login -->
 <script src="./neptune/plugins/datatables/datatables.min.js"></script>
 <!-- Override con DataTables plain para renderizado consistente de paginación en todas las vistas -->
-<script src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/datatables.min.js"></script>
 <script src="./assets/libs/select2/dist/js/select2.full.min.js"></script>
 
 <!-- NO cargar dashboard.js en index.php -->
@@ -45,6 +44,6 @@ if ($current_page !== 'login'):
 <?php endif; ?>
 
 <!-- SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="./assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
 <!-- Neptune Javascripts -->

@@ -10,9 +10,8 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
 <script src="https://kit.fontawesome.com/2e7c1ffc8a.js" crossorigin="anonymous"></script>
 
 <!-- DataTables y exportación -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/b-print-2.2.3/datatables.min.js"></script>
+<script src="assets/extra-libs/DataTables_old1/pdfmake-0.1.32/pdfmake.min.js"></script>
+<script src="assets/extra-libs/DataTables_old1/pdfmake-0.1.32/vfs_fonts.js"></script>
 
 <!-- Scripts del sistema -->
 <script src="dist/js/app.js"></script>

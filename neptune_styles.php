@@ -23,8 +23,7 @@
 
 
 <!-- Estilos externos -->
-
-<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-default@5/default.css" rel="stylesheet">
+<link href="./assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
 
 
 
