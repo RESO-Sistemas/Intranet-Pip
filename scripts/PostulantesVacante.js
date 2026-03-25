@@ -65,6 +65,9 @@ function initPostulantesTable() {
                     const idEncoded = btoa(row.IdPostulanteVacante);
                     return `
                         <div class="btn-group btn-group-sm">
+                            <button class="btn btn-warning btn-sm" onclick="openDocumentosPostulante('${idEncoded}', '${row.NombreCompleto || 'Postulante'}')" title="Ver Documentos">
+                                <span class="material-symbols-outlined">folder_shared</span>
+                            </button>
                             <button class="btn btn-info btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
                                 <span class="material-symbols-outlined">visibility</span>
                             </button>
@@ -175,6 +178,7 @@ function clearPostulanteForm() {
     $('#txtPostulanteEstado').val('');
     $('#txtPostulanteCiudad').val('');
     $('#txtPostulanteObservaciones').val('');
+    $('#txtPostulanteIdEmpleado').val('');
 }
 
 async function buscarPostulanteExistente() {
@@ -217,6 +221,141 @@ async function buscarPostulanteExistente() {
         }
     } catch (error) {
         console.error('Error al buscar postulante:', error);
+    }
+}
+
+async function buscarEmpleadoInterno() {
+    const termino = $('#txtBuscarEmpleado').val().trim().toLowerCase();
+
+    if (termino.length < 3) {
+        if (typeof showBootstrapAlertWar === 'function') {
+            const messageContent = `
+                <div class="alert-content">
+                    <span class="alert-title">¡Información!</span>
+                    <span class="alert-text">Ingrese al menos 3 caracteres para buscar un empleado.</span>
+                </div>`;
+            showBootstrapAlertWar(messageContent, 'top-right', 4000);
+        }
+        return;
+    }
+
+    $('#resultadosBusquedaEmpleado').html('<div class="spinner-border spinner-border-sm text-success" role="status"></div> Buscando...').show();
+
+    try {
+        const response = await $.post('Backend/Empleados/App.php', {
+            op: 'getPersonal',
+            puesto: '',
+            sucursal: '',
+            division: ''
+        });
+
+        // Backend/Empleados/App.php => getPersonal returns raw JSON array
+        let empleados = [];
+        try { 
+            empleados = JSON.parse(response); 
+        } catch (e) {
+            console.error("Error parseando respuesta de getPersonal", e);
+        }
+
+        if (empleados && Array.isArray(empleados)) {
+            const empleadosFiltrados = empleados.filter(e => {
+                const nombreCompleto = `${e.Nombre || ''} ${e.ApellidoPaterno || ''} ${e.ApellidoMaterno || ''}`.toLowerCase();
+                const numEmpleado = (e.NoEmpleado || e.IdEmpleado || '').toString();
+                return nombreCompleto.includes(termino) || numEmpleado.includes(termino);
+            });
+
+            if (empleadosFiltrados.length > 0) {
+                let html = '<div class="list-group list-group-flush border rounded-3 mt-1 shadow-sm" style="max-height: 200px; overflow-y: auto;">';
+                empleadosFiltrados.forEach(e => {
+                    const encodedEmpl = btoa(encodeURIComponent(JSON.stringify(e)));
+                    html += `
+                        <button type="button" class="list-group-item list-group-item-action py-2" onclick="seleccionarEmpleadoInterno('${encodedEmpl}')">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-success">${e.Nombre || ''} ${e.ApellidoPaterno || ''} ${e.ApellidoMaterno || ''}</h6>
+                                    <small class="text-muted"><span class="material-symbols-outlined align-middle" style="font-size:14px;">badge</span> #${e.NoEmpleado || e.IdEmpleado || 'N/A'}</small>
+                                </div>
+                                <span class="material-symbols-outlined text-success">add_circle</span>
+                            </div>
+                        </button>
+                    `;
+                });
+                html += '</div>';
+                $('#resultadosBusquedaEmpleado').html(html).show();
+            } else {
+                $('#resultadosBusquedaEmpleado').html('<div class="alert alert-warning py-2 small mb-0"><span class="material-symbols-outlined align-middle me-1" style="font-size:16px;">sentiment_dissatisfied</span> No se encontró ningún empleado interno.</div>').show();
+            }
+        } else {
+            $('#resultadosBusquedaEmpleado').html('<div class="alert alert-danger py-2 small mb-0">Error al buscar empleados.</div>').show();
+        }
+    } catch (error) {
+        console.error('Error al buscar empleado interno:', error);
+        $('#resultadosBusquedaEmpleado').html('<div class="alert alert-danger py-2 small mb-0">Error de conexión.</div>').show();
+    }
+}
+
+function seleccionarEmpleadoInterno(encodedEmpl) {
+    try {
+        const e = JSON.parse(decodeURIComponent(atob(encodedEmpl)));
+        
+        let nombreCompleto = e.Nombre || '';
+        let nombre = '';
+        let apPaterno = '';
+        let apMaterno = '';
+
+        if (nombreCompleto.includes(',')) {
+            // Formato normal de PIP: "APELLIDO1 APELLIDO2, NOMBRES"
+            const partes = nombreCompleto.split(',');
+            nombre = partes[1].trim();
+            
+            const apellidos = partes[0].trim().split(' ');
+            apPaterno = apellidos[0] || '';
+            apMaterno = apellidos.slice(1).join(' ') || '';
+        } else {
+            // Si no tiene coma, intentar separarlo por espacios
+            const partes = nombreCompleto.trim().split(' ');
+            if (partes.length >= 3) {
+                nombre = partes.slice(2).join(' ');
+                apPaterno = partes[0];
+                apMaterno = partes[1];
+            } else if (partes.length === 2) {
+                nombre = partes[1];
+                apPaterno = partes[0];
+            } else {
+                nombre = nombreCompleto;
+            }
+        }
+        
+        $('#txtPostulanteNombre').val(nombre);
+        $('#txtPostulanteApPaterno').val(apPaterno || e.ApellidoPaterno || '');
+        $('#txtPostulanteApMaterno').val(apMaterno || e.ApellidoMaterno || '');
+        $('#txtPostulanteCURP').val(e.CURP || e.Curp || '');
+        
+        const tel = e.TelefonoCelular || e.Telefono || e.Telefono_Celular || e.Movil || '';
+        $('#txtPostulanteTelefono').val(tel);
+        
+        const email = e.CorreoElectronico || e.Correo_Electronico || e.Email || '';
+        $('#txtPostulanteCorreo').val(email);
+        
+        $('#txtPostulanteDireccion').val(e.Calle || e.Direccion || '');
+        $('#txtPostulanteEstado').val(e.Estado || e.EntidadFederativa || '');
+        $('#txtPostulanteCiudad').val(e.Ciudad || e.Municipio || '');
+        
+        $('#txtPostulanteIdEmpleado').val(e.NoEmpleado || e.IdEmpleado || '');
+
+        $('#resultadosBusquedaEmpleado').hide();
+        $('#txtBuscarEmpleado').val('');
+        
+        if (typeof showBootstrapAlertSuc === 'function') {
+            const messageContent = `
+                <div class="alert-content">
+                    <span class="alert-title">¡Empleado Cargado!</span>
+                    <span class="alert-text">Por favor verifica y completa la información restante.</span>
+                </div>`;
+            showBootstrapAlertSuc(messageContent, 'top-right', 4000);
+        }
+    } catch(err) {
+        console.error("Error al decodificar datos del empleado", err);
     }
 }
 
@@ -286,43 +425,20 @@ async function addPostulanteVacante() {
     const estado = $('#txtPostulanteEstado').val().trim();
     const ciudad = $('#txtPostulanteCiudad').val().trim();
     const observaciones = $('#txtPostulanteObservaciones').val().trim();
+    const idEmpleado = $('#txtPostulanteIdEmpleado').val().trim();
 
-    if (!nombre) {
+    if (!nombre || !apPaterno || !correo) {
         if (typeof showBootstrapAlert === 'function') {
             const messageContent = `
                 <div class="alert-content">
                     <span class="alert-title">Información!</span>
-                    <span class="alert-text">Ingrese el nombre del postulante.</span>
+                    <span class="alert-text">Ingrese el nombre, apellido paterno y correo del postulante.</span>
                 </div>`;
             showBootstrapAlert(messageContent, 'top-right', 3000);
         }
-        $('#txtPostulanteNombre').focus();
-        return;
-    }
-
-    if (!apPaterno) {
-        if (typeof showBootstrapAlert === 'function') {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Información!</span>
-                    <span class="alert-text">Ingrese el apellido paterno.</span>
-                </div>`;
-            showBootstrapAlert(messageContent, 'top-right', 3000);
-        }
-        $('#txtPostulanteApPaterno').focus();
-        return;
-    }
-
-    if (!correo) {
-        if (typeof showBootstrapAlert === 'function') {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Información!</span>
-                    <span class="alert-text">Ingrese el correo electrónico.</span>
-                </div>`;
-            showBootstrapAlert(messageContent, 'top-right', 3000);
-        }
-        $('#txtPostulanteCorreo').focus();
+        if (!nombre) $('#txtPostulanteNombre').focus();
+        else if (!apPaterno) $('#txtPostulanteApPaterno').focus();
+        else if (!correo) $('#txtPostulanteCorreo').focus();
         return;
     }
 
@@ -341,19 +457,34 @@ async function addPostulanteVacante() {
     }
 
     try {
-        const response = await $.post('Backend/Postulantes/App.php', {
-            op: 'addPostulanteConPostulacion',
-            IdVacante: idVacante,
-            Nombre: nombre,
-            ApellidoPaterno: apPaterno,
-            ApellidoMaterno: apMaterno,
-            CorreoElectronico: correo,
-            Telefono: telefono,
-            CURP: curp,
-            Direccion: direccion,
-            Estado: estado,
-            Ciudad: ciudad,
-            Observaciones: observaciones
+        const formData = new FormData();
+        formData.append('op', 'addPostulanteConPostulacion');
+        formData.append('IdVacante', idVacante);
+        formData.append('Nombre', nombre);
+        formData.append('ApellidoPaterno', apPaterno);
+        formData.append('ApellidoMaterno', apMaterno);
+        formData.append('CorreoElectronico', correo);
+        formData.append('Telefono', telefono);
+        formData.append('CURP', curp);
+        formData.append('Direccion', direccion);
+        formData.append('Estado', estado);
+        formData.append('Ciudad', ciudad);
+        formData.append('Observaciones', observaciones);
+        if (idEmpleado) {
+            formData.append('IdEmpleado', idEmpleado);
+        }
+
+        const fileCVInput = $('#filePostulanteCV');
+        if (fileCVInput.length > 0 && fileCVInput[0].files.length > 0) {
+            formData.append('CV', fileCVInput[0].files[0]);
+        }
+
+        const response = await $.ajax({
+            url: 'Backend/Postulantes/App.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false
         });
 
         const result = JSON.parse(response);
@@ -746,6 +877,62 @@ async function eliminarPostulacion() {
         } catch (error) {
             console.error('Error al eliminar postulación:', error);
         }
+    }
+}
+
+async function openDocumentosPostulante(idEncoded, nombrePostulante) {
+    $('#contenedorBotonesDocumentos').html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><p class="mt-2 text-muted">Buscando documentos...</p>');
+    
+    // Mostrar el modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDocumentosPostulante'));
+    modal.show();
+
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', {
+            op: 'getArchivosMetadata',
+            IdPostulanteVacante: idEncoded
+        });
+        
+        const result = JSON.parse(response);
+        let html = '<div class="d-flex flex-column gap-3 align-items-center justify-content-center py-3">';
+        let hasFiles = false;
+
+        if (result.Resultado && result.Archivos) {
+            const archivos = result.Archivos;
+            
+            if (archivos.CV) {
+                hasFiles = true;
+                html += `
+                    <a href="Backend/Postulantes/App.php?op=viewArchivo&token=${archivos.CV.Token}" target="_blank" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+                        <span class="material-symbols-outlined align-middle me-2">description</span> Ver CV (${archivos.CV.TamanoStr})
+                    </a>`;
+            }
+            
+            if (archivos.SolicitudEmpleo) {
+                hasFiles = true;
+                html += `
+                    <a href="Backend/Postulantes/App.php?op=viewArchivo&token=${archivos.SolicitudEmpleo.Token}" target="_blank" class="btn btn-info btn-lg w-100 rounded-pill shadow-sm text-white">
+                        <span class="material-symbols-outlined align-middle me-2">assignment</span> Ver Solicitud (${archivos.SolicitudEmpleo.TamanoStr})
+                    </a>`;
+            }
+        }
+        
+        if (!hasFiles) {
+            html += `<div class="alert alert-warning w-100 text-center"><span class="material-symbols-outlined align-middle me-2 mb-1">folder_off</span><br><b>${nombrePostulante}</b> no ha adjuntado documentos.</div>`;
+        }
+        
+        html += '</div>';
+        
+        // Agregar enlace directo tradicional en caso de que quieran descargar directamente sin popup
+        if (hasFiles) {
+            html += '<p class="text-muted small mt-3 px-2">Nota: Si el documento no se muestra en el navegador, se descargará automáticamente.</p>';
+        }
+
+        $('#contenedorBotonesDocumentos').html(html);
+
+    } catch (e) {
+        console.error("Error obteniendo metadata:", e);
+        $('#contenedorBotonesDocumentos').html('<div class="alert alert-danger">Error al consultar los documentos del postulante.</div>');
     }
 }
 

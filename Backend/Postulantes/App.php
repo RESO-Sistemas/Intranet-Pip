@@ -111,6 +111,7 @@ if ($op == "addPostulanteConPostulacion") {
     $RutaCV = isset($_POST["RutaCV"]) ? $_POST["RutaCV"] : '';
     $RutaSolicitudEmpleo = isset($_POST["RutaSolicitudEmpleo"]) ? $_POST["RutaSolicitudEmpleo"] : '';
     $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : '';
+    $IdEmpleado = isset($_POST["IdEmpleado"]) ? $_POST["IdEmpleado"] : null;
     
     // ==========================================
     // PROCESAMIENTO DE ARCHIVOS (API COMPLETA)
@@ -142,7 +143,7 @@ if ($op == "addPostulanteConPostulacion") {
     
     echo trim($Postulantes->addPostulanteConPostulacion($IdVacante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
               $CURP, $Telefono, $CorreoElectronico, $Direccion, $Estado, $Ciudad, 
-              $RutaCV, $RutaSolicitudEmpleo, $Observaciones));
+              $RutaCV, $RutaSolicitudEmpleo, $Observaciones, $IdEmpleado));
 }
 
 // ==========================================

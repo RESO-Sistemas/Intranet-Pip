@@ -109,6 +109,10 @@ class Puestos extends Conexiones{
 
   function asignaJefesPuesto($Jefes,$IdPuesto){
     try {
+      if (is_array($Jefes)) {
+        $Jefes = implode(',', $Jefes);
+      }
+      $Jefes = trim($Jefes, ',');
       $IdPuesto = base64_decode($IdPuesto);
       $q = "UPDATE Puestos SET IdJefesPuesto = '$Jefes' WHERE IdPuesto = '$IdPuesto';";
       $this->ExecuteQuery($q,array());

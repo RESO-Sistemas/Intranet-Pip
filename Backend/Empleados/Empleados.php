@@ -1194,7 +1194,7 @@ class Empleados extends Conexiones
     function getListPuestos()
     {
       $q = "SELECT TO_BASE64(P.IdPuesto) AS IdPuesto,P.Puesto,D.Division,P.EsJefe,
-            IF(IdJefesPuesto IS NULL OR IdJefesPuesto = '','Puesto sin jefe asignado', (SELECT Puesto FROM Puestos WHERE IdPuesto = P.IdJefesPuesto)) as PuestoJefe
+            IF(IdJefesPuesto IS NULL OR IdJefesPuesto = '','Puesto sin jefe asignado', (SELECT GROUP_CONCAT(Puesto SEPARATOR ', ') FROM Puestos WHERE FIND_IN_SET(IdPuesto, P.IdJefesPuesto))) as PuestoJefe
             FROM Puestos AS P
             LEFT JOIN Divisiones AS D ON D.IdDivision = P.IdDivision
             order by P.Puesto ASC;";

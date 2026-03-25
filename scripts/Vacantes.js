@@ -122,7 +122,7 @@ function initDataTable() {
             }
         },
         responsive: true,
-        order: [[0, 'asc']], // Ordenar por ID ascendente como en la base de datos
+        order: [], // Respetar el orden del backend (descendente por ID)
         columnDefs: [
             { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6, 7] }, // Centrar todas excepto Acciones
             { orderable: false, targets: [8] } // Columna Acciones no ordenable
@@ -285,35 +285,42 @@ async function loadVacantes() {
             
             const statusBadge = getStatusBadge(vacante.Estatus);
             const publishedBadge = vacante.Publicada == 1 
-                ? '<span class="badge bg-success published-badge">Sí</span>' 
-                : '<span class="badge bg-secondary published-badge">No</span>';
+                ? '<span class="badge bg-success published-badge text-dark">Sí</span>' 
+                : '<span class="badge bg-secondary published-badge text-dark">No</span>';
             
             const idEncoded = btoa(vacante.IdVacante);
             
             const actions = `
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-info btn-sm" onclick="openDetalleModal('${idEncoded}')" title="Ver detalle">
-                        <span class="material-symbols-outlined">visibility</span>
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="material-symbols-outlined">more_vert</span>
                     </button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='PostulantesVacante.php?IdVacante=${idEncoded}'" title="Ver postulantes">
-                        <span class="material-symbols-outlined">people</span>
-                    </button>
-                    ${vacante.Publicada == 0 ? `
-                    <button type="button" class="btn btn-primary btn-sm" onclick="openEditModal('${idEncoded}')" title="Editar">
-                        <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    ` : ''}
-                    ${getStatusActions(vacante, idEncoded)}
-                    ${vacante.Publicada == 0 && vacante.Estatus == 2 ? `
-                    <button type="button" class="btn btn-success btn-sm" onclick="publicarVacante('${idEncoded}')" title="Publicar">
-                        <span class="material-symbols-outlined">publish</span>
-                    </button>
-                    ` : ''}
-                    ${vacante.Publicada == 0 ? `
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteVacante('${idEncoded}')" title="Eliminar">
-                        <span class="material-symbols-outlined">delete</span>
-                    </button>
-                    ` : ''}
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="openDetalleModal('${idEncoded}'); return false;">
+                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">visibility</span>Ver detalle
+                        </a></li>
+                        <li><a class="dropdown-item" href="PostulantesVacante.php?IdVacante=${idEncoded}">
+                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">people</span>Ver postulantes
+                        </a></li>
+                        ${vacante.Publicada == 0 ? `
+                        <li><a class="dropdown-item" href="#" onclick="openEditModal('${idEncoded}'); return false;">
+                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit</span>Editar
+                        </a></li>
+                        ` : ''}
+                        ${getStatusDropdownItems(vacante, idEncoded)}
+                        ${vacante.Publicada == 0 && vacante.Estatus == 2 ? `
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-success" href="#" onclick="publicarVacante('${idEncoded}'); return false;">
+                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">publish</span>Publicar
+                        </a></li>
+                        ` : ''}
+                        ${vacante.Publicada == 0 ? `
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteVacante('${idEncoded}'); return false;">
+                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">delete</span>Eliminar
+                        </a></li>
+                        ` : ''}
+                    </ul>
                 </div>
             `;
             
@@ -351,7 +358,7 @@ async function loadVacantes() {
 
 function getStatusBadge(estatus) {
     switch(parseInt(estatus)) {
-        case 1: return '<span class="badge bg-secondary status-badge">Borrador</span>';
+        case 1: return '<span class="badge bg-secondary status-badge text-dark">Borrador</span>';
         case 2: return '<span class="badge bg-success status-badge">Activa</span>';
         case 3: return '<span class="badge bg-danger status-badge">Cerrada</span>';
         default: return '<span class="badge bg-secondary status-badge">-</span>';
@@ -363,12 +370,10 @@ function getStatusActions(vacante, idEncoded) {
     
     if (vacante.Publicada == 0) {
         if (vacante.Estatus == 1) {
-            // Borrador -> puede activar
             actions += `<button type="button" class="btn btn-success btn-sm" onclick="cambiarEstatus('${idEncoded}', 2)" title="Activar">
                 <span class="material-symbols-outlined">play_arrow</span>
             </button>`;
         } else if (vacante.Estatus == 2) {
-            // Activa -> puede cerrar o volver a borrador
             actions += `<button type="button" class="btn btn-warning btn-sm" onclick="cambiarEstatus('${idEncoded}', 1)" title="Volver a borrador">
                 <span class="material-symbols-outlined">edit_note</span>
             </button>`;
@@ -376,7 +381,6 @@ function getStatusActions(vacante, idEncoded) {
                 <span class="material-symbols-outlined">stop</span>
             </button>`;
         } else if (vacante.Estatus == 3) {
-            // Cerrada -> puede reactivar
             actions += `<button type="button" class="btn btn-success btn-sm" onclick="cambiarEstatus('${idEncoded}', 2)" title="Reactivar">
                 <span class="material-symbols-outlined">replay</span>
             </button>`;
@@ -386,9 +390,36 @@ function getStatusActions(vacante, idEncoded) {
     return actions;
 }
 
+function getStatusDropdownItems(vacante, idEncoded) {
+    let items = '';
+    
+    if (vacante.Publicada == 0) {
+        if (vacante.Estatus == 1) {
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;">
+                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">play_arrow</span>Activar
+            </a></li>`;
+        } else if (vacante.Estatus == 2) {
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 1); return false;">
+                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit_note</span>Volver a borrador
+            </a></li>`;
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 3); return false;">
+                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">stop</span>Cerrar
+            </a></li>`;
+        } else if (vacante.Estatus == 3) {
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;">
+                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">replay</span>Reactivar
+            </a></li>`;
+        }
+    }
+    
+    return items;
+}
+
 function formatDate(dateString) {
     if (!dateString) return '-';
-    const date = new Date(dateString);
+    // Si la cadena es sólo YYYY-MM-DD, le agregamos T00:00:00 para evitar que JS lo tome como UTC y lo recorra un día atrás
+    const dateParsed = dateString.length === 10 ? dateString + 'T00:00:00' : dateString;
+    const date = new Date(dateParsed);
     return date.toLocaleDateString('es-MX');
 }
 
@@ -397,9 +428,12 @@ function formatDate(dateString) {
 // ==========================================
 
 function prepareAddModal() {
-    // Establecer fecha de hoy como predeterminada
-    const today = new Date().toISOString().split('T')[0];
-    $('#txtFechaApertura').val(today);
+    // Establecer fecha de hoy como predeterminada (usando zona horaria local)
+    const today = new Date();
+    // Ajustar para obtener formato YYYY-MM-DD local
+    const tzOffset = today.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(today - tzOffset)).toISOString().slice(0, -1).split('T')[0];
+    $('#txtFechaApertura').val(localISOTime);
 }
 
 async function addVacante() {
@@ -649,11 +683,12 @@ async function openEditModal(idEncoded) {
             $('#editBanderaCV').prop('checked', vacante.BanderaCV == 1);
             $('#editBanderaSE').prop('checked', vacante.BanderaSE == 1);
             
-            $('#modalEditVacante').modal({
+            const editModalEl = document.getElementById('modalEditVacante');
+            const editModal = new bootstrap.Modal(editModalEl, {
                 backdrop: 'static',
-                keyboard: false,
-                show: true
+                keyboard: false
             });
+            editModal.show();
         } else {
             const messageContent = `
                 <div class="alert-content">

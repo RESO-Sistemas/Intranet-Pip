@@ -113,6 +113,17 @@ async function updateRegistroDirectorioCorreosTelefonos(val) {
   if (result.isConfirmed) {
     try {
       let Email = $("#emailDir" + val).val();
+      
+      if (Email !== "" && !validateEmail(Email)) {
+        const messageContent = `
+          <div class="alert-content">
+            <span class="alert-title">Formato incorrecto!</span>
+            <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
+          </div>`;
+        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        return;
+      }
+
       let Telefono = $("#movilDir" + val).val();
       let MCorta = $("#MCortaDir" + val).val();
 
@@ -350,6 +361,17 @@ async function addEmpleadosDirectorioCorreosTelefonos() {
     let Em = $("#EmpleadoSelectedEmTel").val();
     let Directorio = Number($("#IdTipoEmTel").val());
     let Email = $("#txtCorreoEmTel").val();
+
+    if (Email !== "" && !validateEmail(Email)) {
+      const messageContent = `
+        <div class="alert-content">
+          <span class="alert-title">Formato incorrecto!</span>
+          <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
+        </div>`;
+      showBootstrapAlertWar(messageContent, "top-right", 5000);
+      return;
+    }
+
     let Telefono = $("#txtTelEmTel").val();
     let MarcacionCorta = $("#txtMCortaEmTel").val();
 
@@ -1257,6 +1279,16 @@ $("#btnAgregaSucursalDirectorio").click(async function () {
       return false;
     }
 
+    if (Correo !== "" && !validateEmail(Correo)) {
+      const messageContent = `
+        <div class="alert-content">
+          <span class="alert-title">Formato incorrecto!</span>
+          <span class="alert-text">Por favor ingrese un correo electrónico válido para la sucursal.</span>
+        </div>`;
+      showBootstrapAlertWar(messageContent, "top-right", 5000);
+      return false;
+    }
+
     let datos = {
       op: "addSucursalesDirectorio",
       IdSucursal: IdSucursal,
@@ -1485,6 +1517,17 @@ async function updateRegistroDirectorioSucursal(val) {
       let Telefono = $("#TelSucur" + val).val();
       let NumRed = $("#NumRedSucur" + val).val();
       let Correo = $("#CorreoSucur" + val).val();
+
+      if (Correo !== "" && !validateEmail(Correo)) {
+        const messageContent = `
+          <div class="alert-content">
+            <span class="alert-title">Formato incorrecto!</span>
+            <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
+          </div>`;
+        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        return;
+      }
+
       let MarcacionCorta = $("#MCortaDir" + val).val();
 
       let datos = {
@@ -1550,4 +1593,9 @@ function removeDuplicates(originalArray, prop) {
     newArray.push(lookupObject[i]);
   }
   return newArray;
+}
+
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(String(email).toLowerCase());
 }

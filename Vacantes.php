@@ -332,6 +332,17 @@
             background-color: #1e1e1e;
             border-color: #404040;
         }
+        /* Fix dropdown overflow inside DataTable */
+        .table-responsive {
+            overflow: visible !important;
+        }
+        .dropdown-menu {
+            z-index: 1050;
+        }
+        .dropdown-item .material-symbols-outlined {
+            font-size: 18px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 

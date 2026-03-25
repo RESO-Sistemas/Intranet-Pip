@@ -277,15 +277,28 @@
                 <div class="modal-body">
                     <input type="hidden" id="addPostulanteIdVacante">
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">¿Ya existe el postulante?</label>
-                        <div class="input-group">
-                            <input type="text" id="txtBuscarPostulante" class="form-control" placeholder="Buscar por correo, CURP o nombre...">
-                            <button class="btn btn-outline-primary" type="button" onclick="buscarPostulanteExistente()">
-                                <span class="material-symbols-outlined">search</span>
-                            </button>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">¿Ya existe el postulante?</label>
+                            <div class="input-group">
+                                <input type="text" id="txtBuscarPostulante" class="form-control" placeholder="Buscar por correo, CURP o nombre...">
+                                <button class="btn btn-outline-primary" type="button" onclick="buscarPostulanteExistente()">
+                                    <span class="material-symbols-outlined">search</span>
+                                </button>
+                            </div>
+                            <div id="resultadosBusqueda" class="mt-2" style="display:none;"></div>
                         </div>
-                        <div id="resultadosBusqueda" class="mt-2" style="display:none;"></div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">¿Es empleado interno?</label>
+                            <div class="input-group">
+                                <input type="text" id="txtBuscarEmpleado" class="form-control" placeholder="Buscar por num. o nombre...">
+                                <button class="btn btn-outline-success" type="button" onclick="buscarEmpleadoInterno()">
+                                    <span class="material-symbols-outlined">search</span>
+                                </button>
+                            </div>
+                            <div id="resultadosBusquedaEmpleado" class="mt-2" style="display:none;"></div>
+                            <input type="hidden" id="txtPostulanteIdEmpleado">
+                        </div>
                     </div>
 
                     <hr>
@@ -483,11 +496,32 @@
         </div>
     </div>
 
+    <!-- ====== MODAL VIEW DOCUMENTOS ====== -->
+    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1" aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDocumentosPostulanteLabel">
+                        <span class="material-symbols-outlined align-middle me-2">folder_shared</span>
+                        Documentos
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center" id="contenedorBotonesDocumentos">
+                    <!-- Botones inyectados por JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
     <?php include("scripts.php"); ?>
 
-    <script src="scripts/PostulantesVacante.js"></script>
+    <script src="scripts/PostulantesVacante.js?v=2"></script>
 </body>
 
 </html>

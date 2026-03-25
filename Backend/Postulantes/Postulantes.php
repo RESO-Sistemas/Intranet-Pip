@@ -328,7 +328,7 @@ class Postulantes extends Conexiones
      */
     function addPostulanteConPostulacion($IdVacante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
                                           $CURP, $Telefono, $CorreoElectronico, $Direccion, 
-                                          $Estado, $Ciudad, $RutaCV, $RutaSolicitudEmpleo, $Observaciones)
+                                          $Estado, $Ciudad, $RutaCV, $RutaSolicitudEmpleo, $Observaciones, $IdEmpleado = null)
     {
         try {
             // Primero verificar si ya existe el postulante por correo o CURP
@@ -354,6 +354,12 @@ class Postulantes extends Conexiones
                     return json_encode($resultAdd);
                 }
                 $IdPostulante = $resultAdd["IdPostulante"];
+            }
+
+            // Asociar el IdEmpleado internamente si se brindó
+            if (!empty($IdEmpleado)) {
+                $IdEmpleadoSQL = $this->sanitize($IdEmpleado);
+                $this->ProcedureExec("UPDATE Postulantes SET IdEmpleado = '$IdEmpleadoSQL' WHERE IdPostulante = '$IdPostulante'", []);
             }
             
             // Crear la postulación

@@ -24,6 +24,9 @@ class Vacantes extends Conexiones
      */
     function getVacantes()
     {
+        // Auto-cerrar vacantes activas y publicadas cuya fecha de cierre ya pasó
+        $this->ProcedureExec("UPDATE Vacantes SET Estatus = 3 WHERE FechaCierre < CURDATE() AND Estatus = 2 AND Publicada = 1", array());
+
         $q = "SELECT v.*, 
                      a.NombreArea,
                      p.Puesto,
@@ -37,7 +40,7 @@ class Vacantes extends Conexiones
               LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica 
               LEFT JOIN Puestos p ON v.IdPuesto = p.IdPuesto
               LEFT JOIN SucursalDepto s ON v.IdSucursal = s.IdSucursal
-              ORDER BY v.IdVacante ASC";
+              ORDER BY v.IdVacante DESC";
         return json_encode($this->Select($q));
     }
 
@@ -46,6 +49,9 @@ class Vacantes extends Conexiones
      */
     function getVacantesPublicadas()
     {
+        // Auto-cerrar vacantes activas y publicadas cuya fecha de cierre ya pasó
+        $this->ProcedureExec("UPDATE Vacantes SET Estatus = 3 WHERE FechaCierre < CURDATE() AND Estatus = 2 AND Publicada = 1", array());
+
         $q = "SELECT v.*, 
                      a.NombreArea,
                      p.Puesto,
@@ -54,7 +60,10 @@ class Vacantes extends Conexiones
               LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica 
               LEFT JOIN Puestos p ON v.IdPuesto = p.IdPuesto
               LEFT JOIN SucursalDepto s ON v.IdSucursal = s.IdSucursal
-              WHERE v.Estatus = 2 AND v.Publicada = 1
+              WHERE v.Estatus = 2 
+                AND v.Publicada = 1 
+                AND v.FechaApertura <= CURDATE() 
+                AND (v.FechaCierre IS NULL OR v.FechaCierre >= CURDATE())
               ORDER BY v.FechaApertura DESC";
         return json_encode($this->Select($q));
     }
@@ -78,7 +87,10 @@ class Vacantes extends Conexiones
               LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica 
               LEFT JOIN Puestos p ON v.IdPuesto = p.IdPuesto
               LEFT JOIN SucursalDepto s ON v.IdSucursal = s.IdSucursal
-              WHERE v.Estatus = 2 AND v.Publicada = 1
+              WHERE v.Estatus = 2 
+                AND v.Publicada = 1
+                AND v.FechaApertura <= CURDATE() 
+                AND (v.FechaCierre IS NULL OR v.FechaCierre >= CURDATE())
               ORDER BY v.NombreVacante ASC";
         return json_encode([
             "Resultado" => true,
@@ -632,7 +644,7 @@ class Vacantes extends Conexiones
      */
     function getEvaluacionesActivas()
     {
-        $q = "SELECT idEvaluaciones, Titulo FROM Evaluaciones WHERE Status = 1 ORDER BY Titulo ASC";
+        $q = "SELECT idEvaluaciones, Titulo FROM Evaluaciones WHERE Status = 1 AND TipoEvaluacion = 1 ORDER BY Titulo ASC";
         return json_encode($this->Select($q));
     }
 

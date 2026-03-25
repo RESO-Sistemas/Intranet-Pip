@@ -129,9 +129,26 @@ async function openListJefes(idp, name) {
     }
   });
 
-  const modal = new bootstrap.Modal(
-    document.getElementById("modalListPuestos")
-  );
+  const modalEl = document.getElementById("modalListPuestos");
+  const modal = new bootstrap.Modal(modalEl);
+  
+  // Agregar evento para exclusividad de "Sin Jefe"
+  $('#slctJefes').off('select2:select').on('select2:select', function (e) {
+    let data = e.params.data;
+    let selectedValues = $(this).val();
+    
+    if (data.id === "") {
+        // Si seleccionó "Sin Jefe", remover todo lo demás
+        $(this).val([""]).trigger('change');
+    } else {
+        // Si seleccionó un jefe real, remover "Sin Jefe"
+        if (selectedValues.includes("")) {
+            let filtered = selectedValues.filter(v => v !== "");
+            $(this).val(filtered).trigger('change');
+        }
+    }
+  });
+
   modal.show();
 }
 
@@ -144,7 +161,13 @@ async function loadJefesAsigPuesto() {
   const ajaxResponse = await pAjaxAsync(url_m_puestos, datos, 0);
   if (ajaxResponse !== undefined) {
     const dataResponse = ajaxResponse.Datos;
-    $("#slctJefes").val(dataResponse[0].IdJefesPuesto).trigger('change');
+    let val = dataResponse[0].IdJefesPuesto;
+    if (val && typeof val === 'string') {
+        val = val.split(',');
+    } else if (!val) {
+        val = [""];
+    }
+    $("#slctJefes").val(val).trigger('change');
   }
 }
 
