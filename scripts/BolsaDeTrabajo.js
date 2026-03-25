@@ -10,6 +10,206 @@
 // Estado global
 let vacantesData = [];
 let vacanteSeleccionada = null;
+let sepomexCache = {}; // Cache para evitar consultas repetidas
+
+/**
+ * Consulta la API local de códigos postales SEPOMEX
+ * Usa la base de datos XML oficial del Servicio Postal Mexicano
+ * @param {string} cp - Código postal de 5 dígitos
+ * @returns {Promise<Object|null>} Datos de ubicación o null si hay error
+ */
+async function consultarCodigoPostal(cp) {
+    // Validar formato
+    if (!cp || !/^\d{5}$/.test(cp)) {
+        return null;
+    }
+    
+    // Verificar cache
+    if (sepomexCache[cp]) {
+        return sepomexCache[cp];
+    }
+    
+    try {
+        // Consultar endpoint local PHP
+        const response = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { 
+                op: "consultarCodigoPostal",
+                cp: cp
+            },
+            dataType: "json",
+            timeout: 10000
+        });
+        
+        // Verificar respuesta exitosa
+        if (response && response.Resultado && response.Data) {
+            const resultado = {
+                estado: response.Data.estado,
+                municipio: response.Data.municipio,
+                colonias: response.Data.colonias
+            };
+            
+            // Guardar en cache
+            sepomexCache[cp] = resultado;
+            return resultado;
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error consultando código postal:', error);
+        return null;
+    }
+}
+
+/**
+ * Maneja el evento de cambio en el input de código postal
+ */
+async function handleCodigoPostalChange() {
+    const inputCP = document.getElementById('input-cp');
+    const inputEstado = document.getElementById('input-estado');
+    const inputMunicipio = document.getElementById('input-municipio');
+    const selectColonia = document.getElementById('select-colonia');
+    const cpLoading = document.getElementById('cp-loading');
+    const cpSuccess = document.getElementById('cp-success');
+    const cpError = document.getElementById('cp-error');
+    
+    const cp = inputCP.value.trim();
+    
+    // Limpiar estados previos
+    cpLoading.classList.add('hidden');
+    cpSuccess.classList.add('hidden');
+    cpError.classList.add('hidden');
+    cpError.textContent = '';
+    
+    // Si no tiene 5 dígitos, limpiar campos y esperar
+    if (cp.length !== 5) {
+        inputEstado.value = '';
+        inputMunicipio.value = '';
+        selectColonia.innerHTML = '<option value="">Primero ingresa tu código postal...</option>';
+        selectColonia.disabled = true;
+        return;
+    }
+    
+    // Mostrar loading
+    cpLoading.classList.remove('hidden');
+    
+    // Consultar API
+    const datos = await consultarCodigoPostal(cp);
+    
+    // Ocultar loading
+    cpLoading.classList.add('hidden');
+    
+    if (datos) {
+        // Éxito - llenar campos
+        inputEstado.value = datos.estado;
+        inputMunicipio.value = datos.municipio;
+        
+        // Poblar select de colonias
+        selectColonia.innerHTML = '<option value="">Selecciona tu colonia...</option>';
+        datos.colonias.forEach(colonia => {
+            const option = document.createElement('option');
+            option.value = colonia;
+            option.textContent = colonia;
+            selectColonia.appendChild(option);
+        });
+        selectColonia.disabled = false;
+        
+        // Mostrar indicador de éxito
+        cpSuccess.classList.remove('hidden');
+        lucide.createIcons();
+    } else {
+        // Error - mostrar mensaje
+        inputEstado.value = '';
+        inputMunicipio.value = '';
+        selectColonia.innerHTML = '<option value="">Primero ingresa tu código postal...</option>';
+        selectColonia.disabled = true;
+        
+        cpError.textContent = 'Código postal no encontrado. Verifica que sea correcto.';
+        cpError.classList.remove('hidden');
+    }
+}
+
+/**
+ * Adjunta el evento al input de código postal
+ */
+function attachCodigoPostalEvent() {
+    const inputCP = document.getElementById('input-cp');
+    if (inputCP) {
+        // Remover listeners previos clonando el elemento
+        const newInputCP = inputCP.cloneNode(true);
+        inputCP.parentNode.replaceChild(newInputCP, inputCP);
+        
+        // Solo permitir números
+        newInputCP.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Si tiene 5 dígitos, consultar automáticamente
+            if (this.value.length === 5) {
+                handleCodigoPostalChange();
+            }
+        });
+        
+        // También manejar cuando se pega un valor
+        newInputCP.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = this.value.replace(/[^0-9]/g, '').substring(0, 5);
+                if (this.value.length === 5) {
+                    handleCodigoPostalChange();
+                }
+            }, 10);
+        });
+    }
+}
+
+/**
+ * Resetea los campos de dirección SEPOMEX al estado inicial
+ */
+function resetearCamposSepomex() {
+    const inputCP = document.getElementById('input-cp');
+    const inputEstado = document.getElementById('input-estado');
+    const inputMunicipio = document.getElementById('input-municipio');
+    const selectColonia = document.getElementById('select-colonia');
+    const cpLoading = document.getElementById('cp-loading');
+    const cpSuccess = document.getElementById('cp-success');
+    const cpError = document.getElementById('cp-error');
+    
+    if (inputCP) inputCP.value = '';
+    if (inputEstado) inputEstado.value = '';
+    if (inputMunicipio) inputMunicipio.value = '';
+    if (selectColonia) {
+        selectColonia.innerHTML = '<option value="">Primero ingresa tu código postal...</option>';
+        selectColonia.disabled = true;
+    }
+    if (cpLoading) cpLoading.classList.add('hidden');
+    if (cpSuccess) cpSuccess.classList.add('hidden');
+    if (cpError) {
+        cpError.classList.add('hidden');
+        cpError.textContent = '';
+    }
+}
+
+/**
+ * Construye la dirección completa concatenando los campos
+ * @returns {string} Dirección completa formateada
+ */
+function construirDireccionCompleta() {
+    const calle = document.getElementById('input-calle')?.value?.trim() || '';
+    const colonia = document.getElementById('select-colonia')?.value || '';
+    const cp = document.getElementById('input-cp')?.value?.trim() || '';
+    const municipio = document.getElementById('input-municipio')?.value || '';
+    const estado = document.getElementById('input-estado')?.value || '';
+    
+    // Formato: Calle #123, Col. Nombre Colonia, C.P. 12345, Municipio, Estado
+    const partes = [];
+    if (calle) partes.push(calle);
+    if (colonia) partes.push(`Col. ${colonia}`);
+    if (cp) partes.push(`C.P. ${cp}`);
+    if (municipio) partes.push(municipio);
+    if (estado) partes.push(estado);
+    
+    return partes.join(', ');
+}
 
 /**
  * Obtiene las vacantes publicadas desde el API
@@ -358,6 +558,12 @@ function abrirModalPostulacion(idVacante) {
     // Adjuntar eventos a los inputs de archivo
     attachFileInputEvents();
     
+    // Adjuntar evento al input de código postal (SEPOMEX)
+    attachCodigoPostalEvent();
+    
+    // Resetear campos de dirección SEPOMEX
+    resetearCamposSepomex();
+    
     // Animar entrada
     setTimeout(() => {
         modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
@@ -463,6 +669,27 @@ async function enviarPostulacion(e) {
     const successMsg = document.getElementById('modal-success');
     const errorMsg = document.getElementById('modal-error');
     
+    // Validar campos de dirección SEPOMEX
+    const inputEstado = document.getElementById('input-estado');
+    const inputMunicipio = document.getElementById('input-municipio');
+    const selectColonia = document.getElementById('select-colonia');
+    const inputCalle = document.getElementById('input-calle');
+    
+    if (!inputEstado.value || !inputMunicipio.value) {
+        mostrarErrorModal('Ingresa un código postal válido para continuar.');
+        return;
+    }
+    
+    if (!selectColonia.value) {
+        mostrarErrorModal('Selecciona una colonia.');
+        return;
+    }
+    
+    if (!inputCalle.value.trim()) {
+        mostrarErrorModal('Ingresa tu calle y número.');
+        return;
+    }
+    
     // Validar archivos requeridos
     const validacionArchivos = validarArchivosRequeridos(form);
     if (!validacionArchivos.valido) {
@@ -481,15 +708,23 @@ async function enviarPostulacion(e) {
         formData.append('op', 'publicApplyToVacante');
         formData.append('IdVacante', form.dataset.vacanteId);
         
-        // Agregar campos del formulario
-        const campos = ['Nombre', 'ApellidoPaterno', 'ApellidoMaterno', 'CURP', 'Telefono', 'CorreoElectronico', 'Direccion', 'Estado', 'Ciudad', 'Observaciones'];
+        // Agregar campos básicos del formulario
+        const camposBasicos = ['Nombre', 'ApellidoPaterno', 'ApellidoMaterno', 'CURP', 'Telefono', 'CorreoElectronico', 'Observaciones'];
         
-        campos.forEach(campo => {
+        camposBasicos.forEach(campo => {
             const input = form.querySelector(`[name="${campo}"]`);
             if (input && input.value) {
                 formData.append(campo, input.value.trim());
             }
         });
+        
+        // Construir dirección completa desde campos SEPOMEX
+        const direccionCompleta = construirDireccionCompleta();
+        formData.append('Direccion', direccionCompleta);
+        
+        // Agregar Estado y Ciudad (Municipio) por separado también
+        formData.append('Estado', inputEstado.value);
+        formData.append('Ciudad', inputMunicipio.value);
         
         // Agregar archivos si existen
         const inputCV = form.querySelector('input[name="cv"]');

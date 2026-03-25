@@ -526,3 +526,68 @@ if ($op == "deleteAllArchivos") {
     
     echo json_encode($PostulantesArchivos->eliminarTodosArchivos($IdPostulanteVacante));
 }
+
+// ==========================================
+// CONSULTA DE CÓDIGOS POSTALES (SEPOMEX)
+// ==========================================
+
+// Consultar información de un código postal
+if ($op == "consultarCodigoPostal") {
+    // Limpiar cualquier output previo
+    if (ob_get_level()) {
+        ob_clean();
+    }
+    
+    header('Content-Type: application/json; charset=utf-8');
+    
+    $codigoPostal = isset($_POST["cp"]) ? $_POST["cp"] : (isset($_GET["cp"]) ? $_GET["cp"] : "");
+    
+    if (empty($codigoPostal)) {
+        echo json_encode([
+            "Resultado" => false,
+            "Msg" => "Código postal no proporcionado"
+        ]);
+        exit;
+    }
+    
+    // Validar formato
+    if (!preg_match('/^\d{5}$/', $codigoPostal)) {
+        echo json_encode([
+            "Resultado" => false,
+            "Msg" => "Código postal inválido. Debe ser de 5 dígitos."
+        ]);
+        exit;
+    }
+    
+    try {
+        // Cargar clase de códigos postales
+        require_once(dirname(__DIR__) . '/Configuracion/CodigosPostales.php');
+        
+        // Suprimir warnings temporalmente
+        $oldErrorReporting = error_reporting(E_ERROR | E_PARSE);
+        
+        $cpService = new CodigosPostales();
+        $resultado = $cpService->consultarCodigoPostal($codigoPostal);
+        
+        // Restaurar error reporting
+        error_reporting($oldErrorReporting);
+        
+        if ($resultado !== null) {
+            echo json_encode([
+                "Resultado" => true,
+                "Data" => $resultado
+            ], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode([
+                "Resultado" => false,
+                "Msg" => "Código postal no encontrado en la base de datos."
+            ], JSON_UNESCAPED_UNICODE);
+        }
+    } catch (Exception $e) {
+        echo json_encode([
+            "Resultado" => false,
+            "Msg" => "Error al consultar código postal: " . $e->getMessage()
+        ], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
