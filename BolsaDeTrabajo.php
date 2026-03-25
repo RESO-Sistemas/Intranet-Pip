@@ -164,6 +164,81 @@
         .search-input::placeholder {
             color: rgba(255,255,255,0.4);
         }
+
+        /* Select con estilo minimalista */
+        .minimal-select {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 0.75rem 0;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            width: 100%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+            padding-right: 24px;
+        }
+        .minimal-select:focus {
+            outline: none;
+            border-bottom-color: #f2bb46;
+            box-shadow: 0 1px 0 0 #f2bb46;
+        }
+        .minimal-select:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .minimal-select option {
+            background: #1e1e1e;
+            color: white;
+            padding: 12px;
+        }
+
+        /* Input readonly con estilo deshabilitado */
+        .minimal-input:read-only {
+            opacity: 0.7;
+            background: rgba(255,255,255,0.03);
+            cursor: not-allowed;
+            border-bottom-color: rgba(255,255,255,0.05);
+        }
+        .minimal-input:read-only:focus {
+            border-bottom-color: rgba(255,255,255,0.05);
+            box-shadow: none;
+        }
+
+        /* Input de CP con indicador de carga */
+        .cp-input-wrapper {
+            position: relative;
+        }
+        .cp-loading {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .cp-success {
+            color: #22c55e;
+        }
+        .cp-error-text {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        .cp-help-link {
+            color: #f2bb46;
+            font-size: 0.7rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .cp-help-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-[#121212] text-white selection:bg-[#f2bb46] selection:text-black font-sans">
@@ -318,28 +393,58 @@
                             </div>
                         </div>
                         
-                        <!-- Dirección -->
+                        <!-- Código Postal -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
-                                Dirección <span class="text-red-500">*</span>
+                                Código Postal <span class="text-red-500">*</span>
                             </label>
-                            <input required type="text" name="Direccion" class="minimal-input" placeholder="Calle, número, colonia...">
+                            <div class="cp-input-wrapper">
+                                <input required type="text" name="CodigoPostal" id="input-cp" class="minimal-input" placeholder="5 dígitos..." maxlength="5" pattern="[0-9]{5}" inputmode="numeric">
+                                <span class="cp-loading hidden" id="cp-loading">
+                                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-[#f2bb46] border-t-transparent"></div>
+                                </span>
+                                <span class="cp-loading cp-success hidden" id="cp-success">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                </span>
+                            </div>
+                            <div id="cp-error" class="cp-error-text hidden"></div>
+                            <a href="https://www.correosdemexico.gob.mx/SSLServicios/ConsultaCP/Descarga.aspx" target="_blank" rel="noopener noreferrer" class="cp-help-link mt-1">
+                                ¿No conoces tu CP? Consúltalo aquí
+                            </a>
                         </div>
                         
-                        <!-- Estado y Ciudad -->
+                        <!-- Estado y Municipio (readonly, llenados por SEPOMEX) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Estado <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="Estado" class="minimal-input" placeholder="Estado...">
+                                <input required type="text" name="Estado" id="input-estado" class="minimal-input" placeholder="Se llenará automáticamente..." readonly>
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
-                                    Ciudad <span class="text-red-500">*</span>
+                                    Municipio <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="Ciudad" class="minimal-input" placeholder="Ciudad...">
+                                <input required type="text" name="Ciudad" id="input-municipio" class="minimal-input" placeholder="Se llenará automáticamente..." readonly>
                             </div>
+                        </div>
+                        
+                        <!-- Colonia (select poblado por SEPOMEX) -->
+                        <div class="flex flex-col">
+                            <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
+                                Colonia <span class="text-red-500">*</span>
+                            </label>
+                            <select required name="Colonia" id="select-colonia" class="minimal-select" disabled>
+                                <option value="">Primero ingresa tu código postal...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dirección (calle y número) -->
+                        <div class="flex flex-col">
+                            <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
+                                Calle y Número <span class="text-red-500">*</span>
+                            </label>
+                            <input required type="text" name="CalleNumero" id="input-calle" class="minimal-input" placeholder="Calle, número exterior e interior...">
                         </div>
                         
                         <!-- Campos de archivo (CV y/o Solicitud de Empleo) - Se generan dinámicamente -->
