@@ -22,7 +22,7 @@
 
 
 
-    <?php include("neptune_styles.php");  ?>
+    <?php include("neptune_styles.php"); ?>
 
 
 
@@ -130,9 +130,9 @@
 
             <?php
 
-            include("menus.php");
+include("menus.php");
 
-            ?>
+?>
 
         </div>
 
@@ -217,7 +217,7 @@
 
                                         </div>
 
-                                        <!-- Mensaje de bienvenida -->
+                                        <!-- Mensaje de bienvenida 
 
                                         <div class="row">
 
@@ -238,6 +238,7 @@
                                             </div>
 
                                         </div>
+                                        -->
 
 
 
@@ -561,7 +562,7 @@
     </div>
 
     <!-- neptune Javascripts -->
-    <?php include("neptune_js.php");  ?>
+    <?php include("neptune_js.php"); ?>
     <!-- neptune Javascripts -->
     <?php include("scripts.php"); ?>
 
