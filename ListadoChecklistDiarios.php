@@ -105,6 +105,32 @@
 
     .loader { display: none !important; }
     .preloader { display: none !important; }
+
+    /* ====== SOPORTE MODO OSCURO (.dark-mode) ====== */
+    body.dark-mode .det-item { border-bottom-color: #3d4450; }
+    body.dark-mode .det-nombre { color: #eef0f7; }
+    body.dark-mode .det-meta { color: #aebad2; }
+    
+    body.dark-mode .det-resumen-item { background: #2a3038; border: 1px solid #3d4450; }
+    body.dark-mode .num-total { color: #eef0f7; }
+    body.dark-mode .det-resumen-item .lbl { color: #aebad2; }
+
+    body.dark-mode .det-incidencia { background: rgba(255, 196, 7, 0.15); color: #ffc407; border-color: #ffc407; }
+    body.dark-mode .det-kpi { background: rgba(34, 105, 245, 0.15); color: #74a0f9; border-color: #2269f5; }
+
+    body.dark-mode .kpi-gauge-card { background: #2a3038; border-color: #3d4450; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+    body.dark-mode .kpi-gauge-card .kpi-name { color: #eef0f7; }
+    body.dark-mode .kpi-gauge-card .kpi-fraction { color: #aebad2; }
+
+    body.dark-mode #modalTab { border-bottom-color: #3d4450; }
+    body.dark-mode #modalTab .nav-link { color: #aebad2; }
+    body.dark-mode #modalTab .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    body.dark-mode #modalTab .nav-link.active { color: #ffc407; border-bottom-color: #ffc407; }
+    
+    body.dark-mode .modal-content { background-color: #1f2329; color: #eef0f7; }
+    body.dark-mode .modal-header, body.dark-mode .modal-footer { border-color: #3d4450; }
+    body.dark-mode .modal-title { color: #eef0f7; }
+    body.dark-mode .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
   </style>
 </head>
 
