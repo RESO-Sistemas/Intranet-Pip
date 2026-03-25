@@ -9,6 +9,7 @@
   let turnosData = [];     // datos de turnos para mapeo
   let kpiPage = 0;
   const KPI_VISIBLE = 3;
+  window.dashboardChecklist = { pending: null };
 
   // ─── Init ────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async function () {
@@ -92,52 +93,65 @@
   }
 
   function _buildGaugeSVG(pct) {
-    var W = 200, H = 115, CX = 100, CY = 105;
-    var R = 85;
+    var W = 200, H = 115, CX = 100, CY = 105, R = 85;
+    var ID = Math.floor(Math.random() * 10000);
 
-    // Rebanadas rellenas (de izquierda a derecha: rojo, amarillo, verde)
-    // 0% = 180°, 40% = 108°, 75% = 45°, 100% = 0°
-    var wedgeRojo  = _wedge(CX, CY, R, 108, 180, '#dc3545');
-    var wedgeAmar  = _wedge(CX, CY, R, 45, 108, '#ffc407');
-    var wedgeVerde = _wedge(CX, CY, R, 0, 45, '#28a745');
+    function _wedge(cx, cy, r, startDeg, endDeg, fill, hasGloss = true) {
+      var s = startDeg * Math.PI / 180, e = endDeg * Math.PI / 180;
+      var x1 = cx + r * Math.cos(s), y1 = cy - r * Math.sin(s);
+      var x2 = cx + r * Math.cos(e), y2 = cy - r * Math.sin(e);
+      var lg = (endDeg - startDeg) > 180 ? 1 : 0;
+      
+      // Base arc with shadow filter
+      var path = '<path d="M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 0 ' + x2 + ' ' + y2 + ' Z" fill="' + fill + '" filter="url(#shadowDash' + ID + ')"/>';
+      
+      // Glossy reflection overlay
+      if (hasGloss) {
+        var rInner = r * 0.75;
+        var x1g = cx + rInner * Math.cos(s), y1g = cy - rInner * Math.sin(s);
+        var x2g = cx + rInner * Math.cos(e), y2g = cy - rInner * Math.sin(e);
+        path += '<path d="M ' + x1g + ' ' + y1g + ' A ' + rInner + ' ' + rInner + ' 0 ' + lg + ' 0 ' + x2g + ' ' + y2g + ' L ' + x2 + ' ' + y2 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 1 ' + x1 + ' ' + y1 + ' Z" fill="url(#glossGradDash' + ID + ')" opacity="0.6"/>';
+      }
+      return path;
+    }
 
-    // Separadores blancos entre zonas
     function sepLine(deg) {
       var rad = deg * Math.PI / 180;
       var x = CX + R * Math.cos(rad), y = CY - R * Math.sin(rad);
-      return '<line x1="' + CX + '" y1="' + CY + '" x2="' + x + '" y2="' + y + '" stroke="#fff" stroke-width="2"/>';
+      return '<line x1="' + CX + '" y1="' + CY + '" x2="' + x + '" y2="' + y + '" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>';
     }
 
-    // Aguja: 0% → 180°, 100% → 0°
-    var needleDeg = 180 - (pct / 100) * 180;
-    var needleRad = needleDeg * Math.PI / 180;
-    var needleLen = R - 12;
-    var nx = CX + needleLen * Math.cos(needleRad);
-    var ny = CY - needleLen * Math.sin(needleRad);
-    var bRad1 = needleRad + Math.PI / 2;
-    var bRad2 = needleRad - Math.PI / 2;
-    var bx1 = CX + 5 * Math.cos(bRad1), by1 = CY - 5 * Math.sin(bRad1);
-    var bx2 = CX + 5 * Math.cos(bRad2), by2 = CY - 5 * Math.sin(bRad2);
+    var txtColor = pct < 40 ? '#e74c3c' : (pct < 75 ? '#d68910' : '#229954');
 
-    var color = pct < 40 ? '#dc3545' : (pct < 75 ? '#e6a817' : '#28a745');
-
-    // Círculo blanco interior para dar forma de dona
-    var innerR = 45;
-
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
-      wedgeRojo + wedgeAmar + wedgeVerde +
-      // Círculo interior blanco (recorta centro → forma de dona)
-      '<circle cx="' + CX + '" cy="' + CY + '" r="' + innerR + '" fill="#fff"/>' +
-      // Separadores
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1))">' +
+      '<defs>' +
+        '<linearGradient id="redGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+          '<stop offset="0%" stop-color="#ff9a9e" /><stop offset="50%" stop-color="#ff4b2b" /><stop offset="100%" stop-color="#c0392b" />' +
+        '</linearGradient>' +
+        '<linearGradient id="yelGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+          '<stop offset="0%" stop-color="#ffeaa7" /><stop offset="50%" stop-color="#feca28" /><stop offset="100%" stop-color="#f39c12" />' +
+        '</linearGradient>' +
+        '<linearGradient id="greGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+          '<stop offset="0%" stop-color="#b8e994" /><stop offset="50%" stop-color="#2ecc71" /><stop offset="100%" stop-color="#218c74" />' +
+        '</linearGradient>' +
+        '<linearGradient id="glossGradDash' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+          '<stop offset="0%" stop-color="white" stop-opacity="0.5"/><stop offset="100%" stop-color="white" stop-opacity="0"/>' +
+        '</linearGradient>' +
+        '<filter id="shadowDash' + ID + '" x="-20%" y="-20%" width="140%" height="140%">' +
+          '<feGaussianBlur in="SourceAlpha" stdDeviation="1.5" /><feOffset dx="0" dy="1" /><feComponentTransfer><feFuncA type="linear" slope="0.3" /></feComponentTransfer><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>' +
+        '</filter>' +
+      '</defs>' +
+      _wedge(CX, CY, R, 108, 180, 'url(#redGD' + ID + ')') +
+      _wedge(CX, CY, R, 45, 108, 'url(#yelGD' + ID + ')') +
+      _wedge(CX, CY, R, 0, 45, 'url(#greGD' + ID + ')') +
+      /* Semicírculo blanco central - Ahora recortado a la mitad */
+      '<path d="M ' + (CX - 45) + ' ' + CY + ' A 45 45 0 0 1 ' + (CX + 45) + ' ' + CY + ' Z" fill="#fff"/>' +
       sepLine(108) + sepLine(45) +
-      // Línea base horizontal
       '<line x1="' + (CX - R) + '" y1="' + CY + '" x2="' + (CX + R) + '" y2="' + CY + '" stroke="#fff" stroke-width="3"/>' +
-      // Aguja
-      '<polygon points="' + nx + ',' + ny + ' ' + bx1 + ',' + by1 + ' ' + bx2 + ',' + by2 + '" fill="#333"/>' +
+      '<polygon points="' + (CX + (R-12) * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180)) + ',' + (CY - (R-12) * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + '" fill="#333"/>' +
       '<circle cx="' + CX + '" cy="' + CY + '" r="7" fill="#444"/>' +
       '<circle cx="' + CX + '" cy="' + CY + '" r="3.5" fill="#fff"/>' +
-      // Porcentaje dentro del centro
-      '<text x="' + CX + '" y="' + (CY - 14) + '" text-anchor="middle" font-size="18" font-weight="700" font-family="sans-serif" fill="' + color + '">' + pct + '%</text>' +
+      '<text x="' + CX + '" y="' + (CY - 14) + '" text-anchor="middle" font-size="23" font-weight="700" font-family="sans-serif" fill="' + txtColor + '">' + pct + '%</text>' +
       '</svg>';
 
     return svg;
@@ -232,7 +246,7 @@
   function _slideKpis() {
     var container = document.getElementById('kpiCarouselContainer');
     if (!container) return;
-    var cardWidth = container.children[0] ? container.children[0].offsetWidth + 16 : 236;
+    var cardWidth = container.children[0] ? container.children[0].offsetWidth + 12 : 252;
     var offset = kpiPage * KPI_VISIBLE * cardWidth;
     container.style.transform = 'translateX(-' + offset + 'px)';
 
@@ -387,10 +401,62 @@
     var item = btnEl.closest('.checklist-item');
     var btnGroup = item.querySelector('.chk-btn-group');
     var allBtns = btnGroup.querySelectorAll('.btn');
+    
     // Buscar el checklist en checklistsData
     var checklist = checklistsData.find(function(chk) { return chk.IdChecklist == idChecklist; });
+
+    // 1. Validar si requiere incidencia antes de guardar en BD
+    if (checklist && checklist.AbreIncidencia == 1 && respuesta !== respuestaEsperada) {
+      if (typeof Swal !== 'undefined') {
+        const result = await Swal.fire({
+          title: '¡Atención!',
+          text: 'La respuesta ingresada requiere la apertura de una incidencia. ¿Deseas continuar?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, continuar',
+          cancelButtonText: 'No, cancelar',
+          confirmButtonColor: '#ffc407',
+          cancelButtonColor: '#d33',
+          background: '#ffffff',
+          color: '#2c3e50',
+          iconColor: '#ffc407',
+          customClass: {
+            title: 'fw-bold',
+            popup: 'rounded-4 shadow-lg'
+          }
+        });
+
+        if (!result.isConfirmed) {
+          return; // No hacemos nada, los botones quedan habilitados
+        }
+      }
+
+      // Deshabilitar botones para evitar multi-click
+      allBtns.forEach(function (b) { b.disabled = true; });
+
+      // Guardar en estado pendiente global
+      window.dashboardChecklist.pending = {
+          idChecklist: idChecklist,
+          respuesta: respuesta,
+          respuestaEsperada: respuestaEsperada,
+          idKpi: idKpi,
+          btnEl: btnEl,
+          item: item,
+          allBtns: allBtns
+      };
+
+      // Abrir modal de incidencia (el guardado del checklist se hará desde scripts/index.js)
+      var modalEl = document.getElementById('modalIncidencia');
+      var modal = new bootstrap.Modal(modalEl, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      modal.show();
+      return;
+    }
+
+    // 2. Si no requiere incidencia o es respuesta esperada, guardado normal
     try {
-      // Deshabilitar ambos botones
       allBtns.forEach(function (b) { b.disabled = true; });
 
       const res = await $.ajax({
@@ -398,53 +464,70 @@
         type: 'POST',
         data: { op: 'responderChecklist', idChecklist: idChecklist, respuesta: respuesta }
       });
-      console.log('Respuesta backend:', res);
+      
       let data;
       try {
         data = JSON.parse(res);
       } catch (jsonErr) {
-        console.error('Error al parsear JSON:', jsonErr, res);
-        if (typeof Swal !== 'undefined') {
-          Swal.fire('Error', 'Respuesta inválida del servidor:<br><pre style="text-align:left">' + res + '</pre>', 'error');
-        } else {
-          alert('Respuesta inválida del servidor: ' + res);
-        }
         allBtns.forEach(function (b) { b.disabled = false; });
         return;
       }
+
       if (data.Resultado) {
-        item.classList.add('ya-contestado');
-        btnEl.classList.add('active');
-
-        if (respuesta === 1) {
-          item.classList.add('chk-respondido-si');
-        } else {
-          item.classList.add('chk-respondido-no');
-        }
-
-        // Actualizar gráfica en tiempo real si el checklist pertenece a un KPI
-        if (idKpi) {
-          _updateKpiGauge(idKpi, respuesta === respuestaEsperada);
-        }
-
-        // Abrir modal de evidencia solo si AbreIncidencia=1 y respuesta incorrecta
-        if (checklist && checklist.AbreIncidencia == 1 && respuesta !== respuestaEsperada) {
-          var modalEl = document.getElementById('modalIncidencia');
-          var modal = new bootstrap.Modal(modalEl, {
-            backdrop: 'static',
-            keyboard: false
-          });
-          modal.show();
-        }
+        _markAsAnswered(item, btnEl, respuesta, idKpi, respuestaEsperada);
       }
     } catch (e) {
       console.error('Error al responder checklist:', e);
       allBtns.forEach(function (b) { b.disabled = false; });
-      if (typeof Swal !== 'undefined') {
-        Swal.fire('Error', 'No se pudo registrar la respuesta', 'error');
-      }
     }
   }
+
+  // Marcar visualmente el checklist como contestado y actualizar KPIs
+  function _markAsAnswered(item, btnEl, respuesta, idKpi, respuestaEsperada) {
+    item.classList.add('ya-contestado');
+    btnEl.classList.add('active');
+    if (respuesta === 1) {
+      item.classList.add('chk-respondido-si');
+    } else {
+      item.classList.add('chk-respondido-no');
+    }
+    if (idKpi) {
+      _updateKpiGauge(idKpi, respuesta === respuestaEsperada);
+    }
+  }
+
+  // Función expuesta globalmente para finalizar el guardado tras una incidencia exitosa
+  window.dashboardChecklist.finalize = async function() {
+    if (!window.dashboardChecklist.pending) return;
+    
+    const p = window.dashboardChecklist.pending;
+    try {
+      const res = await $.ajax({
+        url: API_DASHBOARD,
+        type: 'POST',
+        data: { op: 'responderChecklist', idChecklist: p.idChecklist, respuesta: p.respuesta }
+      });
+      _markAsAnswered(p.item, p.btnEl, p.respuesta, p.idKpi, p.respuestaEsperada);
+    } catch (e) {
+      console.error('Error al finalizar checklist tras incidencia:', e);
+      p.allBtns.forEach(function (b) { b.disabled = false; });
+    } finally {
+      window.dashboardChecklist.pending = null;
+    }
+  };
+
+  // Escuchar cierre de modal para resetear si no se guardó
+  $(document).ready(function() {
+    $('#modalIncidencia').on('hidden.bs.modal', function () {
+      if (window.dashboardChecklist.pending) {
+        // Si sigue pendiente después de cerrar el modal, es que no se guardó la incidencia
+        window.dashboardChecklist.pending.allBtns.forEach(function (b) {
+          b.disabled = false;
+        });
+        window.dashboardChecklist.pending = null;
+      }
+    });
+  });
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
   function _escapeHtml(text) {

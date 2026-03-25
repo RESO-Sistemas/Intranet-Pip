@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -16,6 +16,7 @@
     .badge-completo      { background-color: #28a745; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
     .badge-observaciones { background-color: #ffc407; color: #1a1a1a; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
     .badge-incidencia    { background-color: #dc3545; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
+    .badge-incompleto    { background-color: #6c757d; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
 
     /* Detalle modal — fila de checklist */
     .det-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
@@ -34,12 +35,73 @@
 
     /* Resumen del modal */
     .det-resumen { display: flex; gap: 12px; flex-wrap: wrap; padding: 12px 0 16px; }
-    .det-resumen-item { text-align: center; padding: 8px 16px; border-radius: 6px; background: #f8f9fa; min-width: 80px; }
+    .det-resumen-item { flex: 1; text-align: center; padding: 8px 16px; border-radius: 6px; background: #f8f9fa; min-width: 80px; }
     .det-resumen-item .num  { font-size: 1.4rem; font-weight: 700; line-height: 1; }
     .det-resumen-item .lbl  { font-size: .7rem; color: #888; margin-top: 2px; }
     .num-total      { color: #495057; }
     .num-correctas  { color: #28a745; }
     .num-incidencias{ color: #dc3545; }
+
+    /* KPI Gauges en modal */
+    .kpi-container { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 25px; 
+      padding: 25px; 
+      justify-content: center;
+    }
+    .kpi-gauge-card {
+      flex: 1 1 42%;
+      max-width: 48%;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 25px 20px;
+      text-align: center;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 6px rgba(0,0,0,.04);
+      transition: transform 0.2s;
+    }
+    .kpi-gauge-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,.08); }
+    .kpi-gauge-card svg { display: block; margin: 0 auto; width: 100%; max-width: 280px; height: auto; }
+    .kpi-gauge-card .kpi-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #333;
+      margin-top: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kpi-gauge-card .kpi-fraction {
+      font-size: .95rem;
+      color: #777;
+      margin-top: 6px;
+    }
+
+    /* Estilos personalizados para Tabs del Modal */
+    #modalTab { border-bottom: 2px solid #f0f0f0; margin-bottom: 15px; }
+    #modalTab .nav-item { flex: 1; }
+    #modalTab .nav-link {
+      width: 100%;
+      color: #777;
+      font-weight: 500;
+      border: none;
+      padding: 10px 20px;
+      transition: all 0.2s ease;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    #modalTab .nav-link:hover {
+      color: #333;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px 6px 0 0;
+    }
+    #modalTab .nav-link.active {
+      color: #2269f5;
+      background: transparent;
+      border-bottom: 2px solid #2269f5;
+    }
 
     .loader { display: none !important; }
     .preloader { display: none !important; }
@@ -110,7 +172,7 @@
                             <th>Puesto</th>
                             <th>Turno</th>
                             <th>Hora de revisión</th>
-                            <th>Items</th>
+                            <th>Checklist</th>
                             <th>Estatus</th>
                             <th class="text-center">Detalle</th>
                           </tr>
@@ -132,18 +194,41 @@
   </div>
 
   <!-- Modal Detalle -->
-  <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+  <div class="modal fade" id="modalDetalle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modalDetalleLabel">Detalle del Checklist</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-        <div class="modal-body">
-          <!-- Resumen -->
-          <div class="det-resumen" id="detResumen"></div>
-          <!-- Items -->
-          <div id="detItems"></div>
+        <div class="modal-body p-0">
+          <!-- Tabs Navigation -->
+          <ul class="nav nav-tabs px-3 pt-3" id="modalTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="items-tab" data-bs-toggle="tab" data-bs-target="#tabItems" type="button" role="tab" aria-controls="tabItems" aria-selected="true">
+                <i class="fas fa-list-ul me-1"></i> Checklists
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="graficas-tab" data-bs-toggle="tab" data-bs-target="#tabGraficas" type="button" role="tab" aria-controls="tabGraficas" aria-selected="false">
+                <i class="fas fa-chart-pie me-1"></i> Indicadores KPIs
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Tab 1: Items -->
+            <div class="tab-pane fade show active p-3" id="tabItems" role="tabpanel" aria-labelledby="items-tab">
+              <div class="det-resumen" id="detResumen"></div>
+              <div id="detItems"></div>
+            </div>
+            <!-- Tab 2: Gráficas -->
+            <div class="tab-pane fade p-3" id="tabGraficas" role="tabpanel" aria-labelledby="graficas-tab">
+              <div id="detKpis" class="kpi-container">
+                <div class="text-center w-100 py-4 text-muted">Cargando gráficas...</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -219,6 +304,7 @@
         let badgeEstatus = '';
         if (r.Estatus === 'Completo')           badgeEstatus = '<span class="badge-completo">' + r.Estatus + '</span>';
         else if (r.Estatus === 'Con Observaciones') badgeEstatus = '<span class="badge-observaciones">' + r.Estatus + '</span>';
+        else if (r.Estatus === 'Incompleto')        badgeEstatus = '<span class="badge-incompleto">' + r.Estatus + '</span>';
         else                                        badgeEstatus = '<span class="badge-incidencia">' + r.Estatus + '</span>';
 
         html += '<tr>' +
@@ -229,7 +315,7 @@
           '<td><span class="fw-semibold">' + r.Correctas + '</span><span class="text-muted">/' + r.TotalItems + '</span></td>' +
           '<td>' + badgeEstatus + '</td>' +
           '<td class="text-center">' +
-            '<button class="btn btn-sm btn-outline-primary" onclick="verDetalle(\'' + escHtml(r.NoEmpleado) + '\',\'' + fecha + '\',\'' + escHtml(r.NombreEmpleado) + '\')">' +
+            '<button class="btn btn-sm btn-outline-primary" onclick="verDetalle(\'' + escHtml(r.NoEmpleado) + '\',\'' + fecha + '\',\'' + escHtml(r.NombreEmpleado) + '\',\'' + (r.IdTurno || '') + '\')">' +
               '<i class="fas fa-eye me-1"></i>Ver detalle' +
             '</button>' +
           '</td>' +
@@ -256,13 +342,19 @@
     }
 
     // ── Ver detalle ─────────────────────────────────────────────────────
-    function verDetalle(noEmpleado, fecha, nombre) {
+    function verDetalle(noEmpleado, fecha, nombre, idTurno) {
       $('#modalDetalleLabel').text('Checklist de ' + nombre + ' — ' + fecha);
+      
+      // Resetear pestañas
+      $('#items-tab').tab('show');
+      
       document.getElementById('detResumen').innerHTML = '<div class="text-center w-100 py-3"><span class="text-muted">Cargando...</span></div>';
       document.getElementById('detItems').innerHTML = '';
-
+      document.getElementById('detKpis').innerHTML = '<div class="text-center w-100 py-4 text-muted">Cargando gráficas...</div>';
+      
       $('#modalDetalle').modal('show');
 
+      // 1. Cargar Items
       $.ajax({
         url: API,
         type: 'POST',
@@ -278,6 +370,111 @@
           document.getElementById('detItems').innerHTML = '<p class="text-danger text-center py-3">Error al cargar el detalle.</p>';
         }
       });
+
+      // 2. Cargar KPIs Gráficas
+      $.ajax({
+        url: API,
+        type: 'POST',
+        data: { op: 'getKpisHistorical', noEmpleado, fecha, idTurno },
+        success: function (data) {
+          if (!data.Resultado || !data.Data) {
+            document.getElementById('detKpis').innerHTML = '<p class="text-muted text-center py-4">Sin datos de KPIs para este registro.</p>';
+            return;
+          }
+          renderKpis(data.Data);
+        },
+        error: function () {
+          document.getElementById('detKpis').innerHTML = '<p class="text-danger text-center py-4">Error al cargar las gráficas.</p>';
+        }
+      });
+    }
+
+    // ── Render KPIs ─────────────────────────────────────────────────────
+    function renderKpis(kpis) {
+      const container = document.getElementById('detKpis');
+      if (!kpis || kpis.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center py-4">No hay KPIs asociados a este periodo/turno.</p>';
+        return;
+      }
+
+      let html = '';
+      kpis.forEach(function(kpi) {
+        const total = parseInt(kpi.TotalChecklists) || 0;
+        const cumplidos = parseInt(kpi.ChecklistsCumplidos) || 0;
+        const respondidos = parseInt(kpi.ChecklistsRespondidos) || 0;
+        const pct = total > 0 ? Math.round((cumplidos / total) * 100) : 0;
+        
+        html += '<div class="kpi-gauge-card">' +
+          '<div class="kpi-chart">' + _buildGaugeSVG(pct) + '</div>' +
+          '<div class="kpi-name" title="' + escHtml(kpi.NombreKpi) + '">' + escHtml(kpi.NombreKpi) + '</div>' +
+          '<div class="kpi-fraction">' + respondidos + ' de ' + total + ' respondidos</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    }
+
+    // ── SVG Gauge (Glossy Liquid Premium Look) ───────
+    function _buildGaugeSVG(pct) {
+      const W = 200, H = 115, CX = 100, CY = 105, R = 85;
+      const ID = Math.floor(Math.random() * 10000);
+
+      function _wedge(cx, cy, r, startDeg, endDeg, fill, hasGloss = true) {
+        const s = startDeg * Math.PI / 180, e = endDeg * Math.PI / 180;
+        const x1 = cx + r * Math.cos(s), y1 = cy - r * Math.sin(s);
+        const x2 = cx + r * Math.cos(e), y2 = cy - r * Math.sin(e);
+        const lg = (endDeg - startDeg) > 180 ? 1 : 0;
+        
+        // Base arc with shadow filter
+        let path = '<path d="M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 0 ' + x2 + ' ' + y2 + ' Z" fill="' + fill + '" filter="url(#shadowDetail' + ID + ')"/>';
+        
+        // Glossy reflection overlay (top half of arc)
+        if (hasGloss) {
+          const rInner = r * 0.75;
+          const x1g = cx + rInner * Math.cos(s), y1g = cy - rInner * Math.sin(s);
+          const x2g = cx + rInner * Math.cos(e), y2g = cy - rInner * Math.sin(e);
+          path += '<path d="M ' + x1g + ' ' + y1g + ' A ' + rInner + ' ' + rInner + ' 0 ' + lg + ' 0 ' + x2g + ' ' + y2g + ' L ' + x2 + ' ' + y2 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 1 ' + x1 + ' ' + y1 + ' Z" fill="url(#glossGrad' + ID + ')" opacity="0.6"/>';
+        }
+        return path;
+      }
+
+      function sepLine(deg) {
+        const rad = deg * Math.PI / 180;
+        const x = CX + R * Math.cos(rad), y = CY - R * Math.sin(rad);
+        return '<line x1="' + CX + '" y1="' + CY + '" x2="' + x + '" y2="' + y + '" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>';
+      }
+
+      const txtColor = pct < 40 ? '#e74c3c' : (pct < 75 ? '#d68910' : '#229954');
+
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1))">' +
+        '<defs>' +
+          '<linearGradient id="redG' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+            '<stop offset="0%" stop-color="#ff9a9e" /><stop offset="50%" stop-color="#ff4b2b" /><stop offset="100%" stop-color="#c0392b" />' +
+          '</linearGradient>' +
+          '<linearGradient id="yelG' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+            '<stop offset="0%" stop-color="#ffeaa7" /><stop offset="50%" stop-color="#feca28" /><stop offset="100%" stop-color="#f39c12" />' +
+          '</linearGradient>' +
+          '<linearGradient id="greG' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+            '<stop offset="0%" stop-color="#b8e994" /><stop offset="50%" stop-color="#2ecc71" /><stop offset="100%" stop-color="#218c74" />' +
+          '</linearGradient>' +
+          '<linearGradient id="glossGrad' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+            '<stop offset="0%" stop-color="white" stop-opacity="0.5"/><stop offset="100%" stop-color="white" stop-opacity="0"/>' +
+          '</linearGradient>' +
+          '<filter id="shadowDetail' + ID + '" x="-20%" y="-20%" width="140%" height="140%">' +
+            '<feGaussianBlur in="SourceAlpha" stdDeviation="1.5" /><feOffset dx="0" dy="1" /><feComponentTransfer><feFuncA type="linear" slope="0.3" /></feComponentTransfer><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>' +
+          '</filter>' +
+        '</defs>' +
+        _wedge(CX, CY, R, 108, 180, 'url(#redG' + ID + ')') +
+        _wedge(CX, CY, R, 45, 108, 'url(#yelG' + ID + ')') +
+        _wedge(CX, CY, R, 0, 45, 'url(#greG' + ID + ')') +
+        /* Semicírculo blanco central (hueco de la dona) - Ahora recortado a la mitad */
+        '<path d="M ' + (CX - 45) + ' ' + CY + ' A 45 45 0 0 1 ' + (CX + 45) + ' ' + CY + ' Z" fill="#fff"/>' +
+        sepLine(108) + sepLine(45) +
+        '<line x1="' + (CX - R) + '" y1="' + CY + '" x2="' + (CX + R) + '" y2="' + CY + '" stroke="#fff" stroke-width="3"/>' +
+        '<polygon points="' + (CX + (R-12) * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180)) + ',' + (CY - (R-12) * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + '" fill="#333"/>' +
+        '<circle cx="' + CX + '" cy="' + CY + '" r="7" fill="#444"/>' +
+        '<circle cx="' + CX + '" cy="' + CY + '" r="3.5" fill="#fff"/>' +
+        '<text x="' + CX + '" y="' + (CY - 14) + '" text-anchor="middle" font-size="23" font-weight="700" font-family="sans-serif" fill="' + txtColor + '">' + pct + '%</text>' +
+        '</svg>';
     }
 
     // ── Render detalle modal ─────────────────────────────────────────────
@@ -311,10 +508,17 @@
         if (incidencia) badges += '<span class="det-incidencia">⚠ Genera incidencia</span> ';
         if (item.NombreKpi && item.NombreKpi !== '—') badges += '<span class="det-kpi">KPI: ' + escHtml(item.NombreKpi) + '</span>';
 
+        const rEsperadaText = parseInt(item.RespuestaEsperada) === 1 ? 'SI' : 'NO';
+
         html += '<div class="det-item">' +
           '<div class="det-icon ' + iconClass + '">' + svgIcon + '</div>' +
           '<div class="det-info">' +
-            '<div class="det-nombre">' + escHtml(item.NombreChecklist) + '</div>' +
+            '<div class="d-flex justify-content-between align-items-center">' +
+              '<div class="det-nombre">' + escHtml(item.NombreChecklist) + '</div>' +
+              '<div class="text-end">' +
+                '<span class="badge bg-light text-dark border" style="font-size: .7rem;">Esperado: ' + rEsperadaText + '</span>' +
+              '</div>' +
+            '</div>' +
             '<div class="det-meta">' +
               'Turno: ' + escHtml(item.Turno) + ' &nbsp;·&nbsp; Tipo: ' + escHtml(item.Tipo) +
               (hora ? ' &nbsp;·&nbsp; ' + hora : '') +

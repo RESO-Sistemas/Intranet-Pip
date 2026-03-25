@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -75,7 +75,10 @@
                       </div>
                       <div class="col-12 col-md-3">
                         <label class="form-label fw-bold">SLA (horas para atención):</label>
-                        <input id="txtSLA" type="number" min="1" class="form-control form-control-solid-bordered" placeholder="Ej. 24">
+                        <input id="txtSLA" type="number" min="1" step="1" 
+                               onkeypress="return (event.charCode >= 48 && event.charCode <= 57)"
+                               oninput="if(this.value < 1) this.value = ''"
+                               class="form-control form-control-solid-bordered" placeholder="Ej. 24">
                       </div>
                     </div>
                     <div class="row g-3 mt-1">
@@ -163,7 +166,10 @@
             </div>
             <div class="col-12 col-md-3">
               <label class="form-label fw-bold">SLA (horas para atención):</label>
-              <input id="modalSLA" type="number" min="1" class="form-control form-control-solid-bordered">
+              <input id="modalSLA" type="number" min="1" step="1"
+                     onkeypress="return (event.charCode >= 48 && event.charCode <= 57)"
+                     oninput="if(this.value < 1) this.value = ''"
+                     class="form-control form-control-solid-bordered">
             </div>
           </div>
           <div class="row g-3 mt-1">

@@ -129,8 +129,8 @@ function ocultarForm() {
 function limpiarForm() {
   $('#txtId').val('');
   $('#txtNombre').val('');
-  $('#slctSeveridad').val('');
-  $('#slctPuesto').val('');
+  $('#slctSeveridad').val('').trigger('change');
+  $('#slctPuesto').val('').trigger('change');
   $('#txtSLA').val('');
   // Si existe el título del modal, lo actualiza
   if ($('#formTitle').length) {
@@ -195,8 +195,8 @@ function abrirEdicion(id, nombre, severidad, idPuesto, slaHoras) {
   // Poblar puestos en el modal
   _poblarSelectPuestos('#modalPuesto');
 
-  $('#modalSeveridad').val(severidad);
-  $('#modalPuesto').val(idPuesto || '');
+  $('#modalSeveridad').val(severidad).trigger('change');
+  $('#modalPuesto').val(idPuesto || '').trigger('change');
 
   // Abrir el modal con opciones para que no se cierre por fondo ni ESC
   const modal = new bootstrap.Modal(document.getElementById('modalEditar'), {
