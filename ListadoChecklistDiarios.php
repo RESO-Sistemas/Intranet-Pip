@@ -105,6 +105,32 @@
 
     .loader { display: none !important; }
     .preloader { display: none !important; }
+
+    /* ====== SOPORTE MODO OSCURO (data-theme="dark") ====== */
+    [data-theme="dark"] .det-item { border-bottom-color: #3d4450; }
+    [data-theme="dark"] .det-nombre { color: #eef0f7; }
+    [data-theme="dark"] .det-meta { color: #aebad2; }
+    
+    [data-theme="dark"] .det-resumen-item { background: #2a3038; border: 1px solid #3d4450; }
+    [data-theme="dark"] .num-total { color: #eef0f7; }
+    [data-theme="dark"] .det-resumen-item .lbl { color: #aebad2; }
+
+    [data-theme="dark"] .det-incidencia { background: rgba(255, 196, 7, 0.15); color: #ffc407; border-color: #ffc407; }
+    [data-theme="dark"] .det-kpi { background: rgba(34, 105, 245, 0.15); color: #74a0f9; border-color: #2269f5; }
+
+    [data-theme="dark"] .kpi-gauge-card { background: #2a3038; border-color: #3d4450; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+    [data-theme="dark"] .kpi-gauge-card .kpi-name { color: #eef0f7; }
+    [data-theme="dark"] .kpi-gauge-card .kpi-fraction { color: #aebad2; }
+
+    [data-theme="dark"] #modalTab { border-bottom-color: #3d4450; }
+    [data-theme="dark"] #modalTab .nav-link { color: #aebad2; }
+    [data-theme="dark"] #modalTab .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    [data-theme="dark"] #modalTab .nav-link.active { color: #ffc407; border-bottom-color: #ffc407; }
+    
+    [data-theme="dark"] .modal-content { background-color: #1f2329; color: #eef0f7; }
+    [data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer { border-color: #3d4450; }
+    [data-theme="dark"] .modal-title { color: #eef0f7; }
+    [data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
   </style>
 </head>
 
