@@ -281,7 +281,7 @@
   <script>
     function limpiarFormularioChecklist() {
       $('#txtNombreChecklist').val('');
-      $('#slctPuestoChecklist').val('');
+      $('#slctPuestoChecklist').val('').trigger('change');
       $('#slctTurnosChecklist').val(null).trigger('change');
       $('#slctKpiChecklist').val('');
       $('#slctTipoChecklist').val('');

@@ -22,7 +22,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Poblar selects del formulario
     let optsPuesto = '<option value="" disabled selected>Seleccione un puesto</option>';
     puestos.forEach(function (p) { optsPuesto += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
-    $('#slctPuestoChecklist').html(optsPuesto);
+    $('#slctPuestoChecklist').html(optsPuesto).select2({
+      placeholder: 'Seleccione un puesto',
+      width: '100%',
+      dropdownParent: $('#modalRegistrarChecklist')
+    });
 
     // Inicialmente deshabilitar turnos y kpis y ocultar mensajes de advertencia
     $('#slctTurnosChecklist').prop('disabled', true);
@@ -468,7 +472,7 @@ async function eliminarChecklist(idEncoded) {
 // ─── Limpiar formulario ───────────────────────────────────────────────────────
 function limpiarFormChecklist() {
   $('#txtNombreChecklist').val('');
-  $('#slctPuestoChecklist').val('');
+  $('#slctPuestoChecklist').val('').trigger('change');
   $('#slctTurnosChecklist').val(null).trigger('change');
   $('#slctTipoChecklist').val('');
   $('#slctRespuestaChecklist').val('');
