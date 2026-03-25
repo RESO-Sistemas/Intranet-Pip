@@ -145,10 +145,92 @@ a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
 
 
 
+
+/* =============================================
+   PREMIUM PAGINATION - DataTables & Bootstrap
+   ============================================= */
+
+/* Contenedor general de paginación */
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 1.5rem !important;
+    padding: 0 !important;
+}
+
+/* Lista de paginación */
+.pagination {
+    display: flex !important;
+    gap: 6px !important;
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+}
+
+/* Botones individuales */
+.page-link {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    text-decoration: none !important;
+    background-color: #fff !important;
+    border: 1px solid #e0e6ed !important;
+    border-radius: 8px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+}
+
+/* Estado Hover */
+.page-link:hover {
+    z-index: 2 !important;
+    color: #ffc407 !important;
+    background-color: #fff9e6 !important;
+    border-color: #ffc407 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(255, 196, 7, 0.15) !important;
+}
+
+/* Estado Activo (Página Actual) */
+.page-item.active .page-link {
+    z-index: 3 !important;
+    color: #fff !important;
+    background-color: #ffc407 !important;
+    border-color: #ffc407 !important;
+    box-shadow: 0 4px 15px rgba(255, 196, 7, 0.35) !important;
+}
+
+/* Estado Deshabilitado */
+.page-item.disabled .page-link {
+    color: #adb5bd !important;
+    pointer-events: none !important;
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+    opacity: 0.8 !important;
+}
+
+/* Quitar bordes del template original que ensucian el diseño */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    border: none !important;
+    background: transparent !important;
+}
+
 /* Form Focus States */
 .form-control:focus, .form-select:focus {
-  border-color: #ffc407 !important;
-  box-shadow: 0 0 0 0.25rem rgba(255, 196, 7, 0.25) !important;
+    border-color: #ffc407 !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 196, 7, 0.25) !important;
 }
 
 /* Bootstrap Nav/Tab Active */
