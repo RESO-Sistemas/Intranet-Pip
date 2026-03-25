@@ -69,7 +69,7 @@
                                             <table id="tablePostulantesGeneral" class="table display text-center" style="width:100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>CURP/RFC</th>
+                                                        <th>CURP</th>
                                                         <th>Nombre</th>
                                                         <th>Primera suscripción</th>
                                                         <th>Última vacante</th>

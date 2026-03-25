@@ -63,12 +63,11 @@ function initPostulantesTable() {
                 data: null,
                 render: function (data, type, row) {
                     const idEncoded = btoa(row.IdPostulanteVacante);
+                    const idNumerico = row.IdPostulanteVacante;
                     const nombrePostulante = row.NombreCompleto || 'Postulante';
-                    const rutaCV = encodeURIComponent(row.RutaCV || '');
-                    const rutaSE = encodeURIComponent(row.RutaSolicitudEmpleo || '');
                     return `
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-warning btn-sm" onclick='openDocumentosPostulante(${JSON.stringify(idEncoded)}, ${JSON.stringify(nombrePostulante)}, ${JSON.stringify(rutaCV)}, ${JSON.stringify(rutaSE)})' title="Ver Documentos">
+                            <button class="btn btn-warning btn-sm" onclick='openDocumentosPostulante(${idNumerico}, ${JSON.stringify(nombrePostulante)})' title="Ver Documentos">
                                 <span class="material-symbols-outlined">folder_shared</span>
                             </button>
                             <button class="btn btn-info btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
@@ -925,53 +924,19 @@ function renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante) {
     return html;
 }
 
-async function openDocumentosPostulante(idEncoded, nombrePostulante, rutaCVEncoded = '', rutaSEEncoded = '') {
-    $('#contenedorBotonesDocumentos').html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><p class="mt-2 text-muted">Buscando documentos...</p>');
-    
-    // Mostrar el modal
+function openDocumentosPostulante(idNumerico, nombrePostulante) {
+    // Buscar el row en el array ya cargado usando el ID numérico
+    const row = postulantesData.find(p => p.IdPostulanteVacante == idNumerico);
+
+    const rutaCV = (row && row.RutaCV) ? row.RutaCV : '';
+    const rutaSE = (row && row.RutaSolicitudEmpleo) ? row.RutaSolicitudEmpleo : '';
+
+    // Pintar botones directamente con las rutas que vienen de BD
+    const html = renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante);
+    $('#contenedorBotonesDocumentos').html(html);
+
     const modal = new bootstrap.Modal(document.getElementById('modalDocumentosPostulante'));
     modal.show();
-
-    const rutaCV = rutaCVEncoded ? decodeURIComponent(rutaCVEncoded) : '';
-    const rutaSE = rutaSEEncoded ? decodeURIComponent(rutaSEEncoded) : '';
-
-    // Si ya vienen RutaCV/RutaSolicitudEmpleo desde la tabla, usarlas directamente
-    if (rutaCV || rutaSE) {
-        const htmlDirecto = renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante) +
-            '<p class="text-muted small mt-2 px-2">Estos enlaces vienen directo de RutaCV / RutaSolicitudEmpleo.</p>';
-        $('#contenedorBotonesDocumentos').html(htmlDirecto);
-        return;
-    }
-
-    try {
-        const response = await $.post('Backend/Postulantes/App.php', {
-            op: 'getArchivosMetadata',
-            IdPostulanteVacante: idEncoded
-        });
-        
-        const result = JSON.parse(response);
-        let rutaCvFinal = '';
-        let rutaSeFinal = '';
-
-        if (result.Resultado && result.Archivos) {
-            const archivos = result.Archivos;
-            
-            if (archivos.CV) {
-                rutaCvFinal = `Backend/Postulantes/App.php?op=viewArchivo&token=${archivos.CV.Token}`;
-            }
-            
-            if (archivos.SolicitudEmpleo) {
-                rutaSeFinal = `Backend/Postulantes/App.php?op=viewArchivo&token=${archivos.SolicitudEmpleo.Token}`;
-            }
-        }
-
-        const html = renderBotonesDocumentos(rutaCvFinal, rutaSeFinal, nombrePostulante);
-        $('#contenedorBotonesDocumentos').html(html);
-
-    } catch (e) {
-        console.error("Error obteniendo metadata:", e);
-        $('#contenedorBotonesDocumentos').html('<div class="alert alert-danger">Error al consultar los documentos del postulante.</div>');
-    }
 }
 
 $(document).ready(function () {
