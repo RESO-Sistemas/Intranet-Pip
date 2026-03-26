@@ -82,7 +82,7 @@ function _renderTabla(data) {
 
           return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
             <button class="btn btn-primary btn-sm" title="Editar"
-              onclick="abrirEdicion('${id}','${escTI(row.Nombre)}','${escTI(row.NivelSeveridad)}','${row.IdPuesto || ''}','${row.SLA_Horas}')">
+              onclick="abrirEdicion('${id}','${escTI(row.Nombre)}','${escTI(row.NivelSeveridad)}','${(row.IdPuesto !== null && row.IdPuesto !== undefined) ? row.IdPuesto : ''}','${row.SLA_Horas}')">
               <span class="material-symbols-outlined">edit</span>
             </button>
             <button class="btn ${toggleColor} btn-sm" title="${toggleTitle}"
@@ -196,7 +196,7 @@ function abrirEdicion(id, nombre, severidad, idPuesto, slaHoras) {
   _poblarSelectPuestos('#modalPuesto');
 
   $('#modalSeveridad').val(severidad).trigger('change');
-  $('#modalPuesto').val(idPuesto || '').trigger('change');
+  $('#modalPuesto').val((idPuesto !== null && idPuesto !== undefined && idPuesto !== '') ? idPuesto : '').trigger('change');
 
   // Abrir el modal con opciones para que no se cierre por fondo ni ESC
   const modal = new bootstrap.Modal(document.getElementById('modalEditar'), {
@@ -220,7 +220,7 @@ async function guardarEdicion() {
 
   const ajaxR = await pAjaxAsync(API_TI, {
     op: "updateTipoIncidencia", id, nombre, severidad,
-    idPuesto: idPuesto || '', slaHoras
+    idPuesto: (idPuesto !== null && idPuesto !== undefined && idPuesto !== '') ? idPuesto : '', slaHoras
   }, 1);
 
   if (ajaxR && ajaxR.Resultado && ajaxR.Siguiente) {

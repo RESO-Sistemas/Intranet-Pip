@@ -165,10 +165,9 @@ a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
     margin: 0 !important;
 }
 
-/* Botones individuales */
+/* Botones individuales (EL DISEÑO REAL) */
 .page-link {
-    position: relative !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: 40px !important;
@@ -184,6 +183,7 @@ a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     box-shadow: none !important;
     line-height: 1 !important;
+    z-index: 1 !important;
 }
 
 /* Estado Hover */
@@ -214,14 +214,17 @@ a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
     opacity: 0.8 !important;
 }
 
-/* Quitar bordes del template original que ensucian el diseño */
+/* Neutralizar COMPLETAMENTE los contenedores originales que ensucian el diseño */
+.pagination .page-item,
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 3px !important;
     border: none !important;
     background: transparent !important;
+    box-shadow: none !important;
 }
 
+.pagination .page-item:hover,
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     border: none !important;
     background: transparent !important;
