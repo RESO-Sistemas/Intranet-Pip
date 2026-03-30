@@ -200,11 +200,11 @@ function _renderTablaChecklists(data) {
         render: function (data, type, row) {
           const idEncoded = btoa(row.IdChecklist);
           return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <button class="btn btn-primary btn-sm" title="Editar"
+            <button class="btn btn-primary btn-accion" title="Editar"
               onclick="editarChecklist('${idEncoded}')">
               <span class="material-symbols-outlined">edit</span>
             </button>
-            <button class="btn btn-danger btn-sm" title="Eliminar"
+            <button class="btn btn-danger btn-accion" title="Eliminar"
               onclick="eliminarChecklist('${idEncoded}')">
               <span class="material-symbols-outlined">delete</span>
             </button>

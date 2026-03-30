@@ -11,7 +11,7 @@ class Conexiones{
 			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 		];
-		$this->dbh = new PDO($dsn, 'klynet_usrdatosdemo', 'Us3rK1yns2@22', $options);
+		$this->dbh = new PDO($dsn, 'klynet_usrdatos', 'Us3rK1yns2@22', $options);
 		// $this->dbh = null;
 	}
 
