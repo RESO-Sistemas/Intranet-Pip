@@ -466,27 +466,21 @@ async function getListadoPersonal() {
 
 window.updateBossSF = function (e) {
   let div = document.createElement("div");
-  let btn = `<a class="btn btn-success"  onclick="getJefesPosibles(${e.NoEmpleado},${e.IdSucursal})"><span class="material-symbols-outlined">
-person_check
-</span></a>`;
+  let btn = `<a class="btn btn-success btn-accion" title="Asignar Jefe" onclick="getJefesPosibles(${e.NoEmpleado},${e.IdSucursal})"><span class="material-symbols-outlined">person_check</span></a>`;
   $(div).append(btn);
   return div.outerHTML;
 };
 
 window.updateDataSF = function (e) {
   let div = document.createElement("div");
-  let btn = `<button class="btn btn-primary" onclick="verDetalleEmpleadoPrincipal(${e.NoEmpleado})"><span class="material-symbols-outlined">
-edit
-</span></button>`;
+  let btn = `<button class="btn btn-primary btn-accion" title="Editar Datos" onclick="verDetalleEmpleadoPrincipal(${e.NoEmpleado})"><span class="material-symbols-outlined">edit</span></button>`;
   $(div).append(btn);
   return div.outerHTML;
 };
 
 window.moreDetailsSF = function (e) {
   let div = document.createElement("div");
-  let btn = `<button class="btn btn-warning" onclick="abrirDetallesEmpleado('${e.Nombre}',${e.NoEmpleado})"><span class="material-symbols-outlined">
-info_i
-</span></button>`;
+  let btn = `<button class="btn btn-warning btn-accion" title="Más Detalles" onclick="abrirDetallesEmpleado('${e.Nombre}',${e.NoEmpleado})"><span class="material-symbols-outlined">info</span></button>`;
   $(div).append(btn);
   return div.outerHTML;
 };
@@ -571,9 +565,7 @@ function toggleStatusEmpleado(NoEmpleado, isChecked, element) {
 
 window.documentacionSF = function (e) {
   let div = document.createElement("div");
-  let btn = `<a class="btn btn-info" href="DocumentacionEmpleados.php?NoEmpleado=${e.NoEmpleado}" title="Ver documentación"><span class="material-symbols-outlined">
-folder_shared
-</span></a>`;
+  let btn = `<a class="btn btn-info btn-accion" href="DocumentacionEmpleados.php?NoEmpleado=${e.NoEmpleado}" title="Ver documentación"><span class="material-symbols-outlined">folder_shared</span></a>`;
   $(div).append(btn);
   return div.outerHTML;
 };

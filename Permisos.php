@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -41,67 +41,16 @@
     </div>
     <div class="app-container">
       <?php include("includes/_Header.php"); ?>
-                      id="imgSmallProfile"
-                      alt="user"
-                      class="rounded-circle"
-                      width="30"
-                      height="30" />
-                  </a>
-                  <ul
-                    id="user_dropdown"
-                    class="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="addDropdownLink">
-                    <li>
-                      <!-- <a class="dropdown-item" href="#">New Workspace</a> -->
-                      <div class="dropdown-item " style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
-                        <div class="u-img" style="padding-bottom: 10px; padding-top:10px; "><img class="rounded-circle " id="profileImg" alt="user" width="60px" height="60px"></div>
-                        <div class="u-text">
-                          <h4 id="PerfilNombreEmp"></h4>
-                          <p id="PerfilCorreoEmp"></p>
-                          <!-- <a class="waves-effect waves-light btn-small red white-text" href="index.php">Perfil</a> -->
-                        </div>
-                      </div>
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item d-flex align-items-center"
-                        href="index.php"><i class="material-icons me-2">home</i>Inicio</a>
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item d-flex align-items-center"
-                        href="logout.php"><i class="material-icons me-2">exit_to_app</i>Salir</a>
-                    </li>
-                  </ul>
-                </li>
-
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </div>
       <div class="app-content">
         <div class="content-wrapper">
           <div class="container">
             <div class="row">
-              <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
-                <div class="row">
-                  <div class="col s12 l12" style="position: relative;">
-                    <div id="contenidoMensajes" style="margin-right:2vh"></div>
-                  </div>
-                  <div class="col s12 l12" style="position: relative;">
-                    <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
-                  </div>
-                  <div class="col s12 l12" style="position: relative;">
-                    <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row">
               <div class="col">
-                <div class="page-description page-description-tabbed">
-                  <h1>Permisos</h1>
+                <div class="page-description page-description-tabbed d-flex justify-content-between align-items-center">
+                  <h1 class="mb-0">Permisos</h1>
+                  <a href="Puestos.php" class="btn d-flex align-items-center gap-1" style="white-space: nowrap; background-color: #6c757d; color: #fff; border-color: #6c757d;">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>Regresar
+                  </a>
                 </div>
               </div>
             </div>
@@ -110,11 +59,6 @@
               <div class="col">
                 <div class="card">
                   <div class="card-body">
-                    <div class="row">
-                      <div class="col-4">
-                        <a href="Puestos.php" class="btn btn-danger">Regresar</a>
-                      </div>
-                    </div>
                     <div class="row">
                       <div id="ContenedorPermisos" class="row g-4"></div>
                     </div>
@@ -130,10 +74,15 @@
   </div>
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>
+  <?php include("scripts.php"); ?>
   <!-- neptune Javascripts -->
 
-  <script src="scripts/Permisos.js" charset="utf-8"></script>
-  <script type="text/javascript">
+  <script src="scripts/Permisos.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script>
+    // Ocultar preloader inmediatamente si el DOM cargó
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() { $(".preloader").fadeOut(200); }, 300);
+    });
   </script>
 
 </body>

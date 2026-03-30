@@ -81,15 +81,15 @@ function _renderTabla(data) {
           const nuevoEstado = row.Activo == 1 ? 0 : 1;
 
           return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <button class="btn btn-primary btn-sm" title="Editar"
+            <button class="btn btn-primary btn-accion" title="Editar"
               onclick="abrirEdicion('${id}','${escTI(row.Nombre)}','${escTI(row.NivelSeveridad)}','${(row.IdPuesto !== null && row.IdPuesto !== undefined) ? row.IdPuesto : ''}','${row.SLA_Horas}')">
               <span class="material-symbols-outlined">edit</span>
             </button>
-            <button class="btn ${toggleColor} btn-sm" title="${toggleTitle}"
+            <button class="btn ${toggleColor} btn-accion" title="${toggleTitle}"
               onclick="toggle('${id}', ${nuevoEstado})">
               <span class="material-symbols-outlined">${toggleIcon}</span>
             </button>
-            <button class="btn btn-danger btn-sm" title="Eliminar"
+            <button class="btn btn-danger btn-accion" title="Eliminar"
               onclick="eliminar('${id}')">
               <span class="material-symbols-outlined">delete</span>
             </button>

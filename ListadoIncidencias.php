@@ -58,25 +58,6 @@
       flex: 1;
     }
 
-    /* ── Botones de acción compactos ──────────────────────────────────── */
-    .btn-accion {
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .btn-accion:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-    }
-    .btn-accion .material-symbols-outlined {
-      font-size: 18px;
-    }
-
     /* ── Quitar preloader ─────────────────────────────────────────────── */
     .loader  { display: none !important; }
     .preloader { display: none !important; }
