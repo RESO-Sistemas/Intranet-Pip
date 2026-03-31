@@ -137,6 +137,17 @@ if ($current_page !== 'login'):
   .app-menu > ul > li ul {
     background: #dde1e9 !important;
   }
+
+  /* ====== FIX SELECT2 EN MODALES BOOTSTRAP 5 ====== */
+  .select2-container {
+    z-index: 2000 !important; /* Más que los modales de Bootstrap (1050-1060) */
+  }
+  .select2-container--open {
+    z-index: 2000 !important;
+  }
+  .select2-dropdown {
+    z-index: 2000 !important;
+  }
 </style>
 
 <link href="./neptune/css/custom.css" rel="stylesheet">

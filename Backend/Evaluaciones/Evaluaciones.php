@@ -37,19 +37,30 @@
             $IdEval = $Evaluacion["idEvaluaciones"];
             $InstDetalle = new Evaluaciones();
             $DetalleEv = $InstDetalle->getEvaluadosEvaluacion($IdEval);
-            array_push($arrDatos,[
-              "idEvaluaciones" => $Evaluacion["idEvaluaciones"],
-              "Evaluacion" => $Evaluacion["Titulo"],
-              "FechaInicio" => $Evaluacion["FechaInicio"],
-              "FechaFin" => $Evaluacion["FechaFin"],
-              "Detalle" => $DetalleEv
-            ]);
+            
+            if (sizeof($DetalleEv) > 0) {
+              array_push($arrDatos,[
+                "idEvaluaciones" => $Evaluacion["idEvaluaciones"],
+                "Evaluacion" => $Evaluacion["Titulo"],
+                "FechaInicio" => $Evaluacion["FechaInicio"],
+                "FechaFin" => $Evaluacion["FechaFin"],
+                "Detalle" => $DetalleEv
+              ]);
+            }
           }
-          $arrRetorno = [
-            "Resultado" => true,
-            "Siguiente" => true,
-            "Data" => $arrDatos
-          ];
+          
+          if (sizeof($arrDatos) > 0) {
+            $arrRetorno = [
+              "Resultado" => true,
+              "Siguiente" => true,
+              "Data" => $arrDatos
+            ];
+          } else {
+            $arrRetorno = [
+              "Resultado" => true,
+              "Siguiente" => false,
+            ];
+          }
         } else {
           $arrRetorno = [
             "Resultado" => true,
@@ -1039,16 +1050,21 @@
 
     function viewUnfinishedEmployees($evaluation){
       try {
-        $q = "SELECT ED.NoEmpleadoEvalua AS NoEmpleado, E.Nombre, P.Puesto, SD.Sucursal,
-              (SELECT COUNT(*) FROM EvaluacionDetalle WHERE NoEmpleadoEvalua = ED.NoEmpleadoEvalua AND Status = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation') AS CantEvaluaciones,
-              (SELECT COUNT(*) FROM EvaluacionDetalle WHERE NoEmpleadoEvalua = ED.NoEmpleadoEvalua AND Status = 1 AND StatusEvaluado = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation') AS CantRespondidas
+        $evalDecoded = base64_decode($evaluation);
+        $q = "SELECT 
+                ED.NoEmpleadoEvalua AS NoEmpleado, 
+                E.Nombre, 
+                P.Puesto, 
+                SD.Sucursal,
+                COUNT(ED.idEvaluacionDetalle) AS CantEvaluaciones,
+                SUM(IF(ED.StatusEvaluado = 1, 1, 0)) AS CantRespondidas
               FROM EvaluacionDetalle AS ED
               INNER JOIN Empleados AS E ON E.NoEmpleado = ED.NoEmpleadoEvalua
               LEFT JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
               LEFT JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-              WHERE TO_BASE64(ED.idEvaluaciones) = '$evaluation'
-              GROUP BY ED.NoEmpleadoEvalua
-              HAVING  CantRespondidas < CantEvaluaciones;";
+              WHERE ED.idEvaluaciones = '$evalDecoded' AND ED.Status = 1
+              GROUP BY ED.NoEmpleadoEvalua, E.Nombre, P.Puesto, SD.Sucursal
+              HAVING CantRespondidas < CantEvaluaciones;";
         $resultado = $this->Select($q,array());
         $arrReturn = [
           "Resultado" => true,
@@ -1702,7 +1718,7 @@
           }
         }
 
-    function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = "", $dirigidoA = 1){
+    function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $dirigidoA, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = ""){
       try {
         // Preparar valores para campos opcionales
         $retroIni = $inpRetroFechaIni ? "'$inpRetroFechaIni'" : "NULL";

@@ -2793,9 +2793,8 @@ function seeExpectedResponse(question,inB){
         cleanVerifyInputs('dv_newResponseExpected');
 
         $("#sel_lvl").select2({
-
           dropdownParent: $('#dv_newResponseExpected'),
-
+          width: "100%",
         });
 
         $("#QuestionRE").val(question);
@@ -2960,7 +2959,8 @@ async function addaddResponseExpectedQuestionOld(){
 
           printTableLvlsSavedSV(question);
 
-          alertify.confirm().closeOthers();
+          // Cerrar modal Bootstrap 5
+          bootstrap.Modal.getInstance(document.getElementById('dv_OldResponseExpected'))?.hide();
 
         } else {
 
@@ -3070,7 +3070,8 @@ async function addaddResponseExpectedQuestionOld(){
 
     printTableLvlsSavedSV(question);
 
-    alertify.confirm().closeOthers();
+    // Cerrar modal Bootstrap 5
+    bootstrap.Modal.getInstance(document.getElementById('dv_OldResponseExpected'))?.hide();
 
   } else {
 
@@ -3160,7 +3161,8 @@ function addaddResponseExpectedQuestion(){
 
     printTableLvls(question);
 
-    alertify.confirm().closeOthers();
+    // Cerrar modal Bootstrap 5
+    bootstrap.Modal.getInstance(document.getElementById('dv_newResponseExpected'))?.hide();
 
   } else {
 
@@ -3232,7 +3234,9 @@ function printOptionSelectAnswer(question){
 
   $(`#selectAnswers${question}`).val(_dataQuestions[question].expectedValue);
 
-  $(`#selectAnswers${question}`).select2();
+  $(`#selectAnswers${question}`).select2({
+    width: "100%",
+  });
 
 }
 
@@ -3282,7 +3286,9 @@ function printOptionSelectAnswerSV(question){
 
   $(`#selectAnswersSV${question}`).val(_dataQuestionsSaved[question].expectedValue.IdAnswerExpected);
 
-  $(`#selectAnswersSV${question}`).select2();
+  $(`#selectAnswersSV${question}`).select2({
+    width: "100%",
+  });
 
   _dataQuestionsSaved[question].expectedValue.edited = false;
 
