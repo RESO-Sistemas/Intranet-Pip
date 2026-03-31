@@ -1875,9 +1875,11 @@ class Empleados extends Conexiones
             $CantidadNotificaciones = ($CantidadNotificaciones + $CantNotifVacacionesFinales);
         }
         $Conexiones4 = new Conexiones();
-        $q4 = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados FROM CapacitacionDetalle AS CD
-                INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
-                WHERE C.Status = 1;";
+        $q4 = "SELECT C.idCapacitacion, CD.NoEmpleado AS ALLEmpleados 
+                 FROM CapacitacionDetalle AS CD
+                 INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
+                 WHERE C.Status = 1
+                 GROUP BY C.idCapacitacion;";
         $cons4 = $Conexiones4->Select($q4,array());
         if (sizeof($cons4) > 0) {
           for ($i=0; $i < sizeof($cons4) ; $i++) {
@@ -2171,9 +2173,13 @@ class Empleados extends Conexiones
       $ArrayRetorno = [];
       $Datos = [];
       $NoEmpleado = (SessionManager::get("NoEmpleado"));
-      $q = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados,concat('Se te ha asignado la siguiente capacitaci?n:?',Descripcion) as Descripcion,concat('La capacitaci?n comenzar? el d?a ',date_format(FechaInicio,'%d-%m-%Y')) AS FechaInicio,(select TIMESTAMPDIFF(DAY,C.FechaInicio,NOW())) as DifDias FROM CapacitacionDetalle AS CD
-              INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
-              WHERE C.Status = 1;";
+      $q = "SELECT C.idCapacitacion, CD.NoEmpleado AS ALLEmpleados, 
+                   CONCAT('Se te ha asignado la siguiente capacitación: ', Descripcion) AS Descripcion, 
+                   CONCAT('La capacitación comenzará el día ', DATE_FORMAT(FechaInicio,'%d-%m-%Y')) AS FechaInicio 
+            FROM CapacitacionDetalle AS CD
+            INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
+            WHERE C.Status = 1
+            GROUP BY C.idCapacitacion;";
       $cons = $this->Select($q,array());
       if (sizeof($cons) > 0) {
         for ($i=0; $i < sizeof($cons) ; $i++) {

@@ -49,8 +49,11 @@
 
           <!-- NOTIFICACIONES - Siempre visibles a la derecha -->
           <li class="nav-item d-flex">
-            <a class="nav-link" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">
+            <a class="nav-link position-relative" id="notificationsDropDown" href="#" data-bs-toggle="dropdown">
               <i class="material-icons">notifications</i>
+              <span id="cantidadNotificacionesBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.65rem; padding: 0.35em 0.65em; margin-top: 10px; margin-left: -10px;">
+                0
+              </span>
             </a>
             <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropDown">
               <h6 class="dropdown-header">Notificaciones</h6>

@@ -235,6 +235,11 @@ async function getCantidadNotificaciones() {
     console.log(error);
   } finally {
     $("#cantidadNotificaciones").html(respuesta[0]);
+    if (respuesta[0] > 0) {
+      $("#cantidadNotificacionesBadge").html(respuesta[0]).show();
+    } else {
+      $("#cantidadNotificacionesBadge").hide();
+    }
   }
 }
 
@@ -817,12 +822,20 @@ async function getMensajeCapacitacionGlobal() {
     $("#notificacionesCapacitacionMobile").html("");
     if (respuesta.length > 0) {
       respuesta.forEach((registros) => {
+        const sessionKey = "visto_capacitacion_" + registros.idCapacitacion;
+        const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
         const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Capacitacion!</span>
               <span class="alert-text">${registros.Descripcion}<br>${registros.FechaInicio}</span>
         </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
+        
+        // Solo mostrar el aviso emergente la primera vez en la sesión actual
+        if (!yaVistoEnSesion) {
+            showBootstrapAlert(messageContent, "top-right", 5000);
+            sessionStorage.setItem(sessionKey, "true");
+        }
 
         const notificationHTML = `
                 <a id="msjCapacitacion${registros.idCapacitacion}" style="cursor:pointer;" >
