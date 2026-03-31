@@ -1,20 +1,20 @@
 ﻿<?php include("AutorizaPagina.php"); ?>
 <?php
-if (isset($_COOKIE["tipo_sesion"])) {
-  if ($_COOKIE["tipo_sesion"] != "1") {
-    echo '<meta http-equiv="refresh" content="0;url=logout.php">';
-    die();
-  }
-};
-if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
-  if ($_COOKIE["sesion"] != "activa" || $_COOKIE["verificaSesion"] != "activa") {
-    echo '<meta http-equiv="refresh" content="0;url=login.php">';
-    die();
-  }
-} else {
-  echo '<meta http-equiv="refresh" content="0;url=login.php">';
-  die();
-}
+// if (isset($_COOKIE["tipo_sesion"])) {
+//   if ($_COOKIE["tipo_sesion"] != "1") {
+//     echo '<meta http-equiv="refresh" content="0;url=logout.php">';
+//     die();
+//   }
+// };
+// if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
+//   if ($_COOKIE["sesion"] != "activa" || $_COOKIE["verificaSesion"] != "activa") {
+//     echo '<meta http-equiv="refresh" content="0;url=login.php">';
+//     die();
+//   }
+// } else {
+//   echo '<meta http-equiv="refresh" content="0;url=login.php">';
+//   die();
+// }
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -27,7 +27,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
 
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
   <link rel="stylesheet" href="assets/libs/smart-wizard/dist/css/smart_wizard_all.min.css">
@@ -85,7 +85,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   </div>
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
   <script src="assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="assets/libs/sweetalert2/dist/sweetalert2.all.min.js" charset="utf-8"></script>

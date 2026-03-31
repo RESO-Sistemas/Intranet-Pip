@@ -55,15 +55,21 @@ class Empleados extends Conexiones
   }
 
   function autorizaPermisoPagina($URL) {
-      // El método esperaba que la URL tuviera al menos un "/" y un segmento
-      // adicional. Asegurarse de que $URL sea una cadena y validar el índice.
       $URL = is_string($URL) ? $URL : '';
-      $parts = explode('/', $URL);
-      $URL = isset($parts[1]) ? $parts[1] : '';
 
       // Remover parámetros GET (todo lo que esté después de ?)
       if ($URL !== '' && strpos($URL, '?') !== false) {
         $URL = explode('?', $URL)[0];
+      }
+
+      // Extraer solo el nombre del archivo (por si viene con path)
+      $parts = explode('/', $URL);
+      $URL = end($parts); // tomar el último segmento (el nombre del archivo .php)
+
+      // Páginas que siempre se permiten para evitar loops
+      $paginasLibres = ['index.php', 'login.php', 'logout.php', ''];
+      if (in_array($URL, $paginasLibres)) {
+        return "1";
       }
 
       $idPuesto = (SessionManager::get("idSPuesto"));

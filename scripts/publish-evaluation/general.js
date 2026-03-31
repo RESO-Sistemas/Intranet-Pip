@@ -58,13 +58,9 @@ const contentAfter_SelBranch = {
 loadInitialFunctions();
 
 async function loadInitialFunctions() {
-
   getInitialConfigEvaluation();
-
-  // await getListAllBranchEmp();
-
-  // getAllActiveEmployees();
-
+  getAllActiveEmployees();
+  await getListAllBranchEmp();
 }
 
 async function getListAllBranchEmp() {
@@ -162,9 +158,9 @@ function printListAllBranchEmp() {
   }
 
   $("#selct_AllBranch").append(contentHTML);
-
-  $("#selct_AllBranch").select2();
-
+  $("#selct_AllBranch").select2({
+    width: '100%'
+  });
   checkTemporaryDataEvaluation();
 
 }
@@ -203,11 +199,22 @@ async function checkTemporaryDataEvaluation() {
 
   let arrSendB = [];
 
-  branchSel.forEach((b) => {
+  // Si hay un grupo seleccionado en el filtro, usar esas sucursales
+  if (branchSel && branchSel.length > 0) {
+    branchSel.forEach((b) => {
+      arrSendB.push(b.IdSucursal);
+    });
+  } else {
+    // Si no hay filtro seleccionado, usar todas las sucursales conocidas
+    allBranch.forEach((b) => {
+      arrSendB.push(b.IdSucursal);
+    });
+  }
 
-    arrSendB.push(b.IdSucursal);
-
-  });
+  if (arrSendB.length === 0) {
+    // No hay sucursales en el sistema, no hacer la petición
+    return;
+  }
 
   let dataSend = {
 
@@ -228,6 +235,14 @@ async function checkTemporaryDataEvaluation() {
     allTempData = dataR;
 
     printAllTablesTempData();
+
+    // Asegurar que el contenedor sea visible si hay datos
+    if (dataR && dataR.length > 0) {
+      const cardEmployees = document.getElementById("card_contentEmployees");
+      if (cardEmployees) {
+        cardEmployees.style.display = "";
+      }
+    }
 
   }
 
@@ -708,21 +723,14 @@ function printAllActiveEmployees() {
   }
 
   $("#slct_newEvaluated").select2({
-
     minimumInputLength: 3,
-
     language: {
-
       inputTooShort: function () {
-
         return "Ingrese mínimo 3 caracteres para poder buscar";
-
       },
-
     },
-
     dropdownParent: $("#contentNewEvaluator"),
-
+    width: "100%",
   });
 
 }
@@ -749,6 +757,10 @@ $(document).on("click", "#openNewEv", function () {
 
   printPossibleEvaluators();
 
+  $("#typeNewEvaluator").select2({
+    dropdownParent: $("#contentNewEvaluator"),
+    width: "100%",
+  });
 });
 
 
@@ -778,21 +790,14 @@ async function printPossibleEvaluators() {
   $("#slct_newEvaluator").append(contentHTML);
 
   $("#slct_newEvaluator").select2({
-
     minimumInputLength: 3,
-
     language: {
-
       inputTooShort: function () {
-
         return "Ingrese mínimo 3 caracteres para poder buscar";
-
       },
-
     },
-
     dropdownParent: $("#contentNewEvaluator"),
-
+    width: "100%",
   });
 
 }
@@ -847,31 +852,13 @@ async function addEmpleadoEvaluadorTempData() {
 
   if (ajaxR !== undefined) {
 
-    $("#contentNewEvaluator").modal("close");
+    // Cerrar modal Bootstrap 5
+    bootstrap.Modal.getInstance(document.getElementById("contentNewEvaluator"))?.hide();
 
-    allTempData.push(ajaxR.Data);
-
-    let tableId = `tableB_${ajaxR.Data.IdSucursalEvaluado}`;
-
-    let tempBranch = allTempData.filter(
-
-      (data) => data.IdSucursalEvaluado == ajaxR.Data.IdSucursalEvaluado
-
-    );
-
-    let table = document.getElementById(`${tableId}`);
-
-    // table.innerHTML = "";
-
-    $(table).empty();
-
-    printTablePerBranch(tempBranch, tableId);
-
-    // setTimeout(function () {
-
-    //   location.reload();
-
-    // }, 1500);
+    // Recargar la página para mostrar el nuevo evaluador en la tabla
+    setTimeout(function () {
+      location.reload();
+    }, 1200);
 
   }
 
@@ -944,81 +931,21 @@ $(document).on("click", "#publishEvaluation", async function () {
 async function acceptPublicationOfTheEvaluation() {
 
   let dataSend = {
-
     op: "acceptPublicationOfTheEvaluation",
-
     ev: gblEvaluation,
-
   };
 
-  Cargando();
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
 
-  try {
-
-    let respuesta = await $.ajax({
-
-      type: "post",
-
-      url: url_m_Evaluaciones,
-
-      data: dataSend,
-
-      dataType: "json",
-
-      timeout: 30000, // Reducido a 30 segundos
-
-    });
-
-    console.log("acceptPublicationOfTheEvaluation - Respuesta:", respuesta);
-
-    QuitarCargando();
-
-    if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
-
-      toastr.success(respuesta.Msg || "Evaluación publicada exitosamente.", "¡Completado!");
-
-      setTimeout(function () {
-
-        window.location.href = "ListadoEvaluaciones.php";
-
-      }, 1500);
-
+  if (ajaxR !== undefined) {
+    if (ajaxR.ConMsg) {
+      // pAjaxAsync ya muestra el mensaje de éxito
     } else {
-
-      const msg = respuesta && respuesta.Msg
-
-        ? respuesta.Msg
-
-        : "No se pudo publicar la evaluación.";
-
-      toastr.warning(msg, "Alerta");
-
+      toastr.success("Evaluación publicada exitosamente.", "¡Completado!");
     }
-
-  } catch (e) {
-
-    console.error("Error al publicar evaluación:", e);
-
-    QuitarCargando();
-
-    
-
-    let errorMsg = "No se pudo publicar la evaluación. Inténtelo de nuevo.";
-
-    if (e.statusText === "timeout") {
-
-      errorMsg = "La operación tardó demasiado. Por favor verifique si la evaluación se publicó e intente de nuevo.";
-
-    } else if (e.responseText) {
-
-      console.error("Respuesta del servidor:", e.responseText);
-
-    }
-
-    
-
-    toastr.error(errorMsg, "Error");
-
+    setTimeout(function () {
+      window.location.href = "ListadoEvaluaciones.php";
+    }, 1500);
   }
 
 }
@@ -1048,18 +975,18 @@ async function getInitialConfigEvaluation() {
       ajaxR.Data.TipoOpcionConfiguracion == null
 
     ) {
-
-      $(gblConfigEv.typeSelBranch).select2();
-
+      $(gblConfigEv.typeSelBranch).select2({
+        width: "100%",
+      });
       $(gblConfigEv.cardBranch).fadeOut();
-
-
 
       contentAfter_SelBranch.card_listBranch.style.display = "none";
 
+      // card_employees se mostrará en checkTemporaryDataEvaluation si hay datos
       contentAfter_SelBranch.card_employees.style.display = "none";
 
-      contentAfter_SelBranch.btn_OpenNewEv.style.display = "none";
+      // Mostrar botón de nuevo evaluador para poder agregar configuraciones
+      contentAfter_SelBranch.btn_OpenNewEv.style.display = "";
 
       contentAfter_SelBranch.btn_publishEv.style.display = "none";
 
@@ -1146,9 +1073,8 @@ const printBranch = (data) => {
   gblConfigEv.branch.innerHTML = cHTML;
 
   $(gblConfigEv.branch).select2({
-
     placeholder: "Listado de sucursales...",
-
+    width: "100%",
   });
 
 };

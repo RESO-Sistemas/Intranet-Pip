@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 
 <html>
@@ -301,7 +301,7 @@
 
             <!-- Modal Bootstrap 5 adaptado -->
 
-            <div class="modal fade" id="contentNewEvaluator" tabindex="-1" aria-labelledby="modalLabelNewEvaluator" aria-hidden="true">
+            <div class="modal fade" id="contentNewEvaluator" aria-labelledby="modalLabelNewEvaluator" aria-hidden="true">
 
               <div class="modal-dialog modal-dialog-centered modal-lg">
 
