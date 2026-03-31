@@ -282,14 +282,14 @@
           </div>
         </div>
         <!-- Modal Más Detalles Empleado  -->
-        <div class="modal fade" id="DetallesMasDetallesEmpleado" tabindex="-1" aria-labelledby="DetallesMasDetallesEmpleadoLabel" aria-hidden="true" style="overflow: visible !important;">
-          <div class="modal-dialog modal-dialog-centered modal-lg" style="overflow: visible !important;">
-            <div class="modal-content" style="overflow: visible !important;">
+        <div class="modal fade" id="DetallesMasDetallesEmpleado" tabindex="-1" aria-labelledby="DetallesMasDetallesEmpleadoLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="tituloOtrosDetalles">Detalles adicionales del empleado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
-              <div class="modal-body" style="overflow: visible !important;">
+              <div class="modal-body">
                 <form id="formUpdateMasDetalles" method="post">
                   <input type="hidden" name="EmpleadoMasDetalles" id="EmpleadoMasDetalles">
                   <input type="hidden" name="op" value="updateMasDetallesPersonal">
@@ -324,19 +324,19 @@
               </div>
 
               <div class="modal-footer justify-content-center">
-                <button type="button" name="button" id="btnUpdateMasDetalles" class="btn btn-success" onclick="updateMasDetallesEmpleado()">Actualizar</button>
+                <button type="button" name="button" id="btnUpdateMasDetalles" class="btn btn-success">Actualizar</button>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal fade" id="ModalAsignarHijo" tabindex="-1" aria-labelledby="ModalAsignarHijoLabel" aria-hidden="true" style="overflow: visible !important;">
-          <div class="modal-dialog modal-lg" style="overflow: visible !important;">
-            <div class="modal-content" style="overflow: visible !important;">
+        <div class="modal fade" id="ModalAsignarHijo" tabindex="-1" aria-labelledby="ModalAsignarHijoLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="ModalAsignarHijoLabel">Jefe Asignado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
-              <div class="modal-body" style="overflow: visible !important; padding: 30px;">
+              <div class="modal-body" style="padding: 30px;">
                 <div class="container-fluid">
                   <div class="row g-3 justify-content-center">
                     <div class="col-12">

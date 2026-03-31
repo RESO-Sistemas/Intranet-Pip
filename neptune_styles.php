@@ -138,15 +138,26 @@ if ($current_page !== 'login'):
     background: #dde1e9 !important;
   }
 
-  /* ====== FIX SELECT2 EN MODALES BOOTSTRAP 5 ====== */
-  .select2-container {
-    z-index: 2000 !important; /* Más que los modales de Bootstrap (1050-1060) */
+  /* ====== FIX SELECT2 Y MODALES EN BOOTSTRAP 5 ====== */
+  .modal {
+    z-index: 3000 !important;
+  }
+  .modal-backdrop {
+    z-index: 2990 !important;
   }
   .select2-container--open {
-    z-index: 2000 !important;
+    z-index: 4000 !important; /* El desplegable abierto siempre al frente */
+  }
+  /* Solo subir el z-index de los selectores que están DENTRO de un modal */
+  .modal .select2-container {
+    z-index: 3001 !important; /* Justo sobre el modal (3000) */
   }
   .select2-dropdown {
-    z-index: 2000 !important;
+    z-index: 4000 !important;
+  }
+  /* ====== SWEETALERT SIEMPRE AL FRENTE ====== */
+  .swal2-container {
+    z-index: 10000 !important;
   }
 </style>
 

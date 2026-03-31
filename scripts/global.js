@@ -129,16 +129,24 @@ function getMensajeVistoLineaEtica() {
     success: function (response) {
       response = JSON.parse(response.trim());
       for (var i = 0; i < response.length; i++) {
+        const idMsj = response[i]["idLineaEticaMensajes"];
+        const sessionKey = "visto_le_revisado_" + idMsj;
+        const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
         const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tu mensaje de Linea de etica "${response[i]["Mensaje"]}" <b>fue revisado</b>.</span>
         </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
+        
+        if (!yaVistoEnSesion) {
+            showBootstrapAlert(messageContent, "top-right", 5000);
+            sessionStorage.setItem(sessionKey, "true");
+        }
 
         const notificationHTML = `
             <a href="#">
-              <div class="notifications-dropdown-item" onclick="cerrarMensajeLineaEtica(${response[i]["idLineaEticaMensajes"]})">
+              <div class="notifications-dropdown-item" onclick="cerrarMensajeLineaEtica(${idMsj})">
                 <div class="notifications-dropdown-item-image">
                     <span class="notifications-badge bg-info text-white">
                         <i class="material-icons-outlined">campaign</i>
@@ -277,12 +285,19 @@ async function getMsgLineaEtica() {
   };
   const ajaxResponse = await pAjaxAsync(url_m_LineaE, datos, 0);
   if (ajaxResponse !== undefined) {
+    const sessionKey = "visto_le_pendientes_admin";
+    const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
     const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tienes mensajes de línea de ética pendientes por revisar.</span>
         </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
+    
+    if (!yaVistoEnSesion) {
+        showBootstrapAlert(messageContent, "top-right", 5000);
+        sessionStorage.setItem(sessionKey, "true");
+    }
 
     const notificationHTML = `
         <a href="#" style="cursor:pointer;">
