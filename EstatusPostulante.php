@@ -275,8 +275,8 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                                 }
                                 
                                 $historial = [];
-                                $historyResult = json_decode($Postulantes->getProcesosPostulacion($p['IdPostulanteVacante']), true);
-                                if ($historyResult['Resultado'] && !empty($historyResult['Data'])) {
+                                $historyResult = json_decode($Postulantes->getProcesosPostulacion(base64_encode($p['IdPostulanteVacante'])), true);
+                                if (isset($historyResult['Resultado']) && $historyResult['Resultado'] && !empty($historyResult['Data'])) {
                                     $historial = $historyResult['Data'];
                                 }
                                 $p['Historial'] = $historial;
@@ -430,7 +430,18 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                 </div>`;
             }
 
-            if(parseInt(p.EstatusPostulacion) === 3) {
+            const estatusInt = parseInt(p.EstatusPostulacion);
+            if(estatusInt === 2) {
+                timelineHTML += `
+                <div class="timeline-item completed mt-4 border-l-0">
+                    <div class="timeline-dot mt-1 flex items-center justify-center">
+                        <i data-lucide="check-circle" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <h4 class="text-green-400 font-bold mb-1 ml-6 block">¡Felicidades, has sido aceptado!</h4>
+                    <p class="text-sm text-gray-400 ml-6 block">Nos pondremos en contacto contigo para los siguientes pasos.</p>
+                </div>
+                `;
+            } else if(estatusInt === 3) {
                 timelineHTML += `
                 <div class="timeline-item rejected mt-4 border-l-0">
                     <div class="timeline-dot mt-1 flex items-center justify-center">
