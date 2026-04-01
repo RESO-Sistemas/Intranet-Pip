@@ -1,3 +1,5 @@
+let vacantesDataList = [];
+
 $(document).ready(function() {
     if (typeof ID_POSTULANTE !== 'undefined' && ID_POSTULANTE > 0) {
         loadVacantesPostulante(ID_POSTULANTE);
@@ -37,6 +39,7 @@ async function loadVacantesPostulante(idPostulante) {
 }
 
 function renderVacantesList(list) {
+    vacantesDataList = list;
     const html = list.map((pv, index) => {
         const id = pv.IdPostulanteVacante;
         const nombreVacante = safeText(pv.NombreVacante);
@@ -65,17 +68,64 @@ function renderVacantesList(list) {
         const idVacante = $(this).data('id');
         const nombreText = $(this).text().trim().replace('work', '');
         $('#tituloVacante').text(nombreText);
+
+        const row = vacantesDataList.find(v => v.IdPostulanteVacante == idVacante);
+        if (row) {
+            $('#contenedorBotonesDocumentos').html(renderBotonesDocumentos(row.RutaCV || "", row.RutaSolicitudEmpleo || "", "El postulante"));
+        }
+
         loadProcesosPostulacion(idVacante);
     });
 
     if (list.length > 0) {
         const first = list[0];
         $('#tituloVacante').text(safeText(first.NombreVacante));
+        $('#contenedorBotonesDocumentos').html(renderBotonesDocumentos(first.RutaCV || "", first.RutaSolicitudEmpleo || "", "El postulante"));
         loadProcesosPostulacion(first.IdPostulanteVacante);
     } else {
         $('#tituloVacante').text('Sin vacantes');
         $('#timelineProcesos').html('<div class="text-muted small">No hay postulaciones.</div>');
+        $('#contenedorBotonesDocumentos').html('<div class="text-muted small">No hay vacantes</div>');
     }
+}
+
+function buildDownloadUrl(viewUrl) {
+    if (!viewUrl) return '';
+    return viewUrl.replace('op=viewArchivo', 'op=downloadArchivo');
+}
+
+function renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante = "Postulante") {
+  if (rutaCV == "NULL" || rutaCV == "null") rutaCV = "";
+  if (rutaSE == "NULL" || rutaSE == "null") rutaSE = "";
+
+  const hasCV = !!rutaCV;
+  const hasSE = !!rutaSE;
+  let html = '<div class="d-flex flex-column gap-2">';
+  if (hasCV) {
+    html += `
+      <a href="${rutaCV}" target="_blank" class="btn btn-secondary text-white w-100 mb-1" style="border-radius:6px;">
+        Ver CV
+      </a>
+      <a href="${buildDownloadUrl(rutaCV)}" target="_blank" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:6px;">
+        Descargar CV
+      </a>
+    `;
+  }
+  if (hasSE) {
+    html += `
+      <a href="${rutaSE}" target="_blank" class="btn btn-secondary text-white w-100 mb-1" style="border-radius:6px;">
+        Ver Solicitud
+      </a>
+      <a href="${buildDownloadUrl(rutaSE)}" target="_blank" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:6px;">
+        Descargar Solicitud
+      </a>
+    `;
+  }
+  if (!hasCV && !hasSE) {
+    html += `<div class="alert alert-warning mb-0 small text-center"><i class="material-icons-outlined align-middle mb-1">sentiment_dissatisfied</i><br>Sin documentos.</div>`;
+  }
+  html += "</div>";
+  return html;
 }
 
 async function loadProcesosPostulacion(idPostulanteVacante) {

@@ -33,7 +33,14 @@ function printDetalleEv(dataR) {
   let contenidoForm = "";
   let contador = 0;
   let contenidoGeneral = "";
+  let firstUnansweredIndex = 0;
+  let foundFirstUnanswered = false;
+
   dataR.forEach((allC, index) => {
+    if (!foundFirstUnanswered && allC.Contestado == 0) {
+      firstUnansweredIndex = index;
+      foundFirstUnanswered = true;
+    }
     console.log(allC);
     contador++;
     let contentConfig = "";
@@ -216,12 +223,12 @@ function printDetalleEv(dataR) {
   dv_contentComp.innerHTML = contenidoGeneral;
   $(function () {
     $("#smartwizard").smartWizard({
-      selected: 0, // Initial selected step, 0 = first step
+      selected: firstUnansweredIndex, // Initial selected step
       theme: "dots", // theme for the wizard, related css need to include for other than default theme
       justified: true, // Nav menu justification. true/false
       autoAdjustHeight: true, // Automatically adjust content height
       backButtonSupport: true, // Enable the back button support
-      enableUrlHash: true, // Enable selection of the step based on url hash,
+      enableUrlHash: false, // Enable selection of the step based on url hash,
       transition: {
         animation: "slideVertical", // Animation effect on navigation, none|fade|slideHorizontal|slideVertical|slideSwing|css(Animation CSS class also need to specify)
         speed: "400", // Animation speed. Not used if animation is 'css'
@@ -285,14 +292,14 @@ function printDetalleEv(dataR) {
   );
 }
 
-async function dialogfinishEvaluation(eval) {
-  let dv = `contentValues${eval}`;
+async function dialogfinishEvaluation(evalIndex) {
+  let dv = `contentValues${evalIndex}`;
   const resultV = await validateValue(dv);
   if (resultV) {
     const title = "¿Desea enviar la evaluación?";
     const resultDial = await dialogConfirmSAlert(title);
     if (resultDial) {
-      await finishEvaluation(eval);
+      await finishEvaluation(evalIndex);
     }
   }
 }

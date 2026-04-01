@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <?php
 require_once("Backend/Empleados/Empleados.php");
 $ins = new Empleados();
@@ -242,10 +242,10 @@ $MenuP = $Conf->getMenusPadre();
               <div id="table_general_detail" class="mb-4"></div>
 
               <!-- Listado de Evaluadores -->
-              <div class="row justify-content-center align-items-center mb-4" style="min-height: 100px;">
-                <div class="col-8 text-center">
-                  <label class="form-label">Listado de Evaluadores:</label>
-                  <select id="slc_evaluated_by" class="form-select text-center"></select>
+              <div class="row justify-content-center mb-4">
+                <div class="col-12 col-md-6 text-center">
+                  <label class="form-label d-block mb-2">Listado de Evaluadores:</label>
+                  <select id="slc_evaluated_by" class="form-select w-100"></select>
                 </div>
               </div>
 
