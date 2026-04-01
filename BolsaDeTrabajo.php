@@ -1,3 +1,17 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$user_session_json = json_encode([
+    'loggedIn' => isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true,
+    'curp' => isset($_SESSION['curp_candidato']) ? $_SESSION['curp_candidato'] : '',
+    'nombre' => isset($_SESSION['nombre_candidato']) ? $_SESSION['nombre_candidato'] : '',
+    'apellidoPaterno' => isset($_SESSION['apellido_p_candidato']) ? $_SESSION['apellido_p_candidato'] : '',
+    'apellidoMaterno' => isset($_SESSION['apellido_m_candidato']) ? $_SESSION['apellido_m_candidato'] : '',
+    'correo' => isset($_SESSION['correo_candidato']) ? $_SESSION['correo_candidato'] : '',
+    'telefono' => isset($_SESSION['telefono_candidato']) ? $_SESSION['telefono_candidato'] : ''
+]);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +21,9 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        const USER_SESSION = <?php echo $user_session_json; ?>;
+    </script>
 
     <style>
         /* Fondo de puntos */
@@ -250,6 +267,13 @@
     </div>
 
     <div class="relative z-10">
+        <div class="absolute top-6 left-6 md:top-8 md:left-8 z-50">
+            <a href="EstatusPostulante.php" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-[#f2bb46]/30 text-[#f2bb46] hover:bg-[#f2bb46]/10 hover:border-[#f2bb46]/50 transition-all text-sm font-bold backdrop-blur-md shadow-lg shadow-[#f2bb46]/5">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                Mi Estatus
+            </a>
+        </div>
+
         <header class="pt-20 pb-16 px-4 text-center">
             
             <div class="mb-8 flex justify-center">

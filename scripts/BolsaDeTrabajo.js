@@ -11,6 +11,7 @@
 let vacantesData = [];
 let vacanteSeleccionada = null;
 let sepomexCache = {}; // Cache para evitar consultas repetidas
+let postulacionesUser = []; // IDs de vacantes donde el usuario ya aplicó
 
 /**
  * Consulta la API local de códigos postales SEPOMEX
@@ -476,6 +477,15 @@ function renderJobs(vacantes) {
                 ` : ''}
 
                 <!-- Botón de aplicar -->
+                ${postulacionesUser.includes(parseInt(vacante.IdVacante)) ? `
+                <button type="button" disabled
+                    class="w-full py-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                        Registrado
+                    </span>
+                </button>
+                ` : `
                 <button type="button" 
                     onclick="abrirModalPostulacion(${vacante.IdVacante})"
                     class="ripple-btn btn-apply w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-[#f2bb46] hover:text-black hover:border-[#f2bb46] transition-all group/btn flex items-center justify-center gap-2">
@@ -484,6 +494,7 @@ function renderJobs(vacantes) {
                         <i data-lucide="chevron-right" class="w-4 h-4 transition-transform group-hover/btn:translate-x-1"></i>
                     </span>
                 </button>
+                `}
             </div>
         </div>
         `;
@@ -551,6 +562,32 @@ function abrirModalPostulacion(idVacante) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
+    
+    // Auto-completar datos si el usuario tiene sesión activa
+    if (typeof USER_SESSION !== 'undefined' && USER_SESSION.loggedIn) {
+        const form = document.getElementById('form-postulacion');
+        if(form) {
+            const inputs = {
+                'Nombre': USER_SESSION.nombre || '',
+                'ApellidoPaterno': USER_SESSION.apellidoPaterno || '',
+                'ApellidoMaterno': USER_SESSION.apellidoMaterno || '',
+                'CURP': USER_SESSION.curp || '',
+                'CorreoElectronico': USER_SESSION.correo || '',
+                'Telefono': USER_SESSION.telefono || ''
+            };
+            
+            for (const [name, value] of Object.entries(inputs)) {
+                if (value) {
+                    const inputEl = form.querySelector(`input[name="${name}"]`);
+                    if (inputEl) {
+                        inputEl.value = value;
+                        inputEl.readOnly = true;
+                        inputEl.classList.add('cursor-not-allowed', 'opacity-60', 'bg-white/5');
+                    }
+                }
+            }
+        }
+    }
     
     // Inicializar iconos de Lucide para los nuevos elementos
     lucide.createIcons();
@@ -752,11 +789,12 @@ async function enviarPostulacion(e) {
             // Éxito
             formContainer.classList.add('hidden');
             successMsg.classList.remove('hidden');
+            successMsg.classList.add('flex');
             
-            // Cerrar automáticamente después de 4 segundos
+            // Recargar la página después de 3 segundos para reflejar la sesión y marcar la tarjeta como "Registrado"
             setTimeout(() => {
-                cerrarModalPostulacion();
-            }, 4000);
+                window.location.reload();
+            }, 3000);
         } else {
             // Error del servidor
             mostrarErrorModal(respuesta.Mensaje || respuesta.Msg || 'Error al procesar la solicitud');
@@ -782,6 +820,7 @@ function mostrarErrorModal(mensaje) {
     
     formContainer.classList.add('hidden');
     errorMsg.classList.remove('hidden');
+    errorMsg.classList.add('flex');
     if (errorDetail) {
         errorDetail.textContent = mensaje;
     }
@@ -823,8 +862,42 @@ function handleRipple(e, button) {
  */
 async function cargarVacantes() {
     mostrarCargando();
-    const vacantes = await fetchVacantes();
-    renderJobs(vacantes);
+    
+    // Cargar en paralelo vacantes y postulaciones del usuario logueado
+    const vacantesPromise = fetchVacantes();
+    let postulacionesPromise = Promise.resolve([]);
+    
+    if (typeof USER_SESSION !== 'undefined' && USER_SESSION.loggedIn) {
+        postulacionesPromise = fetchPostulacionesUser();
+    }
+    
+    const [vacantes, postulaciones] = await Promise.all([vacantesPromise, postulacionesPromise]);
+    
+    vacantesData = vacantes;
+    postulacionesUser = postulaciones;
+    
+    renderJobs(vacantesData);
+}
+
+/**
+ * Obtiene los IDs de las vacantes a las que el usuario ya aplicó
+ */
+async function fetchPostulacionesUser() {
+    try {
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { op: "postulacionesCandidato" },
+            dataType: "json"
+        });
+        
+        if (respuesta.Resultado && respuesta.Data) {
+            return respuesta.Data.map(p => parseInt(p.IdVacante));
+        }
+    } catch (error) {
+        console.error('Error al obtener postulaciones del usuario:', error);
+    }
+    return [];
 }
 
 // Ejecutar al cargar el documento

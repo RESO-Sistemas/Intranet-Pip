@@ -802,6 +802,125 @@ class Postulantes extends Conexiones
     }
 
     // ==========================================
+    // PORTAL CANDIDATO (AUTO-LOGIN Y TRAZABILIDAD)
+    // ==========================================
+
+    /**
+     * Validar credenciales de candidato (CURP como usuario, Correo como contraseña)
+     */
+    public function validarCandidato($curp, $correo)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+            $correo = $this->sanitize($correo);
+            
+            $q = "SELECT IdPostulante, Nombre, ApellidoPaterno, ApellidoMaterno, CURP, CorreoElectronico 
+                  FROM Postulantes 
+                  WHERE UPPER(CURP) = UPPER('$curp') 
+                  AND LOWER(CorreoElectronico) = LOWER('$correo')
+                  LIMIT 1";
+            
+            $resultado = $this->Procedure($q);
+            
+            if (sizeof($resultado) > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Data" => $resultado[0]
+                ]);
+            } else {
+                return json_encode([
+                    "Resultado" => false,
+                    "Msg" => "No encontramos postulaciones con esa CURP y Correo."
+                ]);
+            }
+        } catch (\Exception $e) {
+            error_log("Error en validarCandidato: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Msg" => "Error interno al validar."
+            ]);
+        }
+    }
+
+    /**
+     * Obtener las postulaciones de un candidato por su CURP
+     */
+    public function getPostulacionesByCurp($curp)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+            
+            $q = "SELECT 
+                    pv.IdPostulanteVacante,
+                    pv.IdVacante,
+                    v.NombreVacante,
+                    a.NombreArea,
+                    s.Sucursal,
+                    pv.FechaPostulacion,
+                    pv.EstatusPostulacion 
+                  FROM PostulantesVacantes pv
+                  INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                  INNER JOIN Vacantes v ON v.IdVacante = pv.IdVacante
+                  LEFT JOIN AreasTecnicas a ON a.IdAreaTecnica = v.IdAreaTecnica
+                  LEFT JOIN SucursalDepto s ON s.IdSucursal = v.IdSucursal
+                  WHERE UPPER(p.CURP) = UPPER('$curp')
+                  ORDER BY pv.FechaPostulacion DESC";
+                  
+            $resultado = $this->Procedure($q);
+            
+            return json_encode([
+                "Resultado" => true,
+                "Data" => $resultado
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en getPostulacionesByCurp: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Data" => [],
+                "Msg" => "Error interno: " . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Verificar si el candidato ya está postulado a una vacante en concreto
+     */
+    public function checkPostulacionDuplicada($curp, $idVacante)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+            $idVacanteSQL = is_numeric($idVacante) ? intval($idVacante) : intval(base64_decode($idVacante));
+            
+            $q = "SELECT pv.IdPostulanteVacante
+                  FROM PostulantesVacantes pv
+                  INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                  WHERE UPPER(p.CURP) = UPPER('$curp')
+                  AND pv.IdVacante = $idVacanteSQL
+                  LIMIT 1";
+                  
+            $resultado = $this->Procedure($q);
+            
+            if (sizeof($resultado) > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Duplicada" => true
+                ]);
+            } else {
+                return json_encode([
+                    "Resultado" => true,
+                    "Duplicada" => false
+                ]);
+            }
+        } catch (\Exception $e) {
+            error_log("Error en checkPostulacionDuplicada: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Msg" => "Error al comprobar duplicidad."
+            ]);
+        }
+    }
+
+    // ==========================================
     // UTILIDADES
     // ==========================================
 

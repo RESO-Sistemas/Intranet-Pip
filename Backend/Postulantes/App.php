@@ -1,4 +1,9 @@
 <?php
+// Iniciar sesión al comienzo para que el auto-login sea persistido correctamente
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 include("Postulantes.php");
 include("PostulantesArchivos.php");
 
@@ -229,6 +234,13 @@ if ($op == "publicApplyToVacante") {
         exit;
     }
 
+    // Validar que no exista postulación duplicada (misma vacante y CURP)
+    $checkDuplicado = json_decode($Postulantes->checkPostulacionDuplicada($CURP, $IdVacante), true);
+    if ($checkDuplicado['Resultado'] && $checkDuplicado['Duplicada']) {
+        echo json_encode(["Resultado" => false, "Msg" => "El postulante ya está registrado en esta vacante."]);
+        exit;
+    }
+
     // Insertar postulante y postulacion en Base de Datos
     $resultado = trim($Postulantes->addPostulanteConPostulacion($IdVacante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
                $CURP, $Telefono, $CorreoElectronico, $Direccion, $Estado, $Ciudad, 
@@ -258,10 +270,26 @@ if ($op == "publicApplyToVacante") {
                 ]);
             } else {
                 $successMsg = isset($resObj['Msg']) ? $resObj['Msg'] : "Postulacion registrada exitosamente";
+                if (session_status() === PHP_SESSION_NONE) { session_start(); }
+                $_SESSION['logged_in'] = true;
+                $_SESSION['curp_candidato'] = $CURP;
+                $_SESSION['nombre_candidato'] = $Nombre;
+                $_SESSION['correo_candidato'] = $CorreoElectronico;
+                $_SESSION['apellido_p_candidato'] = $ApellidoPaterno;
+                $_SESSION['apellido_m_candidato'] = $ApellidoMaterno;
+                $_SESSION['telefono_candidato'] = $Telefono;
                 echo json_encode(["Resultado" => true, "Msg" => $successMsg]);
             }
         } else {
             $successMsg = isset($resObj['Msg']) ? $resObj['Msg'] : "Postulacion registrada exitosamente";
+            if (session_status() === PHP_SESSION_NONE) { session_start(); }
+            $_SESSION['logged_in'] = true;
+            $_SESSION['curp_candidato'] = $CURP;
+            $_SESSION['nombre_candidato'] = $Nombre;
+            $_SESSION['correo_candidato'] = $CorreoElectronico;
+            $_SESSION['apellido_p_candidato'] = $ApellidoPaterno;
+            $_SESSION['apellido_m_candidato'] = $ApellidoMaterno;
+            $_SESSION['telefono_candidato'] = $Telefono;
             echo json_encode(["Resultado" => true, "Msg" => $successMsg]);
         }
     } else {
@@ -589,6 +617,49 @@ if ($op == "consultarCodigoPostal") {
             "Resultado" => false,
             "Msg" => "Error al consultar código postal: " . $e->getMessage()
         ], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
+
+// ==========================================
+// PORTAL CANDIDATO (AUTO-LOGIN Y TRAZABILIDAD)
+// ==========================================
+
+// Login para Portal del Candidato
+if ($op == "loginCandidato") {
+    header('Content-Type: application/json; charset=utf-8');
+    $curp = isset($_POST["curp"]) ? $_POST["curp"] : '';
+    $email = isset($_POST["email"]) ? $_POST["email"] : '';
+    
+    $loginResult = json_decode($Postulantes->validarCandidato($curp, $email), true);
+    
+    if ($loginResult['Resultado']) {
+        if (session_status() === PHP_SESSION_NONE) { session_start(); }
+        $_SESSION['logged_in'] = true;
+        $_SESSION['curp_candidato'] = $loginResult['Data']['CURP'];
+        $_SESSION['nombre_candidato'] = $loginResult['Data']['Nombre'];
+        $_SESSION['correo_candidato'] = $loginResult['Data']['CorreoElectronico'];
+        $_SESSION['apellido_p_candidato'] = $loginResult['Data']['ApellidoPaterno'];
+        $_SESSION['apellido_m_candidato'] = $loginResult['Data']['ApellidoMaterno'];
+        $_SESSION['telefono_candidato'] = $loginResult['Data']['Telefono'];
+        
+        echo json_encode(["Resultado" => true, "Msg" => "Login exitoso"]);
+    } else {
+        echo json_encode(["Resultado" => false, "Msg" => $loginResult['Msg']]);
+    }
+    exit;
+}
+
+// Obtener postulaciones activas del candidato por sesión
+if ($op == "postulacionesCandidato") {
+    header('Content-Type: application/json; charset=utf-8');
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+    
+    if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_SESSION['curp_candidato'])) {
+        $curp = $_SESSION['curp_candidato'];
+        echo trim($Postulantes->getPostulacionesByCurp($curp));
+    } else {
+        echo json_encode(["Resultado" => false, "Msg" => "No hay sesión activa"]);
     }
     exit;
 }
