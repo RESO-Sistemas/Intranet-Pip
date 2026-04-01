@@ -491,7 +491,7 @@ async function getDatosOrganigramas() {
 
                 email: `${d.Email}`,
 
-                color: "red",
+                color: "#ffc107",
 
                 constraints:
 
@@ -577,7 +577,7 @@ async function loadOrganigrama(Organigrama, Datos) {
 
           node.annotations = [{ content: "" }];
 
-          node.style = { fill: data.color };
+          node.style = { fill: data.color, strokeColor: data.color, strokeWidth: 2 };
 
         },
 
@@ -867,6 +867,8 @@ function connectorDefaults(connector) {
 
   connector.targetDecorator = { shape: "None" };
 
+  connector.style = { strokeColor: "#ffc107", strokeWidth: 2 };
+
   return connector;
 
 }
@@ -883,7 +885,7 @@ function setNodeTemplate(obj, diagram) {
 
   content.orientation = "Horizontal";
 
-  content.style.strokeColor = "red";
+  content.style.strokeColor = "#ffc107";
 
   content.padding = { left: 10, right: 10, top: 20, bottom: 5 };
 
