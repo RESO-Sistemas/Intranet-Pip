@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -91,7 +91,9 @@
                                                     </div>
                                                     <div class="col-12 col-md-6">
                                                         <label class="form-label">Sucursal:</label>
-                                                        <select id="sl_branch" name="sucursal" class="form-control form-select" required disabled></select>
+                                                        <select id="sl_branch" name="sucursal" class="form-control form-select" required disabled>
+                                                            <option value="" selected disabled>Seleccione una sucursal</option>
+                                                        </select>
                                                         <span for="sl_branch"></span>
                                                     </div>
                                                 </div>

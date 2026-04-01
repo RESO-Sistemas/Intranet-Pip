@@ -55,15 +55,21 @@ class Empleados extends Conexiones
   }
 
   function autorizaPermisoPagina($URL) {
-      // El método esperaba que la URL tuviera al menos un "/" y un segmento
-      // adicional. Asegurarse de que $URL sea una cadena y validar el índice.
       $URL = is_string($URL) ? $URL : '';
-      $parts = explode('/', $URL);
-      $URL = isset($parts[1]) ? $parts[1] : '';
 
       // Remover parámetros GET (todo lo que esté después de ?)
       if ($URL !== '' && strpos($URL, '?') !== false) {
         $URL = explode('?', $URL)[0];
+      }
+
+      // Extraer solo el nombre del archivo (por si viene con path)
+      $parts = explode('/', $URL);
+      $URL = end($parts); // tomar el último segmento (el nombre del archivo .php)
+
+      // Páginas que siempre se permiten para evitar loops
+      $paginasLibres = ['index.php', 'login.php', 'logout.php', ''];
+      if (in_array($URL, $paginasLibres)) {
+        return "1";
       }
 
       $idPuesto = (SessionManager::get("idSPuesto"));
@@ -1875,9 +1881,11 @@ class Empleados extends Conexiones
             $CantidadNotificaciones = ($CantidadNotificaciones + $CantNotifVacacionesFinales);
         }
         $Conexiones4 = new Conexiones();
-        $q4 = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados FROM CapacitacionDetalle AS CD
-                INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
-                WHERE C.Status = 1;";
+        $q4 = "SELECT C.idCapacitacion, CD.NoEmpleado AS ALLEmpleados 
+                 FROM CapacitacionDetalle AS CD
+                 INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
+                 WHERE C.Status = 1
+                 GROUP BY C.idCapacitacion;";
         $cons4 = $Conexiones4->Select($q4,array());
         if (sizeof($cons4) > 0) {
           for ($i=0; $i < sizeof($cons4) ; $i++) {
@@ -2171,9 +2179,13 @@ class Empleados extends Conexiones
       $ArrayRetorno = [];
       $Datos = [];
       $NoEmpleado = (SessionManager::get("NoEmpleado"));
-      $q = "SELECT  C.idCapacitacion,CD.NoEmpleado  AS ALLEmpleados,concat('Se te ha asignado la siguiente capacitaci?n:?',Descripcion) as Descripcion,concat('La capacitaci?n comenzar? el d?a ',date_format(FechaInicio,'%d-%m-%Y')) AS FechaInicio,(select TIMESTAMPDIFF(DAY,C.FechaInicio,NOW())) as DifDias FROM CapacitacionDetalle AS CD
-              INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
-              WHERE C.Status = 1;";
+      $q = "SELECT C.idCapacitacion, CD.NoEmpleado AS ALLEmpleados, 
+                   CONCAT('Se te ha asignado la siguiente capacitación: ', Descripcion) AS Descripcion, 
+                   CONCAT('La capacitación comenzará el día ', DATE_FORMAT(FechaInicio,'%d-%m-%Y')) AS FechaInicio 
+            FROM CapacitacionDetalle AS CD
+            INNER JOIN Capacitacion AS C ON C.idCapacitacion = CD.id_capacitacion
+            WHERE C.Status = 1
+            GROUP BY C.idCapacitacion;";
       $cons = $this->Select($q,array());
       if (sizeof($cons) > 0) {
         for ($i=0; $i < sizeof($cons) ; $i++) {

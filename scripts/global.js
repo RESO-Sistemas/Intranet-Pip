@@ -13,23 +13,23 @@ let prof_Name, prof_Email, prof_Img, prof_imgSmall;
 let prof_NameMobile, prof_EmailMobile, prof_ImgMobile;
 
 // Esperar a que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // No ejecutar funciones globales en la página de login
   const currentPage = window.location.pathname.split('/').pop();
   if (currentPage === 'login.php') {
     return;
   }
-  
+
   prof_Name = document.getElementById("PerfilNombreEmp");
   prof_Email = document.getElementById("PerfilCorreoEmp");
   prof_Img = document.getElementById("profileImg");
   prof_imgSmall = document.getElementById("imgSmallProfile");
-  
+
   // Versiones mobile
   prof_NameMobile = document.getElementById("PerfilNombreEmpMobile");
   prof_EmailMobile = document.getElementById("PerfilCorreoEmpMobile");
   prof_ImgMobile = document.getElementById("profileImgMobile");
-  
+
   loadAllFunctions();
 });
 
@@ -53,7 +53,7 @@ class Empleado {
     if (prof_Name) prof_Name.textContent = this._name;
     if (prof_Email) prof_Email.textContent = this._email;
     if (prof_Img) prof_Img.src = this._image;
-    
+
     // Sincronizar con versiones mobile
     if (prof_NameMobile) prof_NameMobile.textContent = this._name;
     if (prof_EmailMobile) prof_EmailMobile.textContent = this._email;
@@ -129,16 +129,24 @@ function getMensajeVistoLineaEtica() {
     success: function (response) {
       response = JSON.parse(response.trim());
       for (var i = 0; i < response.length; i++) {
+        const idMsj = response[i]["idLineaEticaMensajes"];
+        const sessionKey = "visto_le_revisado_" + idMsj;
+        const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
         const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tu mensaje de Linea de etica "${response[i]["Mensaje"]}" <b>fue revisado</b>.</span>
         </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
         
+        if (!yaVistoEnSesion) {
+            showBootstrapAlert(messageContent, "top-right", 5000);
+            sessionStorage.setItem(sessionKey, "true");
+        }
+
         const notificationHTML = `
             <a href="#">
-              <div class="notifications-dropdown-item" onclick="cerrarMensajeLineaEtica(${response[i]["idLineaEticaMensajes"]})">
+              <div class="notifications-dropdown-item" onclick="cerrarMensajeLineaEtica(${idMsj})">
                 <div class="notifications-dropdown-item-image">
                     <span class="notifications-badge bg-info text-white">
                         <i class="material-icons-outlined">campaign</i>
@@ -150,12 +158,12 @@ function getMensajeVistoLineaEtica() {
               </div>
             </a>
           `;
-        
+
         $("#notificacionesMenuLEtica").append(notificationHTML);
         $("#notificacionesMenuLEticaMobile").append(notificationHTML);
       }
     },
-    error: function (e) {},
+    error: function (e) { },
   });
 }
 
@@ -186,7 +194,7 @@ function cerrarMensajeLineaEtica(val) {
         showBootstrapAlert(messageContent, "top-right", 5000);
       }
     },
-    error: function (e) {},
+    error: function (e) { },
   });
 }
 
@@ -235,6 +243,11 @@ async function getCantidadNotificaciones() {
     console.log(error);
   } finally {
     $("#cantidadNotificaciones").html(respuesta[0]);
+    if (respuesta[0] > 0) {
+      $("#cantidadNotificacionesBadge").html(respuesta[0]).show();
+    } else {
+      $("#cantidadNotificacionesBadge").hide();
+    }
   }
 }
 
@@ -272,13 +285,20 @@ async function getMsgLineaEtica() {
   };
   const ajaxResponse = await pAjaxAsync(url_m_LineaE, datos, 0);
   if (ajaxResponse !== undefined) {
+    const sessionKey = "visto_le_pendientes_admin";
+    const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
     const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tienes mensajes de línea de ética pendientes por revisar.</span>
         </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
     
+    if (!yaVistoEnSesion) {
+        showBootstrapAlert(messageContent, "top-right", 5000);
+        sessionStorage.setItem(sessionKey, "true");
+    }
+
     const notificationHTML = `
         <a href="#" style="cursor:pointer;">
           <div class="notifications-dropdown-item">
@@ -293,7 +313,7 @@ async function getMsgLineaEtica() {
             </div>
         </a>
       `;
-    
+
     $("#notificacionesPendienteLEtica").append(notificationHTML);
     $("#notificacionesPendienteLEticaMobile").append(notificationHTML);
   }
@@ -379,7 +399,7 @@ async function getMsgSolicitudesVacacionesRecibidas() {
               </div>
               </a>
           `;
-        
+
         $("#notificacionesMenuSVacaciones").append(notificationHTML);
         $("#notificacionesMenuSVacacionesMobile").append(notificationHTML);
       });
@@ -483,7 +503,7 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
               <span class="alert-text">$${registros.Msg}</span>
           </div>`;
           showBootstrapAlert(messageContent, "top-right", 5000);
-          
+
           const notificationHTML = `
                 <a id="msjSolicitudesVacacionesNomina${registros.idSolicitudesVacaciones}" style="cursor:pointer;" >
                   <div class="notifications-dropdown-item" onclick="cerrarMensajeSolicitudesNomina(${registros.idSolicitudesVacaciones})">
@@ -498,7 +518,7 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
                   </div>
                 </a>
           `;
-          
+
           $("#notificacionesMenuSVacacionesNomina").append(notificationHTML);
           $("#notificacionesMenuSVacacionesNominaMobile").append(notificationHTML);
         });
@@ -817,12 +837,20 @@ async function getMensajeCapacitacionGlobal() {
     $("#notificacionesCapacitacionMobile").html("");
     if (respuesta.length > 0) {
       respuesta.forEach((registros) => {
+        const sessionKey = "visto_capacitacion_" + registros.idCapacitacion;
+        const yaVistoEnSesion = sessionStorage.getItem(sessionKey);
+
         const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Capacitacion!</span>
               <span class="alert-text">${registros.Descripcion}<br>${registros.FechaInicio}</span>
         </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
+        
+        // Solo mostrar el aviso emergente la primera vez en la sesión actual
+        if (!yaVistoEnSesion) {
+            showBootstrapAlert(messageContent, "top-right", 5000);
+            sessionStorage.setItem(sessionKey, "true");
+        }
 
         const notificationHTML = `
                 <a id="msjCapacitacion${registros.idCapacitacion}" style="cursor:pointer;" >
@@ -838,7 +866,7 @@ async function getMensajeCapacitacionGlobal() {
                   </div>
               </a>
          `;
-        
+
         $("#notificacionesCapacitacion").append(notificationHTML);
         $("#notificacionesCapacitacionMobile").append(notificationHTML);
       });

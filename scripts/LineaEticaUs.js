@@ -1,13 +1,17 @@
 cargarDatos();
 function cargarDatos() {
-  // getListBranches();
   getDivisiones();
   getOpcionesLineaEtica();
+  $('#division').select2({ placeholder: "Línea de ética" });
+  $('#sl_branch').select2({ placeholder: "Seleccione una sucursal" });
+  $('#slctLineaEtica').select2({ placeholder: "Selecciona una opción" });
 }
 
 $(document).on("change", "#division", () => {
   getListBranches();
   $("#sl_branch").prop("disabled", false);
+  // Al cambiar división, reiniciamos el selector de sucursal
+  $('#sl_branch').val(null).trigger('change');
 });
 
 async function getListBranches() {
@@ -25,6 +29,8 @@ async function getListBranches() {
       initialOption: "Seleccione una sucursal",
       idElement: "sl_branch",
     });
+    // Forzamos la actualización de Select2 tras cargar los datos
+    $('#sl_branch').trigger('change');
   }
 }
 

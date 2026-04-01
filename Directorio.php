@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -29,6 +29,42 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css" />
     <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
     <script src="componentes/detallesEmpleadoLogeado.js"></script>
+    <style>
+        /* ====== MEJORA DE ESTILO PARA PESTAÑAS (TABS) EN DIRECTORIO ====== */
+        #myTab {
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        #myTab .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            background: transparent;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        #myTab .nav-link:hover {
+            color: #3467f1;
+            background-color: rgba(52, 103, 241, 0.05);
+        }
+
+        #myTab .nav-link.active {
+            color: #3467f1 !important;
+            font-weight: 700;
+            background: transparent;
+            border-bottom: 3px solid #3467f1 !important;
+            opacity: 1;
+        }
+
+        /* Estilo para las tarjetas que contienen las tablas */
+        .tab-content .card {
+            border-top-left-radius: 0;
+            border-top: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 
 
 </head>

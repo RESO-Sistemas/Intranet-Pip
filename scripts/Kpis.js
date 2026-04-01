@@ -187,13 +187,13 @@ function _renderTablaKpis(respuesta) {
           const puestosData = row.Puestos ? row.Puestos.replace(/'/g, "\\'") : 'TODOS';
 
           return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <button class="btn btn-primary btn-sm" title="Editar" onclick="editarKpi('${idEncoded}', '${row.Nombre}', '${row.ValorAlta}', '${row.ValorMedia}', '${row.ValorBaja}', '${row.Prioridad}', '${puestosData}')">
+            <button class="btn btn-primary btn-accion" title="Editar" onclick="editarKpi('${idEncoded}', '${row.Nombre}', '${row.ValorAlta}', '${row.ValorMedia}', '${row.ValorBaja}', '${row.Prioridad}', '${puestosData}')">
               <span class="material-symbols-outlined">edit</span>
             </button>
-            <button class="btn ${toggleColor} btn-sm" title="${toggleTitle}" onclick="toggleKpi('${idEncoded}', ${nuevoEstado})">
+            <button class="btn ${toggleColor} btn-accion" title="${toggleTitle}" onclick="toggleKpi('${idEncoded}', ${nuevoEstado})">
               <span class="material-symbols-outlined">${toggleIcon}</span>
             </button>
-            <button class="btn btn-danger btn-sm" title="Eliminar" onclick="eliminarKpi('${idEncoded}')">
+            <button class="btn btn-danger btn-accion" title="Eliminar" onclick="eliminarKpi('${idEncoded}')">
               <span class="material-symbols-outlined">delete</span>
             </button>
           </div>`;

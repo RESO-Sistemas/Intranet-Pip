@@ -68,19 +68,21 @@ async function getListPuestos() {
         {
           data: "IdPuesto",
           render: function (data, type, row, meta) {
-            return `<a class="btn btn-warning" href="Permisos.php?Puesto=${data}" ><span class="material-symbols-outlined">key</span></a>`;
+            return `<div class="d-flex flex-nowrap gap-1">
+              <a class="btn btn-warning btn-accion" title="Permisos" href="Permisos.php?Puesto=${data}"><span class="material-symbols-outlined">key</span></a>
+            </div>`;
           },
         },
         {
           data: null,
           render: function (data, type, row, meta) {
-            return `<button class="btn btn-primary" href="#" onclick="modalUpdate('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">edit</span></button>`;
+            return `<button class="btn btn-primary btn-accion" title="Editar" onclick="modalUpdate('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">edit</span></button>`;
           },
         },
         {
           data: null,
           render: function (data, type, row, meta) {
-            return `<button class="btn btn-success" href="#" onclick="openListJefes('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">person_edit</span></button>`;
+            return `<button class="btn btn-success btn-accion" title="Asignar Jefes" onclick="openListJefes('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">person_edit</span></button>`;
           },
         },
       ],

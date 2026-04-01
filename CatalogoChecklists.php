@@ -18,7 +18,7 @@
     .badge-activo   { background-color: #28a745; color: #fff; font-size: .85rem; padding: 4px 10px; border-radius: .25rem; }
     .badge-inactivo { background-color: #dc3545; color: #fff; font-size: .85rem; padding: 4px 10px; border-radius: .25rem; }
     .badge-critico  { background-color: #dc3545; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
-    .badge-no-critico { background-color: #6c757d; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
+    .badge-no-critico { background-color: #6c757d; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; white-space: nowrap; }
     .badge-verdadero { background-color: #28a745; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
     .badge-falso     { background-color: #dc3545; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
     .badge-incidencia-si { background-color: #ffc407; color: #1a1a1a; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }

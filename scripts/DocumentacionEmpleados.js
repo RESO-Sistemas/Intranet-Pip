@@ -54,13 +54,13 @@ function renderSmartTable(data) {
             let acciones = '';
             if (doc.Estatus === 'Pendiente' && !doc.IdDocumentacionEmpleado) {
                 // No tiene registro — mostrar botón "Marcar como entregado"
-                acciones = `<button class="btn btn-sm btn-success" onclick="openMarcarModal(${doc.IdTipoDocumento}, '${escapeHtml(doc.NombreDocumento)}')">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Entregado
+                acciones = `<button class="btn btn-success btn-accion" title="Marcar como entregado" onclick="openMarcarModal(${doc.IdTipoDocumento}, '${escapeHtml(doc.NombreDocumento)}')">
+                    <span class="material-symbols-outlined">check_circle</span>
                 </button>`;
             } else {
                 // Ya tiene registro — mostrar botón editar
-                acciones = `<button class="btn btn-sm btn-outline-primary" onclick="openEditarEstatusModal(${doc.IdTipoDocumento}, '${escapeHtml(doc.NombreDocumento)}', '${doc.Estatus}', '${doc.FechaCarga || ''}', '${escapeHtml(doc.Observaciones || '')}')">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
+                acciones = `<button class="btn btn-primary btn-accion" title="Editar estatus" onclick="openEditarEstatusModal(${doc.IdTipoDocumento}, '${escapeHtml(doc.NombreDocumento)}', '${doc.Estatus}', '${doc.FechaCarga || ''}', '${escapeHtml(doc.Observaciones || '')}')">
+                    <span class="material-symbols-outlined">edit</span>
                 </button>`;
             }
 

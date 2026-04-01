@@ -13,10 +13,10 @@
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 
   <style>
-    .badge-completo      { background-color: #28a745; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
-    .badge-observaciones { background-color: #ffc407; color: #1a1a1a; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
-    .badge-incidencia    { background-color: #dc3545; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
-    .badge-incompleto    { background-color: #6c757d; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; }
+    .badge-completo      { background-color: #28a745; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
+    .badge-observaciones { background-color: #ffc407; color: #1a1a1a; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
+    .badge-incidencia    { background-color: #dc3545; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
+    .badge-incompleto    { background-color: #6c757d; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
 
     /* Detalle modal — fila de checklist */
     .det-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
@@ -175,7 +175,7 @@
                         <input type="date" id="txtFechaFin" class="form-control form-control-solid-bordered">
                       </div>
                       <div class="col-12 col-md-4">
-                        <button type="button" class="btn btn-primary w-100" onclick="cargarListado()">
+                        <button type="button" id="btnBuscar" class="btn btn-primary w-100" onclick="cargarListado()">
                           <i class="fas fa-search me-1"></i> Buscar
                         </button>
                       </div>
@@ -184,6 +184,8 @@
                 </div>
               </div>
             </div>
+
+            <div id="statusListado" class="text-center mb-3" style="font-size: 0.9rem; min-height: 1.2rem;"></div>
 
             <!-- Tabla -->
             <div class="row">
@@ -298,9 +300,12 @@
 
       console.log('Buscando checklists de:', fechaIni, 'a', fechaFin);
       
-      const btn = $('button[onclick="cargarListado()"]');
+      const btn = $('#btnBuscar');
+      const statusDiv = $('#statusListado');
       const originalHtml = btn.html();
+      
       btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Buscando...');
+      statusDiv.html('<span class="text-muted"><i class="fas fa-spinner fa-spin me-1"></i>Buscando registros...</span>');
 
       $.ajax({
         url: API,
@@ -311,15 +316,17 @@
           console.log('Respuesta recibida:', data);
           
           if (!data.Resultado) {
-            toastr.error('Error al cargar el listado.');
+            statusDiv.html('<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Error al cargar</span>');
             return;
           }
           renderTabla(data.Data);
           
           if (data.Data && data.Data.length > 0) {
-            toastr.success(data.Data.length + ' registros encontrados.');
+            const count = data.Data.length;
+            const msg = count === 1 ? '1 registro encontrado' : count + ' registros encontrados';
+            statusDiv.html('<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>' + msg + '</span>');
           } else {
-            toastr.info('No se encontraron registros en este periodo.');
+            statusDiv.html('<span class="text-info"><i class="fas fa-info-circle me-1"></i>No se encontraron registros</span>');
           }
         },
         error: function (xhr) { 
@@ -362,8 +369,8 @@
           '<td><span class="fw-semibold">' + r.Correctas + '</span><span class="text-muted">/' + r.TotalItems + '</span></td>' +
           '<td>' + badgeEstatus + '</td>' +
           '<td class="text-center">' +
-            '<button class="btn btn-sm btn-outline-primary" onclick="verDetalle(\'' + escHtml(r.NoEmpleado) + '\',\'' + fecha + '\',\'' + escHtml(r.NombreEmpleado) + '\',\'' + (r.IdTurno || '') + '\')">' +
-              '<i class="fas fa-eye me-1"></i>Ver detalle' +
+            '<button class="btn btn-primary btn-accion" title="Ver detalle" onclick="verDetalle(\'' + escHtml(r.NoEmpleado) + '\',\'' + fecha + '\',\'' + escHtml(r.NombreEmpleado) + '\',\'' + (r.IdTurno || '') + '\')">' +
+              '<span class="material-symbols-outlined">visibility</span>' +
             '</button>' +
           '</td>' +
         '</tr>';

@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -115,7 +115,7 @@
                           <span id="DiasDisponibles" class="badge badge-style-bordered rounded-pill badge-success">
                             Días disponibles: 0
                           </span>
-                          <span id="DiasSeleccionados" class="badge badge-style-bordered rounded-pill badge-primary">
+                          <span id="DiasSeleccionados" class="badge badge-style-bordered rounded-pill badge-primary" style="color: white !important;">
                             Cantidad de días seleccionados: 0
                           </span>
                           <span id="DiaRegreso" class="badge badge-style-bordered rounded-pill badge-dark">
