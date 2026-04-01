@@ -1,4 +1,7 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php
+require_once("Backend/Session/SessionManager.php");
+SessionManager::requireLogin();
+?>
 <?php
 // if (isset($_COOKIE["tipo_sesion"])) {
 //   if ($_COOKIE["tipo_sesion"] != "1") {

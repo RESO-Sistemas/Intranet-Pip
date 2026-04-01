@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <?php
 
 require_once("Backend/Empleados/Empleados.php");
@@ -189,8 +189,6 @@ $MenuP = $Conf->getMenusPadre();
 
                               <option value="1">Evaluación 360°</option>
 
-                              <option value="2">Encuesta Normal</option>
-
                             </select>
 
                             <p for="tipoEvaluacion" data-msg="El tipo de cuestionario es obligatorio"></p>
@@ -310,15 +308,12 @@ $MenuP = $Conf->getMenusPadre();
                       </div>
 
                       <div class="col-12 mb-3">
-
-                        <label class="form-label mb-0">* Empleados Participantes:</label>
-
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <label class="form-label mb-0">* Empleados Participantes:</label>
+                        </div>
                         <select class="form-select form-control-solid-bordered" id="slctEmpleados" multiple="multiple" style="width: 100%;">
-
                         </select>
-
                         <p for="slctEmpleados" data-msg="Debe seleccionar al menos un empleado participante"></p>
-
                       </div>
 
                     </div>
@@ -459,6 +454,28 @@ $MenuP = $Conf->getMenusPadre();
 
     <div class="chat-windows"></div>
 
+  </div>
+
+  <!-- Modal: Función en Desarrollo -->
+  <div class="modal fade" id="modalEnDesarrollo" tabindex="-1" aria-labelledby="modalEnDesarrolloLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius: 16px; overflow: hidden;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none;">
+          <h5 class="modal-title text-white fw-bold" id="modalEnDesarrolloLabel">
+            <i class="mdi mdi-tools me-2"></i> Función en Desarrollo
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <div style="font-size: 3.5rem; margin-bottom: 1rem;">🚧</div>
+          <h5 class="fw-semibold mb-2">Esta opción está en desarrollo</h5>
+          <p class="text-muted mb-0">La creación de <strong>Encuestas Normales</strong> aún no está disponible.<br>Por favor, utiliza la <strong>Evaluación 360°</strong> por el momento.</p>
+        </div>
+        <div class="modal-footer justify-content-center border-0 pb-4">
+          <button type="button" class="btn btn-warning text-white px-4" data-bs-dismiss="modal">Entendido</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 

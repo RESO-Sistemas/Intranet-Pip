@@ -147,8 +147,8 @@ class Organigramas extends Conexiones
             return "Necesitas al menos un jefe principal para agregar este tipo de elemento al organigrama.";
         } else {
             $Conexiones3 = new Conexiones();
-            $q3 = "INSERT INTO DetalleOrganigrama (idOrganigramas,idDetalleOrganigramaPadre,NoEmpleadoHijo,Registro,Otros,Tipo,Nivel)
-            VALUES ('$idOrganigramas','$idDetalleOrganigramaPadre','$NoEmpleadoHijo',NOW(),'$Otros','$TipoElemento','$Nivel');";
+            $q3 = "INSERT INTO DetalleOrganigrama (idOrganigramas,idDetalleOrganigramaPadre,NoEmpleadoHijo,Registro,Otros,Tipo)
+            VALUES ('$idOrganigramas','$idDetalleOrganigramaPadre','$NoEmpleadoHijo',NOW(),'$Otros','$TipoElemento');";
             $Conexiones3->ExecuteQuery($q3, array());
         }
         return "1";
@@ -161,7 +161,7 @@ class Organigramas extends Conexiones
         IF(DO.Tipo = 'OTROS','',P.Puesto) AS Puesto,
         DO.idDetalleOrganigramaPadre,DO.idDetalleOrganigrama,DO.Otros,
         coalesce(DO.Nivel,0) as Nivel,
-        if(E.Imagen is null or E.Imagen = '','https://klynet.mx/assets/Klyns.png',
+        if(E.Imagen is null or E.Imagen = '','assets/images/logo-pip.png',
           concat('https://klynet.mx/Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) as Imagen,
         DO.NoEmpleadoHijo,DO.Tipo,
               coalesce((SELECT DOO.Nivel FROM DetalleOrganigrama AS DOO
@@ -265,7 +265,7 @@ class Organigramas extends Conexiones
         $Conexiones4 = new Conexiones();
         $q4 = "UPDATE DetalleOrganigrama SET idDetalleOrganigramaPadre = '$idDetalleOrganigramaPadre',
                 NoEmpleadoHijo = '$NoEmpleadoHijo',
-                Registro = now(), Otros = '$Otros' ,Tipo = '$TipoElemento', Nivel = '$Nivel'
+                Registro = now(), Otros = '$Otros' ,Tipo = '$TipoElemento'
                 WHERE idDetalleOrganigrama = '$idDetalleOrganigrama';";
         $Conexiones4->ExecuteQuery($q4, array());
 
@@ -336,7 +336,7 @@ class Organigramas extends Conexiones
         IF(DO.Tipo = 'OTROS','',P.Puesto) AS Puesto,
         IF(DO.Tipo = 'OTROS','',IF(E.Email IS NULL OR E.Email = '','Sin Email',E.Email)) AS Email,
         DO.Otros,DO.Nivel,
-        if(E.Imagen is null or E.Imagen = '','https://klynet.mx/assets/Klyns.png',
+        if(E.Imagen is null or E.Imagen = '','assets/images/logo-pip.png',
           concat('https://klynet.mx/Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) as Imagen,
           DO.CoordenadaY,DO.CoordenadaX,DO.Ancho, DO.Altura,
                 coalesce((SELECT DOO.Nivel FROM DetalleOrganigrama AS DOO
