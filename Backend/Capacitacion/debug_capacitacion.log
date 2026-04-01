@@ -402,3 +402,102 @@ Empleados: 11318,
 
 Respuesta de addCapacitacion: 141
 
+2026-03-31 15:27:04 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Prueba
+    [fechaInicio] => 2026-04-07
+    [fechaFin] => 2026-04-14
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 1
+    [slctPuesto] => 0
+    [slctSucursal] => 1
+    [op] => addCapacitacion
+    [dias] => 5,4,2
+    [NoEmpleado] => 994,1139,1389,
+    [existeFichero] => false
+)
+
+
+FILES:
+Array
+(
+)
+
+
+Datos a insertar:
+Desc: Prueba
+Tipo: PROL
+Dias: 5,4,2
+Empleados: 994,1139,1389,
+
+Respuesta de addCapacitacion: 150
+
+2026-03-31 16:19:06 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Capacitacion RESO SISTEMAS
+    [fechaInicio] => 2026-03-31
+    [fechaFin] => 2026-04-02
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 
+    [slctPuesto] => 
+    [slctSucursal] => 
+    [op] => addCapacitacion
+    [dias] => 3,4,5
+    [NoEmpleado] => 999999999,
+    [existeFichero] => false
+)
+
+
+FILES:
+Array
+(
+)
+
+
+Datos a insertar:
+Desc: Capacitacion RESO SISTEMAS
+Tipo: PROL
+Dias: 3,4,5
+Empleados: 999999999,
+
+Respuesta de addCapacitacion: 151
+
+2026-03-31 17:44:24 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => Una prueba de capacitacion
+    [fechaInicio] => 2026-03-31
+    [fechaFin] => 2026-04-01
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 
+    [slctPuesto] => 
+    [slctSucursal] => 
+    [op] => addCapacitacion
+    [dias] => 3,4
+    [NoEmpleado] => 999999999,
+    [existeFichero] => false
+)
+
+
+FILES:
+Array
+(
+)
+
+
+Datos a insertar:
+Desc: Una prueba de capacitacion
+Tipo: PROL
+Dias: 3,4
+Empleados: 999999999,
+
+Respuesta de addCapacitacion: 152
+

@@ -2795,6 +2795,38 @@
           ]);
         }
 
+        // Si es una Encuesta Normal (Tipo 2), autogenerar EvaluacionDetalle
+        $evalInfo = $this->SelectNotClose("SELECT TipoEvaluacion, EmpleadosParticipantes FROM Evaluaciones WHERE idEvaluaciones = '$evDecoded'");
+        if (count($evalInfo) > 0 && $evalInfo[0]['TipoEvaluacion'] == 2) {
+          $participantesStr = $evalInfo[0]['EmpleadosParticipantes'];
+          if (!empty($participantesStr)) {
+            $participantes = explode(',', $participantesStr);
+            foreach($participantes as $part) {
+              $part = trim($part);
+              if ($part != '') {
+                // Verificar si ya existe el detalle
+                $exists = $this->SelectNotClose("SELECT idEvaluacionDetalle FROM EvaluacionDetalle WHERE idEvaluaciones = '$evDecoded' AND NoEmpleadoEvaluado = '$part'");
+                if (count($exists) == 0) {
+                  // Obtener Puesto y Nivel del empleado
+                  $empInfo = $this->SelectNotClose("SELECT IdPuesto, Nivel FROM Empleados WHERE NoEmpleado = '$part'");
+                  if (count($empInfo) > 0) {
+                    $puesto = empty($empInfo[0]['IdPuesto']) ? 'NULL' : $empInfo[0]['IdPuesto'];
+                    $nivel = empty($empInfo[0]['Nivel']) ? 'NULL' : $empInfo[0]['Nivel'];
+                    
+                    // Asegurar que nulls en BD no truenen la consulta
+                    if ($puesto === 'NULL' || $puesto === '') $puesto = 'NULL'; else $puesto = "'$puesto'";
+                    if ($nivel === 'NULL' || $nivel === '') $nivel = 'NULL'; else $nivel = "'$nivel'";
+
+                    $insQuery = "INSERT INTO EvaluacionDetalle (idEvaluaciones, NoEmpleadoEvalua, NoEmpleadoEvaluado, Status, StatusEvaluado, JefeEvalua, ParEvalua, AutoEvalua, SubordinadoEvalua, NivelEvaluado, PuestoEvaluado) 
+                                 VALUES ('$evDecoded', '$part', '$part', 1, 0, 0, 0, 1, 0, $nivel, $puesto)";
+                    $this->ProcedureExec($insQuery, array());
+                  }
+                }
+              }
+            }
+          }
+        }
+
         $q = "CALL sp_PublicarEvaluacion(?)";
         $spResult = $this->ProcedureExec($q, array($evDecoded));
         

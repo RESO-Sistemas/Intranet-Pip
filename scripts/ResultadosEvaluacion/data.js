@@ -148,6 +148,7 @@ async function getDataResultAuto(){
 }
 
 async function getDataResultPar(){
+    let resultAcum = [];
     let resultFinal = [];
   let allDataPar = arrListEvaluators.filter( evaluator => evaluator.ParEvalua == 1);
   if (allDataPar.length > 0) {
@@ -175,7 +176,7 @@ async function getDataResultPar(){
             competence
         };
     });
-    const resultFinal = resultAcum.flatMap(registro => registro);
+
   }
   return resultFinal;
 }

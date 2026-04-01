@@ -67,6 +67,12 @@ if ($idPostulante > 0) {
                                                 <ul class="list-unstyled todo-status-filter" id="vacantesList">
                                                     <li><a href="#" class="active"><i class="material-icons-outlined">hourglass_empty</i>Cargando...</a></li>
                                                 </ul>
+                                                <div class="mt-4 pt-3 border-top">
+                                                    <h5 class="todo-menu-title mb-3">Documentos</h5>
+                                                    <div id="contenedorBotonesDocumentos">
+                                                        <div class="text-muted small">Selecciona una vacante</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-xl-8 col-xxl-9">

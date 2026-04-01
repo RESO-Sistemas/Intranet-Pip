@@ -25,15 +25,31 @@ $(document).on('change', '#tipoEvaluacion', function() {
     $('#inpRetroFin').attr('required', 'required');
     $('#inpPlanAIni').attr('required', 'required');
     $('#inpPlanAFin').attr('required', 'required');
+    // Forzar "Empleados" y quitar la opción Postulantes del DOM
+    $('#dirigidoA').val('1');
+    if ($('#dirigidoA option[value="2"]').length) {
+      window._optPostulantes = $('#dirigidoA option[value="2"]').detach();
+    }
   } else if (tipo === '2') {
-    // Encuesta Normal - SÍ tiene periodicidad
-    $('#divPeriodicidad').show();
-    $('#periodicidad').attr('required', 'required');
-    // Hacer campos de retro y plan obligatorios para normal también
-    $('#inpRetroIni').attr('required', 'required');
-    $('#inpRetroFin').attr('required', 'required');
-    $('#inpPlanAIni').attr('required', 'required');
-    $('#inpPlanAFin').attr('required', 'required');
+    // Encuesta Normal - en desarrollo, mostrar modal y resetear
+    // Diferir el reset para que el select se limpie visualmente antes del modal
+    setTimeout(function() {
+      $('#tipoEvaluacion').val('');
+    }, 150);
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+    $('#inpRetroIni').removeAttr('required');
+    $('#inpRetroFin').removeAttr('required');
+    $('#inpPlanAIni').removeAttr('required');
+    $('#inpPlanAFin').removeAttr('required');
+    // Restaurar opción Postulantes si fue removida
+    if (window._optPostulantes && !$('#dirigidoA option[value="2"]').length) {
+      $('#dirigidoA').append(window._optPostulantes);
+      window._optPostulantes = null;
+    }
+    // Mostrar modal de en desarrollo
+    var modal = new bootstrap.Modal(document.getElementById('modalEnDesarrollo'));
+    modal.show();
   } else {
     // Ninguno seleccionado
     $('#divPeriodicidad').hide();
@@ -42,37 +58,24 @@ $(document).on('change', '#tipoEvaluacion', function() {
     $('#inpRetroFin').removeAttr('required');
     $('#inpPlanAIni').removeAttr('required');
     $('#inpPlanAFin').removeAttr('required');
+    // Restaurar opción Postulantes si fue removida
+    if (window._optPostulantes && !$('#dirigidoA option[value="2"]').length) {
+      $('#dirigidoA').append(window._optPostulantes);
+      window._optPostulantes = null;
+    }
   }
 });
 
 // Event listener para cambio de "A quien va dirigido"
 $(document).on('change', '#dirigidoA', function() {
   const dirigido = $(this).val();
+  const tipoActual = $('#tipoEvaluacion').val();
   console.log('Dirigido a:', dirigido);
   
-  if (dirigido === '2') {
-    // Postulantes - Solo pueden usar Encuesta Normal
-    // Deshabilitar opción 360°
-    $('#tipoEvaluacion option[value="1"]').prop('disabled', true);
-    
-    // Si estaba seleccionada la evaluación 360°, resetear y avisar
-    if ($('#tipoEvaluacion').val() === '1') {
-      $('#tipoEvaluacion').val('');
-      // Ocultar periodicidad y quitar requisitos cuando se resetea
-      $('#divPeriodicidad').hide();
-      $('#periodicidad').val('').removeAttr('required');
-      $('#inpRetroIni').removeAttr('required');
-      $('#inpRetroFin').removeAttr('required');
-      $('#inpPlanAIni').removeAttr('required');
-      $('#inpPlanAFin').removeAttr('required');
-      toastr.info('Para postulantes solo se permite la Encuesta Normal', 'Información');
-    }
-  } else if (dirigido === '1') {
-    // Empleados - Pueden usar cualquier tipo
-    $('#tipoEvaluacion option[value="1"]').prop('disabled', false);
-  } else {
-    // Ninguno seleccionado - Habilitar todas las opciones
-    $('#tipoEvaluacion option[value="1"]').prop('disabled', false);
+  // Si el tipo es 360, no permitir cambiar a Postulantes
+  if (tipoActual === '1' && dirigido !== '1') {
+    $('#dirigidoA').val('1');
+    toastr.info('La Evaluación 360° solo puede ir dirigida a Empleados', 'Información');
   }
 });
 
@@ -171,21 +174,16 @@ $(document).on("click","#btn_SaveData",async function(){
     return;
   }
   
+  // Bloquear Encuesta Normal (en desarrollo)
+  if (tipoEvaluacion.value === '2') {
+    var modal = new bootstrap.Modal(document.getElementById('modalEnDesarrollo'));
+    modal.show();
+    return;
+  }
+  
   // Validar dirigido a
   if (!dirigidoA.value) {
     toastr.error('Debe especificar a quién va dirigido el cuestionario', 'Error de validación');
-    return;
-  }
-  
-  // Validar que los postulantes no puedan tener evaluación 360°
-  if (dirigidoA.value === '2' && tipoEvaluacion.value === '1') {
-    toastr.error('Los postulantes solo pueden tener Encuestas Normales, no Evaluaciones 360°', 'Error de validación');
-    return;
-  }
-  
-  // Validar periodicidad si es encuesta normal
-  if (tipoEvaluacion.value === '2' && !periodicidad.value) {
-    toastr.error('Debe seleccionar una periodicidad para la encuesta normal', 'Error de validación');
     return;
   }
   
@@ -240,6 +238,9 @@ async function saveEvaluationNoE(){
 
 // Inicializar cuando el documento esté listo
 $(document).ready(function() {
+  // Mover el modal al body para evitar problemas de stacking context con el framework Neptune
+  $('body').append($('#modalEnDesarrollo').detach());
+
   // Inicializar Select2 para empleados
   $('#slctEmpleados').select2({
     placeholder: 'Seleccione los empleados participantes',
@@ -371,3 +372,5 @@ $(document).on('change', '#slctSucursal', function() {
 $(document).on('change', '#slctPuesto', function() {
   getEmpleadosParaEvaluacion();
 });
+
+

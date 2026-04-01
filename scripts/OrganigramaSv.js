@@ -68,7 +68,7 @@ async function loadOrganigrama() {
             manager: `'${d.idDetalleOrganigramaPadre}'`,
             Width: Number(d.Ancho),
             Height: Number(d.Altura),
-            color: "red",
+            color: "#ffc107",
             // constraints: ConnectorConstraints.Default & ~ConnectorConstraints.Select
           });
         }
@@ -95,7 +95,7 @@ function printDiagram() {
       doBinding: function (node, data) {
         // You will get the employee information in data argument and bind that value directly to node's built-in properties.
         node.annotations = [{ content: "" }];
-        node.style = { fill: data.color };
+        node.style = { fill: data.color, strokeColor: data.color, strokeWidth: 2 };
       },
     },
     getNodeDefaults: nodeDefaults,
@@ -208,6 +208,7 @@ function nodeDefaults(node) {
 function connectorDefaults(connector) {
   connector.type = "Orthogonal";
   connector.targetDecorator = { shape: "None" };
+  connector.style = { strokeColor: "#ffc107", strokeWidth: 2 };
   return connector;
 }
 //Funtion to add the Template of the Node.
@@ -216,7 +217,7 @@ function setNodeTemplate(obj, diagram) {
   var content = new ej.diagrams.StackPanel();
   content.id = obj.id + "_outerstack";
   content.orientation = "Horizontal";
-  content.style.strokeColor = "red";
+  content.style.strokeColor = "#ffc107";
   content.padding = { left: 10, right: 10, top: 20, bottom: 5 };
 
   // create the image element to map the image data from the data source
