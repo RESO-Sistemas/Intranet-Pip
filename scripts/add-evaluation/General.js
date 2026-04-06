@@ -17,10 +17,11 @@ $(document).on('change', '#tipoEvaluacion', function() {
   console.log('Tipo seleccionado:', tipo);
   
   if (tipo === '1') {
-    // Evaluación 360 - NO tiene periodicidad
+    // Evaluación 360 - NO tiene periodicidad, SÍ tiene retro y plan
     $('#divPeriodicidad').hide();
     $('#periodicidad').val('').removeAttr('required');
-    // Hacer campos de retro y plan obligatorios para 360
+    // Mostrar sección de retro y plan, hacerlos obligatorios
+    $('#seccionRetroYPlan').show();
     $('#inpRetroIni').attr('required', 'required');
     $('#inpRetroFin').attr('required', 'required');
     $('#inpPlanAIni').attr('required', 'required');
@@ -31,33 +32,29 @@ $(document).on('change', '#tipoEvaluacion', function() {
       window._optPostulantes = $('#dirigidoA option[value="2"]').detach();
     }
   } else if (tipo === '2') {
-    // Encuesta Normal - en desarrollo, mostrar modal y resetear
-    // Diferir el reset para que el select se limpie visualmente antes del modal
-    setTimeout(function() {
-      $('#tipoEvaluacion').val('');
-    }, 150);
-    $('#divPeriodicidad').hide();
-    $('#periodicidad').val('').removeAttr('required');
-    $('#inpRetroIni').removeAttr('required');
-    $('#inpRetroFin').removeAttr('required');
-    $('#inpPlanAIni').removeAttr('required');
-    $('#inpPlanAFin').removeAttr('required');
-    // Restaurar opción Postulantes si fue removida
+    // Encuesta Normal - SÍ tiene periodicidad, NO tiene retro ni plan
+    $('#divPeriodicidad').show();
+    $('#periodicidad').attr('required', 'required');
+    // Ocultar sección de retro y plan, limpiar valores y quitar required
+    $('#seccionRetroYPlan').hide();
+    $('#inpRetroIni').val('').removeAttr('required');
+    $('#inpRetroFin').val('').removeAttr('required');
+    $('#inpPlanAIni').val('').removeAttr('required');
+    $('#inpPlanAFin').val('').removeAttr('required');
+    // Restaurar opción Postulantes si fue removida (ambos son válidos para normal)
     if (window._optPostulantes && !$('#dirigidoA option[value="2"]').length) {
       $('#dirigidoA').append(window._optPostulantes);
       window._optPostulantes = null;
     }
-    // Mostrar modal de en desarrollo
-    var modal = new bootstrap.Modal(document.getElementById('modalEnDesarrollo'));
-    modal.show();
   } else {
-    // Ninguno seleccionado
+    // Ninguno seleccionado - resetear todo
     $('#divPeriodicidad').hide();
     $('#periodicidad').val('').removeAttr('required');
-    $('#inpRetroIni').removeAttr('required');
-    $('#inpRetroFin').removeAttr('required');
-    $('#inpPlanAIni').removeAttr('required');
-    $('#inpPlanAFin').removeAttr('required');
+    $('#seccionRetroYPlan').hide();
+    $('#inpRetroIni').val('').removeAttr('required');
+    $('#inpRetroFin').val('').removeAttr('required');
+    $('#inpPlanAIni').val('').removeAttr('required');
+    $('#inpPlanAFin').val('').removeAttr('required');
     // Restaurar opción Postulantes si fue removida
     if (window._optPostulantes && !$('#dirigidoA option[value="2"]').length) {
       $('#dirigidoA').append(window._optPostulantes);
@@ -92,10 +89,6 @@ function validateDates() {
   // Obtener valores de fechas
   const fechaInicio = inpFechaInicio.value ? new Date(inpFechaInicio.value + 'T00:00:00') : null;
   const fechaFin = inpFechaFin.value ? new Date(inpFechaFin.value + 'T00:00:00') : null;
-  const retroIni = inpRetroIni.value ? new Date(inpRetroIni.value + 'T00:00:00') : null;
-  const retroFin = inpRetroFin.value ? new Date(inpRetroFin.value + 'T00:00:00') : null;
-  const planAIni = inpPlanAIni.value ? new Date(inpPlanAIni.value + 'T00:00:00') : null;
-  const planAFin = inpPlanAFin.value ? new Date(inpPlanAFin.value + 'T00:00:00') : null;
   
   // Validación 1: No permitir fechas pasadas para inicio de evaluación
   if (fechaInicio && fechaInicio < today) {
@@ -130,37 +123,44 @@ function validateDates() {
     }
   }
   
-  // Validaciones de retroalimentación y plan de acción (aplican para ambos tipos)
-  // Validación 5: Retroalimentación debe iniciar después o el mismo día que termine la evaluación
-  if (fechaFin && retroIni && retroIni < fechaFin) {
-    toastr.error('La retroalimentación debe iniciar después de que termine la evaluación', 'Error de validación');
-    return false;
-  }
-  
-  // Validación 6: Fecha final de retroalimentación debe ser mayor que inicial
-  if (retroIni && retroFin && retroFin <= retroIni) {
-    toastr.error('La fecha final de retroalimentación debe ser posterior a la fecha de inicio', 'Error de validación');
-    return false;
-  }
-  
-  // Validación 7: Plan de acción debe iniciar después o el mismo día que termine la retroalimentación
-  if (retroFin && planAIni && planAIni < retroFin) {
-    toastr.error('El plan de acción debe iniciar después de que termine la retroalimentación', 'Error de validación');
-    return false;
-  }
-  
-  // Validación 8: Fecha final del plan de acción debe ser mayor que inicial
-  if (planAIni && planAFin && planAFin <= planAIni) {
-    toastr.error('La fecha final del plan de acción debe ser posterior a la fecha de inicio', 'Error de validación');
-    return false;
-  }
-  
-  // Validación 9: Todo el proceso no debe exceder 6 meses desde el inicio
-  if (fechaInicio && planAFin) {
-    const diffTime = planAFin - fechaInicio;
-    const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30);
-    if (diffMonths > 6) {
-      toastr.warning('El proceso completo (evaluación + retroalimentación + plan de acción) supera los 6 meses. Verifica que las fechas sean correctas.', 'Advertencia');
+  // Validaciones de retroalimentación y plan de acción (solo para 360)
+  if (tipo === '1') {
+    const retroIni = inpRetroIni.value ? new Date(inpRetroIni.value + 'T00:00:00') : null;
+    const retroFin = inpRetroFin.value ? new Date(inpRetroFin.value + 'T00:00:00') : null;
+    const planAIni = inpPlanAIni.value ? new Date(inpPlanAIni.value + 'T00:00:00') : null;
+    const planAFin = inpPlanAFin.value ? new Date(inpPlanAFin.value + 'T00:00:00') : null;
+    
+    // Validación 5: Retroalimentación debe iniciar después o el mismo día que termine la evaluación
+    if (fechaFin && retroIni && retroIni < fechaFin) {
+      toastr.error('La retroalimentación debe iniciar después de que termine la evaluación', 'Error de validación');
+      return false;
+    }
+    
+    // Validación 6: Fecha final de retroalimentación debe ser mayor que inicial
+    if (retroIni && retroFin && retroFin <= retroIni) {
+      toastr.error('La fecha final de retroalimentación debe ser posterior a la fecha de inicio', 'Error de validación');
+      return false;
+    }
+    
+    // Validación 7: Plan de acción debe iniciar después o el mismo día que termine la retroalimentación
+    if (retroFin && planAIni && planAIni < retroFin) {
+      toastr.error('El plan de acción debe iniciar después de que termine la retroalimentación', 'Error de validación');
+      return false;
+    }
+    
+    // Validación 8: Fecha final del plan de acción debe ser mayor que inicial
+    if (planAIni && planAFin && planAFin <= planAIni) {
+      toastr.error('La fecha final del plan de acción debe ser posterior a la fecha de inicio', 'Error de validación');
+      return false;
+    }
+    
+    // Validación 9: Todo el proceso no debe exceder 6 meses desde el inicio
+    if (fechaInicio && planAFin) {
+      const diffTime = planAFin - fechaInicio;
+      const diffMonths = diffTime / (1000 * 60 * 60 * 24 * 30);
+      if (diffMonths > 6) {
+        toastr.warning('El proceso completo (evaluación + retroalimentación + plan de acción) supera los 6 meses. Verifica que las fechas sean correctas.', 'Advertencia');
+      }
     }
   }
   
@@ -174,24 +174,26 @@ $(document).on("click","#btn_SaveData",async function(){
     return;
   }
   
-  // Bloquear Encuesta Normal (en desarrollo)
-  if (tipoEvaluacion.value === '2') {
-    var modal = new bootstrap.Modal(document.getElementById('modalEnDesarrollo'));
-    modal.show();
-    return;
-  }
-  
   // Validar dirigido a
   if (!dirigidoA.value) {
     toastr.error('Debe especificar a quién va dirigido el cuestionario', 'Error de validación');
     return;
   }
   
+  // Validar periodicidad si es encuesta normal
+  if (tipoEvaluacion.value === '2' && !periodicidad.value) {
+    toastr.error('Debe seleccionar una periodicidad para la encuesta normal', 'Error de validación');
+    return;
+  }
+  
   const resV = await verifyInputs('dv_DataGeneral');
   const resV2 = await verifyInputs('dv_Dates');
   
-  // Validar secciones de retro y plan para ambos tipos
-  const resV3 = await verifyInputs('seccionRetroYPlan');
+  // Validar secciones de retro y plan SOLO para 360
+  let resV3 = true;
+  if (tipoEvaluacion.value === '1') {
+    resV3 = await verifyInputs('seccionRetroYPlan');
+  }
   
   // Validar fechas antes de guardar
   if (resV && resV2 && resV3) {
@@ -220,10 +222,10 @@ async function saveEvaluationNoE(){
     periodicidad: tipo === '2' ? periodicidad.value : null,
     inpFechaInicio: inpFechaInicio.value,
     inpFechaFin: inpFechaFin.value,
-    inpRetroFechaIni: inpRetroIni.value,
-    inpRetroFechaFin: inpRetroFin.value,
-    inpPlanAFechaIni: inpPlanAIni.value,
-    inpPlanAFechaFin: inpPlanAFin.value,
+    inpRetroFechaIni: tipo === '1' ? inpRetroIni.value : null,
+    inpRetroFechaFin: tipo === '1' ? inpRetroFin.value : null,
+    inpPlanAFechaIni: tipo === '1' ? inpPlanAIni.value : null,
+    inpPlanAFechaFin: tipo === '1' ? inpPlanAFin.value : null,
     empleadosParticipantes: empleadosSeleccionados.join(','),
   };
   const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
@@ -238,9 +240,6 @@ async function saveEvaluationNoE(){
 
 // Inicializar cuando el documento esté listo
 $(document).ready(function() {
-  // Mover el modal al body para evitar problemas de stacking context con el framework Neptune
-  $('body').append($('#modalEnDesarrollo').detach());
-
   // Inicializar Select2 para empleados
   $('#slctEmpleados').select2({
     placeholder: 'Seleccione los empleados participantes',
@@ -372,5 +371,3 @@ $(document).on('change', '#slctSucursal', function() {
 $(document).on('change', '#slctPuesto', function() {
   getEmpleadosParaEvaluacion();
 });
-
-

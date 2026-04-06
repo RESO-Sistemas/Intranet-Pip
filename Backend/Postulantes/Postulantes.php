@@ -726,12 +726,61 @@ class Postulantes extends Conexiones
             $resultado = $this->Procedure($q);
             
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
+                // === AUTO-ASIGNAR EVALUACIONES DEL PROCESO ===
+                // Buscar la vacante de este postulante
+                $Con2 = new Conexiones();
+                $qVacante = "SELECT IdVacante FROM PostulantesVacantes WHERE IdPostulanteVacante = $IdPostulanteVacante";
+                $resVacante = $Con2->Select($qVacante);
+                
+                if (count($resVacante) > 0) {
+                    $IdVacante = $resVacante[0]['IdVacante'];
+                    
+                    // Buscar evaluaciones amarradas a este proceso en esta vacante
+                    $Con3 = new Conexiones();
+                    $qEvals = "SELECT ve.IdVacanteEvaluacion, ve.IdEvaluacion 
+                               FROM VacantesEvaluaciones ve
+                               INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                               WHERE ve.IdVacante = '$IdVacante' 
+                                 AND ve.IdProceso = '$IdProceso'
+                                 AND e.TipoEvaluacion = 2 
+                                 AND e.DirigidoA = 2
+                                 AND e.Status = 1
+                                 AND e.PreguntasAceptadas = 1";
+                    $resEvals = $Con3->Select($qEvals);
+                    
+                    $evaluacionesAsignadas = 0;
+                    foreach ($resEvals as $eval) {
+                        $IdVacanteEvaluacion = $eval['IdVacanteEvaluacion'];
+                        
+                        // Verificar que no exista ya asignada
+                        $Con4 = new Conexiones();
+                        $qCheck = "SELECT IdPostulanteEvaluacion FROM PostulantesEvaluaciones 
+                                   WHERE IdPostulanteVacante = $IdPostulanteVacante 
+                                     AND IdVacanteEvaluacion = $IdVacanteEvaluacion";
+                        $resCheck = $Con4->Select($qCheck);
+                        
+                        if (count($resCheck) == 0) {
+                            $Con5 = new Conexiones();
+                            $qInsert = "INSERT INTO PostulantesEvaluaciones 
+                                        (IdPostulanteVacante, IdVacanteEvaluacion, EstatusEvaluacion) 
+                                        VALUES ($IdPostulanteVacante, $IdVacanteEvaluacion, 1)";
+                            $Con5->ExecuteQuery($qInsert, array());
+                            $evaluacionesAsignadas++;
+                        }
+                    }
+                    
+                    $msgExtra = $evaluacionesAsignadas > 0 
+                        ? " Se asignaron $evaluacionesAsignadas evaluación(es) al postulante." 
+                        : "";
+                }
+                
                 return json_encode([
                     "Resultado" => true,
                     "Siguiente" => true,
                     "ConMsg" => true,
-                    "Msg" => "¡Historial registrado con éxito!",
-                    "IdPostulanteHistorial" => $resultado[0]["IdPostulanteHistorial"]
+                    "Msg" => "¡Historial registrado con éxito!" . ($msgExtra ?? ""),
+                    "IdPostulanteHistorial" => $resultado[0]["IdPostulanteHistorial"],
+                    "EvaluacionesAsignadas" => $evaluacionesAsignadas ?? 0
                 ]);
             }
             

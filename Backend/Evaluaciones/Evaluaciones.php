@@ -1720,15 +1720,31 @@
 
     function saveEvaluationNoE($inpTitulo, $tipoEvaluacion, $dirigidoA, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin, $empleadosParticipantes = ""){
       try {
-        // Preparar valores para campos opcionales
-        $retroIni = $inpRetroFechaIni ? "'$inpRetroFechaIni'" : "NULL";
-        $retroFin = $inpRetroFechaFin ? "'$inpRetroFechaFin'" : "NULL";
-        $planAIni = $inpPlanAFechaIni ? "'$inpPlanAFechaIni'" : "NULL";
-        $planAFin = $inpPlanAFechaFin ? "'$inpPlanAFechaFin'" : "NULL";
         $period = $periodicidad ? "'$periodicidad'" : "NULL";
         
-        $q = "INSERT INTO Evaluaciones(Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin, EmpleadosParticipantes, DirigidoA)
-	               VALUES ('$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', $retroIni, $retroFin, $planAIni, $planAFin, '$empleadosParticipantes', '$dirigidoA');";
+        // Construir query dinámicamente - solo incluir columnas de retro/plan si tienen valor
+        $columns = "Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, EmpleadosParticipantes, DirigidoA";
+        $values = "'$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', '$empleadosParticipantes', '$dirigidoA'";
+        
+        // Solo agregar fechas de retro y plan si son proporcionadas (Evaluación 360)
+        if ($inpRetroFechaIni && $inpRetroFechaIni !== 'null') {
+          $columns .= ", RetroFechaIni";
+          $values .= ", '$inpRetroFechaIni'";
+        }
+        if ($inpRetroFechaFin && $inpRetroFechaFin !== 'null') {
+          $columns .= ", RetroFechaFin";
+          $values .= ", '$inpRetroFechaFin'";
+        }
+        if ($inpPlanAFechaIni && $inpPlanAFechaIni !== 'null') {
+          $columns .= ", PlanAFechaIni";
+          $values .= ", '$inpPlanAFechaIni'";
+        }
+        if ($inpPlanAFechaFin && $inpPlanAFechaFin !== 'null') {
+          $columns .= ", PlanAFechaFin";
+          $values .= ", '$inpPlanAFechaFin'";
+        }
+        
+        $q = "INSERT INTO Evaluaciones($columns) VALUES ($values);";
         $this->ExecuteQuery($q,array());
         
         // Mensaje según el tipo
@@ -3177,6 +3193,349 @@
           "Resultado" => false,
           "Mensaje" => $e->getMessage()
         ]);
+      }
+    }
+
+    // ==========================================
+    // EVALUACIONES PARA POSTULANTES
+    // ==========================================
+
+    /**
+     * Obtener evaluaciones pendientes/completadas de un postulante en una vacante
+     */
+    function getEvaluacionesPostulante($IdPostulanteVacante) {
+      try {
+        $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
+        $q = "SELECT pe.IdPostulanteEvaluacion, pe.IdPostulanteVacante, pe.IdVacanteEvaluacion,
+                     pe.FechaInicio, pe.FechaFinalizacion, pe.Calificacion, pe.EstatusEvaluacion,
+                     e.Titulo AS NombreEvaluacion, e.idEvaluaciones,
+                     TO_BASE64(e.idEvaluaciones) AS IdEvaluacionB64,
+                     TO_BASE64(pe.IdPostulanteEvaluacion) AS IdPostulanteEvaluacionB64,
+                     pv.NombreProceso,
+                     CASE pe.EstatusEvaluacion 
+                       WHEN 1 THEN 'Pendiente' 
+                       WHEN 2 THEN 'En progreso' 
+                       WHEN 3 THEN 'Completada' 
+                     END AS TxEstatus
+              FROM PostulantesEvaluaciones pe
+              INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+              INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+              INNER JOIN ProcesosVacantes pv ON pv.IdProceso = ve.IdProceso
+              WHERE pe.IdPostulanteVacante = $IdPostulanteVacante
+              ORDER BY pv.IdProceso ASC, e.Titulo ASC";
+        $resultado = $this->Select($q);
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $resultado
+        ]);
+      } catch (\Exception $e) {
+        error_log("Error en getEvaluacionesPostulante: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Data" => [], "Msg" => $e->getMessage()]);
+      }
+    }
+
+    /**
+     * Obtener preguntas de una evaluación para que el postulante la conteste
+     */
+    function getPreguntasEvaluacionPostulante($IdPostulanteEvaluacion) {
+      try {
+        $IdPostulanteEvaluacion = intval(base64_decode($IdPostulanteEvaluacion));
+        
+        // Obtener el idEvaluaciones desde PostulantesEvaluaciones
+        $qEval = "SELECT ve.IdEvaluacion, pe.EstatusEvaluacion
+                  FROM PostulantesEvaluaciones pe
+                  INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                  WHERE pe.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
+        $resEval = $this->Select($qEval);
+        
+        if (count($resEval) == 0) {
+          return json_encode(["Resultado" => false, "Msg" => "Evaluación no encontrada."]);
+        }
+        
+        $idEvaluacion = $resEval[0]['IdEvaluacion'];
+        $estatus = $resEval[0]['EstatusEvaluacion'];
+        
+        // Obtener preguntas con sus respuestas posibles
+        $qPreguntas = "SELECT PE.idPreguntasEvaluacion AS IdPregunta,
+                              PE.Titulo, PE.Descripcion, PE.idTipoPregunta,
+                              TP.Descripcion AS TipoPregunta,
+                              C.Competencia
+                       FROM PreguntasEvaluacion PE
+                       INNER JOIN TipoPregunta TP ON TP.idTipoPregunta = PE.idTipoPregunta
+                       LEFT JOIN Competencias C ON C.idCompetencias = PE.idCompetencias
+                       WHERE PE.idEvaluaciones = '$idEvaluacion'
+                       ORDER BY PE.idPreguntasEvaluacion ASC";
+        $preguntas = $this->Select($qPreguntas);
+        
+        // Para cada pregunta, obtener respuestas posibles y configuración
+        for ($i = 0; $i < count($preguntas); $i++) {
+          $idPregunta = $preguntas[$i]['IdPregunta'];
+          
+          if ($preguntas[$i]['idTipoPregunta'] == 2 || $preguntas[$i]['idTipoPregunta'] == 4) {
+            // Opción múltiple - obtener respuestas posibles
+            $Con2 = new Conexiones();
+            $qResp = "SELECT idPreguntasPosiblesRespuestas, DescripcionRespuesta 
+                      FROM PreguntasPosiblesRespuestas 
+                      WHERE idPreguntasEvaluacion = '$idPregunta'
+                      ORDER BY idPreguntasPosiblesRespuestas ASC";
+            $preguntas[$i]['Respuestas'] = $Con2->Select($qResp);
+          } elseif ($preguntas[$i]['idTipoPregunta'] == 3) {
+            // Rango
+            $Con2 = new Conexiones();
+            $qConf = "SELECT RangoInicial, RangoFinal 
+                      FROM PreguntasConfiguracion 
+                      WHERE idPreguntasEvaluacion = '$idPregunta'";
+            $resConf = $Con2->Select($qConf);
+            $preguntas[$i]['Config'] = count($resConf) > 0 ? $resConf[0] : null;
+          }
+          
+          // Obtener respuesta previa del postulante (si existe)
+          $Con3 = new Conexiones();
+          $qPrev = "SELECT Respuesta FROM PostulantesRespuestas 
+                    WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion 
+                      AND IdPreguntasEvaluacion = '$idPregunta'";
+          $resPrev = $Con3->Select($qPrev);
+          $preguntas[$i]['RespuestaPrevia'] = count($resPrev) > 0 ? $resPrev[0]['Respuesta'] : null;
+        }
+        
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $preguntas,
+          "Estatus" => $estatus
+        ]);
+      } catch (\Exception $e) {
+        error_log("Error en getPreguntasEvaluacionPostulante: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);
+      }
+    }
+
+    /**
+     * Guardar respuesta individual del postulante
+     */
+    function saveRespuestaPostulante($IdPostulanteEvaluacion, $IdPregunta, $Respuesta) {
+      try {
+        $IdPostulanteEvaluacion = intval(base64_decode($IdPostulanteEvaluacion));
+        $IdPregunta = intval($IdPregunta);
+        
+        // Marcar evaluación como "En progreso" si está pendiente
+        $Con2 = new Conexiones();
+        $Con2->ExecuteQuery("UPDATE PostulantesEvaluaciones SET EstatusEvaluacion = 2, 
+                             FechaInicio = IFNULL(FechaInicio, NOW()) 
+                             WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion 
+                               AND EstatusEvaluacion = 1", array());
+        
+        // Verificar si ya existe respuesta
+        $qCheck = "SELECT IdPostulanteRespuesta FROM PostulantesRespuestas 
+                   WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion 
+                     AND IdPreguntasEvaluacion = $IdPregunta";
+        $resCheck = $this->Select($qCheck);
+        
+        if (count($resCheck) > 0) {
+          // Actualizar
+          $Con3 = new Conexiones();
+          $Con3->ExecuteQuery("UPDATE PostulantesRespuestas 
+                               SET Respuesta = '$Respuesta', FechaRespuesta = NOW() 
+                               WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion 
+                                 AND IdPreguntasEvaluacion = $IdPregunta", array());
+        } else {
+          // Insertar nueva
+          $Con3 = new Conexiones();
+          $Con3->ExecuteQuery("INSERT INTO PostulantesRespuestas 
+                               (IdPostulanteEvaluacion, IdPreguntasEvaluacion, Respuesta) 
+                               VALUES ($IdPostulanteEvaluacion, $IdPregunta, '$Respuesta')", array());
+        }
+        
+        return json_encode(["Resultado" => true, "Siguiente" => true]);
+      } catch (\Exception $e) {
+        error_log("Error en saveRespuestaPostulante: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);
+      }
+    }
+
+    /**
+     * Finalizar evaluación del postulante y calcular calificación
+     */
+    function finalizarEvaluacionPostulante($IdPostulanteEvaluacion) {
+      try {
+        $IdPostulanteEvaluacion = intval(base64_decode($IdPostulanteEvaluacion));
+        
+        // Contar preguntas totales y respondidas
+        $qTotal = "SELECT COUNT(*) AS Total FROM PreguntasEvaluacion 
+                   WHERE idEvaluaciones = (
+                     SELECT ve.IdEvaluacion FROM PostulantesEvaluaciones pe
+                     INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                     WHERE pe.IdPostulanteEvaluacion = $IdPostulanteEvaluacion
+                   )";
+        $resTotal = $this->Select($qTotal);
+        $totalPreguntas = $resTotal[0]['Total'];
+        
+        $Con2 = new Conexiones();
+        $qRespondidas = "SELECT COUNT(*) AS Respondidas FROM PostulantesRespuestas 
+                         WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
+        $resRespondidas = $Con2->Select($qRespondidas);
+        $respondidas = $resRespondidas[0]['Respondidas'];
+        
+        if ($respondidas < $totalPreguntas) {
+          return json_encode([
+            "Resultado" => false,
+            "Msg" => "Faltan " . ($totalPreguntas - $respondidas) . " preguntas por responder."
+          ]);
+        }
+        
+        // Calcular calificación basada en las respuestas correctas
+        $Con3 = new Conexiones();
+        $qCalc = "SELECT 
+                    COUNT(*) AS TotalPreguntas,
+                    SUM(CASE 
+                      WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = pc.BoolCorreta THEN 1
+                      WHEN pc.RespuestaCorrectaOM IS NOT NULL AND pr.Respuesta = pc.RespuestaCorrectaOM THEN 1
+                      ELSE 0
+                    END) AS Correctas
+                  FROM PostulantesRespuestas pr
+                  INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                  LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                  WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
+        $resCalc = $Con3->Select($qCalc);
+        
+        $totalP = max($resCalc[0]['TotalPreguntas'], 1);
+        $correctas = $resCalc[0]['Correctas'] ?? 0;
+        $calificacion = round(($correctas / $totalP) * 100, 2);
+        
+        // Actualizar la evaluación como completada
+        $Con4 = new Conexiones();
+        $Con4->ExecuteQuery("UPDATE PostulantesEvaluaciones 
+                             SET EstatusEvaluacion = 3, 
+                                 FechaFinalizacion = NOW(), 
+                                 Calificacion = $calificacion 
+                             WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion", array());
+        
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "ConMsg" => true,
+          "Msg" => "¡Evaluación finalizada! Calificación: $calificacion%",
+          "Calificacion" => $calificacion
+        ]);
+      } catch (\Exception $e) {
+        error_log("Error en finalizarEvaluacionPostulante: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);
+      }
+    }
+
+    /**
+     * Obtener resultados comparativos de postulantes en una vacante para una evaluación
+     * (Para gráficas del admin)
+     */
+    function getResultadosComparativosPostulantes($IdVacante, $IdEvaluacion) {
+      try {
+        $IdVacante = intval(base64_decode($IdVacante));
+        $IdEvaluacion = intval(base64_decode($IdEvaluacion));
+        
+        // Obtener todos los postulantes que completaron esta evaluación en esta vacante
+        $q = "SELECT pe.IdPostulanteEvaluacion, pe.Calificacion, pe.FechaFinalizacion,
+                     pe.EstatusEvaluacion,
+                     CONCAT(p.Nombre, ' ', p.ApellidoPaterno, ' ', IFNULL(p.ApellidoMaterno, '')) AS NombrePostulante,
+                     p.IdPostulante,
+                     TO_BASE64(pe.IdPostulanteEvaluacion) AS IdPostulanteEvaluacionB64
+              FROM PostulantesEvaluaciones pe
+              INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+              INNER JOIN PostulantesVacantes pvac ON pvac.IdPostulanteVacante = pe.IdPostulanteVacante
+              INNER JOIN Postulantes p ON p.IdPostulante = pvac.IdPostulante
+              WHERE ve.IdVacante = '$IdVacante' 
+                AND ve.IdEvaluacion = '$IdEvaluacion'
+              ORDER BY pe.Calificacion DESC";
+        $postulantes = $this->Select($q);
+        
+        // Obtener competencias/categorías de la evaluación para el radar chart
+        $Con2 = new Conexiones();
+        $qComp = "SELECT DISTINCT C.Competencia, C.idCompetencias
+                  FROM PreguntasEvaluacion PE
+                  INNER JOIN Competencias C ON C.idCompetencias = PE.idCompetencias
+                  WHERE PE.idEvaluaciones = '$IdEvaluacion'
+                  ORDER BY C.Competencia ASC";
+        $competencias = $Con2->Select($qComp);
+        
+        // Para cada postulante, obtener desglose por competencia
+        for ($i = 0; $i < count($postulantes); $i++) {
+          $idPE = $postulantes[$i]['IdPostulanteEvaluacion'];
+          $desglose = [];
+          
+          foreach ($competencias as $comp) {
+            $idComp = $comp['idCompetencias'];
+            $Con3 = new Conexiones();
+            $qDesg = "SELECT 
+                        COUNT(*) AS Total,
+                        SUM(CASE 
+                          WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = pc.BoolCorreta THEN 1
+                          WHEN pc.RespuestaCorrectaOM IS NOT NULL AND pr.Respuesta = pc.RespuestaCorrectaOM THEN 1
+                          WHEN pr.Respuesta IS NOT NULL AND pr.Respuesta != '' THEN 
+                            CAST(pr.Respuesta AS DECIMAL) / IFNULL(NULLIF(pc.RangoFinal, 0), 5) 
+                          ELSE 0
+                        END) AS Puntos
+                      FROM PostulantesRespuestas pr
+                      INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                      LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                      WHERE pr.IdPostulanteEvaluacion = '$idPE'
+                        AND pe.idCompetencias = '$idComp'";
+            $resDesg = $Con3->Select($qDesg);
+            
+            $total = max($resDesg[0]['Total'], 1);
+            $puntos = $resDesg[0]['Puntos'] ?? 0;
+            
+            $desglose[] = [
+              "Competencia" => $comp['Competencia'],
+              "Porcentaje" => round(($puntos / $total) * 100, 2)
+            ];
+          }
+          
+          $postulantes[$i]['Desglose'] = $desglose;
+        }
+        
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => [
+            "Postulantes" => $postulantes,
+            "Competencias" => $competencias
+          ]
+        ]);
+      } catch (\Exception $e) {
+        error_log("Error en getResultadosComparativosPostulantes: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);
+      }
+    }
+
+    /**
+     * Obtener evaluaciones por vacante (para vista de admin con resultados)
+     */
+    function getEvaluacionesPorVacante($IdVacante) {
+      try {
+        $IdVacante = intval(base64_decode($IdVacante));
+        $q = "SELECT ve.IdVacanteEvaluacion, ve.IdEvaluacion, ve.IdProceso,
+                     e.Titulo AS NombreEvaluacion, 
+                     TO_BASE64(ve.IdVacante) AS IdVacanteB64,
+                     TO_BASE64(ve.IdEvaluacion) AS IdEvaluacionB64,
+                     pv.NombreProceso,
+                     (SELECT COUNT(*) FROM PostulantesEvaluaciones pe2 
+                      WHERE pe2.IdVacanteEvaluacion = ve.IdVacanteEvaluacion AND pe2.EstatusEvaluacion = 3) AS Completadas,
+                     (SELECT COUNT(*) FROM PostulantesEvaluaciones pe2 
+                      WHERE pe2.IdVacanteEvaluacion = ve.IdVacanteEvaluacion) AS TotalAsignadas
+              FROM VacantesEvaluaciones ve
+              INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+              INNER JOIN ProcesosVacantes pv ON pv.IdProceso = ve.IdProceso
+              WHERE ve.IdVacante = '$IdVacante'
+                AND e.TipoEvaluacion = 2 AND e.DirigidoA = 2
+              ORDER BY pv.IdProceso ASC";
+        $resultado = $this->Select($q);
+        return json_encode([
+          "Resultado" => true,
+          "Siguiente" => true,
+          "Data" => $resultado
+        ]);
+      } catch (\Exception $e) {
+        return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);
       }
     }
 

@@ -498,4 +498,41 @@
       $IdPuesto = isset($_POST["IdPuesto"]) ? $_POST["IdPuesto"] : "";
       echo trim($Evaluaciones->getEmpleadosParaEvaluacion($IdDivision, $IdSucursal, $IdPuesto));
     }
+
+    // ==========================================
+    // EVALUACIONES PARA POSTULANTES
+    // ==========================================
+
+    if ($op == "getEvaluacionesPostulante") {
+      $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
+      echo trim($Evaluaciones->getEvaluacionesPostulante($IdPostulanteVacante));
+    }
+
+    if ($op == "getPreguntasEvaluacionPostulante") {
+      $IdPostulanteEvaluacion = $_POST["IdPostulanteEvaluacion"];
+      echo trim($Evaluaciones->getPreguntasEvaluacionPostulante($IdPostulanteEvaluacion));
+    }
+
+    if ($op == "saveRespuestaPostulante") {
+      $IdPostulanteEvaluacion = $_POST["IdPostulanteEvaluacion"];
+      $IdPregunta = $_POST["IdPregunta"];
+      $Respuesta = $_POST["Respuesta"];
+      echo trim($Evaluaciones->saveRespuestaPostulante($IdPostulanteEvaluacion, $IdPregunta, $Respuesta));
+    }
+
+    if ($op == "finalizarEvaluacionPostulante") {
+      $IdPostulanteEvaluacion = $_POST["IdPostulanteEvaluacion"];
+      echo trim($Evaluaciones->finalizarEvaluacionPostulante($IdPostulanteEvaluacion));
+    }
+
+    if ($op == "getResultadosComparativosPostulantes") {
+      $IdVacante = $_POST["IdVacante"];
+      $IdEvaluacion = $_POST["IdEvaluacion"];
+      echo trim($Evaluaciones->getResultadosComparativosPostulantes($IdVacante, $IdEvaluacion));
+    }
+
+    if ($op == "getEvaluacionesPorVacante") {
+      $IdVacante = $_POST["IdVacante"];
+      echo trim($Evaluaciones->getEvaluacionesPorVacante($IdVacante));
+    }
  ?>

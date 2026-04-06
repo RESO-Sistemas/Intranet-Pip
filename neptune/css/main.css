@@ -6551,7 +6551,7 @@ span.flatpickr-weekday {
 }
 
 .app-auth-sign-in .app-auth-background {
-    background: url('../images/backgrounds/undraw_site-content_aa05.svg') no-repeat;
+    background: url('../../assets/images/pato-animadosinfondo.png') no-repeat;
     background-size: 60%;
     background-position: center;
     background-color: #ffecb9;

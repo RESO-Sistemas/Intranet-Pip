@@ -644,7 +644,13 @@ class Vacantes extends Conexiones
      */
     function getEvaluacionesActivas()
     {
-        $q = "SELECT idEvaluaciones, Titulo FROM Evaluaciones WHERE Status = 1 AND TipoEvaluacion = 1 ORDER BY Titulo ASC";
+        $q = "SELECT idEvaluaciones, Titulo, TipoEvaluacion, DirigidoA,
+                     CASE WHEN TipoEvaluacion = 1 THEN 'Evaluación 360°' ELSE 'Encuesta Normal' END AS TxTipo
+              FROM Evaluaciones 
+              WHERE Status = 1 
+                AND (TipoEvaluacion = 1 OR (TipoEvaluacion = 2 AND DirigidoA = 2))
+                AND PreguntasAceptadas = 1
+              ORDER BY Titulo ASC";
         return json_encode($this->Select($q));
     }
 
