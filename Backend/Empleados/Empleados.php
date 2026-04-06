@@ -2286,7 +2286,7 @@ class Empleados extends Conexiones
     try {
       $NoEmpleado = (SessionManager::get("NoEmpleado"));
       $q = "SELECT Nombre AS NameEmployee, IF(Email IS NULL OR Email = '','Sin registros',Email) as EmailEmployee,
-              IF(Imagen IS NULL OR Imagen = '','assets/Klyns.png',CONCAT('Archivos/ImgEmpleados/',NoEmpleado,'/',Imagen)) AS ImgEmployee
+              IF(Imagen IS NULL OR Imagen = '','assets/images/logo-pip.png',CONCAT('Archivos/ImgEmpleados/',NoEmpleado,'/',Imagen)) AS ImgEmployee
             FROM Empleados
             WHERE NoEmpleado = '$NoEmpleado';";
       $resultado = $this->Select($q,array());
@@ -2313,7 +2313,7 @@ class Empleados extends Conexiones
   function getPrincipalDetailEvaluated($employee){
     try {
       $q = "SELECT E.Nombre, P.Puesto, SP.Sucursal, E.NoEmpleado,
-            IF(E.Imagen IS NULL OR E.Imagen = '','assets/Klyns.png',CONCAT('Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) AS ImgEmpleado
+            IF(E.Imagen IS NULL OR E.Imagen = '','assets/images/logo-pip.png',CONCAT('Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) AS ImgEmpleado
             FROM Empleados AS E
             INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
             INNER JOIN SucursalDepto AS SP ON SP.IdSucursal = E.IdPuesto

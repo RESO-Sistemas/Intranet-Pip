@@ -1216,7 +1216,7 @@
     //           IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation' AND TO_BASE64(NoEmpleadoEvaluado) = '$employee' AND Status = 1)  > 0 AND
     //             (SELECT COUNT(*) FROM EvaluacionDetalle WHERE ParEvalua = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation' AND TO_BASE64(NoEmpleadoEvaluado) = '$employee' AND Status = 1) = 0,'C', 'D'
     //           ))) AS GrupoEvaluado,
-    //           IF(E.Imagen IS NULL OR E.Imagen = '','assets/Klyns.png',CONCAT('Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) AS ImgEmpleado,
+    //           IF(E.Imagen IS NULL OR E.Imagen = '','assets/images/logo-pip.png',CONCAT('Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) AS ImgEmpleado,
     //           IF('$evaluation' IN (SELECT TO_BASE64(idEvaluaciones) FROM RetroalimentacionEvaluacion WHERE TO_BASE64(NoEmpleado) = '$employee'),1,0) AS RetroalimentacionR,
     //           (SELECT DATE_FORMAT(PlanAFechaIni,'%d-%m-%Y') FROM Evaluaciones WHERE TO_BASE64(idEvaluaciones) = '$evaluation') AS PlanAFechaIni,
     //           (SELECT DATE_FORMAT(PlanAFechaFin,'%d-%m-%Y') FROM Evaluaciones WHERE TO_BASE64(idEvaluaciones) = '$evaluation') AS PlanAFechaFin

@@ -129,6 +129,9 @@
                     <div class="row justify-content-center mb-4">
                       <div class="col-md-6 col-lg-4">
                         <label class="form-label">Días de descanso:</label>
+                        <small class="form-text text-muted d-block mb-2" style="line-height: normal;">
+                          Indica cuáles son los días de descanso en tu jornada laboral.
+                        </small>
                         <select class="form-select pb-2" aria-label="Default select example" id="daysBreak" multiple>
                           <option value="Sunday">Domingo</option>
                           <option value="Monday">Lunes</option>
@@ -148,17 +151,16 @@
                     </div>
                     <div class="row justify-content-center mb-4">
                       <div class="col-md-6 col-lg-4">
-                        <div class="row justify-content-center">
-                          <img src="" id="imgFirma" alt="" style="height:100%">
-                        </div>
-                        <div class="row justify-content-center">
-                          <a href="AddFirma.php" class="btn btn-primary">Actualizar Firma</a>
+                        <div class="row justify-content-center mt-2">
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalActualizarFirma">Actualizar Firma</button>
                         </div>
                       </div>
                     </div>
                     <div class="row justify-content-center mb-4">
                       <div class="col">
-                        <img src="" id="imgFirma" alt="" style="height:100%">
+                        <div class="firma-container text-center" style="display:none; width: 100%;">
+                          <img src="" class="imgFirmaClass mx-auto d-block" id="imgFirma" style="height:100%; max-width:100%;" onerror="this.parentElement.style.display='none';">
+                        </div>
                         <div class="d-flex justify-content-between mt-3">
                           <a href="SolicitudVacaciones.php" class="btn btn-danger btn-lg" style="width: 200px;">Regresar</a>
                           <a class="btn btn-success btn-lg" style="width: 200px;" onclick="enviarSolicitudVacaciones()">Enviar Solicitud</a>
@@ -185,6 +187,33 @@
                           </div>
                         </div>
                       </div>
+                      <!-- MODAL ASIGNAR HIJO END -->
+
+                      <!-- MODAL FIRMA -->
+                      <div class="modal fade" id="modalActualizarFirma" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalActualizarFirmaLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="modalActualizarFirmaLabel">Traza tu firma aquí</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="row mx-1">
+                                <div id="contentCanvas" class="col form-control form-control-solid-bordered" style="text-align:center; height:200px; width:100%; padding:0; overflow:hidden;">
+                                  <canvas id="draw-canvas">No tienes un buen navegador.</canvas>
+                                </div>
+                                <input type="color" id="color" value="#1a1a1a" style="display:none;">
+                                <input type="range" id="puntero" min="1" value="2" max="5" style="display:none;">
+                              </div>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-between">
+                              <button type="button" class="btn btn-danger" id="draw-clearBtn">Repetir trazo</button>
+                              <button type="button" id="draw-submitBtn" class="btn btn-success">Guardar Firma</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- MODAL FIRMA END -->
                       <!-- MODAL -->
                     </div>
                   </div>
@@ -230,9 +259,18 @@
         data: "op=getFirmaEmp",
         success: function(response) {
           response = JSON.parse(response.trim());
-          for (var i = 0; i < response.length; i++) {
-            let urlImg = "Archivos/ImgEmpleados/" + response[i]["NoEmpleado"] + "/Firma/" + response[i]["Firma"];
-            $("#imgFirma").attr("src", urlImg);
+          if (!response || response.length === 0) {
+            $(".firma-container").hide();
+          } else {
+            for (var i = 0; i < response.length; i++) {
+              if(response[i]["Firma"] && response[i]["Firma"] !== "" && response[i]["Firma"] !== "null") {
+                let urlImg = "Archivos/ImgEmpleados/" + response[i]["NoEmpleado"] + "/Firma/" + response[i]["Firma"];
+                $(".imgFirmaClass").attr("src", urlImg);
+                $(".firma-container").show();
+              } else {
+                $(".firma-container").hide();
+              }
+            }
           }
         },
         error: function(e) {
@@ -240,6 +278,89 @@
         }
       });
     }
+
+    /* INICIO DE LOGICA DE MODAL DE FIRMA */
+    let canvasInitialized = false;
+    window.requestAnimFrame = (function(callback) {
+      return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame || window.msRequestAnimaitonFrame || function(callback) { window.setTimeout(callback, 1000 / 60); };
+    })();
+    
+    $('#modalActualizarFirma').on('shown.bs.modal', function () {
+      var canvas = document.getElementById("draw-canvas");
+      var contentCanvas = document.getElementById("contentCanvas");
+      canvas.width = contentCanvas.offsetWidth;
+      canvas.height = contentCanvas.offsetHeight;
+      if (!canvasInitialized) {
+        var ctx = canvas.getContext("2d");
+        var clearBtn = document.getElementById("draw-clearBtn");
+        var submitBtn = document.getElementById("draw-submitBtn");
+        var drawing = false;
+        var mousePos = { x: 0, y: 0 };
+        var lastPos = mousePos;
+
+        clearBtn.addEventListener("click", function(e) { canvas.width = canvas.width; }, false);
+        
+        submitBtn.addEventListener("click", function(e) {
+          var dataUrl = canvas.toDataURL();
+          SubirFirma(dataUrl);
+        }, false);
+
+        canvas.addEventListener("mousedown", function(e) { drawing = true; lastPos = getMousePos(canvas, e); }, false);
+        canvas.addEventListener("mouseup", function(e) { drawing = false; }, false);
+        canvas.addEventListener("mousemove", function(e) { mousePos = getMousePos(canvas, e); }, false);
+
+        canvas.addEventListener("touchstart", function(e) {
+          mousePos = getTouchPos(canvas, e); e.preventDefault();
+          var touch = e.touches[0];
+          var mouseEvent = new MouseEvent("mousedown", { clientX: touch.clientX, clientY: touch.clientY });
+          canvas.dispatchEvent(mouseEvent);
+        }, false);
+        canvas.addEventListener("touchend", function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup", {})); }, false);
+        canvas.addEventListener("touchleave", function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup", {})); }, false);
+        canvas.addEventListener("touchmove", function(e) {
+          e.preventDefault(); var touch = e.touches[0];
+          var mouseEvent = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
+          canvas.dispatchEvent(mouseEvent);
+        }, false);
+
+        function getMousePos(canvasDom, mouseEvent) {
+          var rect = canvasDom.getBoundingClientRect();
+          return { x: mouseEvent.clientX - rect.left, y: mouseEvent.clientY - rect.top };
+        }
+        function getTouchPos(canvasDom, touchEvent) {
+          var rect = canvasDom.getBoundingClientRect();
+          return { x: touchEvent.touches[0].clientX - rect.left, y: touchEvent.touches[0].clientY - rect.top };
+        }
+        function renderCanvas() {
+          if (drawing) {
+            var tint = document.getElementById("color");
+            var punta = document.getElementById("puntero");
+            ctx.strokeStyle = tint.value;
+            ctx.beginPath(); ctx.moveTo(lastPos.x, lastPos.y); ctx.lineTo(mousePos.x, mousePos.y);
+            ctx.lineWidth = punta.value; ctx.stroke(); ctx.closePath();
+            lastPos = mousePos;
+          }
+        }
+        (function drawLoop() { requestAnimFrame(drawLoop); renderCanvas(); })();
+        canvasInitialized = true;
+      }
+    });
+
+    function SubirFirma(imagen64) {
+      $.ajax({
+        type: "POST",
+        url: "Backend/Empleados/App.php",
+        data: "op=SubirFirma&imagen64=" + imagen64,
+        success: function(text) {
+          $('#modalActualizarFirma').modal('hide');
+          getFirmaEmp(); // Actualizar la imagen mostrada al instante
+        },
+        error: function(e) { alert(e.responseText); }
+      });
+    }
+    /* FIN LOGICA FIRMA MODAL */
+
   </script>
 
 </body>

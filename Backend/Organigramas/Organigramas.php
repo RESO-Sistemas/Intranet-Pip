@@ -110,7 +110,7 @@ class Organigramas extends Conexiones
         return json_encode($this->Select($q, array()));
     }
 
-    function addEmpleadoOrganigrama($idOrganigramas, $idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Tipo, $Otros)
+    function addEmpleadoOrganigrama($idOrganigramas, $idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Tipo, $Otros, $Nivel = 0)
     {
         $idOrganigramas = base64_decode($idOrganigramas);
         $TipoElemento = "";
@@ -161,7 +161,7 @@ class Organigramas extends Conexiones
         IF(DO.Tipo = 'OTROS','',P.Puesto) AS Puesto,
         DO.idDetalleOrganigramaPadre,DO.idDetalleOrganigrama,DO.Otros,
         coalesce(DO.Nivel,0) as Nivel,
-        if(E.Imagen is null or E.Imagen = '','https://klynet.mx/assets/Klyns.png',
+        if(E.Imagen is null or E.Imagen = '','assets/images/logo-pip.png',
           concat('https://klynet.mx/Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) as Imagen,
         DO.NoEmpleadoHijo,DO.Tipo,
               coalesce((SELECT DOO.Nivel FROM DetalleOrganigrama AS DOO
@@ -207,7 +207,7 @@ class Organigramas extends Conexiones
         }
     }
 
-    function EditarElementoOrganigrama($idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Otros, $idDetalleOrganigrama, $Tipo, $idOrganigramas)
+    function EditarElementoOrganigrama($idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Otros, $idDetalleOrganigrama, $Tipo, $idOrganigramas, $Nivel = 0)
     {
         $idOrganigramas = base64_decode($idOrganigramas);
         $TipoElemento = "";
@@ -336,7 +336,7 @@ class Organigramas extends Conexiones
         IF(DO.Tipo = 'OTROS','',P.Puesto) AS Puesto,
         IF(DO.Tipo = 'OTROS','',IF(E.Email IS NULL OR E.Email = '','Sin Email',E.Email)) AS Email,
         DO.Otros,DO.Nivel,
-        if(E.Imagen is null or E.Imagen = '','https://klynet.mx/assets/Klyns.png',
+        if(E.Imagen is null or E.Imagen = '','assets/images/logo-pip.png',
           concat('https://klynet.mx/Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) as Imagen,
           DO.CoordenadaY,DO.CoordenadaX,DO.Ancho, DO.Altura,
                 coalesce((SELECT DOO.Nivel FROM DetalleOrganigrama AS DOO

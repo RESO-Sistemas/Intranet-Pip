@@ -168,6 +168,18 @@ function getMensajeVistoLineaEtica() {
 }
 
 function cerrarMensajeLineaEtica(val) {
+  // Optimistic UI update para velocidad
+  let badge = $("#cantidadNotificacionesBadge");
+  let currentCount = parseInt(badge.text()) || 0;
+  if (currentCount > 1) {
+    badge.html(currentCount - 1);
+    $("#cantidadNotificaciones").html(currentCount - 1);
+  } else {
+    badge.hide();
+    $("#cantidadNotificaciones").html("0");
+  }
+  $("#LineaEticaMsg" + val).hide();
+
   datos = {
     op: "VistoMensajeLineaEtica",
     idLineaEticaMensajes: val,
@@ -242,9 +254,9 @@ async function getCantidadNotificaciones() {
   } catch (error) {
     console.log(error);
   } finally {
-    $("#cantidadNotificaciones").html(respuesta[0]);
-    if (respuesta[0] > 0) {
-      $("#cantidadNotificacionesBadge").html(respuesta[0]).show();
+    $("#cantidadNotificaciones").html(respuesta);
+    if (respuesta > 0) {
+      $("#cantidadNotificacionesBadge").html(respuesta).show();
     } else {
       $("#cantidadNotificacionesBadge").hide();
     }
@@ -378,12 +390,16 @@ async function getMsgSolicitudesVacacionesRecibidas() {
     $("#notificacionesMenuSVacacionesMobile").html("");
     if (respuesta.length > 0) {
       respuesta.forEach((msg) => {
-        const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Solicitud de vacaciones!</span>
-              <span class="alert-text">${msg.Msg}</span>
-        </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
+        const shownKey = 'vacation_jefe_shown_' + msg.idSolicitudesVacaciones;
+        if (!sessionStorage.getItem(shownKey)) {
+          const messageContent = `
+          <div class="alert-content">
+               <span class="alert-title">Solicitud de vacaciones!</span>
+                <span class="alert-text">${msg.Msg}</span>
+          </div>`;
+          showBootstrapAlert(messageContent, "top-right", 5000);
+          sessionStorage.setItem(shownKey, '1');
+        }
 
         const notificationHTML = `
               <a id="msjSolicitudesVacacionesJefe${msg.idSolicitudesVacaciones}" style="cursor:pointer;" >
@@ -408,6 +424,18 @@ async function getMsgSolicitudesVacacionesRecibidas() {
 }
 
 async function cerrarMensajeSolicitudesJefe(val) {
+  // Optimistic UI update para velocidad
+  let badge = $("#cantidadNotificacionesBadge");
+  let currentCount = parseInt(badge.text()) || 0;
+  if (currentCount > 1) {
+    badge.html(currentCount - 1);
+    $("#cantidadNotificaciones").html(currentCount - 1);
+  } else {
+    badge.hide();
+    $("#cantidadNotificaciones").html("0");
+  }
+  $("#msjSolicitudesVacacionesJefe" + val).hide();
+
   let datos = await {
     op: "updateMsgSolicitudesVacacionesRecibidasJefe",
     idSolicitudesVacaciones: val,
@@ -497,12 +525,16 @@ async function getMsgSolicitudesVacacionesRecibidasFinal() {
     if (respuesta[0]["Retorno"] == "Valido") {
       respuesta.map((retorno) => {
         retorno.Registros.map((registros) => {
-          const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Vacaciones Nomina!</span>
-              <span class="alert-text">$${registros.Msg}</span>
-          </div>`;
-          showBootstrapAlert(messageContent, "top-right", 5000);
+          const shownKey = 'vacation_nomina_shown_' + registros.idSolicitudesVacaciones;
+          if (!sessionStorage.getItem(shownKey)) {
+            const messageContent = `
+            <div class="alert-content">
+               <span class="alert-title">Vacaciones!</span>
+                <span class="alert-text">${registros.Msg}</span>
+            </div>`;
+            showBootstrapAlert(messageContent, "top-right", 5000);
+            sessionStorage.setItem(shownKey, '1');
+          }
 
           const notificationHTML = `
                 <a id="msjSolicitudesVacacionesNomina${registros.idSolicitudesVacaciones}" style="cursor:pointer;" >
@@ -875,6 +907,18 @@ async function getMensajeCapacitacionGlobal() {
 }
 
 async function cerrarMensajeSolicitudesNomina(val) {
+  // Optimistic UI update para velocidad
+  let badge = $("#cantidadNotificacionesBadge");
+  let currentCount = parseInt(badge.text()) || 0;
+  if (currentCount > 1) {
+    badge.html(currentCount - 1);
+    $("#cantidadNotificaciones").html(currentCount - 1);
+  } else {
+    badge.hide();
+    $("#cantidadNotificaciones").html("0");
+  }
+  $("#msjSolicitudesVacacionesNomina" + val).hide();
+
   let datos = await {
     op: "updateMsgSolicitudesVacacionesRecibidasNomina",
     idSolicitudesVacaciones: val,
@@ -900,6 +944,18 @@ async function cerrarMensajeSolicitudesNomina(val) {
 }
 
 async function cerrarMensajeCapacitacion(val) {
+  // Optimistic UI update para velocidad
+  let badge = $("#cantidadNotificacionesBadge");
+  let currentCount = parseInt(badge.text()) || 0;
+  if (currentCount > 1) {
+    badge.html(currentCount - 1);
+    $("#cantidadNotificaciones").html(currentCount - 1);
+  } else {
+    badge.hide();
+    $("#cantidadNotificaciones").html("0");
+  }
+  $("#msjCapacitacion" + val).hide();
+
   let datos = {
     op: "cerrarMensajeCapacitacion",
     idCapacitacion: val,
