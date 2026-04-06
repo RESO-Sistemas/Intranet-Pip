@@ -26,6 +26,46 @@
             padding-bottom: 8px;
             margin-bottom: 15px;
         }
+        .pv-section-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid #c7ced6;
+            border-radius: 8px;
+            padding: 11px 14px;
+            background: #fff;
+            box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
+        }
+        .pv-title-main {
+            flex: 1;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .pv-section-tools {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            padding-top: 2px;
+        }
+        .pv-section-icon {
+            font-size: 20px;
+            color: #6c757d;
+            line-height: 1;
+            margin-left: 8px;
+        }
+        .detail-section.is-collapsed {
+            margin-bottom: 10px;
+        }
+        .detail-section.is-collapsed h6 {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
 
         /* ====== ESTILOS PARA POSTULANTES ====== */
         .postulante-status {
@@ -132,6 +172,10 @@
             border-bottom-color: #404040;
             color: #e0e0e0;
         }
+        [data-theme="dark"] .pv-section-toggle {
+            background: #2d2d2d;
+            border-color: #5a6675;
+        }
         [data-theme="dark"] .stat-item {
             background: #1e1e1e;
         }
@@ -186,71 +230,73 @@
 
                         <input type="hidden" id="postulantesIdVacante">
 
-                        <!-- Estadísticas -->
-                        <div class="row mb-3" id="statsPostulantes">
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-primary" id="statTotal">0</h3>
-                                        <small class="text-muted">Total</small>
+                        <div id="postulantesDataArea">
+                            <!-- Estadísticas -->
+                            <div class="row mb-3" id="statsPostulantes">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-3">
+                                            <h3 class="mb-1 text-primary" id="statTotal">0</h3>
+                                            <small class="text-muted">Total</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-3">
+                                            <h3 class="mb-1 text-info" id="statProceso">0</h3>
+                                            <small class="text-muted">En Proceso</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-3">
+                                            <h3 class="mb-1 text-success" id="statAceptados">0</h3>
+                                            <small class="text-muted">Aceptados</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-3">
+                                            <h3 class="mb-1 text-danger" id="statRechazados">0</h3>
+                                            <small class="text-muted">Rechazados</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-info" id="statProceso">0</h3>
-                                        <small class="text-muted">En Proceso</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-success" id="statAceptados">0</h3>
-                                        <small class="text-muted">Aceptados</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-danger" id="statRechazados">0</h3>
-                                        <small class="text-muted">Rechazados</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col">
-                                <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title fw-bold mb-0">
-                                            <span class="material-symbols-outlined align-middle me-2">people</span>
-                                            Postulantes
-                                        </h5>
-                                        <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
-                                            <span class="material-symbols-outlined align-middle me-1">person_add</span>
-                                            Agregar Postulante
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table id="tablePostulantes" class="table table-hover display text-center" style="width:100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Postulante</th>
-                                                        <th>Correo</th>
-                                                        <th>Teléfono</th>
-                                                        <th>Fecha Postulación</th>
-                                                        <th>Último Proceso</th>
-                                                        <th>Estatus</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="tbodyPostulantes"></tbody>
-                                            </table>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title fw-bold mb-0">
+                                                <span class="material-symbols-outlined align-middle me-2">people</span>
+                                                Postulantes
+                                            </h5>
+                                            <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
+                                                <span class="material-symbols-outlined align-middle me-1">person_add</span>
+                                                Agregar Postulante
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table id="tablePostulantes" class="table table-hover display text-center" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Postulante</th>
+                                                            <th>Correo</th>
+                                                            <th>Teléfono</th>
+                                                            <th>Fecha Postulación</th>
+                                                            <th>Último Proceso</th>
+                                                            <th>Estatus</th>
+                                                            <th>Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tbodyPostulantes"></tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -380,6 +426,15 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="detalleIdPostulanteVacante">
+                    <input type="hidden" id="detalleIdPostulante">
+
+                    <!-- Botón de Modo Edición -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnToggleEditMode" onclick="toggleEditMode()">
+                            <span class="material-symbols-outlined align-middle me-1">edit</span>
+                            Editar Información
+                        </button>
+                    </div>
 
                     <div class="detail-section">
                         <h6 class="fw-bold text-primary">
@@ -387,18 +442,157 @@
                             Información Personal
                         </h6>
                         <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Nombre Completo:</strong> <span id="detallePostulanteNombre">-</span></p>
-                                <p><strong>CURP:</strong> <span id="detallePostulanteCURP">-</span></p>
-                                <p><strong>Correo:</strong> <span id="detallePostulanteCorreo">-</span></p>
-                                <p><strong>Teléfono:</strong> <span id="detallePostulanteTelefono">-</span></p>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Nombre(s):</label>
+                                <input type="text" id="edit_Nombre" class="form-control form-control-sm" disabled>
+                                <span id="view_Nombre" class="d-none"></span>
                             </div>
-                            <div class="col-md-6">
-                                <p><strong>Dirección:</strong> <span id="detallePostulanteDireccion">-</span></p>
-                                <p><strong>Estado:</strong> <span id="detallePostulanteEstado">-</span></p>
-                                <p><strong>Ciudad:</strong> <span id="detallePostulanteCiudad">-</span></p>
-                                <p><strong>Fecha Postulación:</strong> <span id="detallePostulanteFecha">-</span></p>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Apellido Paterno:</label>
+                                <input type="text" id="edit_ApellidoPaterno" class="form-control form-control-sm" disabled>
+                                <span id="view_ApellidoPaterno" class="d-none"></span>
                             </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Apellido Materno:</label>
+                                <input type="text" id="edit_ApellidoMaterno" class="form-control form-control-sm" disabled>
+                                <span id="view_ApellidoMaterno" class="d-none"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">CURP:</label>
+                                <input type="text" id="edit_CURP" class="form-control form-control-sm text-uppercase" maxlength="18" disabled>
+                                <span id="view_CURP" class="d-none"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Correo Electrónico:</label>
+                                <input type="email" id="edit_CorreoElectronico" class="form-control form-control-sm" disabled>
+                                <span id="view_CorreoElectronico" class="d-none"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Teléfonos:</label>
+                                <div id="listaTelefonos" class="border rounded p-2 bg-light">
+                                    <small class="text-muted">Cargando...</small>
+                                </div>
+                                <small class="text-muted">* Puedes gestionar los teléfonos aquí abajo</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h6 class="fw-bold text-info">
+                            <span class="material-symbols-outlined align-middle me-2">location_on</span>
+                            Dirección
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Código Postal:</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="edit_CodigoPostal" class="form-control" placeholder="5 dígitos" maxlength="5" disabled>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscarCP" onclick="buscarCodigoPostal()" disabled>
+                                        <span class="material-symbols-outlined">search</span>
+                                    </button>
+                                </div>
+                                <small class="text-muted" id="cpStatus"></small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Colonia:</label>
+                                <select id="edit_Colonia" class="form-select form-select-sm" disabled>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                                <span id="view_Colonia" class="d-none"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Calle:</label>
+                                <input type="text" id="edit_Calle" class="form-control form-control-sm" placeholder="Ej. Av. Juarez" disabled>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-bold">Num. Exterior:</label>
+                                <input type="text" id="edit_NumeroExterior" class="form-control form-control-sm" placeholder="Ej. 123" disabled>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-bold">Num. Interior:</label>
+                                <input type="text" id="edit_NumeroInterior" class="form-control form-control-sm" placeholder="Ej. 2B" disabled>
+                            </div>
+                        </div>
+                        <input type="hidden" id="edit_Direccion">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">Preview direccion final:</label>
+                                <div id="direccionPreview" class="form-control form-control-sm bg-light" style="min-height: 38px;">-</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Estado:</label>
+                                <input type="text" id="edit_Estado" class="form-control form-control-sm" readonly>
+                                <span id="view_Estado" class="d-none"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Municipio/Ciudad:</label>
+                                <input type="text" id="edit_Ciudad" class="form-control form-control-sm" readonly>
+                                <span id="view_Ciudad" class="d-none"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="mb-0"><strong>Fecha Postulación:</strong> <span id="detallePostulanteFecha">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Guardar/Cancelar (solo visibles en modo edición) -->
+                    <div id="editModeButtons" class="d-none mb-3">
+                        <button type="button" class="btn btn-success" onclick="guardarCambiosPostulante()">
+                            <span class="material-symbols-outlined align-middle me-1">save</span>
+                            Guardar Cambios
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">
+                            <span class="material-symbols-outlined align-middle me-1">close</span>
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <!-- Sección de Teléfonos con gestión completa -->
+                    <div class="detail-section">
+                        <h6 class="fw-bold text-success d-flex justify-content-between align-items-center">
+                            <span>
+                                <span class="material-symbols-outlined align-middle me-2">phone</span>
+                                Gestión de Teléfonos
+                            </span>
+                            <button type="button" class="btn btn-success btn-sm" onclick="mostrarFormAgregarTelefono()">
+                                <span class="material-symbols-outlined align-middle">add</span>
+                                Agregar Teléfono
+                            </button>
+                        </h6>
+                        
+                        <!-- Formulario para agregar teléfono -->
+                        <div id="formAgregarTelefono" class="d-none mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" id="nuevoTelefono" class="form-control form-control-sm" placeholder="10 dígitos" maxlength="10">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" id="observacionesTelefono" class="form-control form-control-sm" placeholder="Observaciones (opcional)">
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-success btn-sm me-1" onclick="agregarTelefonoNuevo()">
+                                        <span class="material-symbols-outlined">save</span>
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" onclick="ocultarFormAgregarTelefono()">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de teléfonos -->
+                        <div id="tablaTelefonos">
+                            <p class="text-muted text-center">Cargando teléfonos...</p>
                         </div>
                     </div>
 
@@ -521,7 +715,8 @@
     <?php include("neptune_js.php"); ?>
     <?php include("scripts.php"); ?>
 
-    <script src="scripts/PostulantesVacante.js?v=2"></script>
+    <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
+    <script src="scripts/PostulantesVacante.js?v=<?php echo filemtime('scripts/PostulantesVacante.js'); ?>"></script>
 </body>
 
 </html>

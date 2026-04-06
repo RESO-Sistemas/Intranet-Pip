@@ -7,13 +7,13 @@ $error_msg = '';
 // 1. PROCESAR EL FORMULARIO DE LOGIN
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
     $curp = strtoupper(trim($_POST['curp'] ?? ''));
-    $email = trim($_POST['email'] ?? '');
+    $telefono = preg_replace('/[^0-9]/', '', trim($_POST['telefono'] ?? '')); // Normalizar
 
-    if (!empty($curp) && !empty($email)) {
+    if (!empty($curp) && !empty($telefono)) {
         require_once __DIR__ . '/Backend/Postulantes/Postulantes.php';
         $Postulantes = new Postulantes();
         
-        $loginResult = json_decode($Postulantes->validarCandidato($curp, $email), true);
+        $loginResult = json_decode($Postulantes->validarCandidato($curp, $telefono), true);
 
         if ($loginResult['Resultado']) {
             $_SESSION['logged_in'] = true;
@@ -226,9 +226,23 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
 
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
-                                    Correo Registrado <span class="text-[#f2bb46]">*</span>
+                                    Número Telefónico <span class="text-[#f2bb46]">*</span>
                                 </label>
-                                <input required type="email" name="email" class="minimal-input" placeholder="correo@ejemplo.com" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                                <input 
+                                    required 
+                                    type="tel" 
+                                    name="telefono" 
+                                    id="input-telefono-login"
+                                    class="minimal-input" 
+                                    placeholder="10 dígitos (ej: 8341234567)" 
+                                    maxlength="10" 
+                                    pattern="[0-9]{10}"
+                                    inputmode="numeric"
+                                    value="<?php echo isset($_POST['telefono']) ? htmlspecialchars($_POST['telefono']) : ''; ?>"
+                                >
+                                <small class="text-gray-500 text-[10px] mt-1 opacity-70">
+                                    Puedes usar cualquier teléfono que hayas registrado anteriormente
+                                </small>
                             </div>
 
                             <button type="submit" class="ripple-btn w-full text-[#1e1e1e] bg-[#f2bb46] font-extrabold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(242,187,70,0.3)] hover:shadow-[0_0_30px_rgba(242,187,70,0.5)] transition-all mt-4 uppercase text-xs tracking-widest flex items-center justify-center gap-2">
@@ -484,6 +498,27 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
         <?php elseif(isset($is_logged_in) && $is_logged_in): ?>
             seleccionarPostulacion(0);
         <?php endif; ?>
+        
+        // Normalizar teléfono en tiempo real en formulario de login
+        const inputTelefono = document.getElementById('input-telefono-login');
+        if (inputTelefono) {
+            inputTelefono.addEventListener('input', function(e) {
+                // Solo permitir números, máximo 10 dígitos
+                this.value = this.value.replace(/[^0-9]/g, '').substring(0, 10);
+            });
+            
+            // Cambiar color del borde según validez
+            inputTelefono.addEventListener('keyup', function(e) {
+                const length = this.value.length;
+                if (length > 0 && length < 10) {
+                    this.style.borderBottomColor = '#ef4444'; // Rojo si incompleto
+                } else if (length === 10) {
+                    this.style.borderBottomColor = '#22c55e'; // Verde si completo
+                } else {
+                    this.style.borderBottomColor = 'rgba(255,255,255,0.1)'; // Default
+                }
+            });
+        }
     </script>
 </body>
 </html>

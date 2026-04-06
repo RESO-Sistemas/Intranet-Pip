@@ -2,6 +2,7 @@ let vacantesDataList = [];
 
 $(document).ready(function() {
     if (typeof ID_POSTULANTE !== 'undefined' && ID_POSTULANTE > 0) {
+        loadPostulanteInfo(ID_POSTULANTE);
         loadVacantesPostulante(ID_POSTULANTE);
     } else {
         $('#vacantesList').html('<li><a href="#" class="text-danger"><i class="material-icons-outlined">error</i>Postulante no válido</a></li>');
@@ -190,3 +191,44 @@ function renderTimeline(items) {
     return html;
 }
 
+// Cargar información completa del postulante
+async function loadPostulanteInfo(idPostulante) {
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', {
+            op: 'getPostulanteById',
+            IdPostulante: toB64Int(idPostulante)
+        });
+
+        const result = JSON.parse(response);
+
+        if (result && result.Siguiente && result.Data) {
+            const p = result.Data;
+            
+            // Llenar campos de información
+            $('#detallePostulanteNombre').val(p.Nombre || '');
+            $('#detallePostulanteApellidoPaterno').val(p.ApellidoPaterno || '');
+            $('#detallePostulanteApellidoMaterno').val(p.ApellidoMaterno || '');
+            $('#detallePostulanteCURP').val(p.CURP || '');
+            $('#detallePostulanteCorreo').val(p.CorreoElectronico || '');
+            $('#detallePostulanteTelefono').val(p.Telefono || '');
+            $('#detallePostulanteEstado').val(p.Estado || '');
+            $('#detallePostulanteCiudad').val(p.Ciudad || '');
+
+            if (window.PostulanteEditor && typeof window.PostulanteEditor.aplicarDireccionCompleta === 'function') {
+                await window.PostulanteEditor.aplicarDireccionCompleta(p.Direccion || '', '');
+                if (window.PostulanteEditor.updateDireccionPreview) {
+                    window.PostulanteEditor.updateDireccionPreview();
+                }
+            }
+
+            // Cargar historial de teléfonos
+            if (window.PostulanteEditor && typeof window.PostulanteEditor.cargarTelefonosPostulante === 'function') {
+                window.PostulanteEditor.cargarTelefonosPostulante(idPostulante);
+            }
+        } else {
+            console.error('Error al cargar información del postulante:', result);
+        }
+    } catch (error) {
+        console.error('Error en loadPostulanteInfo:', error);
+    }
+}

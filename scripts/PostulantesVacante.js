@@ -4,6 +4,123 @@ let tablePostulantes;
 let postulantesData = [];
 let postulantesProcesosList = [];
 
+function showListLoading(message = 'Cargando postulantes...') {
+    const $target = $('#postulantesDataArea');
+    if ($target.length && typeof $target.block === 'function') {
+        $target.block({
+            message: `<div style="padding: 10px 16px; font-weight: 600;">${message}</div>`,
+            css: {
+                border: 'none',
+                borderRadius: '8px',
+                backgroundColor: '#1f2937',
+                color: '#fff',
+                opacity: 0.9
+            },
+            overlayCSS: {
+                backgroundColor: '#fff',
+                opacity: 0.65,
+                cursor: 'wait'
+            }
+        });
+        return;
+    }
+
+    if (typeof $.blockUI === 'function') {
+        $.blockUI({ message: `<div style="padding: 10px 16px; font-weight: 600;">${message}</div>` });
+    }
+}
+
+function hideListLoading() {
+    const $target = $('#postulantesDataArea');
+    if ($target.length && typeof $target.unblock === 'function') {
+        $target.unblock();
+        return;
+    }
+    if (typeof $.unblockUI === 'function') {
+        $.unblockUI();
+    }
+}
+
+function showPageLoading(message = 'Cargando...') {
+    if (typeof $.blockUI === 'function') {
+        $.blockUI({ message: `<div style="padding: 10px 18px; font-weight: 600;">${message}</div>` });
+    }
+}
+
+function hidePageLoading() {
+    if (typeof $.unblockUI === 'function') $.unblockUI();
+}
+
+function initDetalleSectionToggles() {
+    const $sections = $('#modalDetallePostulante .detail-section');
+    if (!$sections.length) return;
+
+    $sections.each(function (idx) {
+        const $section = $(this);
+        if ($section.data('collapsible-ready')) return;
+
+        const $title = $section.children('h6').first();
+        if (!$title.length) return;
+
+        if (!$title.data('header-built')) {
+            const $main = $('<div class="pv-title-main"></div>');
+
+            const $buttons = $title.find('button').detach();
+
+            $title.contents().each(function () {
+                if (this.nodeType === 1 && this.tagName && this.tagName.toLowerCase() === 'button') {
+                    return;
+                }
+                $main.append(this);
+            });
+
+            $title.empty().append($main);
+            $title.data('header-built', true);
+
+            if ($buttons.length) {
+                const $tools = $('<div class="pv-section-tools mb-3"></div>');
+                $tools.append($buttons);
+                $section.prepend($tools);
+            }
+        }
+
+        const $content = $('<div class="pv-section-content"></div>');
+        $section.children().not($title).appendTo($content);
+        $section.append($content);
+
+        $title.addClass('pv-section-toggle');
+        if (!$title.find('.pv-section-icon').length) {
+            $title.append('<span class="material-symbols-outlined pv-section-icon">expand_less</span>');
+        }
+
+        $title.find('button').on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        const shouldCollapse = idx >= 2;
+        if (shouldCollapse) {
+            $content.hide();
+            $section.addClass('is-collapsed');
+            $title.find('.pv-section-icon').text('expand_more');
+        }
+
+        $title.on('click', function () {
+            const collapsed = $section.hasClass('is-collapsed');
+            if (collapsed) {
+                $content.stop(true, true).slideDown(140);
+                $section.removeClass('is-collapsed');
+                $title.find('.pv-section-icon').text('expand_less');
+            } else {
+                $content.stop(true, true).slideUp(140);
+                $section.addClass('is-collapsed');
+                $title.find('.pv-section-icon').text('expand_more');
+            }
+        });
+
+        $section.data('collapsible-ready', true);
+    });
+}
+
 function getQueryParam(name) {
     const params = new URLSearchParams(window.location.search);
     return params.get(name);
@@ -41,7 +158,7 @@ async function initPostulantesVacantePage() {
         initPostulantesTable();
     }
 
-    await loadPostulantes(idVacante);
+    await loadPostulantes(idVacante, true);
 }
 
 function initPostulantesTable() {
@@ -101,7 +218,8 @@ function getPostulanteStatusBadge(estatus) {
     }
 }
 
-async function loadPostulantes(idVacante) {
+async function loadPostulantes(idVacante, withLoader = true) {
+    if (withLoader) showListLoading('Actualizando tabla y estadisticas...');
     try {
         const response = await $.post('Backend/Postulantes/App.php', {
             op: 'getPostulantesByVacante',
@@ -121,6 +239,8 @@ async function loadPostulantes(idVacante) {
         }
     } catch (error) {
         console.error('Error al cargar postulantes:', error);
+    } finally {
+        if (withLoader) hideListLoading();
     }
 }
 
@@ -528,7 +648,9 @@ async function addPostulanteVacante() {
 
 async function showDetallePostulante(idEncoded) {
     $('#detalleIdPostulanteVacante').val(idEncoded);
+    initDetalleSectionToggles();
 
+    showPageLoading('Cargando detalle del postulante...');
     try {
         const response = await $.post('Backend/Postulantes/App.php', {
             op: 'getPostulanteDetalle',
@@ -539,15 +661,50 @@ async function showDetallePostulante(idEncoded) {
 
         if (result.Siguiente && result.Data) {
             const p = result.Data;
+            
+            // Guardar IdPostulante para funciones de edición
+            $('#detalleIdPostulante').val(p.IdPostulante);
 
-            $('#detallePostulanteNombre').text(`${p.Nombre} ${p.ApellidoPaterno} ${p.ApellidoMaterno || ''}`);
-            $('#detallePostulanteCURP').text(p.CURP || 'N/A');
-            $('#detallePostulanteCorreo').text(p.CorreoElectronico || 'N/A');
-            $('#detallePostulanteTelefono').text(p.Telefono || 'N/A');
-            $('#detallePostulanteDireccion').text(p.Direccion || 'N/A');
-            $('#detallePostulanteEstado').text(p.Estado || 'N/A');
-            $('#detallePostulanteCiudad').text(p.Ciudad || 'N/A');
+            // Llenar campos de edición
+            $('#edit_Nombre').val(p.Nombre || '');
+            $('#edit_ApellidoPaterno').val(p.ApellidoPaterno || '');
+            $('#edit_ApellidoMaterno').val(p.ApellidoMaterno || '');
+            $('#edit_CURP').val(p.CURP || '');
+            $('#edit_CorreoElectronico').val(p.CorreoElectronico || '');
+            $('#edit_Estado').val(p.Estado || '');
+            $('#edit_Ciudad').val(p.Ciudad || '');
+
+            if (window.PostulanteEditor && typeof window.PostulanteEditor.aplicarDireccionCompleta === 'function') {
+                await window.PostulanteEditor.aplicarDireccionCompleta(p.Direccion || '', '');
+                if (window.PostulanteEditor.updateDireccionPreview) {
+                    window.PostulanteEditor.updateDireccionPreview();
+                }
+            }
+            
+            // Deshabilitar campos (modo visualización por defecto)
+            $('#edit_Nombre, #edit_ApellidoPaterno, #edit_ApellidoMaterno, #edit_CURP, #edit_CorreoElectronico, #edit_CodigoPostal, #edit_Direccion, #edit_Colonia').prop('disabled', true);
+            $('#edit_Calle, #edit_NumeroExterior, #edit_NumeroInterior').prop('disabled', true);
+            $('#btnBuscarCP').prop('disabled', true);
+            
+            // Ocultar botones de edición
+            $('#editModeButtons').addClass('d-none');
+            
+            // Asegurar que el botón de edición esté en modo correcto
+            $('#btnToggleEditMode').html('<span class="material-symbols-outlined align-middle me-1">edit</span>Editar Información');
+            $('#btnToggleEditMode').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+            modoEdicion = false;
+
+            if ($('#cpStatus').length) {
+                $('#cpStatus').text('');
+            }
+            
+            // Mostrar fecha
             $('#detallePostulanteFecha').text(p.FechaPostulacion || 'N/A');
+
+            // Cargar teléfonos
+            if (typeof cargarTelefonosPostulante === 'function') {
+                await cargarTelefonosPostulante(p.IdPostulante);
+            }
 
             $('#cmbEstatusPostulante').val(p.EstatusPostulacion);
             $('#txtObservacionesEstatus').val('');
@@ -569,6 +726,8 @@ async function showDetallePostulante(idEncoded) {
         }
     } catch (error) {
         console.error('Error al cargar detalle de postulante:', error);
+    } finally {
+        hidePageLoading();
     }
 }
 
@@ -940,5 +1099,6 @@ function openDocumentosPostulante(idNumerico, nombrePostulante) {
 }
 
 $(document).ready(function () {
+    initDetalleSectionToggles();
     initPostulantesVacantePage();
 });

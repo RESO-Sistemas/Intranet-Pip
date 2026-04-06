@@ -90,6 +90,11 @@ if ($op == "getPostulanteDetalle") {
     echo trim($Postulantes->getPostulanteDetalle($IdPostulanteVacante));
 }
 
+if ($op == "getPostulanteById") {
+    $IdPostulante = $_POST["IdPostulante"];
+    echo trim($Postulantes->getPostulanteById($IdPostulante));
+}
+
 // Agregar postulación (postulante existente a vacante)
 if ($op == "addPostulacion") {
     $IdVacante = $_POST["IdVacante"];
@@ -662,4 +667,86 @@ if ($op == "postulacionesCandidato") {
         echo json_encode(["Resultado" => false, "Msg" => "No hay sesión activa"]);
     }
     exit;
+}
+
+// ==========================================
+// GESTIÓN DE TELÉFONOS HISTÓRICOS
+// ==========================================
+
+// Obtener histórico de teléfonos por postulante
+if ($op == "getTelefonosHistorico") {
+    $IdPostulante = $_POST["IdPostulante"];
+    echo trim($Postulantes->getTelefonosHistoricoByPostulante($IdPostulante));
+}
+
+// Actualizar teléfono principal (solo RH)
+if ($op == "actualizarTelefonoPostulante") {
+    $IdPostulante = $_POST["IdPostulante"];
+    $Telefono = $_POST["Telefono"];
+    $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : '';
+    
+    // Obtener usuario de sesión (debe ser usuario autenticado de RH)
+    $UsuarioRH = isset($_SESSION['NoEmpleado']) ? $_SESSION['NoEmpleado'] : 0;
+    
+    echo trim($Postulantes->actualizarTelefonoPostulante($IdPostulante, $Telefono, $UsuarioRH, $Observaciones));
+}
+
+// Agregar teléfono secundario
+if ($op == "agregarTelefonoSecundario") {
+    $IdPostulante = $_POST["IdPostulante"];
+    $Telefono = $_POST["Telefono"];
+    $Observaciones = isset($_POST["Observaciones"]) ? $_POST["Observaciones"] : '';
+    
+    $UsuarioRH = isset($_SESSION['NoEmpleado']) ? $_SESSION['NoEmpleado'] : null;
+    
+    echo trim($Postulantes->agregarTelefonoSecundario($IdPostulante, $Telefono, $UsuarioRH, $Observaciones));
+}
+
+// Desactivar teléfono del histórico
+if ($op == "desactivarTelefono") {
+    $IdTelefonoHistorico = $_POST["IdTelefonoHistorico"];
+    
+    $UsuarioRH = isset($_SESSION['NoEmpleado']) ? $_SESSION['NoEmpleado'] : 0;
+    
+    echo trim($Postulantes->desactivarTelefono($IdTelefonoHistorico, $UsuarioRH));
+}
+
+// Reactivar teléfono en el histórico
+if ($op == "reactivarTelefono") {
+    $IdTelefonoHistorico = $_POST["IdTelefonoHistorico"];
+    
+    $UsuarioRH = isset($_SESSION['NoEmpleado']) ? $_SESSION['NoEmpleado'] : 0;
+    
+    echo trim($Postulantes->reactivarTelefono($IdTelefonoHistorico, $UsuarioRH));
+}
+
+// Eliminar teléfono permanentemente
+if ($op == "eliminarTelefono") {
+    $IdTelefonoHistorico = $_POST["IdTelefonoHistorico"];
+    
+    $UsuarioRH = isset($_SESSION['NoEmpleado']) ? $_SESSION['NoEmpleado'] : 0;
+    
+    echo trim($Postulantes->eliminarTelefono($IdTelefonoHistorico, $UsuarioRH));
+}
+
+// ==========================================
+// ACTUALIZACIÓN COMPLETA DE POSTULANTE
+// ==========================================
+
+if ($op == "actualizarPostulanteCompleto") {
+    $IdPostulante = $_POST["IdPostulante"];
+    $Nombre = $_POST["Nombre"];
+    $ApellidoPaterno = $_POST["ApellidoPaterno"];
+    $ApellidoMaterno = isset($_POST["ApellidoMaterno"]) ? $_POST["ApellidoMaterno"] : '';
+    $CURP = isset($_POST["CURP"]) ? $_POST["CURP"] : '';
+    $Telefono = isset($_POST["Telefono"]) ? $_POST["Telefono"] : '';
+    $CorreoElectronico = $_POST["CorreoElectronico"];
+    $Direccion = isset($_POST["Direccion"]) ? $_POST["Direccion"] : '';
+    $CodigoPostal = isset($_POST["CodigoPostal"]) ? $_POST["CodigoPostal"] : '';
+    $Estado = isset($_POST["Estado"]) ? $_POST["Estado"] : '';
+    $Ciudad = isset($_POST["Ciudad"]) ? $_POST["Ciudad"] : '';
+    $Colonia = isset($_POST["Colonia"]) ? $_POST["Colonia"] : '';
+    
+    echo trim($Postulantes->actualizarPostulanteCompleto($IdPostulante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
+                $CURP, $Telefono, $CorreoElectronico, $Direccion, $CodigoPostal, $Estado, $Ciudad, $Colonia));
 }

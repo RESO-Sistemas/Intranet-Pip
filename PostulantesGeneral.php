@@ -94,7 +94,7 @@
     <?php include("neptune_js.php"); ?>
     <?php include("scripts.php"); ?>
 
-    <script src="scripts/PostulantesGeneral.js"></script>
+    <script src="scripts/PostulantesGeneral.js?v=2"></script>
 </body>
 
 </html>

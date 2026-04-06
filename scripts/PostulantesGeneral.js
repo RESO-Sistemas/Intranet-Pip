@@ -53,7 +53,12 @@ function initPostulantesGeneralTable() {
             {
                 data: null,
                 render: function (data, type, row) {
-                    return `<a href="PostulanteDetalle.php?id=${row.IdPostulante}" class="btn btn-primary btn-sm"><i class="material-icons-outlined">visibility</i> Ver</a>`;
+                    const idPostulante = row.IdPostulante;
+                    return `
+                        <a href="PostulanteDetalle.php?id=${idPostulante}" class="btn btn-primary btn-sm">
+                            <i class="material-icons-outlined">visibility</i> Ver
+                        </a>
+                    `;
                 },
                 orderable: false,
                 searchable: false
