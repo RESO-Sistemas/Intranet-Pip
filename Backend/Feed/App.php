@@ -90,7 +90,8 @@
   }
 
   if ($op == "loadFeeds") {
-    echo trim($Feed->loadFeeds());
+    $page = $_POST["page"] ?? 1;
+    echo trim($Feed->loadFeeds($page));
   }
 
   if ($op == "addComentariosFeed") {

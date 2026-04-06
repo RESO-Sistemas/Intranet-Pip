@@ -140,24 +140,32 @@
         return $ArrRetorno;
     }
 
-    function loadFeeds () {
+    function loadFeeds ($page = 1, $limit = 5) {
+      try {
+      $page = intval($page);
+      $limit = intval($limit);
+      if ($page < 1) $page = 1;
+      if ($limit < 1) $limit = 5;
+      $offset = ($page - 1) * $limit;
       $actYear = date("Y");
       $NoEmpleado = SessionManager::get("NoEmpleado");
       $NombreArchivo = "";
+      $NombreArchivoBirthday = "";
+      $NombreArchivoAnniversary = "";
       $IdSucursal = SessionManager::get("IdSucursal");
-      $ficheros1  = scandir("../../Archivos/ImagesBirthday/",1);
-      for ($i=0; $i < 2 ; $i++) {
-          array_pop($ficheros1);
+      $ficheros1  = @scandir("../../Archivos/ImagesBirthday/",1);
+      if ($ficheros1 && count($ficheros1) > 2) {
+        for ($i=0; $i < 2 ; $i++) {
+            array_pop($ficheros1);
+        }
+        $NombreArchivoBirthday = $ficheros1[0];
       }
-      for ($i=0; $i < sizeof($ficheros1) ; $i++) {
-          $NombreArchivoBirthday = $ficheros1[0];
-      }
-      $ficheros2  = scandir("../../Archivos/ImagesAnniversary/",1);
-      for ($i=0; $i < 2 ; $i++) {
-          array_pop($ficheros2);
-      }
-      for ($i=0; $i < sizeof($ficheros2) ; $i++) {
-          $NombreArchivoAnniversary = $ficheros2[0];
+      $ficheros2  = @scandir("../../Archivos/ImagesAnniversary/",1);
+      if ($ficheros2 && count($ficheros2) > 2) {
+        for ($i=0; $i < 2 ; $i++) {
+            array_pop($ficheros2);
+        }
+        $NombreArchivoAnniversary = $ficheros2[0];
       }
       $DatosComentarios = [];
       $ArrayRetorno = [];
@@ -210,86 +218,160 @@
                     where (F.Tipo = 'FED' OR F.Tipo = 'FIN') AND YEAR(F.Registro) = '$actYear'
                     GROUP BY F.idFeed
                     having DDias < 45
-                    ORDER BY F.Registro DESC) AS TABLA3;";
+                    ORDER BY F.Registro DESC) AS TABLA3
+                    ORDER BY Registro DESC
+                    LIMIT $offset, $limit;";
             $cons = $this->Select($q,array());
-            for ($i=0; $i < sizeof($cons) ; $i++) {
-              $Conexiones2 = new Conexiones();
-              $Conexiones3 = new Conexiones();
+            
+            if (!$cons || !is_array($cons) || sizeof($cons) == 0) {
+              return json_encode($ArrayRetorno);
+            }
+
+            // Recopilar todos los idFeed para hacer consultas batch
+            $feedIds = [];
+            for ($i=0; $i < sizeof($cons); $i++) {
+              $feedIds[] = "'" . $cons[$i]["idFeed"] . "'";
+            }
+            $feedIdsStr = implode(",", $feedIds);
+
+            // BATCH 1: Todos los comentarios de todos los feeds de una vez
+            $conn1 = new Conexiones();
+            $q2 = "SELECT CF.idFeed, CF.NoEmpleado, CF.Comentario, CF.Registro, E.Nombre, E.Email 
+                   FROM ComentariosFeed AS CF
+                   INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
+                   WHERE CF.idFeed IN ($feedIdsStr) AND CF.Autorizado = 1
+                   ORDER BY CF.Registro DESC;";
+            $allComments = $conn1->Select($q2);
+            // Agrupar comentarios por idFeed
+            $commentsByFeed = [];
+            if ($allComments && is_array($allComments)) {
+              for ($j=0; $j < sizeof($allComments); $j++) {
+                $fid = $allComments[$j]["idFeed"];
+                if (!isset($commentsByFeed[$fid])) $commentsByFeed[$fid] = [];
+                $commentsByFeed[$fid][] = [
+                  "FeedId" => $fid,
+                  "ComentarioFeed" => $allComments[$j]["Comentario"],
+                  "FechaComentario" => $allComments[$j]["Registro"],
+                  "NoEmpleadoComentario" => $allComments[$j]["NoEmpleado"],
+                  "NombreEmpleadoComentario" => $allComments[$j]["Nombre"],
+                  "EmailEmpleadoComentario" => $allComments[$j]["Email"]
+                ];
+              }
+            }
+
+            // BATCH 2: Contadores de reacciones para todos los feeds
+            $conn2 = new Conexiones();
+            $q3 = "SELECT RF.idFeed,
+                   SUM(CASE WHEN RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS CantidadMeGusta,
+                   SUM(CASE WHEN RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS CantidadFelicitaciones
+                   FROM ReaccionFeed AS RF
+                   WHERE RF.idFeed IN ($feedIdsStr) AND RF.NoEmpleado <> 0
+                   GROUP BY RF.idFeed;";
+            $allReactionCounts = $conn2->Select($q3);
+            $reactionCountsByFeed = [];
+            if ($allReactionCounts && is_array($allReactionCounts)) {
+              for ($j=0; $j < sizeof($allReactionCounts); $j++) {
+                $reactionCountsByFeed[$allReactionCounts[$j]["idFeed"]] = $allReactionCounts[$j];
+              }
+            }
+
+            // Contadores de comentarios
+            $conn3 = new Conexiones();
+            $qCC = "SELECT idFeed, COUNT(*) AS CantidadComentarios FROM ComentariosFeed WHERE idFeed IN ($feedIdsStr) GROUP BY idFeed;";
+            $allCommentCounts = $conn3->Select($qCC);
+            $commentCountsByFeed = [];
+            if ($allCommentCounts && is_array($allCommentCounts)) {
+              for ($j=0; $j < sizeof($allCommentCounts); $j++) {
+                $commentCountsByFeed[$allCommentCounts[$j]["idFeed"]] = $allCommentCounts[$j]["CantidadComentarios"];
+              }
+            }
+
+            // Reacciones del usuario actual
+            $conn4 = new Conexiones();
+            $qUserR = "SELECT idFeed, idTipoReaccion FROM ReaccionFeed WHERE idFeed IN ($feedIdsStr) AND NoEmpleado = '$NoEmpleado';";
+            $userReactions = $conn4->Select($qUserR);
+            $userReactionsByFeed = [];
+            if ($userReactions && is_array($userReactions)) {
+              for ($j=0; $j < sizeof($userReactions); $j++) {
+                $fid = $userReactions[$j]["idFeed"];
+                if (!isset($userReactionsByFeed[$fid])) $userReactionsByFeed[$fid] = [];
+                $userReactionsByFeed[$fid][] = $userReactions[$j]["idTipoReaccion"];
+              }
+            }
+
+            // BATCH 3: Empleados que reaccionaron
+            $conn5 = new Conexiones();
+            $q4r = "SELECT RF.idFeed, E.Nombre, RF.idTipoReaccion FROM ReaccionFeed AS RF
+                    INNER JOIN Empleados AS E ON E.NoEmpleado = RF.NoEmpleado
+                    WHERE RF.idFeed IN ($feedIdsStr) AND RF.NoEmpleado <> 0;";
+            $allEmpReactions = $conn5->Select($q4r);
+            $empReactionsByFeed = [];
+            if ($allEmpReactions && is_array($allEmpReactions)) {
+              for ($j=0; $j < sizeof($allEmpReactions); $j++) {
+                $fid = $allEmpReactions[$j]["idFeed"];
+                if (!isset($empReactionsByFeed[$fid])) $empReactionsByFeed[$fid] = [];
+                $empReactionsByFeed[$fid][] = [
+                  "EmpleadoReaccion" => $allEmpReactions[$j]["Nombre"],
+                  "TipoReaccion" => $allEmpReactions[$j]["idTipoReaccion"]
+                ];
+              }
+            }
+
+            // BATCH 4: Archivos de todos los feeds (incluir hasBlob para saber si tiene contenido binario)
+            $conn6 = new Conexiones();
+            $q4a = "SELECT idArchivosFeed, idFeed, Archivo, 
+                    (CASE WHEN Content IS NOT NULL AND LENGTH(Content) > 0 THEN 1 ELSE 0 END) AS hasBlob 
+                    FROM ArchivosFeed WHERE idFeed IN ($feedIdsStr)";
+            $allArchivos = $conn6->Select($q4a);
+            $archivosByFeed = [];
+            if ($allArchivos && is_array($allArchivos)) {
+              for ($j=0; $j < sizeof($allArchivos); $j++) {
+                $fid = $allArchivos[$j]["idFeed"];
+                if (!isset($archivosByFeed[$fid])) $archivosByFeed[$fid] = [];
+                $archivosByFeed[$fid][] = [
+                  "idArchivosFeed" => $allArchivos[$j]["idArchivosFeed"],
+                  "Archivo" => $allArchivos[$j]["Archivo"],
+                  "hasBlob" => intval($allArchivos[$j]["hasBlob"])
+                ];
+              }
+            }
+
+            // Armar el array de retorno usando los datos ya cargados
+            for ($i=0; $i < sizeof($cons); $i++) {
               $idFeed = $cons[$i]["idFeed"];
-              $q2 = "SELECT CF.NoEmpleado,CF.Comentario,CF.Registro,E.Nombre,E.Email FROM ComentariosFeed AS CF
-                    INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
-                    WHERE idFeed = '$idFeed' AND CF.Autorizado = 1
-                    ORDER BY CF.Registro DESC;";
-              $cons2 = $Conexiones2->Select($q2,array());
-              $q3 = "SELECT (SELECT count(idFeed) FROM ReaccionFeed WHERE idTipoReaccion = 1 AND  idFeed = '$idFeed' AND NoEmpleado <> 0) AS CantidadMeGusta,
-              (SELECT count(idFeed) FROM ReaccionFeed WHERE idTipoReaccion = 2 AND  idFeed = '$idFeed' AND NoEmpleado <> 0) AS CantidadFelicitaciones,
-              (SELECT count(idFeed) FROM ComentariosFeed WHERE idFeed = '$idFeed') AS CantidadComentarios,
-              (SELECT count(MGF.idFeed) FROM Feed AS F LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
-                WHERE  MGF.idFeed = '$idFeed' and MGF.NoEmpleado = '$NoEmpleado' and idTipoReaccion = 1) AS MeGusta,
-              (SELECT count(MGF.idFeed) FROM Feed AS F LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
-                WHERE  MGF.idFeed = '$idFeed' and MGF.NoEmpleado = '$NoEmpleado' and idTipoReaccion = 2) AS Felicitacion";
-              $cons3 = $Conexiones3->Select($q3,array());
-              $ArrayComentarios = [];
-              for ($j=0; $j < sizeof($cons2) ; $j++) {
-                array_push($ArrayComentarios,[
-                  "FeedId" => $cons[$i]["idFeed"],
-                  "ComentarioFeed" => $cons2[$j]["Comentario"],
-                  "FechaComentario" => $cons2[$j]["Registro"],
-                  "NoEmpleadoComentario" => $cons2[$j]["NoEmpleado"],
-                  "NombreEmpleadoComentario" => $cons2[$j]["Nombre"],
-                  "EmailEmpleadoComentario" => $cons2[$j]["Email"]
-                ]
-                );
-              }
-              $FeedReaccion = new Feed();
-              $ArrDatosReaccion = [];
-              $ArrRegistros = $FeedReaccion->getEmpleadosReaccionFeed($idFeed);
-              for ($j=0; $j < sizeof($ArrRegistros); $j++) {
-                array_push($ArrDatosReaccion,[
-                  "EmpleadoReaccion" => $ArrRegistros[$j]["Nombre"],
-                  "TipoReaccion" => $ArrRegistros[$j]["idTipoReaccion"]
-                ]);
-              }
-              
-              // Obtener los IDs de archivos para construir URLs
-              $Conexiones4 = new Conexiones();
-              $q4 = "SELECT idArchivosFeed, Archivo FROM ArchivosFeed WHERE idFeed = '$idFeed'";
-              $cons4 = $Conexiones4->Select($q4,array());
-              $ArrayArchivos = [];
-              for ($j=0; $j < sizeof($cons4); $j++) {
-                array_push($ArrayArchivos,[
-                  "idArchivosFeed" => $cons4[$j]["idArchivosFeed"],
-                  "Archivo" => $cons4[$j]["Archivo"]
-                ]);
-              }
-              
-                array_push($ArrayRetorno,[
-                "idFeed" => $cons[$i]["idFeed"],
+              $rc = isset($reactionCountsByFeed[$idFeed]) ? $reactionCountsByFeed[$idFeed] : ["CantidadMeGusta" => 0, "CantidadFelicitaciones" => 0];
+              $userR = isset($userReactionsByFeed[$idFeed]) ? $userReactionsByFeed[$idFeed] : [];
+
+              array_push($ArrayRetorno,[
+                "idFeed" => $idFeed,
                 "Titulo" => $cons[$i]["Titulo"],
                 "Descripcion" => $cons[$i]["Descripcion"],
                 "Registro" => $cons[$i]["Registro"],
                 "Archivo" => $cons[$i]["Archivo"],
-                "ArrayArchivos" => $ArrayArchivos, // IDs de archivos para construir URLs
+                "ArrayArchivos" => isset($archivosByFeed[$idFeed]) ? $archivosByFeed[$idFeed] : [],
                 "Nombre" => $cons[$i]["Nombre"],
                 "NoEmpleado" => $cons[$i]["NoEmpleado"],
                 "Imagen" => $cons[$i]["Imagen"],
                 "DMinutos" => $cons[$i]["DMinutos"],
                 "DHoras" => $cons[$i]["DHoras"],
                 "DDias" => $cons[$i]["DDias"],
-                "ArrayComentarios" => $ArrayComentarios,
-                "CantidadComentarios" => $cons3[0]["CantidadComentarios"],
-                "CantidadMeGusta" => $cons3[0]["CantidadMeGusta"],
-                "MeGusta" => $cons3[0]["MeGusta"],
-                "CantidadFelicitaciones" => $cons3[0]["CantidadFelicitaciones"],
-                "Felicitacion" => $cons3[0]["Felicitacion"],
+                "ArrayComentarios" => isset($commentsByFeed[$idFeed]) ? $commentsByFeed[$idFeed] : [],
+                "CantidadComentarios" => isset($commentCountsByFeed[$idFeed]) ? $commentCountsByFeed[$idFeed] : 0,
+                "CantidadMeGusta" => $rc["CantidadMeGusta"],
+                "MeGusta" => in_array(1, $userR) ? 1 : 0,
+                "CantidadFelicitaciones" => $rc["CantidadFelicitaciones"],
+                "Felicitacion" => in_array(2, $userR) ? 1 : 0,
                 "Tipo" => $cons[$i]["Tipo"],
                 "DiferenciaRegistro" => $cons[$i]["DiferenciaRegistro"],
                 "Hipervinculo" => $cons[$i]["Hipervinculo"],
-                "EmpleadosReaccion" => $ArrDatosReaccion
+                "EmpleadosReaccion" => isset($empReactionsByFeed[$idFeed]) ? $empReactionsByFeed[$idFeed] : []
               ]);
             }
-      // return json_encode($this->Select($q,array()));
       return json_encode($ArrayRetorno);
+      } catch (\Exception $e) {
+        error_log("Error en loadFeeds: " . $e->getMessage());
+        return json_encode([]);
+      }
     }
 
     function getEmpleadosReaccionFeed ($idFeed) {

@@ -69,7 +69,6 @@ class Conexiones{
 		    $sth->execute();
 		    $sth->setFetchMode(PDO::FETCH_ASSOC);
 		    $result = $sth->fetchAll();
-				$this->dbh = null;
 		    return $result;
 		}
 		catch(PDOException $e){
@@ -98,7 +97,6 @@ class Conexiones{
 		try	{
 		    $sth = $this->dbh->prepare($q);
 		    $sth->execute($parametros);
-		    $this->dbh = null;
 		}
 		catch(PDOException $e){
 		    error_log('PDOException - ' . $e->getMessage(), 0);
@@ -132,7 +130,6 @@ class Conexiones{
 				$sth->execute();
 			}
 			$this->dbh->commit();
-			$this->dbh = null;
 
 		} catch (\Exception $e) {
 			$this->dbh->rollBack();
@@ -149,7 +146,6 @@ class Conexiones{
 			$sth = $this->dbh->prepare($q);
 			$sth->execute($parametros);
 			$lastId = $this->dbh->lastInsertId();
-			$this->dbh = null;
 			return $lastId;
 		} catch(PDOException $e) {
 			error_log('PDOException InsertAndGetId - ' . $e->getMessage(), 0);
@@ -174,7 +170,6 @@ class Conexiones{
 			
 			$stmt->execute();
 			$lastId = $this->dbh->lastInsertId();
-			$this->dbh = null;
 			return $lastId;
 		} catch (PDOException $e) {
 			error_log('PDOException LOB - ' . $e->getMessage(), 0);

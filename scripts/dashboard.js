@@ -13,15 +13,25 @@
 
   // ─── Init ────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async function () {
-    // Cargar turnos primero (se necesitan para mostrar nombres en checklists)
-    await _fetchTurnos();
-    
-    // Luego cargar el resto en paralelo
-    Promise.all([
-      _fetchKpis(),
-      _fetchEventos(),
-      _fetchChecklists()
-    ]);
+    // Una sola petición para todo el dashboard
+    try {
+      const res = await $.ajax({ url: API_DASHBOARD, type: 'POST', data: { op: 'getDashboardAll' }, dataType: 'json' });
+      turnosData = res.turnos || [];
+      kpiDataArr = res.kpis || [];
+      _renderKpiGauges(kpiDataArr);
+      _renderEventos(res.eventos || []);
+      checklistsData = res.checklists || [];
+      _renderChecklists(checklistsData);
+    } catch (e) {
+      console.error('Error cargando dashboard:', e);
+      // Fallback: intentar cargar por separado
+      await Promise.all([
+        _fetchTurnos(),
+        _fetchKpis(),
+        _fetchEventos(),
+        _fetchChecklists()
+      ]);
+    }
   });
 
   // ─── Fetch Turnos ────────────────────────────────────────────────────────
