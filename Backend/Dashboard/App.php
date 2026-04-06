@@ -40,5 +40,20 @@
     echo trim($Dashboard->getTurnos());
   }
 
+  if ($op == "getDashboardAll") {
+    // Endpoint consolidado: devuelve todo en una sola petición
+    $d1 = new Dashboard();
+    $d2 = new Dashboard();
+    $d3 = new Dashboard();
+    
+    $result = [
+      "turnos" => json_decode($Dashboard->getTurnos()),
+      "kpis" => json_decode($d1->getKpisDashboard()),
+      "eventos" => json_decode($d2->getProximosEventos()),
+      "checklists" => json_decode($d3->getChecklistsEmpleado())
+    ];
+    echo json_encode($result);
+  }
+
 ?>
 

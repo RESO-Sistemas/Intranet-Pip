@@ -213,13 +213,25 @@ $(document).ready(function () {
   );
 });
 
+var currentFeedPage = 1;
 loadAll();
 async function loadAll() {
-  await getDatosEmpleado();
-  await getColaboradores();
-  await loadFeeds();
-  await llenadoSelectDivision();
+  currentFeedPage = 1;
+  // Cargar todo en paralelo para que el feed no espere a las demás
+  await Promise.all([
+    getDatosEmpleado(),
+    getColaboradores(),
+    loadFeeds(1),
+    llenadoSelectDivision()
+  ]);
 }
+
+// Botón Cargar más
+$(document).on("click", "#btnLoadMoreFeeds", function() {
+  currentFeedPage++;
+  loadFeeds(currentFeedPage);
+});
+
 
 // Event listener para el calendario
 if ($("#calendar").length) {
@@ -671,8 +683,8 @@ async function getColaboradores() {
 //                 </div>
 //             </div>`;
 //         }
-async function loadFeeds() {
-  let datos = { op: "loadFeeds" };
+async function loadFeeds(page = 1) {
+  let datos = { op: "loadFeeds", page: page };
   let response = [];
   try {
     response = await $.ajax({
@@ -787,18 +799,33 @@ async function loadFeeds() {
           descriptionFinal = feed.Descripcion || '';
           
           if (feed.ArrayArchivos && feed.ArrayArchivos.length > 0) {
-            // Nuevo enfoque BLOB
             for (let k = 0; k < feed.ArrayArchivos.length; k++) {
               const archivoObj = feed.ArrayArchivos[k];
-              const fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
-              contentHtmlImg += `
-                                <img alt="Imagen Adjunta ${k+1}" src="${fUrl}"
-                                    data-image="${fUrl}"
-                                    data-description="${archivoObj.Archivo || 'Imagen Adjunta ' + (k+1)}"
-                                    style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+              
+              // Puede haber varios archivos en un solo registro (separados por coma)
+              const filenames = (archivoObj.Archivo || "").split(",");
+              
+              for (let fName of filenames) {
+                if (!fName.trim()) continue;
+                
+                let fUrl;
+                if (parseInt(archivoObj.hasBlob) === 1) {
+                  // Archivo guardado como BLOB en la BD
+                  fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
+                } else {
+                  // Archivo guardado en disco (enfoque antiguo)
+                  fUrl = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
+                }
+                
+                contentHtmlImg += `
+                                  <img alt="Imagen Adjunta" src="${fUrl}"
+                                      data-image="${fUrl}"
+                                      data-description="${fName.trim()}"
+                                      style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+              }
             }
           } else if (feed.Archivo) {
-            // Enfoque antiguo por carpeta
+            // Enfoque antiguo por carpeta (fallback)
             const arrFiles = feed.Archivo.split(",");
             for (let k = 0; k < arrFiles.length; k++) {
               const f = arrFiles[k];
@@ -960,12 +987,26 @@ async function loadFeeds() {
       }
     }
 
-    $("#ContenidoFeed").html(contentHtmlFinal);
-    const allFeeds = document.querySelectorAll(".galleryImgCl");
+    if (page == 1) {
+      $("#ContenidoFeed").html(contentHtmlFinal);
+    } else {
+      $("#ContenidoFeed").append(contentHtmlFinal);
+    }
+
+    // Manejar visibilidad del botón "Cargar más"
+    if (response.length < 5) {
+      $("#btnLoadMoreContainer").hide();
+    } else {
+      $("#btnLoadMoreContainer").show();
+    }
+
+    const allFeeds = document.querySelectorAll(".galleryImgCl:not(.ug-initialized)");
     if (allFeeds.length > 0) {
       for (let i = 0; i < allFeeds.length; i++) {
         const f = allFeeds[i];
+        f.classList.add('ug-initialized');
         $(f).unitegallery({
+          gallery_images_selector: "> img", // Solo procesar hijos directos de tipo img
           gallery_skin: "alexis",
           gallery_width: "100%",
           slider_scale_mode: "fit",

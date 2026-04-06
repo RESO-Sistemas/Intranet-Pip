@@ -300,12 +300,17 @@ $MenuP = $Conf->getMenusPadre();
                                     <label class="card-title mb-0 text-center">Últimas Novedades</label>
                                   </div>
                                 </div>
-                                <div class="row">
-                                  <div class="col-12 todo-list">
-                                    <div class="overflow-y-auto" id="ContenidoFeed" style="height: 700px;">
+                                  <div class="row">
+                                    <div class="col-12 todo-list">
+                                      <div id="ContenidoFeed">
+                                      </div>
+                                      <div id="btnLoadMoreContainer" class="text-center my-3" style="display: none;">
+                                        <button id="btnLoadMoreFeeds" class="btn btn-outline-primary">
+                                          <i class="fas fa-chevron-down me-1"></i> Cargar más publicaciones
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
                 </div><!-- /card-body -->
                 </div><!-- /card -->
               </div><!-- /col novedades -->

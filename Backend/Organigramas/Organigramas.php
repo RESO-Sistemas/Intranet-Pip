@@ -110,7 +110,7 @@ class Organigramas extends Conexiones
         return json_encode($this->Select($q, array()));
     }
 
-    function addEmpleadoOrganigrama($idOrganigramas, $idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Tipo, $Otros)
+    function addEmpleadoOrganigrama($idOrganigramas, $idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Tipo, $Otros, $Nivel = 0)
     {
         $idOrganigramas = base64_decode($idOrganigramas);
         $TipoElemento = "";
@@ -207,7 +207,7 @@ class Organigramas extends Conexiones
         }
     }
 
-    function EditarElementoOrganigrama($idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Otros, $idDetalleOrganigrama, $Tipo, $idOrganigramas)
+    function EditarElementoOrganigrama($idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Otros, $idDetalleOrganigrama, $Tipo, $idOrganigramas, $Nivel = 0)
     {
         $idOrganigramas = base64_decode($idOrganigramas);
         $TipoElemento = "";
