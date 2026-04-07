@@ -613,6 +613,32 @@ class Vacantes extends Conexiones
     }
 
     /**
+     * Crear una nueva área técnica
+     */
+    function addAreaTecnica($NombreArea, $Descripcion = "")
+    {
+        $NombreArea = addslashes(trim($NombreArea));
+        $Descripcion = addslashes(trim($Descripcion));
+        
+        // Verificar si ya existe
+        $qCheck = "SELECT IdAreaTecnica FROM AreasTecnicas WHERE NombreArea = '$NombreArea'";
+        $resCheck = $this->SelectNotClose($qCheck);
+        
+        if (count($resCheck) > 0) {
+            return json_encode(array("estatus" => false, "msg" => "El área técnica ya existe.", "id" => $resCheck[0]['IdAreaTecnica']));
+        }
+        
+        $qInsert = "INSERT INTO AreasTecnicas (NombreArea, Descripcion, Estatus) VALUES ('$NombreArea', '$Descripcion', 1)";
+        $id = $this->InsertAndGetId($qInsert);
+        
+        if ($id) {
+            return json_encode(array("estatus" => true, "id" => $id, "nombre" => stripslashes($NombreArea)));
+        } else {
+            return json_encode(array("estatus" => false, "msg" => "Error al guardar el área técnica."));
+        }
+    }
+
+    /**
      * Obtener puestos para combo
      */
     function getPuestosActivos()

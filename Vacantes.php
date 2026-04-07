@@ -820,6 +820,42 @@
         </div>
     </div>
     
+    <!-- ====== MODAL AGREGAR AREA TECNICA DESDE VACANTES ====== -->
+    <div class="modal fade" id="modalAddAreaTecnicaVacante" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span class="material-symbols-outlined align-middle me-2">add_circle</span>
+                        Nueva Área Técnica
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="selectTargetAreaTecnica">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre del Área Técnica: <span class="text-danger">*</span></label>
+                        <input id="txtNombreAreaNew" type="text" class="form-control" placeholder="Ej. Mantenimiento, Sistemas, Producción">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Descripción:</label>
+                        <textarea id="txtDescripcionAreaNew" class="form-control" rows="3" placeholder="Breve descripción de la función del área"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#modalAddAreaTecnicaVacante').modal('hide')">
+                        <span class="material-symbols-outlined align-middle me-1">close</span>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnGuardarAreaTecnicaVacante">
+                        <span class="material-symbols-outlined align-middle me-1">save</span>
+                        Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ====== MODAL POSTULANTES DE VACANTE ====== -->
     <div class="modal fade" id="modalPostulantes" tabindex="-1" aria-labelledby="modalPostulantesLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">

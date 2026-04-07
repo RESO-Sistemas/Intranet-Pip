@@ -391,17 +391,25 @@ class EvaluacionesPostulante extends Conexiones
             }
 
             // Calcular calificación (preguntas con respuesta correcta definida)
+            // RespuestaCorrectaOM guarda el idPreguntasPosiblesRespuestas (ID numérico)
+            // pero PostulantesRespuestas.Respuesta puede guardar el TEXTO de la opción.
+            // Se hace JOIN a PreguntasPosiblesRespuestas para resolver el texto de la
+            // respuesta correcta y comparar contra lo que guardó el postulante.
             $Con4 = new Conexiones();
             $qCalc = "SELECT
                         COUNT(*) AS TotalPreguntas,
                         SUM(CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = pc.BoolCorreta THEN 1
-                            WHEN pc.RespuestaCorrectaOM IS NOT NULL AND pr.Respuesta = pc.RespuestaCorrectaOM THEN 1
+                            WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = CAST(pc.BoolCorreta AS CHAR) THEN 1
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                                pr.Respuesta = CAST(pc.RespuestaCorrectaOM AS CHAR)
+                                OR pr.Respuesta = ppr.DescripcionRespuesta
+                            ) THEN 1
                             ELSE 0
                         END) AS Correctas
                       FROM PostulantesRespuestas pr
                       INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
                       LEFT JOIN  PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                      LEFT JOIN  PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
                       WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
             $resCalc = $Con4->Select($qCalc);
 

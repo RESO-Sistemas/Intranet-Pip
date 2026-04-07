@@ -3389,13 +3389,17 @@
         $qCalc = "SELECT 
                     COUNT(*) AS TotalPreguntas,
                     SUM(CASE 
-                      WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = pc.BoolCorreta THEN 1
-                      WHEN pc.RespuestaCorrectaOM IS NOT NULL AND pr.Respuesta = pc.RespuestaCorrectaOM THEN 1
+                      WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = CAST(pc.BoolCorreta AS CHAR) THEN 1
+                      WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                          pr.Respuesta = CAST(pc.RespuestaCorrectaOM AS CHAR)
+                          OR pr.Respuesta = ppr.DescripcionRespuesta
+                      ) THEN 1
                       ELSE 0
                     END) AS Correctas
                   FROM PostulantesRespuestas pr
                   INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
                   LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                  LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
                   WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
         $resCalc = $Con3->Select($qCalc);
         
@@ -3468,8 +3472,11 @@
             $qDesg = "SELECT 
                         COUNT(*) AS Total,
                         SUM(CASE 
-                          WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = pc.BoolCorreta THEN 1
-                          WHEN pc.RespuestaCorrectaOM IS NOT NULL AND pr.Respuesta = pc.RespuestaCorrectaOM THEN 1
+                          WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = CAST(pc.BoolCorreta AS CHAR) THEN 1
+                          WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                              pr.Respuesta = CAST(pc.RespuestaCorrectaOM AS CHAR)
+                              OR pr.Respuesta = ppr.DescripcionRespuesta
+                          ) THEN 1
                           WHEN pr.Respuesta IS NOT NULL AND pr.Respuesta != '' THEN 
                             CAST(pr.Respuesta AS DECIMAL) / IFNULL(NULLIF(pc.RangoFinal, 0), 5) 
                           ELSE 0
@@ -3477,6 +3484,7 @@
                       FROM PostulantesRespuestas pr
                       INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
                       LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                      LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
                       WHERE pr.IdPostulanteEvaluacion = '$idPE'
                         AND pe.idCompetencias = '$idComp'";
             $resDesg = $Con3->Select($qDesg);

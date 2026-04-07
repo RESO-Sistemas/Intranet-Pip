@@ -22,13 +22,55 @@ $(document).ready(function() {
 // ==========================================
 
 function initSelect2() {
+    // Helper function para crear áreas técnicas desde el combo
+    const createAreaTecnicaTag = function (params) {
+        var term = $.trim(params.term);
+        if (term === '') { return null; }
+        return {
+            id: 'NEW_' + term,
+            text: term + ' (Crear nueva área)',
+            newTag: true,
+            cleanText: term
+        }
+    };
+
+    const handleAreaTecnicaSelect = function (e, selectId) {
+        if (e.params.data.newTag) {
+            let text = e.params.data.cleanText;
+            
+            // Remove ghost option from Select2 so it doesn't get "stuck"
+            $(selectId).find('[value="' + e.params.data.id + '"]').remove();
+            
+            // Crear una etiqueta temporal y almacenarla automáticamente (sin modal)
+            let tempId = 'NEW_TEMP_' + new Date().getTime();
+            let newOptionCmb = new Option(text, tempId, false, false);
+            let newOptionEdit = new Option(text, tempId, false, false);
+            
+            $(newOptionCmb).attr('data-new', 'true').attr('data-desc', '');
+            $(newOptionEdit).attr('data-new', 'true').attr('data-desc', '');
+
+            if(selectId === '#cmbAreaTecnica') {
+                newOptionCmb = new Option(text, tempId, true, true);
+                $(newOptionCmb).attr('data-new', 'true').attr('data-desc', '');
+            } else {
+                newOptionEdit = new Option(text, tempId, true, true);
+                $(newOptionEdit).attr('data-new', 'true').attr('data-desc', '');
+            }
+
+            $('#cmbAreaTecnica').append(newOptionCmb).trigger('change');
+            $('#editAreaTecnica').append(newOptionEdit).trigger('change');
+        }
+    };
+
     // Select2 para modal Agregar
     $('#cmbAreaTecnica').select2({
         dropdownParent: $('#modalAddVacante'),
         width: '100%',
         placeholder: 'Seleccione...',
-        allowClear: true
-    });
+        allowClear: true,
+        tags: true,
+        createTag: createAreaTecnicaTag
+    }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#cmbAreaTecnica'); });
     
     $('#cmbPuesto').select2({
         dropdownParent: $('#modalAddVacante'),
@@ -56,8 +98,10 @@ function initSelect2() {
         dropdownParent: $('#modalEditVacante'),
         width: '100%',
         placeholder: 'Seleccione...',
-        allowClear: true
-    });
+        allowClear: true,
+        tags: true,
+        createTag: createAreaTecnicaTag
+    }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#editAreaTecnica'); });
     
     $('#editPuesto').select2({
         dropdownParent: $('#modalEditVacante'),
@@ -593,10 +637,35 @@ async function addVacante() {
     }
     
     try {
+        let areaTecnicaFinal = areaTecnica;
+        
+        // Verificar si es un área técnica nueva
+        const selectedOption = $('#cmbAreaTecnica option:selected');
+        if (selectedOption.attr('data-new') === 'true') {
+            const tempNombre = selectedOption.text();
+            const tempDesc = selectedOption.attr('data-desc');
+            
+            // Crear el área técnica primero
+            try {
+                const resAreaStr = await $.post("Backend/Vacantes/App.php", { op: "addAreaTecnica", NombreArea: tempNombre, Descripcion: tempDesc });
+                const dataArea = JSON.parse(resAreaStr);
+                
+                if (dataArea.estatus || dataArea.id) {
+                    areaTecnicaFinal = dataArea.id;
+                } else {
+                    Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error');
+                    return;
+                }
+            } catch (areaErr) {
+                Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error');
+                return;
+            }
+        }
+
         const response = await $.post("Backend/Vacantes/App.php", {
             op: "addVacante",
             NombreVacante: nombre,
-            IdAreaTecnica: areaTecnica || null,
+            IdAreaTecnica: areaTecnicaFinal || null,
             IdPuesto: puesto || null,
             TipoContratacion: tipoContratacion,
             IdSucursal: sucursal || null,
@@ -748,11 +817,36 @@ async function updateVacante() {
     }
     
     try {
+        let areaTecnicaFinal = $('#editAreaTecnica').val();
+        
+        // Verificar si es un área técnica nueva
+        const selectedOption = $('#editAreaTecnica option:selected');
+        if (selectedOption.attr('data-new') === 'true') {
+            const tempNombre = selectedOption.text();
+            const tempDesc = selectedOption.attr('data-desc');
+            
+            // Crear el área técnica primero
+            try {
+                const resAreaStr = await $.post("Backend/Vacantes/App.php", { op: "addAreaTecnica", NombreArea: tempNombre, Descripcion: tempDesc });
+                const dataArea = JSON.parse(resAreaStr);
+                
+                if (dataArea.estatus || dataArea.id) {
+                    areaTecnicaFinal = dataArea.id;
+                } else {
+                    Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error');
+                    return;
+                }
+            } catch (areaErr) {
+                Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error');
+                return;
+            }
+        }
+
         const response = await $.post("Backend/Vacantes/App.php", {
             op: "updateVacante",
             IdVacante: idVacante,
             NombreVacante: nombre,
-            IdAreaTecnica: $('#editAreaTecnica').val() || null,
+            IdAreaTecnica: areaTecnicaFinal || null,
             IdPuesto: $('#editPuesto').val() || null,
             TipoContratacion: tipoContratacion,
             IdSucursal: $('#editSucursal').val() || null,

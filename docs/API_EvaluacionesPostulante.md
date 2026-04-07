@@ -325,6 +325,7 @@ fetch("http://localhost:8000/Backend/EvaluacionesPostulante/App.php", {
 
 **Lógica de calificación:**
 - Solo se califican las preguntas que tienen una respuesta correcta definida en `PreguntasConfiguracion` (campos `BoolCorreta` o `RespuestaCorrectaOM`).
+- `RespuestaCorrectaOM` almacena el `idPreguntasPosiblesRespuestas` (ID numérico) de la opción correcta. La calificación resuelve el texto de esa opción haciendo JOIN a `PreguntasPosiblesRespuestas` y compara contra la respuesta del postulante (que puede ser texto o ID).
 - Las preguntas abiertas y de rango sin respuesta correcta definida **no penalizan** la calificación.
 - La fórmula es: `(Correctas / TotalPreguntas) * 100`, redondeado a 2 decimales.
 

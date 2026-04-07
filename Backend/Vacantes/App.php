@@ -12,6 +12,8 @@ if ($op == "getRequisitosDocumentacionVacantes") {
     exit;
 }
 
+if ( $op )
+
 // ==========================================
 // CRUD PRINCIPAL DE VACANTES
 // ==========================================
@@ -160,6 +162,12 @@ if ($op == "deleteInduccionVacante") {
 
 if ($op == "getAreasTecnicasActivas") {
     echo trim($Vacantes->getAreasTecnicasActivas());
+}
+
+if ($op == "addAreaTecnica") {
+    $NombreArea = $_POST["NombreArea"];
+    $Descripcion = isset($_POST["Descripcion"]) ? $_POST["Descripcion"] : "";
+    echo trim($Vacantes->addAreaTecnica($NombreArea, $Descripcion));
 }
 
 if ($op == "getPuestosActivos") {
