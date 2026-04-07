@@ -504,19 +504,6 @@ async function getColaboradores() {
   }
 }
 
-// async function loadFeeds() {
-//     let datos = { op: "loadFeeds" };
-//     let response = [];
-//     try {
-//         response = await $.ajax({
-//             type: "post",
-//             url: "Backend/Feed/App.php",
-//             data: datos,
-//             dataType: "json"
-//         });
-//     } catch (e) {
-//         console.log(e);
-//     } finally {
 //         response.sort((a, b) => new Date(b.Registro).getTime() - new Date(a.Registro).getTime());
 //         let contentHtmlFinal = "";
 //         let urlImgProfile = "";
@@ -686,6 +673,14 @@ async function getColaboradores() {
 async function loadFeeds(page = 1) {
   let datos = { op: "loadFeeds", page: page };
   let response = [];
+  
+  // Iniciar estado de carga en el botón
+  const $btnLoadMore = $("#btnLoadMoreFeeds");
+  const originalBtnHtml = "Cargar más publicaciones";
+  if (page > 1) {
+    $btnLoadMore.html('<i class="fa fa-spinner fa-spin"></i> Cargando...').prop('disabled', true);
+  }
+
   try {
     response = await $.ajax({
       type: "post",
@@ -697,6 +692,9 @@ async function loadFeeds(page = 1) {
   } catch (e) {
     console.log("Error en loadFeeds ajax:", e);
   } finally {
+    // Restaurar estado del botón
+    $btnLoadMore.html(originalBtnHtml).prop('disabled', false);
+
     // Validar que response sea un array
     if (!Array.isArray(response)) {
       console.log("Response no es un array:", response);
@@ -812,31 +810,43 @@ async function loadFeeds(page = 1) {
                 if (parseInt(archivoObj.hasBlob) === 1) {
                   // Archivo guardado como BLOB en la BD
                   fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
-                } else {
-                  // Archivo guardado en disco (enfoque antiguo)
-                  fUrl = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
-                }
-                
-                contentHtmlImg += `
+                  contentHtmlImg += `
                                   <img alt="Imagen Adjunta" src="${fUrl}"
                                       data-image="${fUrl}"
                                       data-description="${fName.trim()}"
                                       style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+                } else {
+                  // Archivo guardado en disco (enfoque antiguo)
+                  let fUrlID = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
+                  let fUrlRoot = `Archivos/Feed/${fName.trim()}`;
+
+                  // Usamos onerror para intentar la ruta raíz si la ruta con ID falla (404)
+                  contentHtmlImg += `
+                      <img alt="Image Feed" 
+                           src="${fUrlID}"
+                           onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlRoot}'; } else { this.style.display='none'; }"
+                           data-image="${fUrlID}"
+                           data-description="Archivo: ${fName.trim()}"
+                           style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+                }
               }
             }
           } else if (feed.Archivo) {
             // Enfoque antiguo por carpeta (fallback)
             const arrFiles = feed.Archivo.split(",");
             for (let k = 0; k < arrFiles.length; k++) {
-              const f = arrFiles[k];
+              const f = arrFiles[k].trim();
+              if(!f) continue;
+              let fUrlLegacyID = `Archivos/Feed/${feed.idFeed}/${f}`;
+              let fUrlLegacyRoot = `Archivos/Feed/${f}`;
+              
               contentHtmlImg += `
-                                <img alt="Image 1 Title" src="Archivos/Feed/${
-                                  feed.idFeed
-                                }/${f}"
-                                    data-image="Archivos/Feed/${
-                                      feed.idFeed
-                                    }/${f}"
-                                    data-description="No.${k + 1}">`;
+                                <img alt="Image Feed Legacy" 
+                                    src="${fUrlLegacyID}"
+                                    onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlLegacyRoot}'; } else { this.style.display='none'; }"
+                                    data-image="${fUrlLegacyID}"
+                                    data-description="Archivo: ${f}"
+                                    style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
             }
           }
       }
@@ -994,6 +1004,7 @@ async function loadFeeds(page = 1) {
     }
 
     // Manejar visibilidad del botón "Cargar más"
+    // Si recibimos menos de 5, significa que es la última página disponible
     if (response.length < 5) {
       $("#btnLoadMoreContainer").hide();
     } else {
