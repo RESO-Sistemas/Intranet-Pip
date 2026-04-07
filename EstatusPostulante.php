@@ -272,7 +272,10 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                             <h3 class="text-[11px] uppercase tracking-widest text-gray-500 font-bold mb-4">Tus Postulaciones</h3>
                             <?php
                             require_once __DIR__ . '/Backend/Postulantes/Postulantes.php';
+                            require_once __DIR__ . '/Backend/EvaluacionesPostulante/EvaluacionesPostulante.php';
                             $Postulantes = new Postulantes();
+                            $EvaluacionesPostulante = new EvaluacionesPostulante();
+                            
                             $postulacionesResult = json_decode($Postulantes->getPostulacionesByCurp($_SESSION['curp_candidato']), true);
                             
                             $postulacionesUser = [];
@@ -294,6 +297,28 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                                     $historial = $historyResult['Data'];
                                 }
                                 $p['Historial'] = $historial;
+                                
+                                // Obtener evaluaciones para cada proceso del historial
+                                $evaluacionesPorProceso = [];
+                                $debugEvaluacionesApi = [];
+                                if (!empty($historial)) {
+                                    foreach ($historial as $proceso) {
+                                        $evaluacionesResult = json_decode(
+                                            $EvaluacionesPostulante->getEvaluacionesPorProceso(
+                                                $proceso['IdProceso'], 
+                                                $_SESSION['curp_candidato']
+                                            ), 
+                                            true
+                                        );
+                                        $debugEvaluacionesApi[$proceso['IdProceso']] = $evaluacionesResult;
+                                        if ($evaluacionesResult['Resultado'] && !empty($evaluacionesResult['Data'])) {
+                                            $evaluacionesPorProceso[$proceso['IdProceso']] = $evaluacionesResult['Data'];
+                                        }
+                                    }
+                                }
+                                $p['Evaluaciones'] = $evaluacionesPorProceso;
+                                $p['DebugEvaluacionesApi'] = $debugEvaluacionesApi;
+                                
                                 $todasLasPostulacionesData[$p['IdPostulanteVacante']] = $p;
                                 
                                 $estatusPostulacion = intval($p['EstatusPostulacion']);
@@ -354,6 +379,7 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
         document.getElementById('current-year').textContent = new Date().getFullYear();
 
         const POSTULACIONES_DATA = <?php echo isset($todasLasPostulacionesData) && !empty($todasLasPostulacionesData) ? json_encode($todasLasPostulacionesData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) : '{}'; ?>;
+        const DEBUG_JSON = new URLSearchParams(window.location.search).get('debugJson') === '1';
         
         function formatFecha(fechaStr) {
             if(!fechaStr) return '';
@@ -434,6 +460,54 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                         <span class="text-xs text-gray-500 mt-2 block">${formatFecha(h.Fecha)}</span>
                     </div>
                     `;
+
+                    // Renderizar evaluaciones asociadas a este proceso
+                    if (p.Evaluaciones && p.Evaluaciones[h.IdProceso]) {
+                        const evaluaciones = p.Evaluaciones[h.IdProceso];
+                        evaluaciones.forEach(ev => {
+                            let evClass = "";
+                            let evIcon = "";
+                            let evHeading = "text-white";
+                            let evButton = "";
+                            
+                            if (ev.EstatusEvaluacion == 1) { // Pendiente
+                                evClass = "active";
+                                evIcon = "clipboard-list";
+                                evHeading = "text-[#f2bb46]";
+                                evButton = `<a href="ResponderEvaluacion.php?id=${ev.IdPostulanteEvaluacion}" class="inline-flex items-center gap-2 px-4 py-2 mt-3 rounded-lg bg-[#f2bb46] text-black font-bold text-xs hover:shadow-lg hover:shadow-[#f2bb46]/30 transition-all">
+                                    <i data-lucide="pen" class="w-3 h-3"></i>
+                                    Responder evaluación
+                                </a>`;
+                            } else if (ev.EstatusEvaluacion == 2) { // En progreso
+                                evClass = "active";
+                                evIcon = "clock";
+                                evHeading = "text-blue-400";
+                                evButton = `<a href="ResponderEvaluacion.php?id=${ev.IdPostulanteEvaluacion}" class="inline-flex items-center gap-2 px-4 py-2 mt-3 rounded-lg bg-blue-500 text-white font-bold text-xs hover:shadow-lg hover:shadow-blue-500/30 transition-all">
+                                    <i data-lucide="edit" class="w-3 h-3"></i>
+                                    Continuar evaluación
+                                </a>`;
+                            } else if (ev.EstatusEvaluacion == 3) { // Completada
+                                evClass = "completed";
+                                evIcon = "check-circle";
+                                evHeading = "text-green-400";
+                                evButton = `<div class="inline-flex items-center gap-2 px-4 py-2 mt-3 rounded-lg bg-green-500/20 text-green-400 font-bold text-xs border border-green-500/30">
+                                    <i data-lucide="award" class="w-3 h-3"></i>
+                                    Evaluación completada${ev.Calificacion ? ' • ' + parseFloat(ev.Calificacion).toFixed(0) + '%' : ''}
+                                </div>`;
+                            }
+                            
+                            timelineHTML += `
+                            <div class="timeline-item ${evClass} ml-4 pl-4 border-l-2 border-white/5">
+                                <div class="timeline-dot flex items-center justify-center">
+                                    <i data-lucide="${evIcon}" class="w-3 h-3 text-white"></i>
+                                </div>
+                                <h4 class="${evHeading} font-bold mb-1 text-sm">${ev.NombreEvaluacion}</h4>
+                                <p class="text-xs text-gray-400">${ev.TxEstatus}</p>
+                                ${evButton}
+                            </div>
+                            `;
+                        });
+                    }
                 });
             } else {
                 timelineHTML += `
@@ -482,8 +556,31 @@ $nombre_usuario = $is_logged_in ? $_SESSION['nombre_candidato'] : '';
                     ${timelineHTML}
                 </div>
             </div>`;
+
+            if (DEBUG_JSON) {
+                const debugHtml = `
+                <div class="magic-card p-6 mt-6 fade-in border border-cyan-500/30">
+                    <div class="flex items-center gap-2 mb-3 text-cyan-300">
+                        <i data-lucide="bug" class="w-4 h-4"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest">Debug JSON - Evaluaciones por proceso</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-3">Vista de validacion. Desactiva con <code class="text-cyan-300">?debugJson=0</code>.</p>
+                    <pre class="text-[11px] leading-relaxed text-cyan-100 bg-black/30 border border-white/10 rounded-lg p-4 overflow-x-auto whitespace-pre-wrap">${escapeHtml(JSON.stringify(p.DebugEvaluacionesApi || {}, null, 2))}</pre>
+                </div>`;
+                container.innerHTML += debugHtml;
+            }
             
             lucide.createIcons();
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         <?php if(isset($primerId) && $primerId !== null): ?>
