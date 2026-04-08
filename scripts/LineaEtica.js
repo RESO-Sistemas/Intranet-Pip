@@ -242,17 +242,25 @@ function getOpcionesLineaEtica() {
         tableCatalogoLiniaEtica.fnClearTable();
         for (var i = 0; i < response.length; i++) {
           b64Catalogo = btoa(response[i]["idCatalogoLineaEtica"]);
-          if (response[i]["Status"] == 0) {
-            StatusTexto = "Inactivo";
-            statusBadge = `<span class="badge bg-danger">Inactivo</span>`;
-          } else {
-            StatusTexto = "Activado";
-            statusBadge = `<span class="badge bg-success">Activado</span>`;
-          }
+          const isActive = response[i]["Status"] == 1;
+          const statusIcon = isActive ? 'toggle_on' : 'toggle_off';
+          const statusColor = isActive ? 'btn-success' : 'btn-danger';
+          const statusTitle = isActive ? 'Desactivar' : 'Activar';
+          
+          let statusBadge = isActive 
+            ? `<span class="badge bg-success">Activado</span>`
+            : `<span class="badge bg-danger">Inactivo</span>`;
+
           tableCatalogoLiniaEtica.fnAddData([
             response[i]["Descripcion"],
             statusBadge,
-            `<a class="btn btn-warning" onclick="updateCatalogoStatus('${b64Catalogo}')"><span class="material-symbols-outlined">autorenew</span></a>`,
+            `<div class="d-flex justify-content-center gap-2">
+                <button class="btn ${statusColor} btn-accion" 
+                        onclick="updateCatalogoStatus('${b64Catalogo}')" 
+                        title="${statusTitle}">
+                    <span class="material-symbols-outlined">${statusIcon}</span>
+                </button>
+            </div>`,
           ]);
         }
       },

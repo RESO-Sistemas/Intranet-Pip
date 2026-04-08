@@ -112,40 +112,46 @@
             IF(C.Status = 1,'Activa','Inactiva') as Status
             FROM Capacitacion AS C INNER JOIN CapacitacionDetalle AS CD ON CD.id_capacitacion = C.idCapacitacion
             group by C.idCapacitacion;";
-      error_log("=== OBTENIENDO CAPACITACIONES ===");
-      error_log("Query: " . $q);
+      
       $resp = $this->Select($q,array());
-      error_log("Total registros encontrados: " . sizeof($resp));
-      error_log("Datos: " . print_r($resp, true));
-      $datos = [];
-      for ($i=0; $i < sizeof($resp) ; $i++) {
-        $TextDias = $resp[$i]["Dias"];
-        $dias = explode(",",$TextDias);
-        $idCapacitacion = $resp[$i]["idCapacitacion"];
-        $AllDias = "";
-        $diasTextoArr = [];
-        for ($j=0; $j < sizeof($dias) ; $j++) {
-          $Conexiones2 = new Conexiones();
-          $q2 = "SELECT Dia from DiasSemana
-                 where idDiasSemana = '$dias[$j]'
-                 order by idDiasSemana;";
-                 $resp2 = $Conexiones2->Select($q2,array());
-                array_push($diasTextoArr, $resp2[0]["Dia"]);
+      
+      // Optimizacion: Cargar mapeo de dias una sola vez
+      $qDays = "SELECT idDiasSemana, Dia FROM DiasSemana ORDER BY idDiasSemana";
+      $allDaysRaw = $this->Select($qDays, array());
+      $daysMap = [];
+      if ($allDaysRaw && is_array($allDaysRaw)) {
+        foreach ($allDaysRaw as $d) {
+          $daysMap[$d["idDiasSemana"]] = $d["Dia"];
         }
-             $AllDias = implode(",",$diasTextoArr);
-                $datos = [
-                  "idCapacitacion" => $resp[$i]["idCapacitacion"],
-                  "Descripcion" => $resp[$i]["Descripcion"],
-                  "FechaInicio" => $resp[$i]["FechaInicio"],
-                  "FechaFin" => $resp[$i]["FechaFin"],
-                  "HoraInicio" => $resp[$i]["HoraInicio"],
-                  "HoraFin" => $resp[$i]["HoraFin"],
-                  "Dias" => $AllDias,
-                  "Archivo" => $resp[$i]["archivo"],
-                  "TipoCapacitacion" => $resp[$i]["Tipo"],
-                  "Status" => $resp[$i]["Status"]
-                ];
-                array_push($ListCapacitaciones,$datos);
+      }
+
+      if ($resp && is_array($resp)) {
+        for ($i=0; $i < sizeof($resp) ; $i++) {
+          $TextDias = $resp[$i]["Dias"];
+          $diasIds = explode(",",$TextDias);
+          $diasTextoArr = [];
+          
+          foreach ($diasIds as $id) {
+            $id = trim($id);
+            if (!empty($id) && isset($daysMap[$id])) {
+              $diasTextoArr[] = $daysMap[$id];
+            }
+          }
+          
+          $AllDias = implode(", ",$diasTextoArr);
+          $ListCapacitaciones[] = [
+            "idCapacitacion" => $resp[$i]["idCapacitacion"],
+            "Descripcion" => $resp[$i]["Descripcion"],
+            "FechaInicio" => $resp[$i]["FechaInicio"],
+            "FechaFin" => $resp[$i]["FechaFin"],
+            "HoraInicio" => $resp[$i]["HoraInicio"],
+            "HoraFin" => $resp[$i]["HoraFin"],
+            "Dias" => $AllDias ?: "Indefinido",
+            "Archivo" => $resp[$i]["archivo"],
+            "TipoCapacitacion" => $resp[$i]["Tipo"],
+            "Status" => $resp[$i]["Status"]
+          ];
+        }
       }
       return json_encode($ListCapacitaciones);
     }
@@ -158,44 +164,53 @@
             WHERE Status = 1 AND curdate() between FechaInicio and C.FechaFin
             group by C.idCapacitacion;";
       $resp = $this->Select($q,array());
-      $datos = [];
-      for ($i=0; $i < sizeof($resp) ; $i++) {
-        $EmpleadosSelected = explode(",",$resp[$i]["NoEmpleado"]);
-        $TextDias = $resp[$i]["Dias"];
-        $dias = explode(",",$TextDias);
-        $idCapacitacion = $resp[$i]["idCapacitacion"];
-        $AllDias = "";
-        $diasTextoArr = [];
-       if (in_array($NoEmpleado,$EmpleadosSelected)) {
-        for ($j=0; $j < sizeof($dias) ; $j++) {
-          $Conexiones2 = new Conexiones();
-          $q2 = "SELECT Dia from DiasSemana
-                 where idDiasSemana = '$dias[$j]'
-                 order by idDiasSemana;";
-                 $resp2 = $Conexiones2->Select($q2,array());
-                array_push($diasTextoArr, $resp2[0]["Dia"]);
+
+      // Optimizacion: Cargar mapeo de dias una sola vez
+      $qDays = "SELECT idDiasSemana, Dia FROM DiasSemana ORDER BY idDiasSemana";
+      $allDaysRaw = $this->Select($qDays, array());
+      $daysMap = [];
+      if ($allDaysRaw && is_array($allDaysRaw)) {
+        foreach ($allDaysRaw as $d) {
+          $daysMap[$d["idDiasSemana"]] = $d["Dia"];
         }
-        $AllDias = implode(",",$diasTextoArr);
-          $datos = [
-            "idCapacitacion" => $resp[$i]["idCapacitacion"],
-            "Descripcion" => $resp[$i]["Descripcion"],
-            "FechaInicio" => $resp[$i]["FechaInicio"],
-            "FechaFin" => $resp[$i]["FechaFin"],
-            "HoraInicio" => $resp[$i]["HoraInicio"],
-            "HoraFin" => $resp[$i]["HoraFin"],
-            "Dias" => $AllDias,
-            "Archivo" => $resp[$i]["archivo"],
-            "TipoCapacitacion" => $resp[$i]["Tipo"]
-          ];
-          array_push($ListCapacitaciones,$datos);
-       }
+      }
+
+      if ($resp && is_array($resp)) {
+        for ($i=0; $i < sizeof($resp) ; $i++) {
+          $EmpleadosSelected = explode(",",$resp[$i]["NoEmpleado"]);
+          if (in_array($NoEmpleado, $EmpleadosSelected)) {
+            $TextDias = $resp[$i]["Dias"];
+            $diasIds = explode(",",$TextDias);
+            $diasTextoArr = [];
+          
+            foreach ($diasIds as $id) {
+              $id = trim($id);
+              if (!empty($id) && isset($daysMap[$id])) {
+                $diasTextoArr[] = $daysMap[$id];
+              }
+            }
+          
+            $AllDias = implode(", ",$diasTextoArr);
+            $ListCapacitaciones[] = [
+              "idCapacitacion" => $resp[$i]["idCapacitacion"],
+              "Descripcion" => $resp[$i]["Descripcion"],
+              "FechaInicio" => $resp[$i]["FechaInicio"],
+              "FechaFin" => $resp[$i]["FechaFin"],
+              "HoraInicio" => $resp[$i]["HoraInicio"],
+              "HoraFin" => $resp[$i]["HoraFin"],
+              "Dias" => $AllDias ?: "Indefinido",
+              "Archivo" => $resp[$i]["archivo"],
+              "TipoCapacitacion" => $resp[$i]["Tipo"]
+            ];
+          }
+        }
       }
       return json_encode($ListCapacitaciones);
     }
 
-    function cancelarCapacitacion ($idCapacitacion) {
+    function toggleStatusCapacitacion ($idCapacitacion, $nuevoEstado) {
       try {
-        $q = "UPDATE Capacitacion SET Status = 0 WHERE idCapacitacion = '$idCapacitacion';";
+        $q = "UPDATE Capacitacion SET Status = '$nuevoEstado' WHERE idCapacitacion = '$idCapacitacion';";
         $this->ExecuteQuery($q,array());
         return "1";
       } catch (\Exception $e) {
@@ -276,38 +291,46 @@
       function getDetalleCapacitacion ($idCapacitacion) {
         $idCapacitacion = base64_decode($idCapacitacion);
         $ArrayRetorno = [];
-        $Datos = [];
         $ArrDatosEmpleado = [];
-        $q = "SELECT CD.NoEmpleado AS EmpleadosAgregados,C.Descripcion,C.FechaInicio,C.FechaFin,C.HoraInicio,C.HoraFin,
-                C.Dias,C.archivo,C.Tipo FROM Capacitacion AS C
+        
+        $q = "SELECT CD.NoEmpleado AS EmpleadosAgregados, C.Descripcion, C.FechaInicio, C.FechaFin, C.HoraInicio, C.HoraFin,
+                C.Dias, C.archivo, C.Tipo FROM Capacitacion AS C
                 INNER JOIN CapacitacionDetalle AS CD ON C.idCapacitacion = CD.id_capacitacion
                 WHERE C.idCapacitacion = '$idCapacitacion';";
         $cons = $this->Select($q,array());
-        $EmpleadosAgregados = $cons[0]["EmpleadosAgregados"];
-        $ExplodeEmpleadosAgregados = explode(",",$EmpleadosAgregados);
-        for ($i=0; $i < sizeof($ExplodeEmpleadosAgregados) ; $i++) {
-            $Conexiones2 = new Conexiones();
-            $q2 = "SELECT  E.NoEmpleado,P.Puesto,SD.Sucursal,E.Nombre FROM Empleados as E
-                    INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                    INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                    WHERE E.NoEmpleado = '$ExplodeEmpleadosAgregados[$i]';";
-            $cons2 = $Conexiones2->Select($q2,array());
-            $DatosEmpleado = [];
-            for ($j=0; $j < sizeof($cons2) ; $j++) {
-                $DatosEmpleado = [
-                    "NoEmpleado" => intval($cons2[$j]["NoEmpleado"]),
-                    "Puesto" => $cons2[$j]["Puesto"],
-                    "Sucursal" => $cons2[$j]["Sucursal"],
-                    "Nombre" => $cons2[$j]["Nombre"]
-                ];
-                array_push($ArrDatosEmpleado,$DatosEmpleado);
+        
+        if ($cons && count($cons) > 0) {
+            $EmpleadosAgregados = $cons[0]["EmpleadosAgregados"];
+            if (!empty($EmpleadosAgregados)) {
+                // Limpiar posibles espacios y comas extra
+                $idsArray = array_filter(explode(",", $EmpleadosAgregados));
+                if (count($idsArray) > 0) {
+                    $idsString = implode("','", $idsArray);
+                    $q2 = "SELECT E.NoEmpleado, P.Puesto, SD.Sucursal, E.Nombre FROM Empleados as E
+                            INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
+                            INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
+                            WHERE E.NoEmpleado IN ('$idsString');";
+                    
+                    $cons2 = $this->Select($q2, array());
+                    if ($cons2) {
+                        foreach ($cons2 as $emp) {
+                            $ArrDatosEmpleado[] = [
+                                "NoEmpleado" => intval($emp["NoEmpleado"]),
+                                "Puesto" => $emp["Puesto"],
+                                "Sucursal" => $emp["Sucursal"],
+                                "Nombre" => $emp["Nombre"]
+                            ];
+                        }
+                    }
+                }
             }
+
+            $ArrayRetorno[] = [
+                "Detalle" => $cons,
+                "Empleados" => $ArrDatosEmpleado
+            ];
         }
-        $Datos = [
-            "Detalle" => $cons,
-            "Empleados" => $ArrDatosEmpleado
-        ];
-        array_push($ArrayRetorno,$Datos);
+
         return json_encode($ArrayRetorno);
       }
 

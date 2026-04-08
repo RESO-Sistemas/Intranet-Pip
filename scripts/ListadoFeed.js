@@ -91,13 +91,15 @@ async function getListFeeds() {
       Feedb64 = btoa(respuesta[i]["idFeed"]);
 
       tableFeeds.fnAddData([
-
         respuesta[i]["Titulo"],
-
-        `<a class="btn btn-primary" href="UpdateFeed.php?Feed=${Feedb64}"><span class="material-symbols-outlined">edit</span></a>`,
-
-        `<a class="btn btn-danger" onclick="eliminarFeed('${Feedb64}')"><span class="material-symbols-outlined">delete</span></a>`,
-
+        `<div class="d-flex justify-content-center gap-2">
+            <a class="btn btn-warning btn-accion" href="UpdateFeed.php?Feed=${Feedb64}" title="Editar Feed">
+                <span class="material-symbols-outlined">edit</span>
+            </a>
+            <button class="btn btn-danger btn-accion" onclick="eliminarFeed('${Feedb64}')" title="Eliminar Feed">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+        </div>`,
       ]);
 
     }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
 
@@ -163,9 +163,7 @@
 
                             <th>TÍTULO</th>
 
-                            <th>ACTUALIZAR</th>
-
-                            <th>ELIMINAR FEED</th>
+                            <th>ACCIONES</th>
 
                           </tr>
 

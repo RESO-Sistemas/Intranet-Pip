@@ -261,11 +261,14 @@ function getArchivos() {
 }
 
 function getCapacitaciones() {
-  let ArrayCapacitaciones = [];
-  let datos = {
+  const datos = {
     op: "getCapacitacionDisponibles",
   };
-  let tableCapacitacion = $("#tableCapacitacion").dataTable({
+  
+  // Mostrar preloader si no está visible
+  $(".preloader").show();
+
+  $("#tableCapacitacion").dataTable({
     destroy: true,
     language: {
       lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
@@ -283,46 +286,48 @@ function getCapacitaciones() {
       type: "POST",
       url: "Backend/Capacitacion/App.php",
       data: datos,
-      success: function (response) {
-        tableCapacitacion.fnClearTable();
-        let diasCap = "";
-        let horaInicio = "";
-        let horaFin = "";
-        for (var i = 0; i < response.length; i++) {
-          let b64Capacitacion = btoa(response[i]["idCapacitacion"]);
-          if (response[i]["Dias"] != "") {
-            diasCap = response[i]["Dias"];
-          } else {
-            diasCap = "Indefinido";
-          }
-          if (
-            response[i]["HoraInicio"] == "00:00:00" ||
-            response[i]["HoraFin"] == "00:00:00"
-          ) {
-            horaInicio = "Indefinido";
-            horaFin = "Indefinido";
-          } else {
-            horaInicio = response[i]["HoraInicio"];
-            horaFin = response[i]["HoraFin"];
-          }
-          tableCapacitacion.fnAddData([
-            response[i]["Descripcion"],
-            diasCap,
-            response[i]["FechaInicio"],
-            response[i]["FechaFin"],
-            horaInicio,
-            horaFin,
-            response[i]["Status"],
-            `<button onclick="editarCapacitacion('${b64Capacitacion}')" class="btn btn-success" ><span class="material-symbols-outlined">edit</span></button>`,
-            `<button onclick="cancelarCapacitacion(${response[i]["idCapacitacion"]})" class="btn btn-warning" ><span class="material-symbols-outlined">block</span></button>`,
-            `<button onclick="eliminarCapacitacion(${response[i]["idCapacitacion"]},'${response[i]["Descripcion"]}')" class="btn btn-danger"><span class="material-symbols-outlined">delete</span></button>`,
-          ]);
-        }
-      },
-      complete: function () {
-        // $.unblockUI();
-      },
+      dataSrc: "", // El backend devuelve un array directo
     },
+    columns: [
+      { data: "Descripcion" },
+      { data: "Dias" },
+      { data: "FechaInicio" },
+      { data: "FechaFin" },
+      { data: "HoraInicio" },
+      { data: "HoraFin" },
+      { data: "Status" },
+      { 
+        data: "idCapacitacion",
+        orderable: false,
+        render: function(data, type, row) {
+          const b64 = btoa(data);
+          const statusIcon = row.Status === "Activa" ? "toggle_on" : "toggle_off";
+          const statusColor = row.Status === "Activa" ? "btn-success" : "btn-danger";
+          const statusTitle = row.Status === "Activa" ? "Desactivar" : "Activar";
+
+          return `
+            <div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+              <button onclick="editarCapacitacion('${b64}')" class="btn btn-primary btn-accion" title="Editar">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+              <button onclick="cancelarCapacitacion(${data}, '${row.Status}')" class="btn ${statusColor} btn-accion" title="${statusTitle}">
+                <span class="material-symbols-outlined">${statusIcon}</span>
+              </button>
+              <button onclick="eliminarCapacitacion(${data},'${row.Descripcion}')" class="btn btn-danger btn-accion" title="Eliminar">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          `;
+        }
+      }
+    ],
+    initComplete: function () {
+      $(".preloader").fadeOut();
+    },
+    error: function(xhr, error, thrown) {
+      console.error("Error en getCapacitaciones:", error);
+      $(".preloader").fadeOut();
+    }
   });
 }
 
@@ -422,22 +427,29 @@ async function eliminarCapacitacion(cap, desc) {
 async function editarCapacitacion(cap) {
   window.location.href = `UpdateCapacitacion.php?Cap=${cap}`;
 }
-//Inicio - Cancelar capacotación
-function cancelarCapacitacion(val) {
+// Inicio - Toggle estatus capacitación
+function cancelarCapacitacion(id, currentStatus) {
+  const isActivating = currentStatus !== "Activa";
+  const nuevoEstado = isActivating ? 1 : 0;
+  const titulo = isActivating ? "¿Desea activar la capacitación?" : "¿Desea desactivar la capacitación?";
+  const confirmBtnText = isActivating ? "Activar" : "Desactivar";
+  const confirmBtnColor = isActivating ? "#28a745" : "#dc3545";
+
   Swal.fire({
-    title: "¿Desea cancelar la capacitacion?",
-    text: "",
+    title: titulo,
+    text: isActivating ? "Los colaboradores podrán verla de nuevo." : "Ya no será visible para los colaboradores.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
+    confirmButtonColor: confirmBtnColor,
+    cancelButtonColor: "#6c757d",
     cancelButtonText: "Cancelar",
-    confirmButtonText: "Aceptar",
+    confirmButtonText: confirmBtnText,
   }).then((result) => {
     if (result.isConfirmed) {
       let datos = {
         op: "cancelarCapacitacion",
-        idCapacitacion: val,
+        idCapacitacion: id,
+        status: nuevoEstado
       };
       $.ajax({
         type: "post",
@@ -445,31 +457,29 @@ function cancelarCapacitacion(val) {
         data: datos,
         success: function (response) {
           if (response == "1") {
-            // toastr.success("Capacitacion desactivada");
+            const msg = isActivating ? "Capacitación activada con éxito." : "Capacitación desactivada con éxito.";
             const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Capacitacion desactivada.</span>
-          </div>`;
+              <div class="alert-content">
+                <span class="alert-title">Completado!</span>
+                <span class="alert-text">${msg}</span>
+              </div>`;
             showBootstrapAlertSuc(messageContent, "top-right", 5000);
             setTimeout(function () {
               getCapacitaciones();
             }, 1000);
           } else {
-            // toastr.success("Capacitacion desactivada");
             const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Capacitacion desactivada.</span>
-          </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+              <div class="alert-content">
+                <span class="alert-title">Error!</span>
+                <span class="alert-text">No se pudo cambiar el estatus.</span>
+              </div>`;
+            showBootstrapAlertErr(messageContent, "top-right", 5000);
           }
         },
         error: function (e) {
-          alert(e.responseText);
+          alert("Error de red: " + e.responseText);
         },
       });
-    } else {
     }
   });
 }

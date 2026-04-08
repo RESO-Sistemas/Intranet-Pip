@@ -302,12 +302,13 @@ $MenuP = $Conf->getMenusPadre();
                                 </div>
                                   <div class="row">
                                     <div class="col-12 todo-list">
-                                      <div id="ContenidoFeed">
-                                      </div>
-                                      <div id="btnLoadMoreContainer" class="text-center my-3" style="display: none;">
-                                        <button id="btnLoadMoreFeeds" class="btn btn-outline-primary">
-                                          <i class="fas fa-chevron-down me-1"></i> Cargar más publicaciones
-                                        </button>
+                                      <div id="scrollContainerFeed" style="max-height: 650px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;">
+                                        <div id="ContenidoFeed"></div>
+                                        <div id="btnLoadMoreContainer" class="text-center my-3" style="display: none;">
+                                          <button id="btnLoadMoreFeeds" class="btn btn-outline-primary">
+                                            <i class="fas fa-chevron-down me-1"></i> Cargar más publicaciones
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
