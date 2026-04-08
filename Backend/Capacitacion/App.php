@@ -171,7 +171,8 @@ if ($op == "getArchivosCapacitacion") {
 
 if ($op == "cancelarCapacitacion") {
     $idCapacitacion = $_POST["idCapacitacion"];
-    echo trim($Capacitacion->cancelarCapacitacion($idCapacitacion));
+    $status = $_POST["status"];
+    echo trim($Capacitacion->toggleStatusCapacitacion($idCapacitacion, $status));
 }
 
 if ($op == "leerCarpetaArchivos") {

@@ -195,7 +195,7 @@ function realizarAccion(Menu) {
               <span class="alert-text">Permisos Actualizados.</span>
           </div>`;
         showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        getPermisos();
+        // getPermisos(); // Se comenta para evitar re-renderizado innecesario y parpadeo
       } else {
         // toastr.info("Error al actualizar los permisos");
         const messageContent = `

@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -96,9 +96,7 @@
                                                                 <th scope="col">Hora Inicio</th>
                                                                 <th scope="col">Hora Fin</th>
                                                                 <th scope="col">Estatus</th>
-                                                                <th scope="col">Editar</th>
-                                                                <th scope="col">Cambiar Status</th>
-                                                                <th scope="col">Eliminar</th>
+                                                                <th scope="col">Acciones</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>

@@ -15,8 +15,10 @@ const InpPSelected = document.getElementById("inpPSelected");
 let table;
 loadPuestosData();
 async function loadPuestosData() {
-  await loadDivisiones();
-  await getListPuestos();
+  Promise.all([
+    loadDivisiones(),
+    getListPuestos()
+  ]);
 }
 async function getListPuestos() {
   datos = {

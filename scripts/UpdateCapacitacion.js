@@ -4,13 +4,6 @@ const urlParams = new URLSearchParams(myKeysValues);
 
 const IdCap = urlParams.get("Cap");
 
-
-
-// Ocultar preloader cuando la página termine de cargar
-$(window).on('load', function() {
-  $(".preloader").fadeOut();
-});
-
 const _URL = "Backend/Capacitacion/App.php";
 
 const _IMG = "../assets/images/previewsFolders/ppt.png";
@@ -37,21 +30,29 @@ let ind;
 
 let globalTipoCap = "";
 
+let ArrayContenidoEmpleados = [];
 
-
-getDetalleCapacitacion();
-
-getArchivosActualesCapacitacion();
-
-getPuestos();
-
-getSucursales();
-
-getDivisiones();
-
-getArchivos();
-
-getListadoPersonal();
+$(document).ready(async function() {
+  $(".preloader").show();
+  
+  try {
+    await Promise.all([
+      getDetalleCapacitacion(),
+      getArchivosActualesCapacitacion(),
+      getPuestos(),
+      getSucursales(),
+      getDivisiones(),
+      getArchivos(),
+      getListadoPersonal()
+    ]);
+  } catch (error) {
+    console.error("Error en la carga inicial:", error);
+  } finally {
+    setTimeout(() => {
+      $(".preloader").fadeOut();
+    }, 500);
+  }
+});
 
 m = $("#modalNuevaCapacitacion");
 
@@ -59,21 +60,9 @@ cierre = $("#cerrarModal");
 
 mo = document.getElementById("modalNuevaCapacitacion");
 
-//console.log(",", m);
-
-
-
-//$("#statusModal").click(()=>{
-
-//  m.style.display = "inline";
-
-//})
-
-
-
 async function getDetalleCapacitacion() {
 
-  let datos = await {
+  let datos = {
 
     op: "getDetalleCapacitacion",
 
@@ -103,7 +92,7 @@ async function getDetalleCapacitacion() {
 
   } finally {
 
-    console.log(respuesta);
+    console.log(respuesta.length + " capacitaciones cargadas.");
 
     respuesta.map((retorno) => {
 
@@ -159,8 +148,6 @@ async function getDetalleCapacitacion() {
 
 }
 
-
-
 function tipoCap() {
 
   let val = $("#tipoCapacitacion").val();
@@ -187,11 +174,7 @@ function tipoCap() {
 
     $("#contenidoDias").fadeOut();
 
-    // $("#contenidoDias").html("");
-
     $("#divVistaPrevia").fadeIn();
-
-    //DiasCalendario = [];
 
   } else if (val == "DIA") {
 
@@ -211,17 +194,11 @@ function tipoCap() {
 
     $("#contenidoDias").fadeIn();
 
-    // $("#contenidoDias").html("");
-
     $("#divVistaPrevia").fadeIn();
-
-    //DiasCalendario = [];
 
   }
 
 }
-
-
 
 $("#cerrarModal").click(() => {
 
@@ -230,8 +207,6 @@ $("#cerrarModal").click(() => {
   mo.style.display = "none";
 
 });
-
-
 
 function manipularArchivos(archivoRecibido, input_file) {
 
@@ -263,10 +238,6 @@ function manipularArchivos(archivoRecibido, input_file) {
 
         archivoGlobal = archivoRecibido;
 
-        //input_file.type = "text";
-
-        //input_file.value = archivoRecibido;
-
         newOp = "addCapacitacionInputText";
 
       } else {
@@ -283,13 +254,9 @@ function manipularArchivos(archivoRecibido, input_file) {
 
 }
 
-
-
 function getDiasArray() {
 
   $("#contenidoDias").html("");
-
-  //DiasCalendario = [];
 
   const diasUnicos = [];
 
@@ -334,46 +301,71 @@ function getDiasArray() {
         }
 
         let numeroDia = "";
+
         let nombreDiaEspanol = "";
 
-        // Mapeo de días en inglés a español
         const diasTraduccion = {
+
           "Sunday": "Domingo",
+
           "Monday": "Lunes",
+
           "Tuesday": "Martes",
+
           "Wednesday": "Miércoles",
+
           "Thursday": "Jueves",
+
           "Friday": "Viernes",
+
           "Saturday": "Sábado"
+
         };
 
         for (var i = 0; i < diasUnicos.length; i++) {
 
           if (diasUnicos[i] == "Sunday") {
+
             numeroDia = "1";
+
           } else if (diasUnicos[i] == "Monday") {
+
             numeroDia = "2";
+
           } else if (diasUnicos[i] == "Tuesday") {
+
             numeroDia = "3";
+
           } else if (diasUnicos[i] == "Wednesday") {
+
             numeroDia = "4";
+
           } else if (diasUnicos[i] == "Thursday") {
+
             numeroDia = "5";
+
           } else if (diasUnicos[i] == "Friday") {
+
             numeroDia = "6";
+
           } else if (diasUnicos[i] == "Saturday") {
+
             numeroDia = "7";
+
           }
 
-          // Traducir día al español
           nombreDiaEspanol = diasTraduccion[diasUnicos[i]] || diasUnicos[i];
 
-          // Append de los días con diseño mejorado
           $("#contenidoDias").append(`
+
     <label class="day-selector" for="check${numeroDia}">
+
       <input class="day-checkbox" type="checkbox" id="check${numeroDia}" onclick="diasSemanaSelected(${numeroDia})">
+
       <span class="day-label">${nombreDiaEspanol}</span>
+
     </label>
+
 `);
 
         }
@@ -398,8 +390,6 @@ function getDiasArray() {
 
 }
 
-
-
 function diasSemanaSelected(dia) {
 
   let indice = "";
@@ -420,8 +410,6 @@ function diasSemanaSelected(dia) {
 
 }
 
-
-
 function prueba() {
 
   $("#Desc").val("sss");
@@ -436,8 +424,6 @@ function prueba() {
 
 }
 
-
-
 function getArchivos() {
 
   let datos = {
@@ -446,7 +432,7 @@ function getArchivos() {
 
   };
 
-  $.ajax({
+  return $.ajax({
 
     type: "post",
 
@@ -458,8 +444,6 @@ function getArchivos() {
 
     success: (ajaxResponse) => {
 
-      //  console.log(ajaxResponse);
-
       return;
 
     },
@@ -467,10 +451,6 @@ function getArchivos() {
   });
 
 }
-
-
-
-//Inicio - Cancelar capacotación
 
 function cancelarCapacitacion(val) {
 
@@ -516,8 +496,6 @@ function cancelarCapacitacion(val) {
 
           if (response == "1") {
 
-            // toastr.success("Capacitacion desactivada");
-
             const messageContent = `
 
           <div class="alert-content">
@@ -537,8 +515,6 @@ function cancelarCapacitacion(val) {
             }, 1000);
 
           } else {
-
-            // toastr.success("Capacitacion desactivada");
 
             const messageContent = `
 
@@ -572,15 +548,9 @@ function cancelarCapacitacion(val) {
 
 }
 
-
-
-//Get info selects -Inicio
-
 function getPuestos() {
 
-  let arrId = [];
-
-  $.ajax({
+  return $.ajax({
 
     type: "post",
 
@@ -591,20 +561,6 @@ function getPuestos() {
     success: function (response) {
 
       response = JSON.parse(response.trim());
-
-      /*     response.map((res)=>{
-
-        arrId.push(res.IdPuesto);
-
-      });
-
-      globalId = arrId.join(",");
-
-      $("#slctPuestos").append(`
-
-       <option value="${globalId}">Todas las Opciones</option>
-
-       `); */
 
       response.map((res) => {
 
@@ -956,23 +912,14 @@ async function getListadoPersonal() {
 
     });
 
-    tableEmpleados.fnClearTable();
+    const dataSet = respuesta.map(personal => [
+      personal.NoEmpleado,
+      personal.Nombre,
+      `<button class="btn btn-success" role="button" onclick="SeleccionaEmpleado(${personal.NoEmpleado},'${personal.Nombre.replace(/'/g, "\\'")}','${personal.Puesto.replace(/'/g, "\\'")}',
+              '${personal.Sucursal.replace(/'/g, "\\'")}','${personal.Email}')"><span class="material-symbols-outlined">arrow_right_alt</span></button>`
+    ]);
 
-    respuesta.forEach((personal) => {
-
-      tableEmpleados.fnAddData([
-
-        personal.NoEmpleado,
-
-        personal.Nombre,
-
-        `<button class="btn btn-success" role="button" onclick="SeleccionaEmpleado(${personal.NoEmpleado},'${personal.Nombre}','${personal.Puesto}',
-
-                '${personal.Sucursal}','${personal.Email}')"><span class="material-symbols-outlined">arrow_right_alt</span></button>`,
-
-      ]);
-
-    });
+    tableEmpleados.fnAddData(dataSet);
 
   }
 
@@ -1013,11 +960,6 @@ async function getListadoPersonal() {
 //     loadEmpleadosSeleccionados();
 
 //   }
-
-// }
-
-let ArrayContenidoEmpleados = [];
-
 
 
 async function SeleccionaEmpleado(NoEmpleado, Nombre, Puesto, Sucursal, Email) {

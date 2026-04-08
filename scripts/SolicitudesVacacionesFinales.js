@@ -82,31 +82,22 @@ function getMisSolicitudesFinales() {
 
         for (var i = 0; i < response.length; i++) {
 
-          let btnAcciones = ` <div class="row" id="row${response[i]["idSolicitudesVacaciones"]}">
+          let btnAcciones = `
+            <div class="d-flex justify-content-center gap-2" id="row${response[i]["idSolicitudesVacaciones"]}">
+                <button class="btn btn-success btn-accion" onclick="realizarAccionSolicitud(${response[i]["idSolicitudesVacaciones"]}, 1)" title="Aceptar Solicitud">
+                    <span class="material-symbols-outlined">check</span>
+                </button>
+                <button class="btn btn-danger btn-accion" onclick="realizarAccionSolicitud(${response[i]["idSolicitudesVacaciones"]}, 0)" title="Rechazar Solicitud">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>`;
 
-                              <div class="col" style="text-align:center">
-
-                                <button class="btn btn-success"  onclick="realizarAccionSolicitud(${response[i]["idSolicitudesVacaciones"]},1)" style=""><span class="material-symbols-outlined">thumb_up</span></button>
-
-                              </div>
-
-                              <div class="col" style="text-align:center">
-
-                                <button class="btn btn-danger"  onclick="realizarAccionSolicitud(${response[i]["idSolicitudesVacaciones"]},0)" style=""><span class="material-symbols-outlined">thumb_down</span></button>
-
-                              </div>
-
-                            </div>`;
-
-          let btnVerSolicitud = `<div class="row">
-
-                                  <div class="col-6 offset-3">
-
-                                    <a class="btn btn-primary" target="_blank" href="FormatoVacaciones.php?Solicitud=${response[i]["idSolicitudesVacaciones"]}" style=""><span class="material-symbols-outlined">link</span></a>
-
-                                  </div>
-
-                                </div>`;
+          let btnVerSolicitud = `
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-primary btn-accion" target="_blank" href="FormatoVacaciones.php?Solicitud=${response[i]["idSolicitudesVacaciones"]}" title="Ver Solicitud">
+                    <span class="material-symbols-outlined">visibility</span>
+                </a>
+            </div>`;
 
 
 
@@ -390,49 +381,23 @@ async function getHistoricoSolicitudesNomina() {
 
     respuesta.forEach((registros) => {
 
-      if (registros.NumStatus == 3) {
+      const btnClass = registros.NumStatus == 3 ? 'btn-success' : (registros.NumStatus == 2 ? 'btn-danger' : 'btn-warning');
+      const icon = registros.NumStatus == 3 ? 'sentiment_satisfied' : (registros.NumStatus == 2 ? 'sentiment_dissatisfied' : 'sentiment_neutral');
+      
+      Btn = `
+        <div class="d-flex justify-content-center">
+            <a class="btn ${btnClass} btn-accion" target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}" title="Ver Solicitud">
+                <span class="material-symbols-outlined">${icon}</span>
+            </a>
+        </div>`;
 
-        Btn = `<div class="row">
-
-                  <div class="col-12 offset-l4">
-
-                      <a class="btn btn-success" target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}"><span class="material-symbols-outlined">sentiment_satisfied</span></a>
-
-                  </div>
-
-               </div>`;
-
-        BtnRegresa = `<button class='btn btn-warning' onclick='regresarEstadoSolicitudNomina(${registros.idSolicitudesVacaciones})'><span class="material-symbols-outlined">edit</span></button>`;
-
-      } else if (registros.NumStatus == 2) {
-
-        Btn = `<div class="row">
-
-                  <div class="col-12 offset-l4">
-
-                      <a class="btn btn-danger" target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}"><span class="material-symbols-outlined">sentiment_dissatisfied</span></a>
-
-                  </div>
-
-               </div>`;
-
-        BtnRegresa = `<button class='btn btn-warning' onclick='regresarEstadoSolicitudNomina(${registros.idSolicitudesVacaciones})'><span class="material-symbols-outlined">edit</span></button>`;
-
-      } else if (registros.NumStatus == 1) {
-
-        Btn = `<div class="row">
-
-                  <div class="col-12 offset-l4">
-
-                      <a class="btn btn-warning" target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}"><span class="material-symbols-outlined">sentiment_neutral</span></a>
-
-                  </div>
-
-               </div>`;
-
-        BtnRegresa = `<button class='btn btn-danger'><span class="material-symbols-outlined">edit</span></button>`;
-
-      }
+      const regBtnClass = registros.NumStatus == 1 ? 'btn-danger' : 'btn-warning';
+      BtnRegresa = `
+        <div class="d-flex justify-content-center">
+            <button class="btn ${regBtnClass} btn-accion" onclick="regresarEstadoSolicitudNomina(${registros.idSolicitudesVacaciones})" title="Regresar a Pendiente">
+                <span class="material-symbols-outlined">settings_backup_restore</span>
+            </button>
+        </div>`;
 
       tableHistorico.fnAddData([
 

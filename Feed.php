@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -57,7 +57,13 @@
             <div class="row">
               <div class="col">
                 <div class="page-description page-description-tabbed">
-                  <h1>Nuevo Feed</h1>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h1>Nuevo Feed</h1>
+                    <a href="ListadoFeed.php" class="btn btn-danger d-flex align-items-center gap-2">
+                      <span class="material-symbols-outlined">arrow_back</span>
+                      <span>Regresar</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -66,11 +72,6 @@
               <div class="col">
                 <div class="card">
                   <div class="card-body">
-                    <div class="row text-start mb-4">
-                      <div class="col">
-                        <a href="ListadoFeed.php" class="btn btn-danger">Regresar</a>
-                      </div>
-                    </div>
                     <div class="row">
                       <form id="InsertaFeed" class="col-12">
                         <!-- Título -->

@@ -749,8 +749,7 @@ $("#btnViewDiasFestivos").click(async function () {
   let modal = new bootstrap.Modal(modalElement, {
 
     backdrop: "static",
-
-    keyboard: true,
+    keyboard: false,
 
   });
 
@@ -841,23 +840,32 @@ async function getListDiasFestivos() {
     let DFB64 = "";
 
     respuesta.forEach((registros) => {
-
       DFB64 = btoa(registros.idDiasFestivos);
+      
+      const isActive = registros.StatusD === 'Día Activado';
+      const statusIcon = isActive ? 'toggle_on' : 'toggle_off';
+      const statusColor = isActive ? 'btn-success' : 'btn-danger';
+      const statusTitle = isActive ? 'Desactivar' : 'Activar';
 
       tableDiasFestivos.fnAddData([
-
         registros.Descripcion,
-
         registros.Dia,
-
         registros.StatusD,
-
-        `<button class="btn btn-warning btnUpdateDF" data-diafest="${DFB64}" data-desc="${registros.Descripcion}" data-dia="${registros.Dia}"><span class="material-symbols-outlined">autorenew</span></button>`,
-
-        `<button class="btn btn-danger btnUpdateStatus" data-diafest="${DFB64}"><span class="material-symbols-outlined">mode_off_on</span></button>`,
-
+        `<div class="d-flex justify-content-center gap-2">
+            <button class="btn btn-warning btn-accion btnUpdateDF" 
+                    data-diafest="${DFB64}" 
+                    data-desc="${registros.Descripcion}" 
+                    data-dia="${registros.Dia}" 
+                    title="Actualizar">
+                <span class="material-symbols-outlined">edit</span>
+            </button>
+            <button class="btn ${statusColor} btn-accion btnUpdateStatus" 
+                    data-diafest="${DFB64}" 
+                    title="${statusTitle}">
+                <span class="material-symbols-outlined">${statusIcon}</span>
+            </button>
+        </div>`
       ]);
-
     });
 
   }
@@ -1129,8 +1137,7 @@ $(document).on("click", ".btnUpdateDF", async function () {
   let modal = new bootstrap.Modal(modalElement, {
 
     backdrop: "static",
-
-    keyboard: true,
+    keyboard: false,
 
   });
 

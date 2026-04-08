@@ -1174,27 +1174,12 @@ class Empleados extends Conexiones
     function getPermisos($IdPuesto)
     {
         $IdPuesto = base64_decode($IdPuesto);
-        $array = [];
-        $q = "SELECT id_menu FROM menus";
-        $cons = $this->Select($q, array());
-
-        for ($i = 0; $i < sizeof($cons); $i++) {
-            $id_menu = $cons[$i]["id_menu"];
-            $Con2 = new Conexiones();
-            $q2 = "SELECT  M.id_menu,M.Descripcion,M.Id_Padre,COALESCE(count(*),0) AS Activo from MenusPermisos as MP
-              LEFT join menus as M on M.id_menu = MP.id_menu
-              WHERE MP.IdPuesto = '$IdPuesto' and M.id_menu = '$id_menu';";
-            $resp = $Con2->Select($q2, array());
-            $datos = [
-                "id_menu" => $resp[0]["id_menu"],
-                "Descripcion" => $resp[0]["Descripcion"],
-                "Id_Padre" => $resp[0]["Id_Padre"],
-                "Activo" => $resp[0]["Activo"]
-            ];
-            array_push($array, $datos);
-        }
-
-        return json_encode($array);
+        $q = "SELECT m.id_menu, m.Descripcion, m.Id_Padre, 
+                     IF(mp.id_menu IS NOT NULL, 1, 0) AS Activo
+              FROM menus m
+              LEFT JOIN MenusPermisos mp ON mp.id_menu = m.id_menu AND mp.IdPuesto = '$IdPuesto'
+              ORDER BY m.Id_Padre ASC, m.id_menu ASC;";
+        return json_encode($this->Select($q, array()));
     }
 
     function getListPuestos()

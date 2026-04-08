@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -97,13 +97,16 @@
                     </div>
                 </div>
                 <!-- Modal Catalogo Linea de Etica -->
-                <div class="modal fade" id="CatalogoLineaEica" tabindex="-1" aria-labelledby="CatalogoLineaEicaLabel" aria-hidden="true">
+                <div class="modal fade" id="CatalogoLineaEica" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="CatalogoLineaEicaLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                         <div class="modal-content">
 
                             <!-- Header -->
                             <div class="modal-header">
-                                <h5 class="modal-title" id="CatalogoLineaEicaLabel">Catálogos Línea Ética</h5>
+                                <h5 class="modal-title d-flex align-items-center gap-2" id="CatalogoLineaEicaLabel">
+                                    <span class="material-symbols-outlined text-primary">category</span>
+                                    <span>Catálogos Línea Ética</span>
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                             </div>
 
@@ -119,13 +122,14 @@
                                                 <input type="hidden" name="op" value="addCatalogoLiniaEtica">
 
                                                 <div class="col-9">
-                                                    <label for="txtNuevaEtica" class="form-label fw-bold">Nuevo Catálogo</label>
-                                                    <input type="text" name="txtNuevaEtica" id="txtNuevaEtica" class="form-control" required>
+                                                    <label for="txtNuevaEtica" class="form-label fw-bold small text-muted">Nuevo Catálogo</label>
+                                                    <input type="text" name="txtNuevaEtica" id="txtNuevaEtica" class="form-control" placeholder="Ej. Acoso laboral, Problemas de seguridad..." required>
                                                 </div>
 
                                                 <div class="col-3 text-center d-flex justify-content-center align-items-center">
-                                                    <button type="button" id="btnAgregaNuevoCatalogo" class="btn btn-primary mt-4">
-                                                        Agregar Nuevo
+                                                    <button type="button" id="btnAgregaNuevoCatalogo" class="btn btn-primary mt-4 d-flex align-items-center gap-2">
+                                                        <span class="material-symbols-outlined">add_circle</span>
+                                                        <span>Agregar</span>
                                                     </button>
                                                 </div>
                                             </form>
@@ -141,7 +145,7 @@
                                                         <tr>
                                                             <th>Descripción</th>
                                                             <th>Status</th>
-                                                            <th>Actualizar Status</th>
+                                                            <th>Acciones</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
