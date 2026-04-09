@@ -24,7 +24,7 @@ async function loadDirecorioEmailTel() {
                   </div>
                   <div class="row">
                     <div class="col" style="text-align:left">
-                      <button type="button" class="btn btn-success" onclick="openModalAddEmpCorreosTelefonos(${Registros.idDirectoriosCorreosTelefonos},'${Registros.Tipo}')">
+                      <button type="button" class="btn btn-success btn-accion" onclick="openModalAddEmpCorreosTelefonos(${Registros.idDirectoriosCorreosTelefonos},'${Registros.Tipo}')" title="Agregar Empleado">
                         <span class="material-symbols-outlined">add_call</span>
                       </button>
                     </div>
@@ -37,8 +37,7 @@ async function loadDirecorioEmailTel() {
                 <th class="text-center">CORREO</th>
                 <th class="text-center">TELEFONO</th>
                 <th class="text-center">MARCACION CORTA</th>
-                <th class="text-center">ACTUALIZAR</th>
-                <th class="text-center">ELIMINAR</th>
+                <th class="text-center">ACCIONES</th>
               </tr>
             </thead>
             <tbody>`;
@@ -71,18 +70,16 @@ async function loadDirecorioEmailTel() {
                        style="width: 120px;" onkeypress="return onlynumber(event)" maxlength="4">
               </td>
               <td class="text-center align-middle">
-                <button class="btn btn-warning d-flex justify-content-center align-items-center mx-auto" 
-                        style="width: 50px; height: 40px;" 
-                        onclick="updateRegistroDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})">
-                  <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
-                </button>
-              </td>
-              <td class="text-center align-middle">
-                <button class="btn btn-danger d-flex justify-content-center align-items-center mx-auto" 
-                        style="width: 50px; height: 40px;" 
-                        onclick="deleteEmpleadosDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})">
-                  <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
-                </button>
+                <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-warning btn-accion" 
+                          onclick="updateRegistroDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})" title="Actualizar">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn btn-danger btn-accion" 
+                          onclick="deleteEmpleadosDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})" title="Eliminar">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
               </td>
             </tr>`;
         }
@@ -214,7 +211,7 @@ async function openModalAddEmpCorreosTelefonos(idTipo, Nombre) {
     },
   });
 
-  $("#NameDirectorio").html(`Directorio: ${Nombre}`);
+  $("#txtTitleEmTel").html(`Directorio: ${Nombre}`);
   $("#IdTipoEmTel").val(idTipo);
   $("#slctDivisionEm").val("");
   $("#slctPuestoEm").val("");
@@ -228,10 +225,12 @@ async function openModalAddEmpCorreosTelefonos(idTipo, Nombre) {
       getListadoPersonal(),
     ]);
 
-    var modal = new bootstrap.Modal(
-      document.getElementById("modalAddEmpleadosDirectorioEmTel")
-    );
-    modal.show();
+    var modalEl = document.getElementById("modalAddEmpleadosDirectorioEmTel");
+    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (!modalInstance) {
+        modalInstance = new bootstrap.Modal(modalEl);
+    }
+    modalInstance.show();
   } catch (err) {
     console.error("Error cargando datos:", err);
   } finally {
@@ -281,7 +280,9 @@ function getListadoPersonal() {
               response[i]["Nombre"],
               `<div class="row">
                   <div class="col">
-                    <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoDirEmTel(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')"><span class="material-symbols-outlined">add</span></button>
+                    <button type="button" class="btn btn-success btn-accion" onclick="SeleccionarEmpleadoDirEmTel(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')" title="Seleccionar">
+                      <span class="material-symbols-outlined">add</span>
+                    </button>
                   </div>
               </div>`,
             ]);
@@ -738,7 +739,7 @@ async function openModalAddEmpExtensiones(idTipo, Nombre) {
     },
   });
 
-  $("#NameDirectorioExtension").html(`Directorio : ${Nombre}`);
+  $("#txtTitleExt").html(`Directorio : ${Nombre}`);
   $("#IdTipoExtensiones").val(idTipo);
   $("#slctPuestoEmExt").val("");
   $("#slctDivisionEmExt").val("");
@@ -756,11 +757,13 @@ async function openModalAddEmpExtensiones(idTipo, Nombre) {
       getListadoPersonalExtensiones(),
     ]);
 
-    // Mostrar modal
-    var modal = new bootstrap.Modal(
-      document.getElementById("modalAddEmpleadosDirectorioExtensiones")
-    );
-    modal.show();
+    // Mostrar modal con bootstrap 5 (usando instancia existente si es posible)
+    var modalEl = document.getElementById("modalAddEmpleadosDirectorioExtensiones");
+    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (!modalInstance) {
+        modalInstance = new bootstrap.Modal(modalEl);
+    }
+    modalInstance.show();
   } catch (err) {
     console.error("Error cargando datos:", err);
   } finally {
@@ -811,7 +814,7 @@ function getListadoPersonalExtensiones() {
               response[i]["Nombre"],
               `<div class="row">
                   <div class="col">
-                    <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoExt(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')">
+                    <button type="button" class="btn btn-success btn-accion" onclick="SeleccionarEmpleadoExt(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')" title="Seleccionar">
                       <span class="material-symbols-outlined">add</span>
                     </button>
                   </div>
@@ -989,7 +992,7 @@ async function loadDirectorioExtensiones() {
                                 </div>
                                 <div class="row">
                                     <div class="col" style="text-align:left">
-                                        <button type="button" class="btn btn-success"  onclick="openModalAddEmpExtensiones(${Registros.idDirectorioExtensiones},'${Registros.Tipo}')"><span class="material-symbols-outlined">add_call</span></button>
+                                        <button type="button" class="btn btn-success btn-accion"  onclick="openModalAddEmpExtensiones(${Registros.idDirectorioExtensiones},'${Registros.Tipo}')" title="Agregar Extensión"><span class="material-symbols-outlined">add_call</span></button>
                                     </div>
                                 </div>
                                 </th>
@@ -997,7 +1000,7 @@ async function loadDirectorioExtensiones() {
                             <tr>
                                 <th>NOMBRE</th>
                                 <th>EXTENSION</th>
-                                <th>ELIMINAR</th>
+                                <th>ACCIONES</th>
                             </tr>
                         </thead>
                         <tbody> `;
@@ -1010,20 +1013,18 @@ async function loadDirectorioExtensiones() {
                                        
                                         <td>${Detalle.Nombre}</td>
                                         <td>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="row">
-                                                            <div class="col-8">
-                                                                <input class="form-control form-control-solid-bordered" value="${Detalle.Extension}" style="text-align: center" onkeypress="return onlynumber(event)" maxlength="4" id="Extension${Detalle.idDetalleDirectorioExtensiones}"></input>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <button class="btn btn-warning" role="button" onclick="updateExtesionEmp(${Detalle.idDetalleDirectorioExtensiones},${Registros.idDirectorioExtensiones})" ><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>
-                                                            </div>
-                                                    </div>
-                                                </div>
+                                            <input class="form-control form-control-solid-bordered text-center mx-auto" value="${Detalle.Extension}" style="width: 80px;" onkeypress="return onlynumber(event)" maxlength="4" id="Extension${Detalle.idDetalleDirectorioExtensiones}">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <button class="btn btn-warning btn-accion" role="button" onclick="updateExtesionEmp(${Detalle.idDetalleDirectorioExtensiones},${Registros.idDirectorioExtensiones})" title="Actualizar">
+                                                    <span class="material-symbols-outlined">edit</span>
+                                                </button>
+                                                <button class="btn btn-danger btn-accion" role="button" onclick="deleteEmpleadosDirectorioExtension(${Detalle.idDetalleDirectorioExtensiones})" title="Eliminar">
+                                                    <span class="material-symbols-outlined">delete</span>
+                                                </button>
                                             </div>
                                         </td>
-                                        <td><button class="btn btn-danger" role="button" onclick="deleteEmpleadosDirectorioExtension(${Detalle.idDetalleDirectorioExtensiones})"> <span class="material-symbols-outlined" style="font-size:20px;">delete</span></button></td>
                                     </tr>
                                 `;
         }
@@ -1175,9 +1176,13 @@ $("#btnOpenModalSucursal").click(function () {
     $("#txtMarcacionCorta").val("");
     $("#inpFechaApertura").val("");
 
-    // Abrir modal con Bootstrap 5
-    var modal = new bootstrap.Modal(document.getElementById("modalAddSucursalesDirectorio"));
-    modal.show();
+    // Abrir modal con Bootstrap 5 (usando instancia para asegurar static backdrop)
+    var modalEl = document.getElementById("modalAddSucursalesDirectorio");
+    var modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (!modalInstance) {
+        modalInstance = new bootstrap.Modal(modalEl);
+    }
+    modalInstance.show();
 });
 
 $(document).ready(function () {
@@ -1445,7 +1450,11 @@ async function getDirectorioSucursal() {
             UnicosV.FechaApertura,
             UnicosV.años_transcurridos,
             `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="text" id="MCorta${UnicosV.idDirectorioSucursales}" value="${UnicosV.MarcacionCorta}" onkeypress="return onlynumber(event)" maxlength="4" style="width:12vh; text-align:center;"></input>`,
-            `<button class="btn btn-warning" role="button" onclick="updateRegistroDirectorioSucursal(${UnicosV.idDirectorioSucursales})" ><span class="material-symbols-outlined">edit</span></button>`,
+            `<div class="d-flex justify-content-center">
+                <button class="btn btn-warning btn-accion" role="button" onclick="updateRegistroDirectorioSucursal(${UnicosV.idDirectorioSucursales})" title="Actualizar">
+                    <span class="material-symbols-outlined">edit</span>
+                </button>
+            </div>`,
           ]);
         });
       },

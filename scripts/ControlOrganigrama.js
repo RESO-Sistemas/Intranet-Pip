@@ -67,10 +67,12 @@ $("#btnGuardarOrg").click(function () {
   }
 });
 $("#btnNewOrganigrama").click(function () {
-  var modal = new bootstrap.Modal(
-    document.getElementById("ModalNewOrganigrama")
-  );
-  modal.show();
+  var modalEl = document.getElementById("ModalNewOrganigrama");
+  var modalInstance = bootstrap.Modal.getInstance(modalEl);
+  if (!modalInstance) {
+    modalInstance = new bootstrap.Modal(modalEl);
+  }
+  modalInstance.show();
 });
 
 getOrganigramas();
@@ -120,27 +122,26 @@ async function getOrganigramas() {
     let TextStatus = "";
     let statusBadge = "";
     respuesta.forEach((registros) => {
-      if (registros.Status == 1) {
-        TextStatus = "Activo";
-        statusBadge = `<span class="badge bg-success">Activo</span>`;
-      } else {
-        TextStatus = "Inactivo";
-        statusBadge = `<span class="badge bg-warning">Inactivo</span>`;
-      }
+      const isActive = registros.Status == 1;
+      const statusBadge = isActive 
+        ? `<span class="badge bg-success">Activo</span>` 
+        : `<span class="badge bg-danger">Inactivo</span>`;
+      const statusIcon = isActive ? 'toggle_on' : 'toggle_off';
+      const statusColor = isActive ? 'btn-success' : 'btn-danger';
+      const statusTitle = isActive ? 'Desactivar' : 'Activar';
+
       OrganigramaId = btoa(registros.idOrganigramas);
       tableOrganigramas.fnAddData([
         registros.Titulo,
         statusBadge,
-        `<div class="row">
-                      <div class="col-12 col-lg-4 offset-lg-4">
-                          <a type="button" class="btn btn-warning" href="OrganigramaSv.php?Org=${OrganigramaId}"><span class="material-symbols-outlined">edit</span></a>
-                      </div>
-                  </div>`,
-        `<div class="row">
-                  <div class="col-12 col-lg-4 offset-lg-4">
-                  <button type="button" class="btn btn-success" onclick="updateStatusOrganigrama('${OrganigramaId}')"><span class="material-symbols-outlined">autorenew</span></button>
-              </div>
-                  </div>`,
+        `<div class="d-flex justify-content-center gap-2">
+            <a class="btn btn-warning btn-accion" href="OrganigramaSv.php?Org=${OrganigramaId}" title="Editar">
+                <span class="material-symbols-outlined">edit</span>
+            </a>
+            <button type="button" class="btn ${statusColor} btn-accion" onclick="updateStatusOrganigrama('${OrganigramaId}')" title="${statusTitle}">
+                <span class="material-symbols-outlined">${statusIcon}</span>
+            </button>
+        </div>`,
       ]);
     });
   }

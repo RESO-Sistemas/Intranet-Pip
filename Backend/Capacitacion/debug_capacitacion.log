@@ -501,3 +501,36 @@ Empleados: 999999999,
 
 Respuesta de addCapacitacion: 152
 
+2026-04-07 18:01:03 - POST recibido:
+Array
+(
+    [tipoCapacitacion] => PROL
+    [Desc] => prueba
+    [fechaInicio] => 2026-04-07
+    [fechaFin] => 2026-04-08
+    [HoraInicio] => 
+    [HoraFin] => 
+    [slctDivision] => 
+    [slctPuesto] => 
+    [slctSucursal] => 
+    [op] => addCapacitacion
+    [dias] => 3,4
+    [NoEmpleado] => 999999999,
+    [existeFichero] => false
+)
+
+
+FILES:
+Array
+(
+)
+
+
+Datos a insertar:
+Desc: prueba
+Tipo: PROL
+Dias: 3,4
+Empleados: 999999999,
+
+Respuesta de addCapacitacion: 153
+

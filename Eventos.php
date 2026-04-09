@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -80,8 +80,7 @@
                             <th>FECHA INICIO</th>
                             <th>FECHA FIN</th>
                             <th>STATUS</th>
-                            <th>EDITAR</th>
-                            <th>EDITAR STATUS</th>
+                            <th>ACCIONES</th>
                           </tr>
                         </thead>
                       </table>
@@ -91,13 +90,15 @@
               </div>
             </div>
 
-            <!-- Modal Bootstrap -->
-            <div class="modal fade" id="ModalEvento" tabindex="-1" aria-labelledby="ModalEventoLabel" aria-hidden="true">
+            <div class="modal fade" id="ModalEvento" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalEventoLabel" aria-hidden="true">
               <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
 
                   <div class="modal-header">
-                    <h5 class="modal-title" id="ModalEventoLabel">Nuevo Evento</h5>
+                    <h5 class="modal-title d-flex align-items-center gap-2" id="ModalEventoLabel">
+                      <span class="material-symbols-outlined text-primary">event_note</span>
+                      <span id="txtTituloModal">Nuevo Evento</span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                   </div>
 

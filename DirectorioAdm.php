@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -110,7 +110,9 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col text-end mb-4">
-                                                            <button type="button" class="btn btn-success" id="btnOpenModalSucursal"><span class="material-symbols-outlined">add</span></button>
+                                                            <button type="button" class="btn btn-success btn-accion" id="btnOpenModalSucursal" title="Agregar Sucursal">
+                                                                <span class="material-symbols-outlined">add_business</span>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <div class="table-responsive">
@@ -127,7 +129,7 @@
                                                                     <th>Fecha de Apertura</th>
                                                                     <th>Antigüedad</th>
                                                                     <th>Marcación Corta</th>
-                                                                    <th>Actualizar</th>
+                                                                    <th>Acciones</th>
                                                                 </tr>
                                                             </thead>
                                                         </table>
@@ -150,7 +152,10 @@
 
                         <!-- Header -->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="NameDirectorio"></h5>
+                            <h5 class="modal-title d-flex align-items-center gap-2" id="NameDirectorio">
+                                <span class="material-symbols-outlined text-primary">person_add</span>
+                                <span id="txtTitleEmTel"></span>
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
@@ -243,7 +248,10 @@
 
                         <!-- Header -->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="NameDirectorioExtension"></h5>
+                            <h5 class="modal-title d-flex align-items-center gap-2" id="NameDirectorioExtension">
+                                <span class="material-symbols-outlined text-primary">person_add</span>
+                                <span id="txtTitleExt"></span>
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
@@ -327,7 +335,10 @@
 
                         <!-- Header -->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="TitleModalSucursales">Sucursales Disponibles</h5>
+                            <h5 class="modal-title d-flex align-items-center gap-2" id="TitleModalSucursales">
+                                <span class="material-symbols-outlined text-primary">add_business</span>
+                                <span>Sucursales Disponibles</span>
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
@@ -401,7 +412,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/global.js" charset="utf-8"></script>
+    <!-- scripts/global.js ya se incluye en neptune_js.php -->
     <!-- index.js removido - solo es para index.php -->
     <script src="scripts/DirectorioAdm.js"></script>
     <script src="scripts/detallesEmpleadoLogeado.js"></script>

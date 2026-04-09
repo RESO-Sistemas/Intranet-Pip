@@ -27,19 +27,29 @@ function getEventos() {
         let StatusTexto = "";
         TableEventos.fnClearTable();
         for (var i = 0; i < response.length; i++) {
-          if (response[i]["Status"] == "1") {
-            StatusTexto = "Activo";
-          } else {
-            StatusTexto = "Inactivo";
-          }
+          const isActive = response[i]["Status"] == "1";
+          const statusIcon = isActive ? 'toggle_on' : 'toggle_off';
+          const statusColor = isActive ? 'btn-success' : 'btn-danger';
+          const statusTitle = isActive ? 'Desactivar' : 'Activar';
+          
+          let statusLabel = isActive 
+            ? `<span class="badge bg-success">Activo</span>` 
+            : `<span class="badge bg-danger">Inactivo</span>`;
+
           TableEventos.fnAddData([
             response[i]["Titulo"],
             response[i]["Descripcion"],
             response[i]["FechaInicio"],
             response[i]["FechaFin"],
-            StatusTexto,
-            `<a class="btn btn-warning"  onclick="TipoAccion(${response[i]["idEventos"]})"><span class="material-symbols-outlined">edit</span></a>`,
-            `<a class="btn btn-success"  onclick="updateStatus(${response[i]["Status"]},${response[i]["idEventos"]})"><span class="material-symbols-outlined">autorenew</span></a>`,
+            statusLabel,
+            `<div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-warning btn-accion" onclick="TipoAccion(${response[i]["idEventos"]})" title="Editar Evento">
+                    <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button class="btn ${statusColor} btn-accion" onclick="updateStatus(${response[i]["Status"]}, ${response[i]["idEventos"]})" title="${statusTitle}">
+                    <span class="material-symbols-outlined">${statusIcon}</span>
+                </button>
+            </div>`,
           ]);
         }
       },
@@ -134,6 +144,7 @@ function TipoAccion(valor) {
       success: function (response) {
         response = JSON.parse(response.trim());
         $("#RegistrarEvento").html("Actualizar evento");
+        $("#txtTituloModal").html("Editar Evento");
         $("#txtTitulo").val(response[0]["Titulo"]);
         $("#txtDescripcion").val(response[0]["Descripcion"]);
         $("#txtFechaInicio").val(response[0]["FechaInicio"]);
@@ -151,6 +162,7 @@ function TipoAccion(valor) {
   } else {
     // Nuevo evento
     $("#RegistrarEvento").html("Agregar evento");
+    $("#txtTituloModal").html("Nuevo Evento");
     limpiarInputsModal();
 
     // Abrir modal directamente

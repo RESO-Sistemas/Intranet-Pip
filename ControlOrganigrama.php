@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -67,8 +67,9 @@
                                     <div class="card-body">
                                         <div class="row mb-4">
                                             <div class="col text-end">
-                                                <button type="button"
-                                                    class="btn btn-primary" id="btnNewOrganigrama">Nuevo Organigrama</button>
+                                                <button type="button" class="btn btn-primary btn-accion" id="btnNewOrganigrama" title="Nuevo Organigrama">
+                                                    <span class="material-symbols-outlined">add</span>
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="table-responsive">
@@ -77,8 +78,7 @@
                                                     <tr>
                                                         <th>Organigrama</th>
                                                         <th>Status</th>
-                                                        <th>Editar</th>
-                                                        <th>Cambiar Status</th>
+                                                        <th>ACCIONES</th>
                                                     </tr>
                                                 </thead>
                                             </table>
@@ -91,13 +91,16 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="ModalNewOrganigrama" tabindex="-1" aria-labelledby="TituloOrganigrama" aria-hidden="true">
+            <div class="modal fade" id="ModalNewOrganigrama" tabindex="-1" aria-labelledby="TituloOrganigrama" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
 
                         <!-- Header -->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="TituloOrganigrama">Nuevo Organigrama</h5>
+                            <h5 class="modal-title d-flex align-items-center gap-2" id="TituloOrganigrama">
+                                <span class="material-symbols-outlined text-primary">account_tree</span>
+                                <span>Nuevo Organigrama</span>
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
