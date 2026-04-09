@@ -187,6 +187,9 @@ function initPostulantesTable() {
                             <button class="btn btn-warning btn-sm" onclick='openDocumentosPostulante(${idNumerico}, ${JSON.stringify(nombrePostulante)})' title="Ver Documentos">
                                 <span class="material-symbols-outlined">folder_shared</span>
                             </button>
+                            <button class="btn btn-primary btn-sm" onclick="verResultadosPostulante('${idEncoded}', '${nombrePostulante}')" title="Ver Resultados">
+                                <span class="material-symbols-outlined">analytics</span>
+                            </button>
                             <button class="btn btn-info btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
                                 <span class="material-symbols-outlined">visibility</span>
                             </button>
@@ -1098,7 +1101,461 @@ function openDocumentosPostulante(idNumerico, nombrePostulante) {
     modal.show();
 }
 
+// =====================================
+// FUNCIONES DE GRAFICAS DE EVALUACION 360
+// =====================================
+
+// Registrar licencia de Syncfusion para evitar el banner rojo de trial
+ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+
+let rawResultadosPostulante = [];
+let chartPostulanteGeneral = null;
+
+async function verResultadosPostulante(idEncoded, nombre) {
+    window.currentIdPostulanteEncodedResultados = idEncoded;
+    showPageLoading('Cargando resultados de evaluación...');
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', {
+            op: 'getPostulanteResultadosEvaluaciones',
+            IdPostulanteVacante: idEncoded
+        });
+        
+        const result = JSON.parse(response);
+
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            rawResultadosPostulante = result.Data;
+            
+            // Agrupar por evaluaciones (únicas)
+            let evaluaciones = [...new Set(rawResultadosPostulante.map(item => item.NombreEvaluacion))];
+            let options = '';
+            evaluaciones.forEach(ev => {
+                options += `<option value="${ev}">${ev}</option>`;
+            });
+            $('#selResultadosPostulante').html(options);
+            $('#modalResultadosPostulanteLabel').html(`<span class="material-symbols-outlined align-middle me-2">analytics</span> Resultados - ${nombre}`);
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalResultadosPostulante'));
+            modal.show();
+
+            // Esperar a que el modal esté visible para renderizar el chart correctamente
+            $('#modalResultadosPostulante').on('shown.bs.modal', function () {
+                drawResultadosPostulante();
+                // Destruir el listener para evitar renders duplicados si se abre el modal de nuevo
+                $(this).off('shown.bs.modal');
+            });
+
+        } else {
+            if (typeof showBootstrapAlertWar === 'function') {
+                const messageContent = `
+                    <div class="alert-content">
+                        <span class="alert-title">¡Aviso!</span>
+                        <span class="alert-text">El postulante aún no tiene evaluaciones finalizadas registradas.</span>
+                    </div>`;
+                showBootstrapAlertWar(messageContent, 'top-right', 4000);
+            }
+        }
+    } catch(err) {
+        console.error('Error obteniendo gráficas de evaluación', err);
+    } finally {
+        hidePageLoading();
+    }
+}
+
+function drawResultadosPostulante() {
+    const seleccion = $('#selResultadosPostulante').val();
+    if (!seleccion) return;
+
+    let calificacionGeneral = 0;
+    const datosFiltrados = rawResultadosPostulante.filter(i => i.NombreEvaluacion === seleccion);
+    
+    // Obtenemos su calificacion general
+    if(datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) {
+        calificacionGeneral = datosFiltrados[0].Calificacion;
+    }
+
+    $('#lblScoreGeneralPostulante').html(`Calificación Promedio General<br><b style="font-size:2rem;color:#0d6efd;">${calificacionGeneral}</b>`);
+
+    let chartData = datosFiltrados.map(item => {
+        return {
+            competencia: item.Competencia || 'Sin Competencia',
+            score: parseFloat(item.ScoreCompetencia)
+        };
+    });
+
+    if(chartPostulanteGeneral) {
+        chartPostulanteGeneral.destroy();
+    }
+
+    chartPostulanteGeneral = new ej.charts.Chart({
+        isResponsive: true,
+        primaryXAxis: {
+            valueType: 'Category',
+            labelIntersectAction: 'MultipleRows'
+        },
+        primaryYAxis: {
+            minimum: 0, maximum: 100, interval: 20,
+            labelFormat: '{value}'
+        },
+        series:[{
+            dataSource: chartData, width:2,
+            xName: 'competencia', yName: 'score',
+            name: 'Resultados (Competencias)',
+            type: 'Polar',
+            drawType: 'Line',
+            marker: { visible: true, width: 7, height: 7 }
+        }],
+        title: seleccion,
+        tooltip: { enable: true }
+    });
+    chartPostulanteGeneral.appendTo('#chartPostulanteGeneral');
+}
+
+// -------------------------------------
+// COMPARATIVO GENERAL DE VACANTE
+// -------------------------------------
+
+let rawComparativoVacante = [];
+let chartComparativoVacante = null;
+
+async function showComparativoResultadosModal() {
+    const idVacante = $('#postulantesIdVacante').val();
+    if(!idVacante) return;
+    
+    showPageLoading('Cargando comparativos...');
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', {
+            op: 'getComparativoResultadosVacante',
+            IdVacante: idVacante
+        });
+        
+        const result = JSON.parse(response);
+
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            rawComparativoVacante = result.Data;
+            
+            let evaluaciones = [...new Set(rawComparativoVacante.map(item => item.NombreEvaluacion))];
+            let options = '';
+            evaluaciones.forEach(ev => {
+                options += `<option value="${ev}">${ev}</option>`;
+            });
+            $('#selComparativoEvaluaciones').html(options);
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalComparativoResultados'));
+            modal.show();
+
+            $('#modalComparativoResultados').on('shown.bs.modal', function () {
+                loadComparativoCandidatos();
+                $(this).off('shown.bs.modal');
+            });
+            
+        } else {
+            if (typeof showBootstrapAlertWar === 'function') {
+                const messageContent = `
+                    <div class="alert-content">
+                        <span class="alert-title">¡Aviso!</span>
+                        <span class="alert-text">Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.</span>
+                    </div>`;
+                showBootstrapAlertWar(messageContent, 'top-right', 4000);
+            }
+        }
+    } catch(err) {
+        console.error('Error en gráficas comparativas', err);
+    } finally {
+        hidePageLoading();
+    }
+}
+
+function loadComparativoCandidatos() {
+    const seleccion = $('#selComparativoEvaluaciones').val();
+    if (!seleccion) return;
+
+    const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion);
+    
+    // Extraer candidatos unicos para esa evaluación
+    let candidatosUnicos = [...new Set(datosFiltrados.map(item => item.NombreCandidato))];
+    
+    let htmlChecks = '';
+    candidatosUnicos.forEach((candidato, index) => {
+        // Seleccionar los primeros 4 por defecto para no saturar la grafica
+        const isChecked = index < 4 ? 'checked' : '';
+        htmlChecks += `
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input chk-candidato-comparar" type="checkbox" value="${candidato}" id="chkComp_${index}" ${isChecked} onchange="drawComparativoResultados()">
+                    <label class="form-check-label" for="chkComp_${index}">
+                        ${candidato}
+                    </label>
+                </div>
+            </li>
+        `;
+    });
+    
+    $('#listCheckCandidatosComparar').html(htmlChecks);
+    drawComparativoResultados();
+}
+
+function drawComparativoResultados() {
+    const seleccion = $('#selComparativoEvaluaciones').val();
+    if (!seleccion) return;
+
+    // Obtener candidatos seleccionados
+    const candidatosSeleccionados = [];
+    $('.chk-candidato-comparar:checked').each(function() {
+        candidatosSeleccionados.push($(this).val());
+    });
+
+    const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion && candidatosSeleccionados.includes(i.NombreCandidato));
+    
+    // Preparar series para la grafica polar
+    let seriesData = [];
+    candidatosSeleccionados.forEach(candidato => {
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        
+        let serie = {
+            dataSource: datosCandidato.map(d => { return { competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) } }),
+            xName: 'competencia',
+            yName: 'score',
+            name: candidato,
+            type: 'Polar',
+            drawType: 'Line',
+            marker: { visible: true, width: 7, height: 7 },
+            width: 2
+        };
+        seriesData.push(serie);
+    });
+
+    if(chartComparativoVacante) {
+        chartComparativoVacante.destroy();
+    }
+
+    chartComparativoVacante = new ej.charts.Chart({
+        isResponsive: true,
+        primaryXAxis: {
+            valueType: 'Category',
+            labelIntersectAction: 'MultipleRows'
+        },
+        primaryYAxis: {
+            minimum: 0, maximum: 100, interval: 20,
+            labelFormat: '{value}'
+        },
+        series: seriesData,
+        title: `Comparativo de Resultados - ${seleccion}`,
+        tooltip: { enable: true },
+        legendSettings: { visible: true, position: 'Bottom' }
+    });
+    chartComparativoVacante.appendTo('#chartComparativoVacante');
+
+    // MÁGIA PARA LAS TABLAS (Tabulator)
+    let htmlContenedorTablas = '';
+    candidatosSeleccionados.forEach((candidato, idx) => {
+        htmlContenedorTablas += `
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light text-center fw-bold text-dark">
+                        ${candidato}
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="tabla_comparativo_${idx}"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    $('#contenedorTablasComparativo').html(htmlContenedorTablas);
+
+    // Inicializar tabulators para cada candidato
+    candidatosSeleccionados.forEach((candidato, idx) => {
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        let tableData = datosCandidato.map(d => {
+            return {
+                Competencia: d.Competencia || 'Sin Competencia',
+                Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2)
+            };
+        });
+
+        new Tabulator(`#tabla_comparativo_${idx}`, {
+            data: tableData,
+            layout: "fitColumns",
+            columns: [
+                { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 },
+                { title: "CALIFICACIÓN", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 }
+            ]
+        });
+    });
+}
+
 $(document).ready(function () {
     initDetalleSectionToggles();
     initPostulantesVacantePage();
 });
+
+// =====================================
+// FUNCIONES DE VER RESPUESTAS DE EVALUACION
+// =====================================
+
+function cerrarEvaluacionRespuestas() {
+    $('#modalEvaluacionRespuestas').modal('hide');
+    $('#modalResultadosPostulante').modal('show');
+}
+
+async function abrirEvaluacionRespuestas() {
+    const seleccionEv = $('#selResultadosPostulante').val();
+    if (!seleccionEv || !window.currentIdPostulanteEncodedResultados) {
+        if (typeof showBootstrapAlertWar === 'function') {
+            showBootstrapAlertWar(`
+                <div class="alert-content">
+                    <span class="alert-title">¡Atención!</span>
+                    <span class="alert-text">Debes seleccionar una evaluación primero.</span>
+                </div>`, 'top-right', 3000);
+        }
+        return;
+    }
+
+    $('#modalResultadosPostulante').modal('hide');
+    $('#contenedorEvaluacionRespuestas').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Cargando evaluación...</p></div>');
+    $('#modalEvaluacionRespuestas').modal('show');
+
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', {
+            op: 'getPostulanteRespuestasDetalle',
+            IdPostulanteVacante: window.currentIdPostulanteEncodedResultados,
+            NombreEvaluacion: seleccionEv
+        });
+
+        const result = JSON.parse(response);
+
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            let html = '';
+            
+            result.Data.forEach((item, index) => {
+                html += `
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-1 d-flex align-items-start">
+                            <span class="badge bg-primary rounded-pill me-2 mt-1">${index + 1}</span> 
+                            <span>${item.TituloPregunta || 'Pregunta ' + (index + 1)}</span>
+                        </h6>
+                        ${item.Pregunta && item.Pregunta.trim() !== '' ? `<p class="mb-3 text-muted" style="margin-left: 2.2rem;">${item.Pregunta}</p>` : '<div class="mb-3"></div>'}
+                `;
+
+                if (item.Opciones && item.Opciones.length > 0) {
+                    html += '<div class="list-group ps-4">';
+                    item.Opciones.forEach(opt => {
+                        let rPost = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                        let oI = opt.IdOpcion ? String(opt.IdOpcion).trim().toLowerCase() : "";
+                        let oT = opt.Texto ? String(opt.Texto).trim().toLowerCase() : "";
+
+                        let isSelected = (rPost !== "" && (rPost === oI || rPost === oT));
+
+                        let isCorrectaOM = false;
+                        let corrO = item.RespuestaCorrectaOM ? String(item.RespuestaCorrectaOM).trim().toLowerCase() : "";
+                        let corrT = item.TextoRespuestaCorrectaOM ? String(item.TextoRespuestaCorrectaOM).trim().toLowerCase() : "";
+
+                        if ((corrO !== "" && oI === corrO) || (corrT !== "" && oT === corrT)) {
+                            isCorrectaOM = true;
+                        }
+
+                        let bgColor = "background-color: transparent;";
+                        let borderColor = "border-color: #dee2e6;";
+                        let iconOption = "";
+                        
+                        // Si el postulante la seleccionó
+                        if (isSelected) {
+                            if (isCorrectaOM) {
+                                // Correcta seleccionada (Verde claro)
+                                bgColor = "background-color: #d4edda;";
+                                borderColor = "border-color: #c3e6cb;";
+                                iconOption = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                            } else {
+                                // Incorrecta seleccionada (Rojo claro)
+                                bgColor = "background-color: #f8d7da;";
+                                borderColor = "border-color: #f5c6cb;";
+                                iconOption = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>';
+                            }
+                        } else if (isCorrectaOM) {
+                            // Era la correcta y no la seleccionó (la mostramos en verde igual para indicar cual era)
+                            bgColor = "background-color: #d4edda;";
+                            borderColor = "border-color: #c3e6cb;";
+                            iconOption = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                        }
+
+                        html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgColor} ${borderColor} border-width:1px; border-style:solid;">
+                            <span>${opt.Texto}</span>
+                            ${iconOption}
+                        </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else if (item.BoolCorreta !== null) {
+                    // Verdadero/Falso (True/False o 1/0)
+                    let rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                    
+                    let isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
+                    let isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
+                    
+                    let trueIsCorrect = (item.BoolCorreta == "1");
+
+                    // Estilo Opcion Verdadero
+                    let bgTrue = "", iconTrue = "";
+                    if (isTrueSelected) {
+                        if (trueIsCorrect) { bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                        else { bgTrue = "background-color: #f8d7da; border-color: #f5c6cb;"; iconTrue = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                    } else if (trueIsCorrect) {
+                        bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                    }
+
+                    // Estilo Opcion Falso
+                    let bgFalse = "", iconFalse = "";
+                    if (isFalseSelected) {
+                        if (!trueIsCorrect) { bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                        else { bgFalse = "background-color: #f8d7da; border-color: #f5c6cb;"; iconFalse = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                    } else if (!trueIsCorrect) {
+                        bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                    }
+
+                    html += `
+                    <div class="list-group ps-4 w-50">
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgTrue} border-width:1px; border-style:solid;">
+                            <span>Verdadero</span> ${iconTrue}
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgFalse} border-width:1px; border-style:solid;">
+                            <span>Falso</span> ${iconFalse}
+                        </div>
+                    </div>`;
+
+                } else {
+                    // Respuesta abierta u otro formato
+                    html += `
+                    <div class="ps-4">
+                        <div class="p-3 bg-light rounded-3 text-dark mb-2">
+                           ${item.RespuestaPostulante || '<em class="text-muted">Sin respuesta</em>'}
+                        </div>
+                    </div>`;
+                }
+
+                html += `
+                    </div>
+                </div>
+                `;
+            });
+            
+            $('#contenedorEvaluacionRespuestas').html(html);
+        } else {
+            $('#contenedorEvaluacionRespuestas').html(`
+                <div class="alert alert-warning m-4">
+                    <span class="material-symbols-outlined align-middle me-2">sentiment_dissatisfied</span>
+                    No se encontraron detalles para esta evaluación.
+                </div>
+            `);
+        }
+    } catch(err) {
+        console.error('Error al abrir evaluación:', err);
+        $('#contenedorEvaluacionRespuestas').html(`
+            <div class="alert alert-danger m-4">
+                <span class="material-symbols-outlined align-middle me-2">error</span>
+                Ha ocurrido un error al cargar los datos.
+            </div>
+        `);
+    }
+}

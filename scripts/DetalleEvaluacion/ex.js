@@ -140,43 +140,47 @@ function renderActions(ev) {
   );
 
   // 3. Ver Evaluados
-  if (ev.Activado == 0) {
-    container.appendChild(
-      createActionBtn(
-        "Ver Evaluados",
-        "group",
-        "btn-primary",
-        null,
-        true,
-        "Evaluación no activada"
-      )
-    );
-  } else {
-    container.appendChild(
-      createActionBtn("Ver Evaluados", "group", "btn-primary", function () {
-        window.location.href = "Evaluados.php?EV=" + ev.idEvaluaciones;
-      })
-    );
+  if (ev.TipoEvaluacion == 1) {
+    if (ev.Activado == 0) {
+      container.appendChild(
+        createActionBtn(
+          "Ver Evaluados",
+          "group",
+          "btn-primary",
+          null,
+          true,
+          "Evaluación no activada"
+        )
+      );
+    } else {
+      container.appendChild(
+        createActionBtn("Ver Evaluados", "group", "btn-primary", function () {
+          window.location.href = "Evaluados.php?EV=" + ev.idEvaluaciones;
+        })
+      );
+    }
   }
 
   // 4. Ver Resultados
-  if (ev.Activado == 0) {
-    container.appendChild(
-      createActionBtn(
-        "Ver Resultados",
-        "donut_large",
-        "btn-secondary",
-        null,
-        true,
-        "Evaluación no activada"
-      )
-    );
-  } else {
-    container.appendChild(
-      createActionBtn("Ver Resultados", "donut_large", "btn-secondary", function () {
-        window.location.href = "ResultadosEvaluacion.php?Ev=" + ev.idEvaluaciones;
-      })
-    );
+  if (ev.TipoEvaluacion == 1) {
+    if (ev.Activado == 0) {
+      container.appendChild(
+        createActionBtn(
+          "Ver Resultados",
+          "donut_large",
+          "btn-secondary",
+          null,
+          true,
+          "Evaluación no activada"
+        )
+      );
+    } else {
+      container.appendChild(
+        createActionBtn("Ver Resultados", "donut_large", "btn-secondary", function () {
+          window.location.href = "ResultadosEvaluacion.php?Ev=" + ev.idEvaluaciones;
+        })
+      );
+    }
   }
 
   // 5. Publicar
@@ -226,7 +230,7 @@ function renderActions(ev) {
   }
 
   // 6. Ver Restantes (if there are remaining)
-  if (ev.Restantes > 0) {
+  if (ev.TipoEvaluacion == 1 && ev.Restantes > 0) {
     container.appendChild(
       createActionBtn(
         "Restantes (" + ev.Restantes + ")",

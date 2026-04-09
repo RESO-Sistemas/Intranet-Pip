@@ -380,6 +380,26 @@ if ($op == "addPostulanteHistorial") {
 }
 
 // ==========================================
+// RESULTADOS EVALUACIONES (GRAFICAS)
+// ==========================================
+
+if ($op == "getPostulanteResultadosEvaluaciones") {
+    $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
+    echo trim($Postulantes->getPostulanteResultadosEvaluaciones($IdPostulanteVacante));
+}
+
+if ($op == "getPostulanteRespuestasDetalle") {
+    $IdPostulanteVacante = $_POST["IdPostulanteVacante"];
+    $NombreEvaluacion = $_POST["NombreEvaluacion"];
+    echo trim($Postulantes->getPostulanteRespuestasDetalle($IdPostulanteVacante, $NombreEvaluacion));
+}
+
+if ($op == "getComparativoResultadosVacante") {
+    $IdVacante = $_POST["IdVacante"];
+    echo trim($Postulantes->getComparativoResultadosVacante($IdVacante));
+}
+
+// ==========================================
 // POSTULANTES (VISTA GENERAL)
 // ==========================================
 

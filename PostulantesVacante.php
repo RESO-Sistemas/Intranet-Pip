@@ -14,6 +14,7 @@
 
     <!-- Styles adicionales -->
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
+    <link href="https://cdn.syncfusion.com/ej2/20.3.56/css/tailwind.css" rel="stylesheet">
     <style>
         .detail-section {
             background-color: #f8f9fa;
@@ -275,10 +276,16 @@
                                                 <span class="material-symbols-outlined align-middle me-2">people</span>
                                                 Postulantes
                                             </h5>
-                                            <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
-                                                <span class="material-symbols-outlined align-middle me-1">person_add</span>
-                                                Agregar Postulante
-                                            </button>
+                                            <div>
+                                                <button type="button" class="btn btn-info btn-sm me-2" onclick="showComparativoResultadosModal()">
+                                                    <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                                                    Resultados Comparativos
+                                                </button>
+                                                <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
+                                                    <span class="material-symbols-outlined align-middle me-1">person_add</span>
+                                                    Agregar Postulante
+                                                </button>
+                                            </div>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -414,15 +421,15 @@
     </div>
 
     <!-- ====== MODAL DETALLE POSTULANTE ====== -->
-    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-info">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalDetallePostulanteLabel">
                         <span class="material-symbols-outlined align-middle me-2">person</span>
                         Detalle del Postulante
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="detalleIdPostulanteVacante">
@@ -690,16 +697,103 @@
         </div>
     </div>
 
+    <!-- ====== MODAL RESULTADOS POSTULANTE ====== -->
+    <div class="modal fade" id="modalResultadosPostulante" tabindex="-1" aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalResultadosPostulanteLabel">
+                        <span class="material-symbols-outlined align-middle me-2">analytics</span>
+                        Resultados de Evaluación
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirEvaluacionRespuestas()">
+                            <span class="material-symbols-outlined align-middle" style="font-size: 18px;">visibility</span>
+                            Ver Evaluación
+                        </button>
+                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Evaluación:</label>
+                            <select id="selResultadosPostulante" class="form-select" onchange="drawResultadosPostulante()"></select>
+                        </div>
+                        <div class="col-md-8 text-center" style="display:flex; justify-content:center; flex-direction:column; align-items:center;">
+                            <h4 id="lblScoreGeneralPostulante"></h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <div id="chartPostulanteGeneral" style="width:100%; height:500px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MODAL COMPARATIVO RESULTADOS ====== -->
+    <div class="modal fade" id="modalComparativoResultados" tabindex="-1" aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalComparativoResultadosLabel">
+                        <span class="material-symbols-outlined align-middle me-2">bar_chart</span>
+                        Comparativo de Resultados por Evaluación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Seleccione Evaluación:</label>
+                            <select id="selComparativoEvaluaciones" class="form-select" onchange="loadComparativoCandidatos()"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Seleccione Candidatos a comparar:</label>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary w-100 text-start dropdown-toggle bg-white text-dark" type="button" id="dropdownCandidatosComparar" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                    Seleccionar candidatos...
+                                </button>
+                                <ul class="dropdown-menu w-100 p-3 shadow" aria-labelledby="dropdownCandidatosComparar" id="listCheckCandidatosComparar" style="max-height: 250px; overflow-y: auto;">
+                                    <!-- Injected by JS -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="chartComparativoVacante" style="width:100%; height:500px"></div>
+                        </div>
+                    </div>
+                    <!-- Contenedores para las tabilitas por cada candidato comparado -->
+                    <div class="row mt-4" id="contenedorTablasComparativo">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ====== MODAL VIEW DOCUMENTOS ====== -->
-    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1" aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1" aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalDocumentosPostulanteLabel">
                         <span class="material-symbols-outlined align-middle me-2">folder_shared</span>
                         Documentos
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center" id="contenedorBotonesDocumentos">
                     <!-- Botones inyectados por JS -->
@@ -711,10 +805,31 @@
         </div>
     </div>
 
+    <!-- ====== MODAL EVALUACION RESPUESTAS ====== -->
+    <div class="modal fade" id="modalEvaluacionRespuestas" tabindex="-1" aria-labelledby="modalEvaluacionRespuestasLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEvaluacionRespuestasLabel">
+                        <span class="material-symbols-outlined align-middle me-2">quiz</span>
+                        Evaluación del Postulante
+                    </h5>
+                    <button type="button" class="btn-close" onclick="cerrarEvaluacionRespuestas()"></button>
+                </div>
+                <div class="modal-body" style="background-color: #f8f9fa;">
+                    <div id="contenedorEvaluacionRespuestas">
+                        <!-- inyectado -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
     <?php include("scripts.php"); ?>
 
+    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
     <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
     <script src="scripts/PostulantesVacante.js?v=<?php echo filemtime('scripts/PostulantesVacante.js'); ?>"></script>
 </body>

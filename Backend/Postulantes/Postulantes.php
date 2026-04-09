@@ -710,6 +710,177 @@ class Postulantes extends Conexiones
         }
     }
 
+    // ==========================================
+    // RESULTADOS EVALUACIONES (GRAFICAS)
+    // ==========================================
+
+    /**
+     * Obtener los resultados (por competencia) de las evaluaciones completadas de un postulante.
+     */
+    function getPostulanteResultadosEvaluaciones($IdPostulanteVacante)
+    {
+        try {
+            $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
+            $q = "SELECT 
+                    pe.IdPostulanteEvaluacion, 
+                    e.Titulo AS NombreEvaluacion, 
+                    pe.Calificacion,
+                    IFNULL(c.Competencia, 'General') AS Competencia, 
+                    ROUND(AVG(
+                        CASE
+                            WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                                CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
+                                OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
+                            ) THEN 100
+                            ELSE 0
+                        END
+                    ), 2) AS ScoreCompetencia
+                FROM PostulantesEvaluaciones pe
+                INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
+                INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
+                LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+                LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                WHERE pe.IdPostulanteVacante = $IdPostulanteVacante
+                  AND pe.EstatusEvaluacion = 3
+                GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pe.Calificacion, Competencia
+                ORDER BY e.Titulo, Competencia";
+                
+            $resultado = $this->Select($q);
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en getPostulanteResultadosEvaluaciones: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "Data" => [],
+                "Msg" => "Error al obtener resultados."
+            ]);
+        }
+    }
+
+    /**
+     * Obtener el detalle de las respuestas de un postulante en una evaluación específica.
+     */
+    function getPostulanteRespuestasDetalle($IdPostulanteVacante, $NombreEvaluacion)
+    {
+        try {
+            $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
+            $NombreEvaluacion = $this->sanitize($NombreEvaluacion);
+
+            $q = "SELECT 
+                    peval.IdPostulanteEvaluacion, 
+                    preg.idPreguntasEvaluacion,
+                    preg.Titulo AS TituloPregunta,
+                    preg.Descripcion AS Pregunta,
+                    pr.Respuesta AS RespuestaPostulante,
+                    pc.BoolCorreta,
+                    pc.RespuestaCorrectaOM,
+                    ppr_corr.DescripcionRespuesta AS TextoRespuestaCorrectaOM
+                  FROM PostulantesEvaluaciones peval
+                  INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = peval.IdVacanteEvaluacion
+                  INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                  INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = peval.IdPostulanteEvaluacion
+                  INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                  LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+                  LEFT JOIN PreguntasPosiblesRespuestas ppr_corr ON ppr_corr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                  WHERE peval.IdPostulanteVacante = $IdPostulanteVacante
+                    AND e.Titulo = '$NombreEvaluacion'
+                  ORDER BY preg.idPreguntasEvaluacion ASC";
+                  
+            $resultado = $this->Select($q);
+
+            foreach ($resultado as &$row) {
+                $idPregunta = $row['idPreguntasEvaluacion'];
+                $qOpciones = "SELECT idPreguntasPosiblesRespuestas AS IdOpcion, DescripcionRespuesta AS Texto 
+                              FROM PreguntasPosiblesRespuestas 
+                              WHERE idPreguntasEvaluacion = '$idPregunta'
+                              ORDER BY idPreguntasPosiblesRespuestas ASC";
+                $Con2 = new Conexiones();
+                $row['Opciones'] = $Con2->Select($qOpciones);
+            }
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en getPostulanteRespuestasDetalle: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "Data" => [],
+                "Msg" => "Error al obtener detalle de respuestas."
+            ]);
+        }
+    }
+
+    /**
+     * Obtener los resultados globales de todos los postulantes para una vacante
+     * para mostrarlos en comparativo.
+     */
+    function getComparativoResultadosVacante($IdVacante)
+    {
+        try {
+            $IdVacante = base64_decode($IdVacante);
+            $q = "SELECT 
+                    e.idEvaluaciones,
+                    e.Titulo AS NombreEvaluacion,
+                    pe.IdPostulanteEvaluacion,
+                    CONCAT(p.Nombre, ' ', p.ApellidoPaterno) AS NombreCandidato,
+                    pv.IdPostulanteVacante,
+                    pe.Calificacion,
+                    IFNULL(c.Competencia, 'General') AS Competencia, 
+                    ROUND(AVG(
+                        CASE
+                            WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                                CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
+                                OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
+                            ) THEN 100
+                            ELSE 0
+                        END
+                    ), 2) AS ScoreCompetencia
+                FROM PostulantesEvaluaciones pe
+                INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
+                INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
+                INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
+                LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+                LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                WHERE pv.IdVacante = '$IdVacante'
+                  AND pe.EstatusEvaluacion = 3
+                GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pv.IdPostulanteVacante, pe.Calificacion, NombreCandidato, Competencia
+                ORDER BY e.Titulo, NombreCandidato, Competencia";
+                
+            $resultado = $this->Select($q);
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en getComparativoResultadosVacante: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "Data" => [],
+                "Msg" => "Error al obtener resultados comparativos."
+            ]);
+        }
+    }
+
     /**
      * Agregar registro de historial (avance de proceso)
      */

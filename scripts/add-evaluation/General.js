@@ -74,6 +74,14 @@ $(document).on('change', '#dirigidoA', function() {
     $('#dirigidoA').val('1');
     toastr.info('La Evaluación 360° solo puede ir dirigida a Empleados', 'Información');
   }
+
+  if (dirigido === '2') {
+    $('#divParticipantes').prev('.row').hide();
+    $('#divParticipantes').hide();
+  } else {
+    $('#divParticipantes').prev('.row').show();
+    $('#divParticipantes').show();
+  }
 });
 
 // Función para validar fechas
@@ -209,9 +217,11 @@ async function saveEvaluationNoE(){
   
   // Obtener empleados seleccionados
   const empleadosSeleccionados = $('#slctEmpleados').val();
-  if (!empleadosSeleccionados || empleadosSeleccionados.length === 0) {
-    toastr.error('Debe seleccionar al menos un empleado participante', 'Error de validación');
-    return;
+  if (dirigidoA.value !== '2') {
+    if (!empleadosSeleccionados || empleadosSeleccionados.length === 0) {
+      toastr.error('Debe seleccionar al menos un empleado participante', 'Error de validación');
+      return;
+    }
   }
   
   const dataSend = {

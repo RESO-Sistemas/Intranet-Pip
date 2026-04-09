@@ -22,7 +22,11 @@ const sel_lvlOld = document.getElementById('sel_lvlOld');
 
 loadInitialFunctions();
 
+let _currentEvaluation = null;
+
 async function loadInitialFunctions(){
+
+  await getCurrentEvaluation();
 
   getQuestionTypes();
 
@@ -31,6 +35,21 @@ async function loadInitialFunctions(){
   getLevelsEmployees();
 
   getQuestionsPerEvaluation();
+
+}
+
+async function getCurrentEvaluation() {
+
+  const dataSend = {
+    op: "getEvaluationById",
+    idEvaluacion: e_valuation,
+  };
+
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend);
+
+  if (ajaxR !== undefined && ajaxR.Resultado === true) {
+    _currentEvaluation = ajaxR.Data;
+  }
 
 }
 
@@ -1177,6 +1196,13 @@ function printQuestionTypes(data){
   if(data.length > 0) {
 
     for (var i = 0; i < data.length; i++) {
+
+      let desc = data[i]["Descripcion"] ? data[i]["Descripcion"].toLowerCase() : "";
+      if (_currentEvaluation && _currentEvaluation.TipoEvaluacion == 2) {
+          if ((desc.includes("múltiple") || desc.includes("multiple")) && (desc.includes("esperad"))) {
+              continue; // Ocultar múltiple esperado
+          }
+      }
 
       contentHTML += `<option value='${data[i]["idTipoPregunta"]}'>${data[i]["Descripcion"]}</option>`;
 
