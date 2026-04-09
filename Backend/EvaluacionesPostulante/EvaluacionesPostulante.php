@@ -61,7 +61,7 @@ class EvaluacionesPostulante extends Conexiones
                   INNER JOIN PostulantesVacantes pv    ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
                   INNER JOIN Vacantes v                ON v.IdVacante = pv.IdVacante
                   INNER JOIN Postulantes p             ON p.IdPostulante = pv.IdPostulante
-                  WHERE UPPER(p.CURP) = UPPER('$curpSesion')
+                  WHERE BINARY UPPER(p.CURP) = BINARY UPPER('$curpSesion')
                   ORDER BY v.NombreVacante ASC, pv2.IdProceso ASC";
 
             $resultado = $this->Select($q);
@@ -115,7 +115,7 @@ class EvaluacionesPostulante extends Conexiones
                   INNER JOIN PostulantesVacantes pv    ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
                   INNER JOIN Vacantes v                ON v.IdVacante = pv.IdVacante
                   INNER JOIN Postulantes p             ON p.IdPostulante = pv.IdPostulante
-                  WHERE UPPER(p.CURP) = UPPER('$curpSesion')
+                  WHERE BINARY UPPER(p.CURP) = BINARY UPPER('$curpSesion')
                     AND pv2.IdProceso = $IdProceso
                   ORDER BY e.Titulo ASC";
 
@@ -154,7 +154,7 @@ class EvaluacionesPostulante extends Conexiones
                        INNER JOIN PostulantesVacantes pv  ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
                        INNER JOIN Postulantes p           ON p.IdPostulante = pv.IdPostulante
                        WHERE pe.IdPostulanteEvaluacion = $IdPostulanteEvaluacion
-                         AND UPPER(p.CURP) = UPPER('$curpSesion')";
+                         AND BINARY UPPER(p.CURP) = BINARY UPPER('$curpSesion')";
             $resVerif = $this->Select($qVerif);
 
             if (count($resVerif) == 0) {
@@ -254,7 +254,7 @@ class EvaluacionesPostulante extends Conexiones
                        INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
                        INNER JOIN Postulantes p          ON p.IdPostulante = pv.IdPostulante
                        WHERE pe.IdPostulanteEvaluacion = $IdPostulanteEvaluacion
-                         AND UPPER(p.CURP) = UPPER('$curpSesion')";
+                         AND BINARY UPPER(p.CURP) = BINARY UPPER('$curpSesion')";
             $resVerif = $this->Select($qVerif);
 
             if (count($resVerif) == 0) {
@@ -347,7 +347,7 @@ class EvaluacionesPostulante extends Conexiones
                        INNER JOIN PostulantesVacantes pv  ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
                        INNER JOIN Postulantes p           ON p.IdPostulante = pv.IdPostulante
                        WHERE pe.IdPostulanteEvaluacion = $IdPostulanteEvaluacion
-                         AND UPPER(p.CURP) = UPPER('$curpSesion')";
+                         AND BINARY UPPER(p.CURP) = BINARY UPPER('$curpSesion')";
             $resVerif = $this->Select($qVerif);
 
             if (count($resVerif) == 0) {
@@ -399,10 +399,10 @@ class EvaluacionesPostulante extends Conexiones
             $qCalc = "SELECT
                         COUNT(*) AS TotalPreguntas,
                         SUM(CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND pr.Respuesta = CAST(pc.BoolCorreta AS CHAR) THEN 1
+                            WHEN pc.BoolCorreta IS NOT NULL AND BINARY pr.Respuesta = BINARY CAST(pc.BoolCorreta AS CHAR) THEN 1
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
-                                pr.Respuesta = CAST(pc.RespuestaCorrectaOM AS CHAR)
-                                OR pr.Respuesta = ppr.DescripcionRespuesta
+                                BINARY pr.Respuesta = BINARY CAST(pc.RespuestaCorrectaOM AS CHAR)
+                                OR BINARY pr.Respuesta = BINARY ppr.DescripcionRespuesta
                             ) THEN 1
                             ELSE 0
                         END) AS Correctas

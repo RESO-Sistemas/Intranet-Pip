@@ -362,8 +362,32 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
             getPreguntas: null,
             savePayload: null,
             saveResponse: null,
-            finalizarResponse: null
+            finalizarResponse: null,
+            lastRawResponse: null
         };
+
+        async function parseApiResponse(response) {
+            const rawText = await response.text();
+            DEBUG_DATA.lastRawResponse = {
+                status: response.status,
+                ok: response.ok,
+                body: rawText
+            };
+
+            let data = null;
+            try {
+                data = rawText ? JSON.parse(rawText) : null;
+            } catch (e) {
+                throw new Error(`Respuesta no JSON (HTTP ${response.status}). Cuerpo: ${rawText.substring(0, 220)}`);
+            }
+
+            if (!response.ok) {
+                const msg = data && data.Msg ? data.Msg : `HTTP ${response.status}`;
+                throw new Error(msg);
+            }
+
+            return data;
+        }
 
         // Cargar evaluación al iniciar
         document.addEventListener('DOMContentLoaded', function() {
@@ -385,7 +409,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                     body: formData
                 });
                 
-                const data = await response.json();
+                const data = await parseApiResponse(response);
                 DEBUG_DATA.getPreguntas = data;
                 renderDebugJson();
                 
@@ -684,7 +708,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                     body: formData
                 });
                 
-                const data = await response.json();
+                const data = await parseApiResponse(response);
                 DEBUG_DATA.saveResponse = data;
                 renderDebugJson();
                 
@@ -742,7 +766,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                     body: formData
                 });
                 
-                const data = await response.json();
+                const data = await parseApiResponse(response);
                 DEBUG_DATA.finalizarResponse = data;
                 renderDebugJson();
                 
