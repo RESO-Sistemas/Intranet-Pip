@@ -76,7 +76,7 @@
                     <!-- SUBIR Y DESCARGAR-->
                     <div class="row">
                       <!-- Columna izquierda -->
-                      <div class="col-12 col-sm-6">
+                      <div class="col-12 col-sm-6" style="display: none;">
                         <label class="form-label">Nuevos Empleados Excel</label>
                         <div class="row g-2 align-items-center flex-nowrap flex-sm-wrap">
                           <!-- Botón File -->
@@ -104,7 +104,7 @@
                       </div>
 
                       <!-- Columna derecha -->
-                      <div class="col-12 col-sm-6">
+                      <div class="col-12 col-sm-6" style="display: none;">
                         <label class="form-label">Asignar Vacaciones Excel</label>
                         <div class="row g-2 align-items-center flex-nowrap flex-sm-wrap">
                           <!-- Botón File -->
@@ -133,7 +133,7 @@
                     </div>
                     <div class="row">
                       <!-- Tabla Empleados -->
-                      <div class="col-12">
+                      <div class="col-12" style="display: none;">
                         <div class="table-responsive">
                           <table class="table table-bordered" id="contenidoExcel">
                             <thead>
@@ -146,7 +146,7 @@
                       </div>
 
                       <!-- Tabla Vacaciones -->
-                      <div class="col-12 mt-3">
+                      <div class="col-12 mt-3" style="display: none;">
                         <div class="table-responsive">
                           <table class="table table-bordered" id="contenidoExcelVacaciones">
                             <thead>

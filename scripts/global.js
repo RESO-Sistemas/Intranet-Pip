@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 async function loadAllFunctions() {
-  await loadGblDataEmployee();
+  loadGblDataEmployee();
   getMensajeVistoLineaEtica();
   getMsgSolicitudesVacacionesRecibidas();
   getMsgSolicitudesVacacionesRecibidasFinal();

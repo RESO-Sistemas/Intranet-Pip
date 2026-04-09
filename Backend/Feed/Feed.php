@@ -202,7 +202,7 @@
                     ORDER BY F.Registro DESC) AS TABLA2
                     UNION ALL
         SELECT * FROM (
-                    SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,AF.Archivo,E.Nombre,E.NoEmpleado,E.Imagen,
+                    SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,GROUP_CONCAT(AF.Archivo) as Archivo,E.Nombre,E.NoEmpleado,E.Imagen,
                     (select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) as DMinutos,
                     (select TIMESTAMPDIFF(HOUR,F.Registro,NOW())) as DHoras,
                     (select TIMESTAMPDIFF(DAY,F.Registro,NOW())) as DDias,
@@ -213,8 +213,6 @@
                     FROM Feed AS F
                     LEFT JOIN ArchivosFeed AS AF ON AF.idFeed = F.idFeed
                     INNER JOIN Empleados AS E ON E.NoEmpleado = F.NoEmpleado
-                    LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = F.idFeed
-                    LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
                     where (F.Tipo = 'FED' OR F.Tipo = 'FIN') AND YEAR(F.Registro) = '$actYear'
                     GROUP BY F.idFeed
                     having DDias < 45

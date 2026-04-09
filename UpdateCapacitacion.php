@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 
 <html>
@@ -152,18 +152,13 @@
 
                         </div>
 
-                        <div class="row">
-
-                            <div class="col">
-
-                                <div class="page-description page-description-tabbed">
-
-                                    <h1>Actualizar Capacitación</h1>
-
+                        <div class="row mb-4">
+                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                <div class="page-description page-description-tabbed mb-0 p-0">
+                                    <h1 class="mb-0">Actualizar Capacitación</h1>
                                 </div>
-
+                                <a href="Capacitacion.php" class="btn btn-danger">Regresar</a>
                             </div>
-
                         </div>
 
                         <div class="row">
@@ -173,16 +168,6 @@
                                 <div class="card">
 
                                     <div class="card-body">
-
-                                        <div class="row mb-4">
-
-                                            <div class="col text-start">
-
-                                                <a href="Capacitacion.php" class="btn btn-danger">Regresar</a>
-
-                                            </div>
-
-                                        </div>
 
                                         <div class="row">
 
@@ -538,17 +523,9 @@
 
     </div>
 
-    <?php include("scripts.php"); ?>
-
     <!-- neptune Javascripts -->
-
-    <?php include("neptune_js.php");  ?>
-
+    <?php include("neptune_js.php"); ?>
     <!-- neptune Javascripts -->
-
-    <script src="assets/libs/toastr/build/toastr.min.js"></script>
-
-    <script src="assets/extra-libs/toastr/toastr-init.js"></script>
 
     <script src="scripts/UpdateCapacitacion.js"></script>
 

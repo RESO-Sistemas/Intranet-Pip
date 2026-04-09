@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
 
@@ -422,10 +422,7 @@ include("menus.php");
                                                         <th>Día</th>
 
                                                         <th>Status</th>
-
-                                                        <th>Actualizar</th>
-
-                                                        <th>Activar / Desactivar</th>
+                                                        <th>Acciones</th>
 
                                                     </tr>
 
