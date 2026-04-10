@@ -11,6 +11,10 @@
     echo trim($Kpis->getPuestos());
   }
 
+  if ($op == "getInitialData") {
+    echo trim($Kpis->getInitialData());
+  }
+
   if ($op == "insertKpi") {
     $nombre = $_POST["nombre"];
     $valorAlta = $_POST["valorAlta"];

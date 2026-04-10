@@ -51,7 +51,7 @@
                   $ArgumentosH = $MenuH[$j]["Argumentos"];
                ?>
                  <li>
-                   <a href="<?php echo $URLH ?>"><?php echo $DescripcionH ?></a>
+                   <a href="<?php echo $URLH ?>" title="<?php echo $DescripcionH ?>"><?php echo $DescripcionH ?></a>
                  </li>
                <?php
                 }

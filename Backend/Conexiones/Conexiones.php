@@ -1,11 +1,10 @@
 <?php
 @ini_set('display_errors', '0');
 @ini_set('display_startup_errors', '0');
-@ini_set('log_errors', '1');
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
-if (!headers_sent()) {
-    header('Content-Type: text/html; charset=utf-8');
-}
+@ini_set('log_errors', '0');
+error_reporting(0);
+ini_set('default_charset', 'utf-8');
+
 
 class Conexiones{
 	private $dbh;
@@ -30,9 +29,9 @@ class Conexiones{
 				$array[] = $row;
 			}
 			// Consumir todos los result sets del SP para evitar que PDO se bloquee
-			while ($res->nextRowset()) {
+			// while ($res->nextRowset()) {
 				// avanzar hasta que no haya más result sets
-			}
+			// }
 			$res->closeCursor();
 			return $array;
 		} catch (\Exception $e) {

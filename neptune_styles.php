@@ -130,7 +130,6 @@ if ($current_page !== 'login'):
   .app-menu > ul > li ul li a:hover,
   .app-menu > ul > li ul li a.active {
     color: #ffc407 !important;
-    font-weight: 500;
   }
 
   /* Sidebar — recuadro de sub-menú más oscuro */

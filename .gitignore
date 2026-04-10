@@ -12,3 +12,6 @@ resources/.DS_Store
 # Logs
 *.log
 error_log
+
+# Archivos
+Archivos/

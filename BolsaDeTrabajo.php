@@ -502,6 +502,6 @@ $user_session_json = json_encode([
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <!-- Script principal de Bolsa de Trabajo -->
-    <script src="scripts/BolsaDeTrabajo.js"></script>
+    <script src="scripts/BolsaDeTrabajo.js "></script>
 </body>
 </html>

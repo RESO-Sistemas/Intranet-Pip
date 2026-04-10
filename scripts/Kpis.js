@@ -1,17 +1,14 @@
 const url_m_Kpis = "Backend/Kpis/App.php";
 
-// Cargar al inicio — ambas peticiones en paralelo
+// Cargar al inicio — petición consolidada
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const [puestos, kpis] = await Promise.all([
-      $.ajax({ type: "post", url: url_m_Kpis, data: { op: "getPuestos" }, dataType: "json" }),
-      $.ajax({ type: "post", url: url_m_Kpis, data: { op: "getKpis" }, dataType: "json" })
-    ]);
-    listaPuestos = puestos;
+    const respuesta = await $.ajax({ type: "post", url: url_m_Kpis, data: { op: "getInitialData" }, dataType: "json" });
+    listaPuestos = respuesta.puestos;
     let options = '<option value="" disabled selected>-- Seleccione un puesto --</option>';
-    puestos.forEach(function (p) { options += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
+    respuesta.puestos.forEach(function (p) { options += `<option value="${p.IdPuesto}">${p.Puesto}</option>`; });
     $('#slctPuestos').html(options);
-    _renderTablaKpis(kpis);
+    _renderTablaKpis(respuesta.kpis);
   } catch (e) {
     console.error("Error al inicializar:", e);
   }
@@ -202,8 +199,8 @@ function _renderTablaKpis(respuesta) {
       {
         data: null,
         orderable: false,
-        className: 'reorder-handle text-center',
-        defaultContent: '<span class="material-symbols-outlined" style="cursor:grab;color:#bbb;font-size:22px;vertical-align:middle">drag_indicator</span>'
+        className: 'reorder-handle',
+        defaultContent: '<div style="text-align:left; margin-left:-18px;"><span class="material-symbols-outlined" style="cursor:grab;color:#bbb;font-size:22px;vertical-align:middle">drag_indicator</span></div>'
       }
     ]
   });
@@ -345,6 +342,7 @@ async function guardarKpi() {
   const ajaxR = await pAjaxAsync(url_m_Kpis, dataSend, 1);
   if (ajaxR && ajaxR.Resultado && ajaxR.Siguiente) {
     limpiarFormulario();
+    bootstrap.Modal.getInstance(document.getElementById('modalRegistrarKpi')).hide();
     getKpis();
   }
 }

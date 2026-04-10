@@ -2275,3 +2275,14 @@ body.dark-mode #modalDetalleVacante .select2-container--default .select2-results
   background-color: #ffc407 !important;
   color: #1a1a2e !important;
 }
+
+/* Sidebar - Control de texto en submenús largos para que se dividan limpiamente */
+.app-menu .sub-menu li a {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.3 !important;
+    padding-right: 15px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    display: block !important;
+}

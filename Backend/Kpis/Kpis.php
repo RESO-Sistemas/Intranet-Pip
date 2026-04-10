@@ -27,6 +27,15 @@ class Kpis extends Conexiones {
     return json_encode($this->Select($q));
   }
 
+  function getInitialData() {
+    $puestos = $this->Select("SELECT IdPuesto, Puesto FROM Puestos ORDER BY Puesto ASC");
+    $kpis = $this->Procedure("CALL spGetKpis()");
+    return json_encode([
+      "puestos" => $puestos,
+      "kpis" => $kpis
+    ]);
+  }
+
   function insertKpi($nombre, $valorAlta, $valorMedia, $valorBaja, $prioridad, $puestos) {
     try {
       $q = "CALL spInsertKpi(?, ?, ?, ?, ?, ?)";
