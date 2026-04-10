@@ -752,12 +752,15 @@ async function openEditModal(idEncoded) {
             $('#editBanderaCV').prop('checked', vacante.BanderaCV == 1);
             $('#editBanderaSE').prop('checked', vacante.BanderaSE == 1);
             
-            const editModalEl = document.getElementById('modalEditVacante');
-            const editModal = new bootstrap.Modal(editModalEl, {
-                backdrop: 'static',
-                keyboard: false
-            });
-            editModal.show();
+            let modalEl = document.getElementById('modalEditVacante');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+            modal.show();
         } else {
             const messageContent = `
                 <div class="alert-content">
@@ -1100,7 +1103,15 @@ async function openDetalleModal(idEncoded) {
                 loadInduccionesDetalle(idEncoded)
             ]);
             
-            $('#modalDetalleVacante').modal('show');
+            let modalEl = document.getElementById('modalDetalleVacante');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+            modal.show();
         } else {
             const messageContent = `
                 <div class="alert-content">

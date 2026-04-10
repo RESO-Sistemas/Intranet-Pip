@@ -53,22 +53,18 @@ $(document).ready(function () {
     });
   }
 });
-// let modalComments = new tingle.modal({
-//   footer: true,
-//   stickyFooter: false,
-//   closeMethods: ["button", "escape"],
-//   closeLabel: "Close",
-//   cssClass: ["custom-class-1", "custom-class-2"],
-//   onOpen: function () {
-//     console.log("modal open");
-//   },
-//   onClose: function () {
-//     console.log("modal closed");
-//   },
-//   beforeClose: function () {
-//     return true;
-//   },
-// });
+let modalComments = new tingle.modal({
+  footer: false,
+  stickyFooter: false,
+  closeMethods: ["overlay", "button", "escape"],
+  closeLabel: "Cerrar",
+  cssClass: ["custom-modal-comments"],
+  onOpen: function () {},
+  onClose: function () {},
+  beforeClose: function () {
+    return true;
+  },
+});
 // let modalNewFeed = new tingle.modal({
 //   footer: true,
 //   stickyFooter: true,
@@ -976,13 +972,9 @@ async function loadFeeds(page = 1) {
                               feed.idFeed
                             }"></div>
                             <div class="col-12 mt-2">
-                                <div class="input-group">
-                                    <textarea class="form-control" placeholder="Escribe tu comentario aquí..." id="f_newComentary${
-                                      feed.idFeed
-                                    }" rows="2"></textarea>
-                                    <button class="btn btn-primary" onclick="checkComment('${
-                                      feed.idFeed
-                                    }')">Comentar</button>
+                                <div class="d-flex align-items-start gap-2">
+                                    <textarea class="form-control flex-grow-1" placeholder="Escribe tu comentario aquí..." id="f_newComentary${feed.idFeed}" rows="1" style="min-height: 38px; resize: none;"></textarea>
+                                    <button class="btn btn-primary btn-sm px-3" style="margin-top: 2px;" onclick="checkComment('${feed.idFeed}')">Comentar</button>
                                 </div>
                             </div>
                         </div>
@@ -1563,7 +1555,10 @@ const showCommentsMain = (content) => {
   }
 };
 
-const getCommentsFeedSelected = async (content) => {
+let feedCommentsState = {};
+let feedCommentsData = {};
+
+const getCommentsFeedSelected = async (content, forceReload = false) => {
   let dataSend = {
     op: "getCommentsFeedSelected",
     iFeed: content,
@@ -1571,91 +1566,95 @@ const getCommentsFeedSelected = async (content) => {
   let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
   if (ajaxR !== undefined) {
     let cant = ajaxR.Data.length;
-    let colorReaction = "black";
-    if (ajaxR.Data[0].inReaction) {
-      colorReaction = "#ffc407";
+    feedCommentsData[content] = ajaxR.Data;
+    
+    if (!feedCommentsState[content] || !forceReload) {
+        if (!feedCommentsState[content]) feedCommentsState[content] = 5;
+    } else {
+        feedCommentsState[content] = cant; // Expande lo suficiente para revelar el nuevo comentario al final
     }
+    
     let btnComm = document.getElementById(`btnComment${content}`);
     if (btnComm) {
       btnComm.innerHTML = `<i class="far fa-comments"></i> ${cant} Comentarios`;
     }
-    let contentCom = "";
-    if (cant > 0) {
-      let employeesRLike = "";
-      let cantReactions = ajaxR.Data[0].reactionsC.length;
-      if (cantReactions > 0) {
-        for (var i = 0; i < cantReactions; i++) {
-          employeesRLike += `<li>
-						${ajaxR.Data[0].reactionsC[i]["Nombre"]}
-					</li>`;
-        }
-      } else {
-        employeesRLike = "<li>Sin registros...</li>";
-      }
-      contentCom = `
-<div class="mt-3 ms-3">
-  <h6 class="text-primary fw-semibold" style="cursor: pointer;" 
-      onclick="viewAllCommentsFeed('${dataSend.iFeed}')">
-    Ver todos los comentarios
-  </h6>
-</div>
-
-<div class="chat-box scrollable p-3">
-  <ul class="list-unstyled mb-0">
-    <li class="d-flex mb-4">
-      <!-- Avatar -->
-      <div class="me-3">
-        <img src="Archivos/ImgEmpleados/${ajaxR.Data[0].ImagenEmpleado}" 
-             alt="user" 
-             class="rounded-circle shadow-sm" 
-             width="48" height="48">
-      </div>
-
-      <!-- Contenido -->
-      <div class="flex-grow-1">
-        <div class="bg-light rounded-3 p-3 shadow-sm">
-          <h6 class="mb-1 fw-semibold">${ajaxR.Data[0].Nombre}</h6>
-          <p class="mb-2 text-secondary small">${ajaxR.Data[0].Comentario}</p>
-
-          <!-- Reacciones -->
-          <div class="d-inline-flex align-items-center px-2 py-1 rounded-pill bg-white border shadow-sm hover-actionCmm"
-               style="cursor: pointer;"
-               onclick="reactsToComment('1', '${ajaxR.Data[0].idComentariosFeed}')"
-               data-comment="${ajaxR.Data[0].idComentariosFeed}">
-            <i id="icon-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" 
-               class="fa fa-thumbs-up me-1" 
-               style="color: ${colorReaction}; font-size: 16px;"></i>
-            <span id="span-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" class="small">${cantReactions}</span>
-          </div>
-        </div>
-
-        <small class="text-muted d-block mt-1">${ajaxR.Data[0].Registro}</small>
-      </div>
-    </li>
-  </ul>
-</div>
-
-<!-- Ventana reacciones -->
-<div class="mt-3">
-  <div id="WindowReactionComm${ajaxR.Data[0].idComentariosFeed}" class="p-3 border rounded-3 bg-white shadow-sm">
-    <h6 class="fw-semibold mb-2">Personas que reaccionaron</h6>
-    <ul id="employeesReactionComm-1-${ajaxR.Data[0].idComentariosFeed}" 
-        class="list-unstyled small mb-0">
-      ${employeesRLike}
-    </ul>
-  </div>
-</div>
-
-			`;
-    }
-    let contentFinal = `
-      <div class="row">
-        ${contentCom}
-      </div>
-    `;
-    var dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
-    dvContent.innerHTML = contentFinal;
+    
+    renderCommentsFeedInline(content);
   }
+};
+
+const loadMoreCommentsFeed = (content) => {
+    feedCommentsState[content] += 5;
+    renderCommentsFeedInline(content);
+};
+
+const renderCommentsFeedInline = (content) => {
+    let comments = feedCommentsData[content] || [];
+    let limit = feedCommentsState[content] || 5;
+    let showing = comments.slice(0, limit);
+    let cant = comments.length;
+    
+    let contentHtml = "";
+    if (cant > 0) {
+        showing.forEach((c) => {
+          let colorReaction = c.inReaction ? "#ffc407" : "black";
+          let cantReactions = c.reactionsC ? c.reactionsC.length : 0;
+          let employeesRLike = "";
+          if (cantReactions > 0) {
+            c.reactionsC.forEach((r) => {
+                employeesRLike += `<li>${r.Nombre}</li>`;
+            });
+          } else {
+            employeesRLike = "<li>Sin registros...</li>";
+          }
+
+          contentHtml += `
+        <li class="d-flex mb-4">
+          <div class="me-3">
+            <img src="Archivos/ImgEmpleados/${c.ImagenEmpleado}" alt="user" class="rounded-circle shadow-sm" width="48" height="48">
+          </div>
+          <div class="flex-grow-1" style="position:relative;">
+            <div class="border rounded-3 p-3 shadow-sm" style="background-color: var(--bs-body-bg); color: var(--bs-body-color);">
+              <h6 class="mb-1 fw-semibold">${c.Nombre}</h6>
+              <p class="mb-2 small" style="color: inherit;">${c.Comentario}</p>
+              <div class="d-inline-flex align-items-center px-2 py-1 rounded-pill bg-white border shadow-sm hover-actionCmm" style="cursor: pointer;" onclick="reactsToComment('1', '${c.idComentariosFeed}')" data-comment="${c.idComentariosFeed}">
+                <i id="icon-1-CommentP-${c.idComentariosFeed}" class="fa fa-thumbs-up me-1" style="color: ${colorReaction}; font-size: 16px;"></i>
+                <span id="span-1-CommentP-${c.idComentariosFeed}" class="small">${cantReactions}</span>
+              </div>
+            </div>
+            <small class="text-muted d-block mt-1">${c.Registro}</small>
+            <!-- Ventana reacciones -->
+            <div class="mt-2 text-dark reactionComm" style="display:none; position:absolute; z-index:9999; bottom:100%; left:20px; min-width:200px;" id="WindowReactionComm${c.idComentariosFeed}">
+              <div class="p-3 border rounded-3 bg-white shadow-sm">
+                <h6 class="fw-semibold mb-2">Personas que reaccionaron</h6>
+                <ul id="employeesReactionComm-1-${c.idComentariosFeed}" class="list-unstyled small mb-0">${employeesRLike}</ul>
+              </div>
+            </div>
+          </div>
+        </li>`;
+        });
+    }
+
+    let verMasBtn = "";
+    if (cant > limit) {
+        verMasBtn = `
+        <div class="text-center mt-3 mb-2">
+            <h6 class="text-primary fw-semibold" style="cursor: pointer;" onclick="loadMoreCommentsFeed('${content}')">
+                Ver más comentarios <i class="fa-solid fa-chevron-down"></i>
+            </h6>
+        </div>`;
+    }
+
+    let resultHtml = `
+    <div class="chat-box p-3">
+      <ul class="list-unstyled mb-0">
+        ${contentHtml}
+      </ul>
+      ${verMasBtn}
+    </div>`;
+    
+    let dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
+    if (dvContent) dvContent.innerHTML = resultHtml;
 };
 
 const checkComment = (i_Feed) => {
@@ -1721,48 +1720,11 @@ const makeComment = async (content, i_Feed) => {
   };
   let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
   if (ajaxR !== undefined) {
-    console.log(ajaxR);
     let inpText = document.getElementById(`f_newComentary${i_Feed}`);
     $(inpText).val("");
-    let contentCom = "";
-    contentCom = `
-<div class="mt-3">
-  <!-- Botón ver todos los comentarios -->
-  <h6 class="text-primary fw-semibold" style="cursor: pointer;" onclick="viewAllCommentsFeed('${dataSend.i_Feed}')">
-    Ver todos los comentarios
-  </h6>
-</div>
-
-<!-- Caja de comentarios -->
-<div class="chat-box scrollable p-3 border rounded-3 bg-light shadow-sm" style="min-height:170px;">
-  <ul class="list-unstyled mb-0">
-    <li class="d-flex mb-3">
-      <!-- Avatar -->
-      <div class="me-3">
-        <img src="Archivos/ImgEmpleados/${ajaxR.Data.ImagenEmpleado}" 
-             alt="user" 
-             class="rounded-circle shadow-sm" 
-             width="48" height="48">
-      </div>
-
-      <!-- Contenido -->
-      <div class="flex-grow-1">
-        <h6 class="mb-1 fw-semibold">${ajaxR.Data.Nombre}</h6>
-        <div class="bg-white border rounded-3 p-2 shadow-sm">
-          <p class="mb-0 text-secondary small">${ajaxR.Data.Comentario}</p>
-        </div>
-        <small class="text-muted d-block mt-1">${ajaxR.Data.Registro}</small>
-      </div>
-    </li>
-  </ul>
-</div>
-`;
-    let contentFinal = `
-		<div class="row">
-			${contentCom}
-		</div>`;
-    var dvContent = document.getElementById(`dv_contentCommentsFeed${i_Feed}`);
-    dvContent.innerHTML = contentFinal;
+    
+    // Recargar la lista de comentarios para mostrar el nuevo comentario insertado
+    getCommentsFeedSelected(i_Feed, true);
   }
 };
 
@@ -1861,7 +1823,7 @@ const viewAllCommentsFeed = async (feed) => {
     <!-- Burbuja -->
     <div class="p-3 bg-light rounded-3 shadow-sm d-inline-block">
       <h6 class="fw-semibold mb-1">${dataFeed.commentsData[i].Nombre}</h6>
-      <p class="mb-2 small">${dataFeed.commentsData[i].Comentario}</p>
+      <p class="mb-2 small text-dark">${dataFeed.commentsData[i].Comentario}</p>
 
       <!-- Reacciones -->
       <div class="d-inline-flex align-items-center px-2 py-1 bg-white border rounded-pill shadow-sm hover-actionCmmM"

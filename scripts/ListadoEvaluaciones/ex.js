@@ -119,173 +119,44 @@ async function getListEvaluations() {
 }
 
 function printListEvaluations(data) {
-
-  if (table_Ev) {
-
-    table_Ev.destroy();
-
+  if ($.fn.DataTable.isDataTable('#table_Ev')) {
+    $('#table_Ev').DataTable().clear().destroy();
   }
 
-  table_Ev = new ej.grids.Grid({
-
-    dataSource: data,
-
-    allowFiltering: true,
-
-    filterSettings: { type: "Menu" },
-
-    allowTextWrap: true,
-
-    allowPaging: true,
-
-    pageSettings: { pageSize: 10 },
-
-    toolbar: ["Search"],
-
+  $('#table_Ev').DataTable({
+    data: data,
+    order: [], // Mantiene el orden original por defecto del backend (último creado primero)
     columns: [
-
-      {
-
-        field: "Titulo",
-
-        headerText: "Evaluación",
-
-        width: 100,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-      },
-
-      {
-
-        field: "TxTipoEvaluacion",
-
-        headerText: "Tipo",
-
-        width: 70,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "TxPeriodicidad",
-
-        headerText: "Periodicidad",
-
-        width: 60,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "FechaInicio",
-
-        headerText: "Fecha Inicio",
-
-        width: 60,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-      },
-
-      {
-
-        field: "FechaFin",
-
-        headerText: "Fecha Fin",
-
-        width: 60,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-      },
-
-      {
-
-        field: "StatusActivado",
-
-        headerText: "Status",
-
-        width: 80,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "idEvaluaciones",
-
-        headerText: "Acciones",
-
-        width: 50,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#verDetalleTemplate",
-
-      },
-
-    ],
-
-    dataBound: function () {
-
-      // Agregar botón de ayuda al header de "Status"
-
-      var headers = document.querySelectorAll("#table_Ev .e-headercelldiv");
-
-      headers.forEach(function (header) {
-
-        if (header.textContent.trim() === "Status" && !header.querySelector(".status-help-btn")) {
-
-          var helpBtn = document.createElement("span");
-
-          helpBtn.className = "material-symbols-outlined status-help-btn";
-
-          helpBtn.textContent = "help";
-
-          helpBtn.title = "¿Qué significa este status?";
-
-          helpBtn.style.cssText = "font-size:20px;cursor:pointer;vertical-align:middle;margin-left:6px;color:#ffc407;background:#FFF8E1;border-radius:50%;padding:2px;transition:all 0.2s;";
-
-          helpBtn.addEventListener("click", function (e) {
-
-            e.stopPropagation();
-
-            showStatusHelpModal();
-
-          });
-
-          header.appendChild(helpBtn);
-
+      { data: "Titulo" },
+      { data: "TxTipoEvaluacion" },
+      { data: "TxPeriodicidad" },
+      { data: "FechaInicio", width: "10%" },
+      { data: "FechaFin", width: "10%" },
+      { 
+        data: "StatusActivado",
+        render: function(data, type, row) {
+          return data;
         }
-
-      });
-
+      },
+      {
+        data: null,
+        orderable: false,
+        render: function(data, type, row) {
+          return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+            <button class="btn btn-primary btn-accion" title="Ver Detalle"
+              onclick="window.location.href='DetalleEvaluacion.php?EV=${encodeURIComponent(row.idEvaluaciones)}'">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>`;
+        }
+      }
+    ],
+    language: {
+      url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
     },
-
+    responsive: true,
+    pageLength: 10
   });
-
-  table_Ev.appendTo("#table_Ev");
-
 }
 
 

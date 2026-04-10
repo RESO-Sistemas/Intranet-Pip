@@ -22,11 +22,13 @@
             padding: 15px;
             margin-bottom: 15px;
         }
+
         .detail-section h6 {
             border-bottom: 2px solid #dee2e6;
             padding-bottom: 8px;
             margin-bottom: 15px;
         }
+
         .pv-section-toggle {
             display: flex;
             justify-content: space-between;
@@ -39,6 +41,7 @@
             background: #fff;
             box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03);
         }
+
         .pv-title-main {
             flex: 1;
             text-align: center;
@@ -47,6 +50,7 @@
             justify-content: center;
             gap: 8px;
         }
+
         .pv-section-tools {
             display: flex;
             justify-content: flex-end;
@@ -54,15 +58,18 @@
             gap: 8px;
             padding-top: 2px;
         }
+
         .pv-section-icon {
             font-size: 20px;
             color: #6c757d;
             line-height: 1;
             margin-left: 8px;
         }
+
         .detail-section.is-collapsed {
             margin-bottom: 10px;
         }
+
         .detail-section.is-collapsed h6 {
             margin-bottom: 0;
             border-bottom: none;
@@ -73,18 +80,22 @@
             font-size: 0.75rem;
             padding: 0.25em 0.6em;
         }
+
         .postulante-status.en-proceso {
             background-color: #17a2b8;
             color: white;
         }
+
         .postulante-status.aceptado {
             background-color: #28a745;
             color: white;
         }
+
         .postulante-status.rechazado {
             background-color: #dc3545;
             color: white;
         }
+
         .postulante-status.finalizado {
             background-color: #6c757d;
             color: white;
@@ -101,14 +112,17 @@
             padding-left: 22px;
             margin: 0;
         }
+
         .timeline-item {
             position: relative;
             padding: 12px 0 12px 18px;
             border-bottom: 1px solid #e9ecef;
         }
+
         .timeline-item:last-child {
             border-bottom: none;
         }
+
         .timeline-marker {
             position: absolute;
             left: 0;
@@ -119,6 +133,7 @@
             background: #6c757d;
             z-index: 2;
         }
+
         .timeline-item:before {
             content: '';
             position: absolute;
@@ -129,25 +144,31 @@
             background: #e9ecef;
             z-index: 1;
         }
+
         .timeline-item:first-child:before {
             top: 16px;
         }
+
         .timeline-item:last-child:before {
             bottom: calc(100% - 16px);
         }
+
         .timeline-title {
             font-weight: 600;
             margin: 0;
         }
+
         .timeline-sub {
             margin: 2px 0 0 0;
             font-size: 0.85rem;
         }
+
         .timeline-time {
             font-size: 0.8rem;
             color: #6c757d;
             white-space: nowrap;
         }
+
         .timeline-icon {
             font-size: 18px;
             vertical-align: middle;
@@ -157,9 +178,11 @@
         [data-theme="dark"] .timeline-item {
             border-bottom-color: #404040;
         }
+
         [data-theme="dark"] .timeline-item:before {
             background: #404040;
         }
+
         [data-theme="dark"] .timeline-time {
             color: #b0b0b0;
         }
@@ -169,20 +192,25 @@
             background-color: #2d2d2d;
             border: 1px solid #404040;
         }
+
         [data-theme="dark"] .detail-section h6 {
             border-bottom-color: #404040;
             color: #e0e0e0;
         }
+
         [data-theme="dark"] .pv-section-toggle {
             background: #2d2d2d;
             border-color: #5a6675;
         }
+
         [data-theme="dark"] .stat-item {
             background: #1e1e1e;
         }
+
         [data-theme="dark"] .stat-item .stat-label {
             color: #b0b0b0;
         }
+
         [data-theme="dark"] #modalAddPostulante .modal-content,
         [data-theme="dark"] #modalDetallePostulante .modal-content {
             background-color: #1e1e1e;
@@ -277,19 +305,24 @@
                                                 Postulantes
                                             </h5>
                                             <div>
-                                                <button type="button" class="btn btn-info btn-sm me-2" onclick="showComparativoResultadosModal()">
-                                                    <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                                                <button type="button" class="btn btn-info btn-sm me-2"
+                                                    onclick="showComparativoResultadosModal()">
+                                                    <span
+                                                        class="material-symbols-outlined align-middle me-1">bar_chart</span>
                                                     Resultados Comparativos
                                                 </button>
-                                                <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
-                                                    <span class="material-symbols-outlined align-middle me-1">person_add</span>
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    onclick="showAddPostulanteModal()">
+                                                    <span
+                                                        class="material-symbols-outlined align-middle me-1">person_add</span>
                                                     Agregar Postulante
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table id="tablePostulantes" class="table table-hover display text-center" style="width:100%">
+                                                <table id="tablePostulantes"
+                                                    class="table table-hover display text-center" style="width:100%">
                                                     <thead>
                                                         <tr>
                                                             <th>Postulante</th>
@@ -317,7 +350,8 @@
     </div>
 
     <!-- ====== MODAL AGREGAR POSTULANTE ====== -->
-    <div class="modal fade" id="modalAddPostulante" tabindex="-1" aria-labelledby="modalAddPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalAddPostulante" tabindex="-1" aria-labelledby="modalAddPostulanteLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -334,8 +368,10 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">¿Ya existe el postulante?</label>
                             <div class="input-group">
-                                <input type="text" id="txtBuscarPostulante" class="form-control" placeholder="Buscar por correo, CURP o nombre...">
-                                <button class="btn btn-outline-primary" type="button" onclick="buscarPostulanteExistente()">
+                                <input type="text" id="txtBuscarPostulante" class="form-control"
+                                    placeholder="Buscar por correo, CURP o nombre...">
+                                <button class="btn btn-outline-primary" type="button"
+                                    onclick="buscarPostulanteExistente()">
                                     <span class="material-symbols-outlined">search</span>
                                 </button>
                             </div>
@@ -344,7 +380,8 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">¿Es empleado interno?</label>
                             <div class="input-group">
-                                <input type="text" id="txtBuscarEmpleado" class="form-control" placeholder="Buscar por num. o nombre...">
+                                <input type="text" id="txtBuscarEmpleado" class="form-control"
+                                    placeholder="Buscar por num. o nombre...">
                                 <button class="btn btn-outline-success" type="button" onclick="buscarEmpleadoInterno()">
                                     <span class="material-symbols-outlined">search</span>
                                 </button>
@@ -363,18 +400,23 @@
                             <input id="txtPostulanteNombre" type="text" class="form-control" placeholder="Nombre(s)">
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Apellido Paterno: <span class="text-danger">*</span></label>
-                            <input id="txtPostulanteApPaterno" type="text" class="form-control" placeholder="Apellido Paterno">
+                            <label class="form-label fw-bold">Apellido Paterno: <span
+                                    class="text-danger">*</span></label>
+                            <input id="txtPostulanteApPaterno" type="text" class="form-control"
+                                placeholder="Apellido Paterno">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Apellido Materno:</label>
-                            <input id="txtPostulanteApMaterno" type="text" class="form-control" placeholder="Apellido Materno">
+                            <input id="txtPostulanteApMaterno" type="text" class="form-control"
+                                placeholder="Apellido Materno">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Correo Electrónico: <span class="text-danger">*</span></label>
-                            <input id="txtPostulanteCorreo" type="email" class="form-control" placeholder="correo@ejemplo.com">
+                            <label class="form-label fw-bold">Correo Electrónico: <span
+                                    class="text-danger">*</span></label>
+                            <input id="txtPostulanteCorreo" type="email" class="form-control"
+                                placeholder="correo@ejemplo.com">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Teléfono:</label>
@@ -384,11 +426,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">CURP:</label>
-                            <input id="txtPostulanteCURP" type="text" class="form-control" placeholder="18 caracteres" maxlength="18" style="text-transform:uppercase;">
+                            <input id="txtPostulanteCURP" type="text" class="form-control" placeholder="18 caracteres"
+                                maxlength="18" style="text-transform:uppercase;">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Dirección:</label>
-                            <input id="txtPostulanteDireccion" type="text" class="form-control" placeholder="Calle, número, colonia...">
+                            <input id="txtPostulanteDireccion" type="text" class="form-control"
+                                placeholder="Calle, número, colonia...">
                         </div>
                     </div>
                     <div class="row">
@@ -403,7 +447,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Observaciones:</label>
-                        <textarea id="txtPostulanteObservaciones" class="form-control" rows="2" placeholder="Observaciones iniciales..."></textarea>
+                        <textarea id="txtPostulanteObservaciones" class="form-control" rows="2"
+                            placeholder="Observaciones iniciales..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -411,7 +456,8 @@
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-success" id="btnAddPostulante" onclick="addPostulanteVacante()">
+                    <button type="button" class="btn btn-success" id="btnAddPostulante"
+                        onclick="addPostulanteVacante()">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Registrar Postulante
                     </button>
@@ -421,7 +467,8 @@
     </div>
 
     <!-- ====== MODAL DETALLE POSTULANTE ====== -->
-    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -437,7 +484,8 @@
 
                     <!-- Botón de Modo Edición -->
                     <div class="d-flex justify-content-end mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnToggleEditMode" onclick="toggleEditMode()">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnToggleEditMode"
+                            onclick="toggleEditMode()">
                             <span class="material-symbols-outlined align-middle me-1">edit</span>
                             Editar Información
                         </button>
@@ -456,24 +504,28 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-bold">Apellido Paterno:</label>
-                                <input type="text" id="edit_ApellidoPaterno" class="form-control form-control-sm" disabled>
+                                <input type="text" id="edit_ApellidoPaterno" class="form-control form-control-sm"
+                                    disabled>
                                 <span id="view_ApellidoPaterno" class="d-none"></span>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label fw-bold">Apellido Materno:</label>
-                                <input type="text" id="edit_ApellidoMaterno" class="form-control form-control-sm" disabled>
+                                <input type="text" id="edit_ApellidoMaterno" class="form-control form-control-sm"
+                                    disabled>
                                 <span id="view_ApellidoMaterno" class="d-none"></span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">CURP:</label>
-                                <input type="text" id="edit_CURP" class="form-control form-control-sm text-uppercase" maxlength="18" disabled>
+                                <input type="text" id="edit_CURP" class="form-control form-control-sm text-uppercase"
+                                    maxlength="18" disabled>
                                 <span id="view_CURP" class="d-none"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Correo Electrónico:</label>
-                                <input type="email" id="edit_CorreoElectronico" class="form-control form-control-sm" disabled>
+                                <input type="email" id="edit_CorreoElectronico" class="form-control form-control-sm"
+                                    disabled>
                                 <span id="view_CorreoElectronico" class="d-none"></span>
                             </div>
                         </div>
@@ -497,8 +549,10 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Código Postal:</label>
                                 <div class="input-group input-group-sm">
-                                    <input type="text" id="edit_CodigoPostal" class="form-control" placeholder="5 dígitos" maxlength="5" disabled>
-                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscarCP" onclick="buscarCodigoPostal()" disabled>
+                                    <input type="text" id="edit_CodigoPostal" class="form-control"
+                                        placeholder="5 dígitos" maxlength="5" disabled>
+                                    <button class="btn btn-outline-secondary" type="button" id="btnBuscarCP"
+                                        onclick="buscarCodigoPostal()" disabled>
                                         <span class="material-symbols-outlined">search</span>
                                     </button>
                                 </div>
@@ -515,22 +569,26 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Calle:</label>
-                                <input type="text" id="edit_Calle" class="form-control form-control-sm" placeholder="Ej. Av. Juarez" disabled>
+                                <input type="text" id="edit_Calle" class="form-control form-control-sm"
+                                    placeholder="Ej. Av. Juarez" disabled>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Num. Exterior:</label>
-                                <input type="text" id="edit_NumeroExterior" class="form-control form-control-sm" placeholder="Ej. 123" disabled>
+                                <input type="text" id="edit_NumeroExterior" class="form-control form-control-sm"
+                                    placeholder="Ej. 123" disabled>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Num. Interior:</label>
-                                <input type="text" id="edit_NumeroInterior" class="form-control form-control-sm" placeholder="Ej. 2B" disabled>
+                                <input type="text" id="edit_NumeroInterior" class="form-control form-control-sm"
+                                    placeholder="Ej. 2B" disabled>
                             </div>
                         </div>
                         <input type="hidden" id="edit_Direccion">
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold">Preview direccion final:</label>
-                                <div id="direccionPreview" class="form-control form-control-sm bg-light" style="min-height: 38px;">-</div>
+                                <div id="direccionPreview" class="form-control form-control-sm bg-light"
+                                    style="min-height: 38px;">-</div>
                             </div>
                         </div>
                         <div class="row">
@@ -547,7 +605,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <p class="mb-0"><strong>Fecha Postulación:</strong> <span id="detallePostulanteFecha">-</span></p>
+                                <p class="mb-0"><strong>Fecha Postulación:</strong> <span
+                                        id="detallePostulanteFecha">-</span></p>
                             </div>
                         </div>
                     </div>
@@ -576,15 +635,17 @@
                                 Agregar Teléfono
                             </button>
                         </h6>
-                        
+
                         <!-- Formulario para agregar teléfono -->
                         <div id="formAgregarTelefono" class="d-none mb-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <input type="text" id="nuevoTelefono" class="form-control form-control-sm" placeholder="10 dígitos" maxlength="10">
+                                    <input type="text" id="nuevoTelefono" class="form-control form-control-sm"
+                                        placeholder="10 dígitos" maxlength="10">
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" id="observacionesTelefono" class="form-control form-control-sm" placeholder="Observaciones (opcional)">
+                                    <input type="text" id="observacionesTelefono" class="form-control form-control-sm"
+                                        placeholder="Observaciones (opcional)">
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-success btn-sm me-1" onclick="agregarTelefonoNuevo()">
@@ -620,7 +681,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Observaciones:</label>
-                                <input type="text" id="txtObservacionesEstatus" class="form-control" placeholder="Motivo del cambio...">
+                                <input type="text" id="txtObservacionesEstatus" class="form-control"
+                                    placeholder="Motivo del cambio...">
                             </div>
                             <div class="col-md-2 d-grid">
                                 <label class="form-label">&nbsp;</label>
@@ -656,7 +718,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="text" id="txtObservacionesProceso" class="form-control" placeholder="Observaciones...">
+                                    <input type="text" id="txtObservacionesProceso" class="form-control"
+                                        placeholder="Observaciones...">
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-success me-1" onclick="addHistorialProceso()">
@@ -698,7 +761,9 @@
     </div>
 
     <!-- ====== MODAL RESULTADOS POSTULANTE ====== -->
-    <div class="modal fade" id="modalResultadosPostulante" tabindex="-1" aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalResultadosPostulante" tabindex="-1"
+        aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -707,20 +772,25 @@
                         Resultados de Evaluación
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirEvaluacionRespuestas()">
-                            <span class="material-symbols-outlined align-middle" style="font-size: 18px;">visibility</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                            onclick="abrirEvaluacionRespuestas()">
+                            <span class="material-symbols-outlined align-middle"
+                                style="font-size: 18px;">visibility</span>
                             Ver Evaluación
                         </button>
-                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Evaluación:</label>
-                            <select id="selResultadosPostulante" class="form-select" onchange="drawResultadosPostulante()"></select>
+                            <select id="selResultadosPostulante" class="form-select"
+                                onchange="drawResultadosPostulante()"></select>
                         </div>
-                        <div class="col-md-8 text-center" style="display:flex; justify-content:center; flex-direction:column; align-items:center;">
+                        <div class="col-md-8 text-center"
+                            style="display:flex; justify-content:center; flex-direction:column; align-items:center;">
                             <h4 id="lblScoreGeneralPostulante"></h4>
                         </div>
                     </div>
@@ -739,7 +809,9 @@
     </div>
 
     <!-- ====== MODAL COMPARATIVO RESULTADOS ====== -->
-    <div class="modal fade" id="modalComparativoResultados" tabindex="-1" aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalComparativoResultados" tabindex="-1"
+        aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -753,24 +825,60 @@
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Seleccione Evaluación:</label>
-                            <select id="selComparativoEvaluaciones" class="form-select" onchange="loadComparativoCandidatos()"></select>
+                            <select id="selComparativoEvaluaciones" class="form-select"
+                                onchange="loadComparativoCandidatos()"></select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Seleccione Candidatos a comparar:</label>
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary w-100 text-start dropdown-toggle bg-white text-dark" type="button" id="dropdownCandidatosComparar" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <button
+                                    class="btn btn-outline-secondary w-100 text-start dropdown-toggle bg-white text-dark"
+                                    type="button" id="dropdownCandidatosComparar" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside" aria-expanded="false">
                                     Seleccionar candidatos...
                                 </button>
-                                <ul class="dropdown-menu w-100 p-3 shadow" aria-labelledby="dropdownCandidatosComparar" id="listCheckCandidatosComparar" style="max-height: 250px; overflow-y: auto;">
+                                <ul class="dropdown-menu w-100 p-3 shadow" aria-labelledby="dropdownCandidatosComparar"
+                                    id="listCheckCandidatosComparar" style="max-height: 250px; overflow-y: auto;">
                                     <!-- Injected by JS -->
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <hr>
-                    <div class="row">
+                    <!-- Selector de Gráficas (Cards) -->
+                    <div class="row text-center mb-4">
+                        <div class="col-md-6 mb-2">
+                            <div class="card border-primary shadow-sm h-100 mb-0 bg-white" id="cardChartColumn"
+                                onclick="switchComparativoChart('column')"
+                                style="cursor: pointer; transition: all 0.2s;">
+                                <div class="card-body py-3">
+                                    <h6 class="mb-0 fw-bold text-primary" id="textChartColumn"><span
+                                            class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                                        Postulantes mejor puntuados</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="card border-0 shadow-none h-100 mb-0 bg-light" id="cardChartRadar"
+                                onclick="switchComparativoChart('radar')"
+                                style="cursor: pointer; transition: all 0.2s;">
+                                <div class="card-body py-3">
+                                    <h6 class="mb-0 fw-bold text-muted" id="textChartRadar"><span
+                                            class="material-symbols-outlined align-middle me-1">radar</span> Postulantes
+                                        por competencias</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="containerChartColumn">
                         <div class="col-md-12">
-                            <div id="chartComparativoVacante" style="width:100%; height:500px"></div>
+                            <div id="chartComparativoVacanteColumn" style="width:100%; height:450px"></div>
+                        </div>
+                    </div>
+                    <div class="row d-none" id="containerChartRadar">
+                        <div class="col-md-12">
+                            <div id="chartComparativoVacanteRadar" style="width:100%; height:450px"></div>
                         </div>
                     </div>
                     <!-- Contenedores para las tabilitas por cada candidato comparado -->
@@ -785,7 +893,9 @@
     </div>
 
     <!-- ====== MODAL VIEW DOCUMENTOS ====== -->
-    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1" aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1"
+        aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
@@ -806,7 +916,9 @@
     </div>
 
     <!-- ====== MODAL EVALUACION RESPUESTAS ====== -->
-    <div class="modal fade" id="modalEvaluacionRespuestas" tabindex="-1" aria-labelledby="modalEvaluacionRespuestasLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalEvaluacionRespuestas" tabindex="-1"
+        aria-labelledby="modalEvaluacionRespuestasLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">

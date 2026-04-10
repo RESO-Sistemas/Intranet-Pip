@@ -683,12 +683,12 @@
     <div class="modal fade" id="modalDetalleVacante" tabindex="-1" aria-labelledby="modalDetalleVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <div class="modal-header bg-info">
+                <div class="modal-header">
                     <h5 class="modal-title" id="modalDetalleVacanteLabel">
                         <span class="material-symbols-outlined align-middle me-2">info</span>
                         Detalle de Vacante
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="detalleIdVacante">

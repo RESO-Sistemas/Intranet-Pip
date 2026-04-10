@@ -55,9 +55,11 @@ function initPostulantesGeneralTable() {
                 render: function (data, type, row) {
                     const idPostulante = row.IdPostulante;
                     return `
-                        <a href="PostulanteDetalle.php?id=${idPostulante}" class="btn btn-primary btn-sm">
-                            <i class="material-icons-outlined">visibility</i> Ver
-                        </a>
+                        <div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+                            <a href="PostulanteDetalle.php?id=${idPostulante}" class="btn btn-primary btn-accion" title="Ver">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </a>
+                        </div>
                     `;
                 },
                 orderable: false,

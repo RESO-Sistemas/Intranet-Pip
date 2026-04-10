@@ -4,6 +4,9 @@ let tablePostulantes;
 let postulantesData = [];
 let postulantesProcesosList = [];
 
+// Paleta personalizada (Tints of #ffc407)
+const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+
 function showListLoading(message = 'Cargando postulantes...') {
     const $target = $('#postulantesDataArea');
     if ($target.length && typeof $target.block === 'function') {
@@ -183,14 +186,14 @@ function initPostulantesTable() {
                     const idNumerico = row.IdPostulanteVacante;
                     const nombrePostulante = row.NombreCompleto || 'Postulante';
                     return `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-warning btn-sm" onclick='openDocumentosPostulante(${idNumerico}, ${JSON.stringify(nombrePostulante)})' title="Ver Documentos">
+                        <div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+                            <button class="btn btn-warning btn-accion" onclick='openDocumentosPostulante(${idNumerico}, ${JSON.stringify(nombrePostulante)})' title="Ver Documentos">
                                 <span class="material-symbols-outlined">folder_shared</span>
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="verResultadosPostulante('${idEncoded}', '${nombrePostulante}')" title="Ver Resultados">
+                            <button class="btn btn-primary btn-accion" onclick="verResultadosPostulante('${idEncoded}', '${nombrePostulante}')" title="Ver Resultados">
                                 <span class="material-symbols-outlined">analytics</span>
                             </button>
-                            <button class="btn btn-info btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
+                            <button class="btn btn-info btn-accion" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
                                 <span class="material-symbols-outlined">visibility</span>
                             </button>
                         </div>
@@ -286,7 +289,14 @@ function showAddPostulanteModal() {
     $('#addPostulanteIdVacante').val(idVacante);
     clearPostulanteForm();
 
-    const modal = new bootstrap.Modal(document.getElementById('modalAddPostulante'));
+    let modalEl = document.getElementById('modalAddPostulante');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
     modal.show();
 }
 
@@ -376,8 +386,8 @@ async function buscarEmpleadoInterno() {
 
         // Backend/Empleados/App.php => getPersonal returns raw JSON array
         let empleados = [];
-        try { 
-            empleados = JSON.parse(response); 
+        try {
+            empleados = JSON.parse(response);
         } catch (e) {
             console.error("Error parseando respuesta de getPersonal", e);
         }
@@ -422,7 +432,7 @@ async function buscarEmpleadoInterno() {
 function seleccionarEmpleadoInterno(encodedEmpl) {
     try {
         const e = JSON.parse(decodeURIComponent(atob(encodedEmpl)));
-        
+
         let nombreCompleto = e.Nombre || '';
         let nombre = '';
         let apPaterno = '';
@@ -432,7 +442,7 @@ function seleccionarEmpleadoInterno(encodedEmpl) {
             // Formato normal de PIP: "APELLIDO1 APELLIDO2, NOMBRES"
             const partes = nombreCompleto.split(',');
             nombre = partes[1].trim();
-            
+
             const apellidos = partes[0].trim().split(' ');
             apPaterno = apellidos[0] || '';
             apMaterno = apellidos.slice(1).join(' ') || '';
@@ -450,27 +460,27 @@ function seleccionarEmpleadoInterno(encodedEmpl) {
                 nombre = nombreCompleto;
             }
         }
-        
+
         $('#txtPostulanteNombre').val(nombre);
         $('#txtPostulanteApPaterno').val(apPaterno || e.ApellidoPaterno || '');
         $('#txtPostulanteApMaterno').val(apMaterno || e.ApellidoMaterno || '');
         $('#txtPostulanteCURP').val(e.CURP || e.Curp || '');
-        
+
         const tel = e.TelefonoCelular || e.Telefono || e.Telefono_Celular || e.Movil || '';
         $('#txtPostulanteTelefono').val(tel);
-        
+
         const email = e.CorreoElectronico || e.Correo_Electronico || e.Email || '';
         $('#txtPostulanteCorreo').val(email);
-        
+
         $('#txtPostulanteDireccion').val(e.Calle || e.Direccion || '');
         $('#txtPostulanteEstado').val(e.Estado || e.EntidadFederativa || '');
         $('#txtPostulanteCiudad').val(e.Ciudad || e.Municipio || '');
-        
+
         $('#txtPostulanteIdEmpleado').val(e.NoEmpleado || e.IdEmpleado || '');
 
         $('#resultadosBusquedaEmpleado').hide();
         $('#txtBuscarEmpleado').val('');
-        
+
         if (typeof showBootstrapAlertSuc === 'function') {
             const messageContent = `
                 <div class="alert-content">
@@ -479,7 +489,7 @@ function seleccionarEmpleadoInterno(encodedEmpl) {
                 </div>`;
             showBootstrapAlertSuc(messageContent, 'top-right', 4000);
         }
-    } catch(err) {
+    } catch (err) {
         console.error("Error al decodificar datos del empleado", err);
     }
 }
@@ -664,7 +674,7 @@ async function showDetallePostulante(idEncoded) {
 
         if (result.Siguiente && result.Data) {
             const p = result.Data;
-            
+
             // Guardar IdPostulante para funciones de edición
             $('#detalleIdPostulante').val(p.IdPostulante);
 
@@ -683,15 +693,15 @@ async function showDetallePostulante(idEncoded) {
                     window.PostulanteEditor.updateDireccionPreview();
                 }
             }
-            
+
             // Deshabilitar campos (modo visualización por defecto)
             $('#edit_Nombre, #edit_ApellidoPaterno, #edit_ApellidoMaterno, #edit_CURP, #edit_CorreoElectronico, #edit_CodigoPostal, #edit_Direccion, #edit_Colonia').prop('disabled', true);
             $('#edit_Calle, #edit_NumeroExterior, #edit_NumeroInterior').prop('disabled', true);
             $('#btnBuscarCP').prop('disabled', true);
-            
+
             // Ocultar botones de edición
             $('#editModeButtons').addClass('d-none');
-            
+
             // Asegurar que el botón de edición esté en modo correcto
             $('#btnToggleEditMode').html('<span class="material-symbols-outlined align-middle me-1">edit</span>Editar Información');
             $('#btnToggleEditMode').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
@@ -700,7 +710,7 @@ async function showDetallePostulante(idEncoded) {
             if ($('#cpStatus').length) {
                 $('#cpStatus').text('');
             }
-            
+
             // Mostrar fecha
             $('#detallePostulanteFecha').text(p.FechaPostulacion || 'N/A');
 
@@ -715,7 +725,14 @@ async function showDetallePostulante(idEncoded) {
             await loadHistorialPostulante(idEncoded);
             await loadRequisitosPostulante(idEncoded);
 
-            const modal = new bootstrap.Modal(document.getElementById('modalDetallePostulante'));
+            let modalEl = document.getElementById('modalDetallePostulante');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
             modal.show();
         } else {
             if (typeof showBootstrapAlertWar === 'function') {
@@ -1097,7 +1114,14 @@ function openDocumentosPostulante(idNumerico, nombrePostulante) {
     const html = renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante);
     $('#contenedorBotonesDocumentos').html(html);
 
-    const modal = new bootstrap.Modal(document.getElementById('modalDocumentosPostulante'));
+    let modalEl = document.getElementById('modalDocumentosPostulante');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
     modal.show();
 }
 
@@ -1119,12 +1143,12 @@ async function verResultadosPostulante(idEncoded, nombre) {
             op: 'getPostulanteResultadosEvaluaciones',
             IdPostulanteVacante: idEncoded
         });
-        
+
         const result = JSON.parse(response);
 
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             rawResultadosPostulante = result.Data;
-            
+
             // Agrupar por evaluaciones (únicas)
             let evaluaciones = [...new Set(rawResultadosPostulante.map(item => item.NombreEvaluacion))];
             let options = '';
@@ -1133,8 +1157,15 @@ async function verResultadosPostulante(idEncoded, nombre) {
             });
             $('#selResultadosPostulante').html(options);
             $('#modalResultadosPostulanteLabel').html(`<span class="material-symbols-outlined align-middle me-2">analytics</span> Resultados - ${nombre}`);
-            
-            const modal = new bootstrap.Modal(document.getElementById('modalResultadosPostulante'));
+
+            let modalEl = document.getElementById('modalResultadosPostulante');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
             modal.show();
 
             // Esperar a que el modal esté visible para renderizar el chart correctamente
@@ -1154,7 +1185,7 @@ async function verResultadosPostulante(idEncoded, nombre) {
                 showBootstrapAlertWar(messageContent, 'top-right', 4000);
             }
         }
-    } catch(err) {
+    } catch (err) {
         console.error('Error obteniendo gráficas de evaluación', err);
     } finally {
         hidePageLoading();
@@ -1167,9 +1198,9 @@ function drawResultadosPostulante() {
 
     let calificacionGeneral = 0;
     const datosFiltrados = rawResultadosPostulante.filter(i => i.NombreEvaluacion === seleccion);
-    
+
     // Obtenemos su calificacion general
-    if(datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) {
+    if (datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) {
         calificacionGeneral = datosFiltrados[0].Calificacion;
     }
 
@@ -1182,12 +1213,13 @@ function drawResultadosPostulante() {
         };
     });
 
-    if(chartPostulanteGeneral) {
+    if (chartPostulanteGeneral) {
         chartPostulanteGeneral.destroy();
     }
 
     chartPostulanteGeneral = new ej.charts.Chart({
         isResponsive: true,
+        palettes: yellowPalette,
         primaryXAxis: {
             valueType: 'Category',
             labelIntersectAction: 'MultipleRows'
@@ -1196,8 +1228,8 @@ function drawResultadosPostulante() {
             minimum: 0, maximum: 100, interval: 20,
             labelFormat: '{value}'
         },
-        series:[{
-            dataSource: chartData, width:2,
+        series: [{
+            dataSource: chartData, width: 2,
             xName: 'competencia', yName: 'score',
             name: 'Resultados (Competencias)',
             type: 'Polar',
@@ -1219,35 +1251,42 @@ let chartComparativoVacante = null;
 
 async function showComparativoResultadosModal() {
     const idVacante = $('#postulantesIdVacante').val();
-    if(!idVacante) return;
-    
+    if (!idVacante) return;
+
     showPageLoading('Cargando comparativos...');
     try {
         const response = await $.post('Backend/Postulantes/App.php', {
             op: 'getComparativoResultadosVacante',
             IdVacante: idVacante
         });
-        
+
         const result = JSON.parse(response);
 
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             rawComparativoVacante = result.Data;
-            
+
             let evaluaciones = [...new Set(rawComparativoVacante.map(item => item.NombreEvaluacion))];
             let options = '';
             evaluaciones.forEach(ev => {
                 options += `<option value="${ev}">${ev}</option>`;
             });
             $('#selComparativoEvaluaciones').html(options);
-            
-            const modal = new bootstrap.Modal(document.getElementById('modalComparativoResultados'));
+
+            let modalEl = document.getElementById('modalComparativoResultados');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
             modal.show();
 
             $('#modalComparativoResultados').on('shown.bs.modal', function () {
                 loadComparativoCandidatos();
                 $(this).off('shown.bs.modal');
             });
-            
+
         } else {
             if (typeof showBootstrapAlertWar === 'function') {
                 const messageContent = `
@@ -1258,7 +1297,7 @@ async function showComparativoResultadosModal() {
                 showBootstrapAlertWar(messageContent, 'top-right', 4000);
             }
         }
-    } catch(err) {
+    } catch (err) {
         console.error('Error en gráficas comparativas', err);
     } finally {
         hidePageLoading();
@@ -1270,29 +1309,43 @@ function loadComparativoCandidatos() {
     if (!seleccion) return;
 
     const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion);
-    
-    // Extraer candidatos unicos para esa evaluación
-    let candidatosUnicos = [...new Set(datosFiltrados.map(item => item.NombreCandidato))];
-    
+
+    // Agrupar y obtener la calificación global por candidato
+    let candidatosUnicosInfo = [];
+    datosFiltrados.forEach(i => {
+        if (!candidatosUnicosInfo.find(c => c.Nombre === i.NombreCandidato)) {
+            candidatosUnicosInfo.push({
+                Nombre: i.NombreCandidato,
+                Calificacion: parseFloat(i.Calificacion || 0)
+            });
+        }
+    });
+
+    // Ordenar de mayor a menor calificación (Top Candidates)
+    candidatosUnicosInfo.sort((a, b) => b.Calificacion - a.Calificacion);
+
     let htmlChecks = '';
-    candidatosUnicos.forEach((candidato, index) => {
-        // Seleccionar los primeros 4 por defecto para no saturar la grafica
-        const isChecked = index < 4 ? 'checked' : '';
+    candidatosUnicosInfo.forEach((candidatoObj, index) => {
+        // Seleccionar los mejores 5 por defecto
+        const isChecked = index < 5 ? 'checked' : '';
         htmlChecks += `
             <li>
-                <div class="form-check">
-                    <input class="form-check-input chk-candidato-comparar" type="checkbox" value="${candidato}" id="chkComp_${index}" ${isChecked} onchange="drawComparativoResultados()">
-                    <label class="form-check-label" for="chkComp_${index}">
-                        ${candidato}
+                <div class="form-check" style="white-space: nowrap;">
+                    <input class="form-check-input chk-candidato-comparar" type="checkbox" value="${candidatoObj.Nombre}" id="chkComp_${index}" ${isChecked} onchange="drawComparativoResultados()">
+                    <label class="form-check-label" style="display:inline-block;" for="chkComp_${index}">
+                        ${candidatoObj.Nombre}
                     </label>
                 </div>
             </li>
         `;
     });
-    
+
     $('#listCheckCandidatosComparar').html(htmlChecks);
     drawComparativoResultados();
 }
+
+let chartComparativoVacanteColumn = null;
+let chartComparativoVacanteRadar = null;
 
 function drawComparativoResultados() {
     const seleccion = $('#selComparativoEvaluaciones').val();
@@ -1300,50 +1353,103 @@ function drawComparativoResultados() {
 
     // Obtener candidatos seleccionados
     const candidatosSeleccionados = [];
-    $('.chk-candidato-comparar:checked').each(function() {
+    $('.chk-candidato-comparar:checked').each(function () {
         candidatosSeleccionados.push($(this).val());
     });
 
     const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion && candidatosSeleccionados.includes(i.NombreCandidato));
-    
-    // Preparar series para la grafica polar
-    let seriesData = [];
+
+    // ==========================================
+    // 1. GRÁFICA DE BARRAS (POR COMPETENCIAS)
+    // ==========================================
+    let seriesDataColumn = [];
     candidatosSeleccionados.forEach(candidato => {
         let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
-        
+
+        let serie = {
+            dataSource: datosCandidato.map(d => { return { competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) } }),
+            xName: 'competencia',
+            yName: 'score',
+            name: candidato,
+            type: 'Column',
+            columnSpacing: 0.1,
+            cornerRadius: { topLeft: 4, topRight: 4 },
+            marker: {
+                dataLabel: {
+                    visible: true,
+                    position: 'Top',
+                    font: { fontWeight: '600' }
+                }
+            }
+        };
+        seriesDataColumn.push(serie);
+    });
+
+    if (chartComparativoVacanteColumn) chartComparativoVacanteColumn.destroy();
+
+    chartComparativoVacanteColumn = new ej.charts.Chart({
+        isResponsive: true,
+        palettes: yellowPalette,
+        primaryXAxis: {
+            valueType: 'Category',
+            labelIntersectAction: 'MultipleRows',
+            majorGridLines: { width: 0 }
+        },
+        primaryYAxis: {
+            minimum: 0, maximum: 100, interval: 20,
+            labelFormat: '{value}',
+            majorTickLines: { width: 0 },
+            lineStyle: { width: 0 }
+        },
+        series: seriesDataColumn,
+        title: `Comparativo de Competencias (Barras) - ${seleccion}`,
+        tooltip: { enable: true },
+        legendSettings: { visible: true, position: 'Bottom' }
+    });
+    chartComparativoVacanteColumn.appendTo('#chartComparativoVacanteColumn');
+
+
+    // ==========================================
+    // 2. GRÁFICA ARAÑA (RADAR AREA POR COMPETENCIA)
+    // ==========================================
+    let seriesDataRadar = [];
+    candidatosSeleccionados.forEach(candidato => {
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+
         let serie = {
             dataSource: datosCandidato.map(d => { return { competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) } }),
             xName: 'competencia',
             yName: 'score',
             name: candidato,
             type: 'Polar',
-            drawType: 'Line',
-            marker: { visible: true, width: 7, height: 7 },
-            width: 2
+            drawType: 'Area', // Forma rellena
+            opacity: 0.4, // TRANSPARENCIA crucial para que no se tapen
+            marker: { visible: true, width: 6, height: 6, shape: 'Circle' },
+            border: { width: 2, color: 'transparent' }
         };
-        seriesData.push(serie);
+        seriesDataRadar.push(serie);
     });
 
-    if(chartComparativoVacante) {
-        chartComparativoVacante.destroy();
-    }
+    if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.destroy();
 
-    chartComparativoVacante = new ej.charts.Chart({
+    chartComparativoVacanteRadar = new ej.charts.Chart({
         isResponsive: true,
+        palettes: yellowPalette,
         primaryXAxis: {
             valueType: 'Category',
-            labelIntersectAction: 'MultipleRows'
+            labelPlacement: 'OnTicks'
         },
         primaryYAxis: {
             minimum: 0, maximum: 100, interval: 20,
             labelFormat: '{value}'
         },
-        series: seriesData,
-        title: `Comparativo de Resultados - ${seleccion}`,
+        series: seriesDataRadar,
+        title: `Comparativo de Competencias (Radar) - ${seleccion}`,
         tooltip: { enable: true },
         legendSettings: { visible: true, position: 'Bottom' }
     });
-    chartComparativoVacante.appendTo('#chartComparativoVacante');
+    chartComparativoVacanteRadar.appendTo('#chartComparativoVacanteRadar');
+
 
     // MÁGIA PARA LAS TABLAS (Tabulator)
     let htmlContenedorTablas = '';
@@ -1378,10 +1484,33 @@ function drawComparativoResultados() {
             layout: "fitColumns",
             columns: [
                 { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 },
-                { title: "CALIFICACIÓN", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 }
+                { title: "SCORE", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 }
             ]
         });
     });
+}
+
+function switchComparativoChart(type) {
+    // Resetear ambos a estado "desactivado"
+    $('#cardChartColumn, #cardChartRadar').removeClass('border-primary shadow-sm bg-white').addClass('border-0 shadow-none bg-light');
+    $('#textChartColumn, #textChartRadar').removeClass('text-primary').addClass('text-muted');
+
+    // Ocultar contenedores
+    $('#containerChartColumn, #containerChartRadar').addClass('d-none');
+
+    if (type === 'column') {
+        // Activar Barras
+        $('#cardChartColumn').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
+        $('#textChartColumn').removeClass('text-muted').addClass('text-primary');
+        $('#containerChartColumn').removeClass('d-none');
+        if (chartComparativoVacanteColumn) chartComparativoVacanteColumn.refresh();
+    } else {
+        // Activar Araña
+        $('#cardChartRadar').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
+        $('#textChartRadar').removeClass('text-muted').addClass('text-primary');
+        $('#containerChartRadar').removeClass('d-none');
+        if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.refresh();
+    }
 }
 
 $(document).ready(function () {
@@ -1394,8 +1523,13 @@ $(document).ready(function () {
 // =====================================
 
 function cerrarEvaluacionRespuestas() {
-    $('#modalEvaluacionRespuestas').modal('hide');
-    $('#modalResultadosPostulante').modal('show');
+    let modalElResp = document.getElementById('modalEvaluacionRespuestas');
+    let modalResp = bootstrap.Modal.getInstance(modalElResp);
+    if (modalResp) modalResp.hide();
+
+    let modalElResu = document.getElementById('modalResultadosPostulante');
+    let modalResu = bootstrap.Modal.getInstance(modalElResu);
+    if (modalResu) modalResu.show();
 }
 
 async function abrirEvaluacionRespuestas() {
@@ -1411,9 +1545,21 @@ async function abrirEvaluacionRespuestas() {
         return;
     }
 
-    $('#modalResultadosPostulante').modal('hide');
+    let modalElResu = document.getElementById('modalResultadosPostulante');
+    let modalResu = bootstrap.Modal.getInstance(modalElResu);
+    if (modalResu) modalResu.hide();
+
     $('#contenedorEvaluacionRespuestas').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Cargando evaluación...</p></div>');
-    $('#modalEvaluacionRespuestas').modal('show');
+
+    let modalElResp = document.getElementById('modalEvaluacionRespuestas');
+    let modalResp = bootstrap.Modal.getInstance(modalElResp);
+    if (!modalResp) {
+        modalResp = new bootstrap.Modal(modalElResp, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
+    modalResp.show();
 
     try {
         const response = await $.post('Backend/Postulantes/App.php', {
@@ -1426,7 +1572,7 @@ async function abrirEvaluacionRespuestas() {
 
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             let html = '';
-            
+
             result.Data.forEach((item, index) => {
                 html += `
                 <div class="card mb-4 shadow-sm border-0">
@@ -1458,7 +1604,7 @@ async function abrirEvaluacionRespuestas() {
                         let bgColor = "background-color: transparent;";
                         let borderColor = "border-color: #dee2e6;";
                         let iconOption = "";
-                        
+
                         // Si el postulante la seleccionó
                         if (isSelected) {
                             if (isCorrectaOM) {
@@ -1490,10 +1636,10 @@ async function abrirEvaluacionRespuestas() {
                 } else if (item.BoolCorreta !== null) {
                     // Verdadero/Falso (True/False o 1/0)
                     let rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
-                    
+
                     let isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
                     let isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
-                    
+
                     let trueIsCorrect = (item.BoolCorreta == "1");
 
                     // Estilo Opcion Verdadero
@@ -1539,7 +1685,7 @@ async function abrirEvaluacionRespuestas() {
                 </div>
                 `;
             });
-            
+
             $('#contenedorEvaluacionRespuestas').html(html);
         } else {
             $('#contenedorEvaluacionRespuestas').html(`
@@ -1549,7 +1695,7 @@ async function abrirEvaluacionRespuestas() {
                 </div>
             `);
         }
-    } catch(err) {
+    } catch (err) {
         console.error('Error al abrir evaluación:', err);
         $('#contenedorEvaluacionRespuestas').html(`
             <div class="alert alert-danger m-4">

@@ -382,7 +382,7 @@
     function addComentariosFeed ($idFeed,$Comentario) {
       try {
         $NoEmpleado = SessionManager::get("NoEmpleado");
-        $q = "INSERT INTO ComentariosFeed (idFeed,NoEmpleado,Comentario,Registro) VALUES ('$idFeed','$NoEmpleado','$Comentario',NOW());";
+        $q = "INSERT INTO ComentariosFeed (idFeed,NoEmpleado,Comentario,Registro,Revisado,Autorizado) VALUES ('$idFeed','$NoEmpleado','$Comentario',NOW(),1,1);";
         $this->ExecuteQuery($q,array());
         return "1";
       } catch (\Exception $e) {
@@ -761,7 +761,7 @@
                 FROM Empleados
               ) AS E ON E.NoEmpleado = CF.NoEmpleado
               WHERE idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1
-              ORDER BY CF.Registro DESC";
+              ORDER BY CF.Registro ASC";
         $res = $this->ExecuteQueryWithParam($q, [$user, $iFeed]);
         $cantR = count($res);
         $arrFinal = [];
@@ -848,6 +848,13 @@
         $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "CALL sp_makeCommentFeed(?,?,?)";
         $res = $this->ProcedureWithParam($q, [$i_Feed, $NoEmpleado, $commentary]);
+        
+        // --- Aprobar el comentario para que sea visible inmediatamente ---
+        $ConUpd = new Conexiones();
+        $qUpd = "UPDATE ComentariosFeed SET Revisado = 1, Autorizado = 1 WHERE idFeed = ? AND NoEmpleado = ? AND Revisado = 0";
+        $ConUpd->ExecuteQueryWithParam($qUpd, [$i_Feed, $NoEmpleado]);
+        // -----------------------------------------------------------------
+        
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,

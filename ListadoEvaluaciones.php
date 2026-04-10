@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -77,7 +77,22 @@
                     <div class="row">
                       <label class="form-label">Listado de evaluaciones registradas en el sistema.</label>
                     </div>
-                    <div id="table_Ev"></div>
+                    <div class="table-responsive">
+                      <table class="table display text-center" id="table_Ev" style="width: 100%;">
+                        <thead>
+                          <tr>
+                            <th>EVALUACIÓN</th>
+                            <th>TIPO</th>
+                            <th>PERIODICIDAD</th>
+                            <th>FECHA INICIO</th>
+                            <th>FECHA FIN</th>
+                            <th>STATUS</th>
+                            <th>ACCIONES</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

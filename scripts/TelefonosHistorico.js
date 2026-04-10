@@ -196,30 +196,30 @@ function renderTelefonosHistorico(telefonos) {
                             </p>
                         ` : ''}
                     </div>
-                    <div class="btn-group btn-group-sm">
+                    <div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
                         ${!esActual ? `
-                            <button class="btn btn-outline-primary" 
+                            <button class="btn btn-primary btn-accion" 
                                     onclick="establecerComoPrincipal(${tel.IdTelefonoHistorico}, '${tel.Telefono}')" 
                                     title="Establecer como principal">
                                 <span class="material-symbols-outlined">star</span>
                             </button>
                         ` : ''}
                         ${esActivo && !esActual ? `
-                            <button class="btn btn-outline-warning" 
+                            <button class="btn btn-warning btn-accion" 
                                     onclick="desactivarTelefonoHistorico(${tel.IdTelefonoHistorico})" 
                                     title="Desactivar">
                                 <span class="material-symbols-outlined">block</span>
                             </button>
                         ` : ''}
                         ${!esActivo ? `
-                            <button class="btn btn-outline-success" 
+                            <button class="btn btn-success btn-accion" 
                                     onclick="reactivarTelefonoHistorico(${tel.IdTelefonoHistorico})" 
                                     title="Reactivar">
                                 <span class="material-symbols-outlined">check_circle</span>
                             </button>
                         ` : ''}
                         ${!esActual ? `
-                            <button class="btn btn-outline-danger" 
+                            <button class="btn btn-danger btn-accion" 
                                     onclick="eliminarTelefonoHistorico(${tel.IdTelefonoHistorico})" 
                                     title="Eliminar">
                                 <span class="material-symbols-outlined">delete</span>

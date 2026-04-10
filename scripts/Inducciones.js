@@ -207,30 +207,32 @@ async function loadInducciones() {
                     render: function(data, type, row) {
                         let idEncoded = btoa(row.IdInduccion);
                         
-                        let btnContenido = `<button class="btn btn-info btn-sm me-1" onclick="openContenidoModal('${idEncoded}', '${row.NombreInduccion}')" title="Gestionar Contenido">
+                        let btnContenido = `<button class="btn btn-info btn-accion" onclick="openContenidoModal('${idEncoded}', '${row.NombreInduccion}')" title="Gestionar Contenido">
                             <span class="material-symbols-outlined">folder_open</span>
                         </button>`;
                         
-                        let btnEdit = `<button class="btn btn-primary btn-sm me-1" onclick="openEditModal('${idEncoded}')" title="Editar">
+                        let btnEdit = `<button class="btn btn-primary btn-accion" onclick="openEditModal('${idEncoded}')" title="Editar">
                             <span class="material-symbols-outlined">edit</span>
                         </button>`;
                         
                         let btnToggle = '';
                         if (row.Estatus == 1) {
-                            btnToggle = `<button class="btn btn-warning btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Desactivar">
+                            btnToggle = `<button class="btn btn-warning btn-accion" onclick="toggleEstatus('${idEncoded}')" title="Desactivar">
                                 <span class="material-symbols-outlined">toggle_off</span>
                             </button>`;
                         } else {
-                            btnToggle = `<button class="btn btn-success btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Activar">
+                            btnToggle = `<button class="btn btn-success btn-accion" onclick="toggleEstatus('${idEncoded}')" title="Activar">
                                 <span class="material-symbols-outlined">toggle_on</span>
                             </button>`;
                         }
                         
-                        let btnDelete = `<button class="btn btn-danger btn-sm" onclick="deleteInduccion('${idEncoded}')" title="Eliminar">
+                        let btnDelete = `<button class="btn btn-danger btn-accion" onclick="deleteInduccion('${idEncoded}')" title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>`;
                         
-                        return btnContenido + btnEdit + btnToggle + btnDelete;
+                        return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+                            ${btnContenido}${btnEdit}${btnToggle}${btnDelete}
+                        </div>`;
                     }
                 }
             ],
@@ -366,10 +368,14 @@ async function openEditModal(idEncoded) {
             $('#editPuestos').val(puestos).trigger('change');
             
             // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('modalEditInduccion'), {
-                backdrop: 'static',
-                keyboard: false
-            });
+            let modalEl = document.getElementById('modalEditInduccion');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) {
+                modal = new bootstrap.Modal(modalEl, {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
             modal.show();
         } else {
             const messageContent = `
@@ -589,7 +595,14 @@ async function openContenidoModal(idEncoded, nombreInduccion) {
     await loadAudiovisuales(idEncoded);
     
     // Mostrar modal
-    const modal = new bootstrap.Modal(document.getElementById('modalContenido'));
+    let modalEl = document.getElementById('modalContenido');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) {
+        modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
     modal.show();
 }
 

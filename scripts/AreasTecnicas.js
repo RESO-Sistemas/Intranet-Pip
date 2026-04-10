@@ -101,26 +101,28 @@ async function loadAreasTecnicas() {
                     orderable: false,
                     render: function(data, type, row) {
                         let idEncoded = btoa(row.IdAreaTecnica);
-                        let btnEdit = `<button class="btn btn-primary btn-sm me-1" onclick="openEditModal('${idEncoded}')" title="Editar">
+                        let btnEdit = `<button class="btn btn-primary btn-accion" title="Editar" onclick="openEditModal('${idEncoded}')">
                             <span class="material-symbols-outlined">edit</span>
                         </button>`;
                         
                         let btnToggle = '';
                         if (row.Estatus == 1) {
-                            btnToggle = `<button class="btn btn-warning btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Desactivar">
+                            btnToggle = `<button class="btn btn-warning btn-accion" title="Desactivar" onclick="toggleEstatus('${idEncoded}')">
                                 <span class="material-symbols-outlined">toggle_off</span>
                             </button>`;
                         } else {
-                            btnToggle = `<button class="btn btn-success btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Activar">
+                            btnToggle = `<button class="btn btn-success btn-accion" title="Activar" onclick="toggleEstatus('${idEncoded}')">
                                 <span class="material-symbols-outlined">toggle_on</span>
                             </button>`;
                         }
                         
-                        let btnDelete = `<button class="btn btn-danger btn-sm" onclick="deleteAreaTecnica('${idEncoded}')" title="Eliminar">
+                        let btnDelete = `<button class="btn btn-danger btn-accion" title="Eliminar" onclick="deleteAreaTecnica('${idEncoded}')">
                             <span class="material-symbols-outlined">delete</span>
                         </button>`;
                         
-                        return btnEdit + btnToggle + btnDelete;
+                        return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+                            ${btnEdit}${btnToggle}${btnDelete}
+                        </div>`;
                     }
                 }
             ],

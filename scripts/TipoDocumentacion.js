@@ -102,30 +102,32 @@ async function loadTiposDocumentacion() {
                     orderable: false,
                     render: function(data, type, row) {
                         let idEncoded = btoa(row.IdTipoDocumento);
-                        let btnEdit = `<button class="btn btn-primary btn-sm me-1" onclick="openEditModal('${idEncoded}')" title="Editar">
+                        let btnEdit = `<button class="btn btn-primary btn-accion" onclick="openEditModal('${idEncoded}')" title="Editar">
                             <span class="material-symbols-outlined">edit</span>
                         </button>`;
                         
                         let btnToggle = '';
                         if (row.Estatus == 1) {
-                            btnToggle = `<button class="btn btn-warning btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Desactivar">
+                            btnToggle = `<button class="btn btn-warning btn-accion" onclick="toggleEstatus('${idEncoded}')" title="Desactivar">
                                 <span class="material-symbols-outlined">toggle_off</span>
                             </button>`;
                         } else {
-                            btnToggle = `<button class="btn btn-success btn-sm me-1" onclick="toggleEstatus('${idEncoded}')" title="Activar">
+                            btnToggle = `<button class="btn btn-success btn-accion" onclick="toggleEstatus('${idEncoded}')" title="Activar">
                                 <span class="material-symbols-outlined">toggle_on</span>
                             </button>`;
                         }
                         
-                        let btnDelete = `<button class="btn btn-danger btn-sm me-1" onclick="deleteTipoDocumento('${idEncoded}')" title="Eliminar">
+                        let btnDelete = `<button class="btn btn-danger btn-accion" onclick="deleteTipoDocumento('${idEncoded}')" title="Eliminar">
                             <span class="material-symbols-outlined">delete</span>
                         </button>`;
                         
-                        let btnChecklist = `<button class="btn btn-info btn-sm" onclick="openChecklist('${idEncoded}', '${row.NombreDocumento.replace(/'/g, "\\'")}')" title="Ver entregas">
+                        let btnChecklist = `<button class="btn btn-info btn-accion" onclick="openChecklist('${idEncoded}', '${row.NombreDocumento.replace(/'/g, "\\'")}')" title="Ver entregas">
                             <span class="material-symbols-outlined">checklist</span>
                         </button>`;
                         
-                        return btnEdit + btnToggle + btnDelete + btnChecklist;
+                        return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+                            ${btnEdit}${btnToggle}${btnDelete}${btnChecklist}
+                        </div>`;
                     }
                 }
             ],
