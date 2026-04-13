@@ -31,31 +31,60 @@ if ($op == "asignarTipoIncidencia") {
 
 if ($op == "registrarIncidencia") {
   $descripcion = $_POST['descripcion'] ?? '';
+  $evidenciaDataUri = trim($_POST['evidencia'] ?? '');
   $file = $_FILES['evidencia'] ?? null;
   session_start();
   $noEmpleado = $_SESSION['NoEmpleado'] ?? '';
-  if (!$descripcion || !$file || !$noEmpleado) {
+  if (!$descripcion || !$noEmpleado || (!$file && !$evidenciaDataUri)) {
     echo json_encode(['Resultado' => false, 'Msg' => 'Datos incompletos']);
     exit;
   }
+
   $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-  if (!in_array($file['type'], $allowed)) {
-    echo json_encode(['Resultado' => false, 'Msg' => 'Solo se permiten imágenes']);
-    exit;
+  $evidencia = '';
+
+  // Soporte para formato API: data:image/...;base64,...
+  if ($evidenciaDataUri) {
+    if (!preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/i', $evidenciaDataUri)) {
+      echo json_encode(['Resultado' => false, 'Msg' => 'Formato de evidencia inválido']);
+      exit;
+    }
+    $evidencia = preg_replace('/\s+/', '', $evidenciaDataUri);
+  } else if ($file) {
+    // Compatibilidad con formulario legacy por archivo: convertir y guardar en BD.
+    $tmpName = $file['tmp_name'] ?? '';
+    if (!$tmpName || !is_uploaded_file($tmpName)) {
+      echo json_encode(['Resultado' => false, 'Msg' => 'Archivo de evidencia inválido']);
+      exit;
+    }
+
+    $mimeType = $file['type'] ?? '';
+    if (function_exists('finfo_open')) {
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $detected = finfo_file($finfo, $tmpName);
+      if ($detected) {
+        $mimeType = $detected;
+      }
+      finfo_close($finfo);
+    }
+
+    if (!in_array($mimeType, $allowed)) {
+      echo json_encode(['Resultado' => false, 'Msg' => 'Solo se permiten imágenes']);
+      exit;
+    }
+
+    $binary = file_get_contents($tmpName);
+    if ($binary === false) {
+      echo json_encode(['Resultado' => false, 'Msg' => 'Error al leer la evidencia']);
+      exit;
+    }
+
+    $evidencia = 'data:' . $mimeType . ';base64,' . base64_encode($binary);
   }
-  $uploadDir = '../../Archivos/Incidencias/';
-  if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-  }
-  $fileName = uniqid('incidencia_') . '_' . basename($file['name']);
-  $filePath = $uploadDir . $fileName;
-  if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-    echo json_encode(['Resultado' => false, 'Msg' => 'Error al guardar la evidencia']);
-    exit;
-  }
-  $ok = $obj->registrarIncidencia($descripcion, $fileName, $noEmpleado);
+
+  $ok = $obj->registrarIncidencia($descripcion, $evidencia, $noEmpleado);
   if ($ok) {
-    echo json_encode(['Resultado' => true, 'Msg' => 'Incidencia registrada', 'Evidencia' => $fileName]);
+    echo json_encode(['Resultado' => true, 'Msg' => 'Incidencia registrada', 'Evidencia' => $evidencia]);
   } else {
     echo json_encode(['Resultado' => false, 'Msg' => 'Error al registrar en la base de datos']);
   }

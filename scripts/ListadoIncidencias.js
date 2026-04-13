@@ -271,11 +271,12 @@ async function verDetalle(idBase64) {
     // Ocultar botón guardar hasta que haya cambios
     $('#btnGuardarCambios').hide();
 
-    // Evidencia (imagen)
-    if (inc.Evidencia) {
+    // Evidencia (imagen) - soporta nombre de archivo legacy y data URI en BD.
+    const evidenciaSrc = getEvidenciaSrc(inc.Evidencia);
+    if (evidenciaSrc) {
       $('#detalleEvidenciaContainer').html(`
         <h6 class="fw-bold mb-2"><i class="fas fa-camera me-1"></i> Evidencia fotográfica</h6>
-        <img src="Archivos/Incidencias/${escHtml(inc.Evidencia)}" 
+        <img src="${escAttr(evidenciaSrc)}" 
              alt="Evidencia de incidencia" 
              class="evidencia-img"
              onerror="this.onerror=null; this.parentElement.innerHTML='<p class=\\'text-muted\\'>No se pudo cargar la imagen de evidencia.</p>';">
@@ -526,4 +527,28 @@ function formatFecha(fecha) {
 function escHtml(str) {
   if (!str && str !== 0) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escAttr(str) {
+  if (!str && str !== 0) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getEvidenciaSrc(evidencia) {
+  if (!evidencia) return '';
+  const val = String(evidencia).trim();
+  if (!val) return '';
+
+  // Nuevo formato desde API/BD.
+  if (/^data:image\/(jpeg|jpg|png|gif|webp);base64,/i.test(val)) {
+    return val;
+  }
+
+  // Compatibilidad con formato previo (nombre de archivo en proyecto).
+  return 'Archivos/Incidencias/' + encodeURIComponent(val);
 }
