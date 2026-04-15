@@ -1,3 +1,4 @@
+<?php include("AutorizaPagina.php"); ?>
 <?php
   // Debe recibir un ID de incidencia
   if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -10,7 +11,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <?php include("AutorizaPagina.php"); ?>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

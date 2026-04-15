@@ -1,3 +1,4 @@
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 
 <html>
@@ -6,7 +7,6 @@
 
 <head>
 
-  <?php include("AutorizaPagina.php"); ?>
 
   <meta charset="utf-8">
 
