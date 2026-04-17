@@ -156,22 +156,21 @@ if (btnActionGreen) {
   btnActionGreen.addEventListener("click", async function () {
     let resultV = await verifyInputs("formFeed");
     if (resultV) {
-      var files = $("#filesFeedForm")[0].files;
-      if (files.length > 0) {
-        saveInfoFeed();
-        if (typeof modal !== 'undefined') {
-          modal.hide();
-        }
-      } else {
-        const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Informacion!</span>
-              <span class="alert-text">Por favor, selecciona al menos un archivo.</span>
-        </div>`;
-        if (typeof showBootstrapAlert === 'function') {
-          showBootstrapAlert(messageContent, "top-right", 5000);
-        }
-        return false;
+      // Guardar el post
+      saveInfoFeed();
+
+      // Cerrar el formulario inline y restaurar el trigger
+      if (typeof closeComposeForm === 'function') {
+        closeComposeForm();
+      }
+
+      // Recargar el feed desde la primera página
+      currentFeedPage = 1;
+      loadFeeds(1);
+
+      // Ocultar modal Bootstrap si estuviera abierto (compatibilidad)
+      if (typeof modal !== 'undefined') {
+        modal.hide();
       }
     }
   });
@@ -306,6 +305,8 @@ async function getDatosEmpleado() {
       $("#slctDivision").val(respuesta[i]["IdDivision"]);
       $("#ImgEmpleadoPerfil").attr("src", urlImg);
       $("#mensajeBienvenida").html(respuesta[i]["MensajeBienvenida"]);
+      // Actualizar avatar de la barra "Crear publicación" estilo Reddit
+      $("#avatarCreatePost").attr("src", urlImg);
     }
   }
 }
@@ -796,34 +797,36 @@ async function loadFeeds(page = 1) {
             for (let k = 0; k < feed.ArrayArchivos.length; k++) {
               const archivoObj = feed.ArrayArchivos[k];
               
-              // Puede haber varios archivos en un solo registro (separados por coma)
-              const filenames = (archivoObj.Archivo || "").split(",");
-              
-              for (let fName of filenames) {
-                if (!fName.trim()) continue;
-                
-                let fUrl;
-                if (parseInt(archivoObj.hasBlob) === 1) {
-                  // Archivo guardado como BLOB en la BD
-                  fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
-                  contentHtmlImg += `
-                                  <img alt="Imagen Adjunta" src="${fUrl}"
-                                      data-image="${fUrl}"
-                                      data-description="${fName.trim()}"
-                                      style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
-                } else {
-                  // Archivo guardado en disco (enfoque antiguo)
-                  let fUrlID = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
+              if (parseInt(archivoObj.isDataUri) === 1) {
+                // ── Nuevo patrón: imagen guardada como Data URI base64 (igual que Incidencias)
+                // El campo Archivo contiene el string 'data:image/...;base64,...'
+                contentHtmlImg += `
+                  <img alt="Imagen adjunta" src="${archivoObj.Archivo}"
+                       data-image="${archivoObj.Archivo}"
+                       data-description="Imagen"
+                       style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+              } else if (parseInt(archivoObj.hasBlob) === 1) {
+                // ── Patrón legacy BLOB: obtener imagen vía endpoint especial
+                const fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
+                contentHtmlImg += `
+                  <img alt="Imagen Adjunta" src="${fUrl}"
+                       data-image="${fUrl}"
+                       data-description="${(archivoObj.Archivo || '').trim()}"
+                       style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+              } else {
+                // ── Patrón antiguo: archivo guardado en disco (nombre de archivo)
+                const filenames = (archivoObj.Archivo || "").split(",");
+                for (let fName of filenames) {
+                  if (!fName.trim()) continue;
+                  let fUrlID   = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
                   let fUrlRoot = `Archivos/Feed/${fName.trim()}`;
-
-                  // Usamos onerror para intentar la ruta raíz si la ruta con ID falla (404)
                   contentHtmlImg += `
-                      <img alt="Image Feed" 
-                           src="${fUrlID}"
-                           onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlRoot}'; } else { this.style.display='none'; }"
-                           data-image="${fUrlID}"
-                           data-description="Archivo: ${fName.trim()}"
-                           style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+                    <img alt="Image Feed" 
+                         src="${fUrlID}"
+                         onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlRoot}'; } else { this.style.display='none'; }"
+                         data-image="${fUrlID}"
+                         data-description="Archivo: ${fName.trim()}"
+                         style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
                 }
               }
             }
@@ -833,157 +836,119 @@ async function loadFeeds(page = 1) {
             for (let k = 0; k < arrFiles.length; k++) {
               const f = arrFiles[k].trim();
               if(!f) continue;
-              let fUrlLegacyID = `Archivos/Feed/${feed.idFeed}/${f}`;
+              let fUrlLegacyID   = `Archivos/Feed/${feed.idFeed}/${f}`;
               let fUrlLegacyRoot = `Archivos/Feed/${f}`;
               
               contentHtmlImg += `
-                                <img alt="Image Feed Legacy" 
-                                    src="${fUrlLegacyID}"
-                                    onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlLegacyRoot}'; } else { this.style.display='none'; }"
-                                    data-image="${fUrlLegacyID}"
-                                    data-description="Archivo: ${f}"
-                                    style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
+                <img alt="Image Feed Legacy" 
+                     src="${fUrlLegacyID}"
+                     onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlLegacyRoot}'; } else { this.style.display='none'; }"
+                     data-image="${fUrlLegacyID}"
+                     data-description="Archivo: ${f}"
+                     style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
             }
           }
+
       }
 
       urlImgProfile = feed.Imagen
         ? `Archivos/ImgEmpleados/${feed.NoEmpleado}/${feed.Imagen}`
         : "assets/logoK.png";
 
+      // --- Determinar badge de tipo ---
+      let typeBadge = '';
+      if (feed.Tipo === 'CMP') {
+        typeBadge = `<span class="rpc-type-badge cmp"><i class="fas fa-birthday-cake me-1"></i>Cumpleaños</span>`;
+      } else if (feed.Tipo === 'ANY') {
+        typeBadge = `<span class="rpc-type-badge any"><i class="fas fa-star me-1"></i>Aniversario</span>`;
+      }
+
+      // --- Clase liked para el botón de Me Gusta ---
+      const likedClass = feed.MeGusta == 1 ? 'liked' : '';
+      const congratClass = feed.Felicitacion == 1 ? 'congrat' : '';
+
       contentHtmlFinal += `
-            <div class="card mb-3" >
-    <div class="card-body" style="min-height:170px; padding:15px;">
-        <ul class="list-unstyled">
-            <li class="mb-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0 me-3">
-                        <img src="${urlImgProfile}" alt="user" class="rounded-circle" width="50">
-                    </div>
-                    <div class="flex-grow-1 border p-3 rounded">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="fw-bold mb-0">${feed.Nombre || 'Usuario'}</h6>
-                            <small class="text-muted">Publicado hace ${
-                              feed.DiferenciaRegistro || '0 Minutos'
-                            }</small>
-                        </div>
-                        <p class="mb-2">${feed.Titulo || ''}</p>
-                        <div class="text-justify">
-                            <hr class="my-2">
-                            ${descriptionFinal}
-                        </div>
+      <div class="reddit-post-card">
 
-                        ${
-                          feed.Hipervinculo
-                            ? `<div class="text-center my-2"><a href="${feed.Hipervinculo}" target="_blank">${feed.Hipervinculo}</a></div>`
-                            : ""
-                        }
-                        
-                        ${
-                          feed.Archivo
-                            ? `<div class="text-center"><div id="galleryFeed${feed.idFeed}" class="galleryImgCl m-t-3 mx-auto" style="display:none; max-width: 100%">${contentHtmlImg}</div></div>`
-                            : ""
-                        }
+        <!-- Cuerpo del post -->
+        <div class="rpc-body">
 
-                        <!-- Ventana Me Gusta -->
-                        <div class="position-relative">
-                            <div id="WindowMeGusta${
-                              feed.idFeed
-                            }" class="menuMeGusta row position-absolute d-none" style="z-index:9999; width:50%; background-color:#007B85; bottom:30%; left:30%; border-radius:15px; opacity:0.95; color:white; padding:10px; max-height:45vh;">
-                                <div class="col-12">
-                                    <h6 class="text-white fw-bold">Personas que reaccionaron</h6>
-                                </div>
-                                <div class="col-12">
-                                    <ul id="ulEmpleadosReaccionanMG${
-                                      feed.idFeed
-                                    }" class="list-unstyled">
-                                        ${contentHtmlMg}
-                                    </ul>
-                                </div>
-                            </div>
+          <!-- Meta: avatar + autor + tiempo + badge tipo -->
+          <div class="rpc-meta">
+            <img src="${urlImgProfile}" alt="avatar">
+            <span class="rpc-author">${feed.Nombre || 'Usuario'}</span>
+            <span class="rpc-time">· hace ${feed.DiferenciaRegistro || '—'}</span>
+            ${typeBadge}
+          </div>
 
-                            ${
-                              feed.Tipo == "CMP" || feed.Tipo == "ANY"
-                                ? `
-                            <!-- Ventana Felicitaciones -->
-                            <div class="position-relative">
-                                <div id="WindowFelicitacion${feed.idFeed}" class="menuFelicitacion row position-absolute d-none" style="z-index:9999; width:50%; background-color:#7F00A7; bottom:30%; left:30%; border-radius:15px; opacity:0.95; color:white; padding:10px; max-height:45vh;">
-                                    <div class="col-12">
-                                        <h6 class="text-white fw-bold">Personas que reaccionaron</h6>
-                                    </div>
-                                    <div class="col-12">
-                                        <ul id="ulEmpleadosReaccionanFEL${feed.idFeed}" class="list-unstyled">
-                                            ${contentHtmlCongra}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>`
-                                : ""
-                            }
-                        </div>
+          <!-- Título -->
+          <p class="rpc-title">${feed.Titulo || ''}</p>
 
-                        <!-- Botones de interacción -->
-                        <div class="row mt-3">
-                            <div class="col-md-4 mb-2 mb-md-0">
-                                <a href="javascript:void(0)" id="btnEventoMG${
-                                  feed.idFeed
-                                }" class="text-decoration-none ${
-        colorMg ? "" : "text-dark"
-      }" onclick="MeGusta(${feed.idFeed},1)">
-                                    <i class="fa-solid fa-heart me-1"></i> ${
-                                      feed.CantidadMeGusta || 0
-                                    } Me gusta
-                                </a>
-                            </div>
-                            
-                            ${
-                              feed.Tipo == "CMP" || feed.Tipo == "ANY"
-                                ? `
-                            <div class="col-md-4 mb-2 mb-md-0">
-                                <a href="javascript:void(0)" id="btnEventoF${
-                                  feed.idFeed
-                                }" class="text-decoration-none ${
-                                    colorCong ? "" : "text-dark"
-                                  }" onclick="MeGusta(${feed.idFeed},2)">
-                                    <i class="fas fa-birthday-cake me-1"></i> ${
-                                      feed.CantidadFelicitaciones || 0
-                                    } Felicitaciones
-                                </a>
-                            </div>`
-                                : ""
-                            }
-                            
-                            <div class="col-md-4">
-                                <a href="javascript:void(0)" id="btnComment${
-                                  feed.idFeed
-                                }" class="text-decoration-none text-dark" onclick="showCommentsMain('${
-        feed.idFeed
-      }')">
-                                    <i class="far fa-comments me-1"></i> ${cantComm} Comentarios
-                                </a>
-                            </div>
-                        </div>
+          <!-- Descripción -->
+          <div class="rpc-desc">${descriptionFinal}</div>
 
-                        <!-- Comentarios -->
-                        <div class="row mt-3" id="dv_commentarios${
-                          feed.idFeed
-                        }" style="display: none;">
-                            <div class="col-12" id="dv_contentCommentsFeed${
-                              feed.idFeed
-                            }"></div>
-                            <div class="col-12 mt-2">
-                                <div class="d-flex align-items-start gap-2">
-                                    <textarea class="form-control flex-grow-1" placeholder="Escribe tu comentario aquí..." id="f_newComentary${feed.idFeed}" rows="1" style="min-height: 38px; resize: none;"></textarea>
-                                    <button class="btn btn-primary btn-sm px-3" style="margin-top: 2px;" onclick="checkComment('${feed.idFeed}')">Comentar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-    </div>
-</div>`;
+          <!-- Hipervínculo -->
+          ${feed.Hipervinculo ? `<a class="rpc-link" href="${feed.Hipervinculo}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt me-1"></i>${feed.Hipervinculo}</a>` : ''}
+
+          <!-- Galería de imágenes -->
+          ${
+            (feed.ArrayArchivos && feed.ArrayArchivos.length > 0) || feed.Archivo
+              ? `<div class="rpc-gallery"><div id="galleryFeed${feed.idFeed}" class="galleryImgCl" style="display:none; max-width:100%;">${contentHtmlImg}</div></div>`
+              : ''
+          }
+
+          <!-- Ventana Me Gusta (tooltip) -->
+          <div class="position-relative">
+            <div id="WindowMeGusta${feed.idFeed}" class="menuMeGusta row position-absolute d-none"
+                 style="z-index:9999;width:50%;background:#007B85;bottom:30%;left:30%;border-radius:15px;color:#fff;padding:10px;max-height:45vh;">
+              <div class="col-12"><h6 class="text-white fw-bold">Personas que reaccionaron</h6></div>
+              <div class="col-12"><ul id="ulEmpleadosReaccionanMG${feed.idFeed}" class="list-unstyled">${contentHtmlMg}</ul></div>
+            </div>
+            ${feed.Tipo == 'CMP' || feed.Tipo == 'ANY' ? `
+            <div class="position-relative">
+              <div id="WindowFelicitacion${feed.idFeed}" class="menuFelicitacion row position-absolute d-none"
+                   style="z-index:9999;width:50%;background:#7F00A7;bottom:30%;left:30%;border-radius:15px;color:#fff;padding:10px;max-height:45vh;">
+                <div class="col-12"><h6 class="text-white fw-bold">Personas que reaccionaron</h6></div>
+                <div class="col-12"><ul id="ulEmpleadosReaccionanFEL${feed.idFeed}" class="list-unstyled">${contentHtmlCongra}</ul></div>
+              </div>
+            </div>` : ''}
+          </div>
+
+          <!-- Barra de acciones estilo Reddit -->
+          <div class="rpc-actions">
+            <a href="javascript:void(0)" id="btnEventoMG${feed.idFeed}"
+               class="rpc-action-btn TooltipHoverMg ${likedClass}"
+               onclick="MeGusta(${feed.idFeed},1)">
+              <i class="fa-solid fa-heart"></i> ${feed.CantidadMeGusta || 0} Me gusta
+            </a>
+
+            <a href="javascript:void(0)" id="btnComment${feed.idFeed}"
+               class="rpc-action-btn"
+               onclick="showCommentsMain('${feed.idFeed}')">
+              <i class="far fa-comments"></i> ${cantComm} Comentarios
+            </a>
+
+            ${feed.Tipo == 'CMP' || feed.Tipo == 'ANY' ? `
+            <a href="javascript:void(0)" id="btnEventoF${feed.idFeed}"
+               class="rpc-action-btn TooltipHoverF ${congratClass}"
+               onclick="MeGusta(${feed.idFeed},2)">
+              <i class="fas fa-birthday-cake"></i> ${feed.CantidadFelicitaciones || 0} Felicitaciones
+            </a>` : ''}
+          </div>
+
+          <!-- Área de comentarios (se expande al hacer clic) -->
+          <div id="dv_commentarios${feed.idFeed}" style="display:none;">
+            <div class="rpc-comments-area">
+              <div id="dv_contentCommentsFeed${feed.idFeed}"></div>
+              <div class="rpc-comment-input-row">
+                <textarea placeholder="Escribe tu comentario aquí..." id="f_newComentary${feed.idFeed}" rows="1"></textarea>
+                <button class="btn-comment" onclick="checkComment('${feed.idFeed}')">Comentar</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /rpc-body -->
+      </div><!-- /reddit-post-card -->`;
       } catch (errFeed) {
         console.log("Error procesando feed #" + i + ":", errFeed, response[i]);
       }

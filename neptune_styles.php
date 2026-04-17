@@ -55,7 +55,19 @@
 .e-grid .e-detailrowexpand.e-focused,
 .e-grid .e-focused {
     box-shadow: none !important;
-    outline: none !important;
+    outline: none !important;   
+}
+.e-grid .e-headercelldiv {
+    font-size: 15px;
+    font-weight: 500;
+    }
+
+.e-pagenomsg {
+  display: none !important;
+}
+.e-pagecountmsg
+{
+  display: none !important;
 }
 </style>
 

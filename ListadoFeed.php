@@ -155,21 +155,7 @@
 
                     <div class="table-responsive">
 
-                      <table id="tableFeeds" class="table display text-center">
-
-                        <thead>
-
-                          <tr>
-
-                            <th>TÍTULO</th>
-
-                            <th>ACCIONES</th>
-
-                          </tr>
-
-                        </thead>
-
-                      </table>
+                      <div id="TableFeeds"></div>
 
                     </div>
 

@@ -172,7 +172,7 @@
     if (!container) return;
 
     if (!kpis || kpis.length === 0) {
-      container.innerHTML = '<p class="text-muted small text-center w-100 py-3">No hay KPIs asignados a tu puesto</p>';
+      container.innerHTML = '';
       return;
     }
 
@@ -180,19 +180,29 @@
     kpiCharts = [];
 
     kpis.forEach(function (kpi, i) {
-      var total = parseInt(kpi.TotalChecklists) || 0;
-      var cumplidos = parseInt(kpi.ChecklistsCumplidos) || 0;
+      var total      = parseInt(kpi.TotalChecklists)      || 0;
+      var cumplidos  = parseInt(kpi.ChecklistsCumplidos)  || 0;
       var respondidos = parseInt(kpi.ChecklistsRespondidos) || 0;
       var pct = total > 0 ? Math.round((cumplidos / total) * 100) : 0;
 
-      var card = document.createElement('div');
-      card.className = 'kpi-gauge-card';
-      card.setAttribute('data-kpi-id', kpi.IdKpi);
-      card.innerHTML =
-        '<div id="kpiChart' + i + '">' + _buildGaugeSVG(pct) + '</div>' +
-        '<div class="kpi-name" title="' + _escapeHtml(kpi.NombreKpi) + '">' + _escapeHtml(kpi.NombreKpi) + '</div>' +
-        '<div class="kpi-fraction" id="kpiFraction' + i + '">' + respondidos + ' de ' + total + ' checklists respondidos</div>';
-      container.appendChild(card);
+      // Color del texto según porcentaje
+      var txtColor = pct < 40 ? '#e74c3c' : (pct < 75 ? '#d68910' : '#229954');
+
+      // SVG mini para la pill (viewBox compacto)
+      var miniSvg = _buildGaugeSVG(pct);
+
+      var pill = document.createElement('div');
+      pill.className = 'kpi-pill';
+      pill.setAttribute('data-kpi-id', kpi.IdKpi);
+      pill.innerHTML =
+        '<div class="kpi-pill-gauge" id="kpiChart' + i + '" style="width:90px;height:52px;overflow:hidden;">' +
+          miniSvg +
+        '</div>' +
+        '<div class="kpi-pill-info">' +
+          '<span class="kpi-pill-name" title="' + _escapeHtml(kpi.NombreKpi) + '">' + _escapeHtml(kpi.NombreKpi) + '</span>' +
+          '<span class="kpi-pill-fraction" id="kpiFraction' + i + '">' + respondidos + '/' + total + '</span>' +
+        '</div>';
+      container.appendChild(pill);
 
       kpiCharts.push({
         idKpi: kpi.IdKpi,
@@ -202,70 +212,28 @@
         index: i
       });
     });
-
-    _setupCarousel(kpis.length);
   }
 
-  // Actualizar una gráfica en tiempo real
+  // Actualizar una pill en tiempo real (tras responder un checklist)
   function _updateKpiGauge(idKpi, esCorrecta) {
     var entry = kpiCharts.find(function (c) { return c.idKpi == idKpi; });
     if (!entry) return;
 
     entry.respondidos = (entry.respondidos || 0) + 1;
-    if (esCorrecta) {
-      entry.cumplidos++;
-    }
-    
+    if (esCorrecta) entry.cumplidos++;
     var pct = entry.total > 0 ? Math.round((entry.cumplidos / entry.total) * 100) : 0;
 
-    // Re-render SVG gauge
+    // Re-render mini SVG dentro de la pill
     var chartEl = document.getElementById('kpiChart' + entry.index);
     if (chartEl) chartEl.innerHTML = _buildGaugeSVG(pct);
 
-    // Actualizar texto
+    // Actualizar texto de fracción
     var fractionEl = document.getElementById('kpiFraction' + entry.index);
-    if (fractionEl) {
-      fractionEl.textContent = entry.respondidos + ' de ' + entry.total + ' checklists respondidos';
-    }
+    if (fractionEl) fractionEl.textContent = entry.respondidos + '/' + entry.total;
   }
 
-  function _setupCarousel(total) {
-    var btnPrev = document.getElementById('kpiBtnPrev');
-    var btnNext = document.getElementById('kpiBtnNext');
-    if (!btnPrev || !btnNext) return;
+  /* _setupCarousel y _slideKpis se eliminan: ahora el scroll es nativo (CSS overflow-x: auto) */
 
-    if (total <= KPI_VISIBLE) {
-      btnPrev.style.display = 'none';
-      btnNext.style.display = 'none';
-      return;
-    }
-
-    btnNext.style.display = 'flex';
-    btnPrev.style.display = 'none';
-    var maxPage = Math.ceil(total / KPI_VISIBLE) - 1;
-    kpiPage = 0;
-
-    btnNext.onclick = function () {
-      if (kpiPage < maxPage) { kpiPage++; _slideKpis(); }
-    };
-    btnPrev.onclick = function () {
-      if (kpiPage > 0) { kpiPage--; _slideKpis(); }
-    };
-  }
-
-  function _slideKpis() {
-    var container = document.getElementById('kpiCarouselContainer');
-    if (!container) return;
-    var cardWidth = container.children[0] ? container.children[0].offsetWidth + 12 : 252;
-    var offset = kpiPage * KPI_VISIBLE * cardWidth;
-    container.style.transform = 'translateX(-' + offset + 'px)';
-
-    var btnPrev = document.getElementById('kpiBtnPrev');
-    var btnNext = document.getElementById('kpiBtnNext');
-    var maxPage = Math.ceil(container.children.length / KPI_VISIBLE) - 1;
-    btnPrev.style.display = kpiPage > 0 ? 'flex' : 'none';
-    btnNext.style.display = kpiPage < maxPage ? 'flex' : 'none';
-  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PRÓXIMOS EVENTOS

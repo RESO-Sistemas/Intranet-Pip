@@ -98,7 +98,7 @@
       return "1";
     }
 
-    // Función para guardar archivo binario (BLOB) directamente en la BD
+    // Función para guardar archivo binario (BLOB) directamente en la BD (método legacy)
     function AddArchivoFeedBlob($idFeed, $fileName, $contentType, $content){
       try {
         $conn = new Conexiones();
@@ -109,6 +109,30 @@
         return $result ? "1" : "0";
       } catch (Exception $e) {
         error_log("Error guardando archivo Feed: " . $e->getMessage());
+        return "0";
+      }
+    }
+
+    /**
+     * Guarda un archivo de imagen como Data URI (base64) en la tabla ArchivosFeed.
+     * La imagen viene del frontend ya convertida a data:image/...;base64,...
+     * Este es el mismo patrón que usa el módulo de Incidencias.
+     */
+    function addArchivoDataUri($idFeed, $dataUri) {
+      try {
+        // Validar que sea un Data URI de imagen válido
+        if (!preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/i', $dataUri)) {
+          error_log("addArchivoDataUri - Data URI inválido para idFeed: $idFeed");
+          return "0";
+        }
+        // Limpiar espacios en blanco que puedan romper el Data URI
+        $dataUri = preg_replace('/\s+/', '', $dataUri);
+        $sql = "INSERT INTO ArchivosFeed (idFeed, Archivo) VALUES (?, ?)";
+        $params = [$idFeed, $dataUri];
+        $this->ExecuteQueryWithParam($sql, $params);
+        return "1";
+      } catch (\Exception $e) {
+        error_log("Error en addArchivoDataUri: " . $e->getMessage());
         return "0";
       }
     }
@@ -315,10 +339,12 @@
               }
             }
 
-            // BATCH 4: Archivos de todos los feeds (incluir hasBlob para saber si tiene contenido binario)
+            // BATCH 4: Archivos de todos los feeds
+            // Se detecta el tipo: Data URI base64 (nuevo patrón), BLOB binario (legacy) o nombre en disco (antiguo)
             $conn6 = new Conexiones();
             $q4a = "SELECT idArchivosFeed, idFeed, Archivo, 
-                    (CASE WHEN Content IS NOT NULL AND LENGTH(Content) > 0 THEN 1 ELSE 0 END) AS hasBlob 
+                    (CASE WHEN Content IS NOT NULL AND LENGTH(Content) > 0 THEN 1 ELSE 0 END) AS hasBlob,
+                    (CASE WHEN Archivo LIKE 'data:image/%' THEN 1 ELSE 0 END) AS isDataUri
                     FROM ArchivosFeed WHERE idFeed IN ($feedIdsStr)";
             $allArchivos = $conn6->Select($q4a);
             $archivosByFeed = [];
@@ -328,8 +354,10 @@
                 if (!isset($archivosByFeed[$fid])) $archivosByFeed[$fid] = [];
                 $archivosByFeed[$fid][] = [
                   "idArchivosFeed" => $allArchivos[$j]["idArchivosFeed"],
-                  "Archivo" => $allArchivos[$j]["Archivo"],
-                  "hasBlob" => intval($allArchivos[$j]["hasBlob"])
+                  // Si es Data URI, enviarlo completo al frontend; si es nombre de archivo, solo el nombre
+                  "Archivo"        => $allArchivos[$j]["Archivo"],
+                  "hasBlob"        => intval($allArchivos[$j]["hasBlob"]),
+                  "isDataUri"      => intval($allArchivos[$j]["isDataUri"])
                 ];
               }
             }

@@ -185,9 +185,21 @@ class LineaEtica extends Conexiones
       try {
         $NoEmpleado = SessionManager::get("NoEmpleado");
         $q = "SELECT PuestoRecibeLineaEtica FROM ConfiguracionPersonalizacion";
-        $result = $this->Select($q,array());
+        $result = $this->Select($q, array());
+
+        // Verificar que existe la configuración y que el campo no es nulo
+        if (empty($result) || !isset($result[0]["PuestoRecibeLineaEtica"]) || $result[0]["PuestoRecibeLineaEtica"] === null) {
+          return json_encode(["Resultado" => true, "Siguiente" => false]);
+        }
+
         $valPuestos = $result[0]["PuestoRecibeLineaEtica"];
-        $ExpPuestos = explode(',',$valPuestos);
+
+        // Validar que el valor no esté vacío antes de explotar
+        if (empty(trim($valPuestos))) {
+          return json_encode(["Resultado" => true, "Siguiente" => false]);
+        }
+
+        $ExpPuestos = explode(',', $valPuestos);
 
         $Con2 = new Conexiones();
         $q2 = "SELECT IdPuesto FROM Empleados WHERE NoEmpleado = '$NoEmpleado'";

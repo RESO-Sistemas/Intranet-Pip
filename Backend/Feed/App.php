@@ -218,37 +218,56 @@
       
       $idGen = $resInsert["f_idFeed"];
 
-      // Procesar archivos y guardarlos como BLOB en la BD (sin crear carpetas)
+      // ── Procesar imágenes adjuntas ─────────────────────────────────────────
+      // Se convierte cada imagen a Data URI base64 y se guarda como texto en la BD.
+      // Este es el mismo patrón que usa el módulo de Incidencias (simple y robusto).
       if (isset($_FILES['filesFeedForm']) && !empty($_FILES['filesFeedForm']['name'][0])) {
           try {
+              $allowed  = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
               $cantFiles = count($_FILES['filesFeedForm']['name']);
-              $countFile = 0;
 
               for ($i = 0; $i < $cantFiles; $i++) {
-                  if (isset($_FILES['filesFeedForm']['name'][$i]) && $_FILES['filesFeedForm']['name'][$i] != '') {
-                      $file_tmp = $_FILES['filesFeedForm']['tmp_name'][$i];
-                      $namefile = $_FILES['filesFeedForm']['name'][$i];
-                      $file_extension = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-                      $countFile++;
-
-                      // Obtener metadatos del archivo
-                      $fileName = $idGen . '_' . $actDate . '_' . $countFile . "." . $file_extension;
-                      $contentType = $_FILES['filesFeedForm']['type'][$i];
-                      
-                      // Leer el contenido binario del archivo
-                      $content = file_get_contents($file_tmp);
-
-                      // Guardar en la base de datos como BLOB
-                      $insUpdateFile = new Feed();
-                      $insUpdateFile->AddArchivoFeedBlob($idGen, $fileName, $contentType, $content);
+                  if (!isset($_FILES['filesFeedForm']['name'][$i]) || $_FILES['filesFeedForm']['name'][$i] == '') {
+                      continue;
                   }
+
+                  $file_tmp = $_FILES['filesFeedForm']['tmp_name'][$i];
+                  $namefile = $_FILES['filesFeedForm']['name'][$i];
+
+                  // Detectar MIME real con finfo (más seguro que confiar en el cliente)
+                  $mimeType = $_FILES['filesFeedForm']['type'][$i];
+                  if (function_exists('finfo_open')) {
+                      $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+                      $detected = finfo_file($finfo, $file_tmp);
+                      if ($detected) $mimeType = $detected;
+                      finfo_close($finfo);
+                  }
+
+                  // Rechazar archivos que no sean imágenes
+                  if (!in_array($mimeType, $allowed)) {
+                      error_log("addPublicationFromIndex - Tipo no permitido: $mimeType ($namefile)");
+                      continue;
+                  }
+
+                  // Leer binario → convertir a Data URI base64 (igual que Incidencias)
+                  $binary = file_get_contents($file_tmp);
+                  if ($binary === false) {
+                      error_log("addPublicationFromIndex - No se pudo leer: $namefile");
+                      continue;
+                  }
+
+                  $dataUri = 'data:' . $mimeType . ';base64,' . base64_encode($binary);
+
+                  // Guardar Data URI en la columna Archivo de ArchivosFeed (TEXT/LONGTEXT)
+                  $insArchivo = new Feed();
+                  $insArchivo->addArchivoDataUri($idGen, $dataUri);
               }
           } catch (Exception $e) {
-              error_log("Error procesando archivos: " . $e->getMessage());
+              error_log("Error procesando imágenes Feed: " . $e->getMessage());
           }
       }
       
-      // Respuesta JSON de éxito (siempre responder)
+      // Respuesta JSON de éxito
       header('Content-Type: application/json');
       $arrReturn = [
           "Resultado" => true,

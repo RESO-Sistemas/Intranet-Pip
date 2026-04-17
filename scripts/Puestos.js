@@ -53,6 +53,10 @@ async function getListPuestos() {
       allowPaging: true,
       allowSelection: false,
       pageSettings: { pageSize: 10 },
+      emptyRecordTemplate: `<div class="d-flex flex-column align-items-center gap-2 py-4">
+          <span class="material-symbols-outlined" style="font-size: 48px; color: #6c757d;">info</span>
+          <h5 class="text-secondary">No se encontraron puestos registrados.</h5>
+      </div>`,
       columns: [
         { field: 'Puesto', headerText: 'PUESTO', width: 150 },
         { field: 'Division', headerText: 'DIVISION', width: 150 },
