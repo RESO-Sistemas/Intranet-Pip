@@ -201,7 +201,7 @@
   <!-- neptune Javascripts -->
 
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/Puestos.js" charset="utf-8"></script>
+  <script src="scripts/Puestos.js?v=<?= date('YmdHis') ?>" charset="utf-8"></script>
   <script type="text/javascript">
   </script>
 

@@ -1,0 +1,56 @@
+{
+  "name": "@syncfusion/ej2-angular-notifications",
+  "version": "32.1.1",
+  "description": "A package of Essential JS 2 notification components such as Toast and Badge which used to notify important information to end-users. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-notifications": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng-template",
+    "ej2-ng-notifications",
+    "ng-notifications",
+    "ng-toast",
+    "angular-toaster",
+    "angular-template",
+    "ej2-angular-notifications",
+    "angular-notifications",
+    "angular-toast",
+    "angular-toaster",
+    "ng-message",
+    "angular-message",
+    "ng-skeleton",
+    "angular-skeleton"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-notifications.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-notifications.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-notifications.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-notifications.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-notifications.mjs",
+  "typings": "syncfusion-ej2-angular-notifications.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-notifications.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-notifications.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-notifications.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-notifications.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-notifications.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-notifications.mjs"
+    }
+  }
+}

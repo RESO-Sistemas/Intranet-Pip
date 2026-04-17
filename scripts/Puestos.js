@@ -35,61 +35,80 @@ async function getListPuestos() {
   } catch (e) {
     console.log(e);
   } finally {
-    table = $("#TablePuestos").DataTable({
-      destroy: true,
-      language: {
-        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-        info: "PÁGINA _PAGE_ DE _PAGES_",
-        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-        infoFiltered: "",
-        search: "BUSCAR",
-        paginate: {
-          previous: "ANTERIOR",
-          next: "SIGUIENTE"
+    // Modify PuestoJefe data if empty
+    respuesta.forEach(r => {
+      if (!r.PuestoJefe || r.PuestoJefe.trim() === "") {
+        r.PuestoJefe = "No Disponible";
+      }
+    });
+
+    if (table) {
+      table.destroy();
+    }
+
+    ej.grids.Grid.Inject(ej.grids.Toolbar, ej.grids.Page);
+    table = new ej.grids.Grid({
+      dataSource: respuesta,
+      toolbar: ['Search'],
+      allowPaging: true,
+      allowSelection: false,
+      pageSettings: { pageSize: 10 },
+      columns: [
+        { field: 'Puesto', headerText: 'PUESTO', width: 150 },
+        { field: 'Division', headerText: 'DIVISION', width: 150 },
+        { field: 'PuestoJefe', headerText: 'JEFE', width: 150 },
+        { 
+          headerText: 'PERMISOS', 
+          width: 100, 
+          textAlign: 'Center',
+          template: `<div class="d-flex flex-nowrap gap-1 justify-content-center">
+              <button type="button" class="btn btn-warning btn-accion btn-permisos" title="Permisos"><span class="material-symbols-outlined">key</span></button>
+            </div>`
+        },
+        { 
+          headerText: 'ACTUALIZAR', 
+          width: 100, 
+          textAlign: 'Center',
+          template: `<button type="button" class="btn btn-primary btn-accion btn-editar" title="Editar"><span class="material-symbols-outlined">edit</span></button>`
+        },
+        { 
+          headerText: 'MODIFICAR JEFE', 
+          width: 120, 
+          textAlign: 'Center',
+          template: `<button type="button" class="btn btn-success btn-accion btn-jefes" title="Asignar Jefes"><span class="material-symbols-outlined">person_edit</span></button>`
+        }
+      ],
+      recordClick: (args) => {
+        const rowData = args.rowData || {};
+        const idPuesto = rowData.IdPuesto || "";
+        const puesto = rowData.Puesto || "";
+        const clickedElement = args.target;
+
+        if (!clickedElement || typeof clickedElement.closest !== "function") {
+          return;
+        }
+
+        if (clickedElement.closest('.btn-editar')) {
+          modalUpdate(idPuesto, puesto);
+          return;
+        }
+
+        if (clickedElement.closest('.btn-jefes')) {
+          openListJefes(idPuesto, puesto);
+          return;
+        }
+
+        if (clickedElement.closest('.btn-permisos')) {
+          window.location.href = `Permisos.php?Puesto=${encodeURIComponent(idPuesto)}`;
         }
       },
-      bSort: false,
-      bPaginate: true,
-      bFilter: true,
-      bInfo: false,
-      // dom: '<"fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-tl ui-corner-tr"fr>' +
-      //   't' +
-      //   '<"fg-toolbar ui-toolbar ui-widget-header ui-helper-clearfix ui-corner-bl ui-corner-br"ip>',
-      data: respuesta,
-      columns: [
-        {
-          data: "Puesto",
-        },
-        {
-          data: "Division",
-        },
-        {
-          data: "PuestoJefe",
-        },
-        {
-          data: "IdPuesto",
-          render: function (data, type, row, meta) {
-            return `<div class="d-flex flex-nowrap gap-1">
-              <a class="btn btn-warning btn-accion" title="Permisos" href="Permisos.php?Puesto=${data}"><span class="material-symbols-outlined">key</span></a>
-            </div>`;
-          },
-        },
-        {
-          data: null,
-          render: function (data, type, row, meta) {
-            return `<button class="btn btn-primary btn-accion" title="Editar" onclick="modalUpdate('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">edit</span></button>`;
-          },
-        },
-        {
-          data: null,
-          render: function (data, type, row, meta) {
-            return `<button class="btn btn-success btn-accion" title="Asignar Jefes" onclick="openListJefes('${data.IdPuesto}','${data.Puesto}')"><span class="material-symbols-outlined">person_edit</span></button>`;
-          },
-        },
-      ],
-      order: [[1, "asc"]],
+      created: () => {
+        document.getElementById(table.element.id + "_searchbar").addEventListener('keyup', (event) => {
+          table.search(event.target.value);
+        });
+      }
     });
+    table.appendTo('#TablePuestos');
     
     let contHtmlJ = '';
     contHtmlJ += `<option value="">Sin Jefe asignado</option>`;

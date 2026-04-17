@@ -1,0 +1,42 @@
+#!groovy
+
+node('EJ2Angularlatest') {
+     timeout(time:45){
+            try {
+        deleteDir()
+
+        stage('Import') {
+            git url: 'https://gitea.syncfusion.com/essential-studio/ej2-groovy-scripts.git', branch: 'master', credentialsId: env.GiteaCredentialID;
+            shared = load 'src/shared.groovy'
+        }
+
+        stage('Checkout') {
+            checkout scm
+            shared.getProjectDetails()
+            shared.gitlabCommitStatus('running')
+        }
+        
+        if(shared.checkCommitMessage()) {
+            stage('Install') {
+                shared.install()
+            }
+
+            stage('Themes') {
+                shared.runShell('gulp styles')
+            }
+
+            stage('Publish') {
+                shared.publish()
+            }
+
+        }
+
+        shared.gitlabCommitStatus('success')
+        deleteDir()
+    }
+    catch(Exception e) {
+        shared.throwError(e)
+    }
+
+}
+}

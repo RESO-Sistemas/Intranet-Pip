@@ -48,7 +48,19 @@
 <link href="./assets/syncfusion/Packages/ej2-splitbuttons/styles/tailwind.css" rel="stylesheet">
 <link href="./assets/syncfusion/Packages/ej2-grids/styles/tailwind.css" rel="stylesheet">
 
+<style>
+  /* Elimina el borde/sombra azul de la celda enfocada en Syncfusion */
+.e-grid .e-rowcell.e-focused,
+.e-grid .e-detailrowcollapse.e-focused,
+.e-grid .e-detailrowexpand.e-focused,
+.e-grid .e-focused {
+    box-shadow: none !important;
+    outline: none !important;
+}
+</style>
+
 <script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
+<script src="./scripts/syncfusion-config.js"></script>
 
 <?php
 $current_page = basename($_SERVER['PHP_SELF'], '.php');

@@ -1,0 +1,45 @@
+{
+  "name": "@syncfusion/ej2-charts",
+  "version": "33.1.44",
+  "description": "Feature-rich chart control with built-in support for over 25 chart types, technical indictors, trendline, zooming, tooltip, selection, crosshair and trackball.",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-calendars": "*",
+    "@syncfusion/ej2-data": "*",
+    "@syncfusion/ej2-excel-export": "*",
+    "@syncfusion/ej2-navigations": "*",
+    "@syncfusion/ej2-pdf-export": "*",
+    "@syncfusion/ej2-svg-base": "*"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/es6-promise": "0.0.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/requirejs": "^2.1.26"
+  },
+  "keywords": [
+    "ej2",
+    "syncfusion",
+    "ej2-charts",
+    "TypeScript",
+    "chart",
+    "graph",
+    "financial-chart",
+    "stock-chart",
+    "bullet-chart",
+    "sparkline",
+    "smith-chart",
+    "range-navigator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-javascript-ui-controls/tree/master/controls/charts"
+  },
+  "main": "./dist/ej2-charts.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-charts.es5.js",
+  "typings": "index.d.ts"
+}

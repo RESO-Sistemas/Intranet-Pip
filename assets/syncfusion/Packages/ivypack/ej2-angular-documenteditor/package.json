@@ -1,0 +1,43 @@
+{
+  "name": "@syncfusion/ej2-angular-documenteditor",
+  "version": "32.1.1",
+  "description": "Feature-rich document editor control with built-in support for context menu, options pane and dialogs. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-documenteditor": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "ej2-angular-documenteditor",
+    "angular-documenteditor",
+    "angular"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-documenteditor.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-documenteditor.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-documenteditor.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-documenteditor.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-documenteditor.mjs",
+  "typings": "syncfusion-ej2-angular-documenteditor.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-documenteditor.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-documenteditor.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-documenteditor.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-documenteditor.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-documenteditor.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-documenteditor.mjs"
+    }
+  }
+}

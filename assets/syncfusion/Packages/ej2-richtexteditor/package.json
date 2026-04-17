@@ -1,0 +1,54 @@
+{
+  "name": "@syncfusion/ej2-richtexteditor",
+  "version": "33.1.44",
+  "description": "Essential JS 2 RichTextEditor component",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "main": "./dist/ej2-richtexteditor.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-richtexteditor.es5.js",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-buttons": "*",
+    "@syncfusion/ej2-dropdowns": "*",
+    "@syncfusion/ej2-filemanager": "*",
+    "@syncfusion/ej2-inputs": "*",
+    "@syncfusion/ej2-interactive-chat": "*",
+    "@syncfusion/ej2-markdown-converter": "*",
+    "@syncfusion/ej2-navigations": "*",
+    "@syncfusion/ej2-popups": "*",
+    "@syncfusion/ej2-splitbuttons": "*"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/node": "10.14.0",
+    "@types/requirejs": "^2.1.26"
+  },
+  "keywords": [
+    "ej2",
+    "syncfusion",
+    "HTML5-rich-text-editor",
+    "wysiwyg-html-editor",
+    "rich-text-editor",
+    "markdown-editor",
+    "wysiwyg-markdown-editor",
+    "editor",
+    "rich text editor",
+    "editing",
+    "rich text",
+    "rich editor",
+    "text editor",
+    "contenteditable",
+    "wysiwyg",
+    "html",
+    "text",
+    "markdown"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-javascript-ui-controls.git"
+  },
+  "typings": "index.d.ts"
+}

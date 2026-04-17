@@ -1,0 +1,45 @@
+{
+  "name": "@syncfusion/ej2-angular-image-editor",
+  "version": "28.2.0",
+  "description": "Essential JS 2 ImageEditor for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-image-editor": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng image editor",
+    "angular image editor",
+    "angular photo editor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-image-editor.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-image-editor.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-image-editor.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-image-editor.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-image-editor.mjs",
+  "typings": "syncfusion-ej2-angular-image-editor.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-image-editor.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-image-editor.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-image-editor.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-image-editor.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-image-editor.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-image-editor.mjs"
+    }
+  }
+}

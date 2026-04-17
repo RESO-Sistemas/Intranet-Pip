@@ -1,0 +1,72 @@
+{
+  "name": "@syncfusion/ej2-angular-popups",
+  "version": "32.1.1",
+  "description": "A package of Essential JS 2 popup components such as Dialog and Tooltip that is used to display information or messages in separate pop-ups. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-popups": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng-dialog",
+    "angular-dialog",
+    "ng-tooltip",
+    "angular-tooltip",
+    "ng-spinner",
+    "angular-spinner",
+    "ng-modal",
+    "angular-modal",
+    "ng-alert",
+    "angular-alert",
+    "ng-popup",
+    "angular-popup",
+    "ng-loading-indicator",
+    "angular-loading-indicator",
+    "ng-waiting-popup",
+    "angular-waiting-popup",
+    "ng-loader",
+    "ng-busy-indicator",
+    "ng-waitingfor-loader",
+    "angular-loader",
+    "angular-busy-indicator",
+    "angular-waitingfor-loader",
+    "ng-template-tooltip",
+    "ng-positional-tooltip",
+    "ng-ajax-tooltip",
+    "ng-tooltip -component",
+    "angular-template-tooltip",
+    "angular-positional-tooltip",
+    "angular-ajax-tooltip",
+    "angular-tooltip-component"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-popups.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-popups.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-popups.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-popups.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-popups.mjs",
+  "typings": "syncfusion-ej2-angular-popups.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-popups.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-popups.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-popups.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-popups.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-popups.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-popups.mjs"
+    }
+  }
+}

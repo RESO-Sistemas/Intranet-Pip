@@ -1,0 +1,48 @@
+{
+  "name": "@syncfusion/ej2-treegrid",
+  "version": "33.1.44",
+  "description": "Essential JS 2 TreeGrid Component",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "main": "./dist/ej2-treegrid.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-treegrid.es5.js",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-data": "*",
+    "@syncfusion/ej2-grids": "*",
+    "@syncfusion/ej2-popups": "*"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/requirejs": "^2.1.26"
+  },
+  "keywords": [
+    "ej2",
+    "syncfusion",
+    "JavaScript",
+    "TypeScript",
+    "treelist",
+    "tree-table",
+    "tree-data",
+    "treegrid",
+    "table",
+    "tree-grid-component",
+    "tree-table-control",
+    "hierarchy-table",
+    "nested-grid",
+    "treeview-grid",
+    "hierarchical-grid",
+    "nested-table",
+    "parent-child-table",
+    "collapsible-table",
+    "multi-level-table"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-treegrid.git"
+  },
+  "typings": "index.d.ts"
+}

@@ -1,0 +1,58 @@
+{
+  "name": "@syncfusion/ej2-angular-gantt",
+  "version": "32.1.1",
+  "description": "Essential JS 2 Gantt Component for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-gantt": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "angular-gantt",
+    "angular-gantt-chart",
+    "gantt",
+    "gantt-chart",
+    "project-management",
+    "project-planning",
+    "task-scheduling",
+    "timeline-chart",
+    "project-tracking",
+    "project-timeline",
+    "resource-management",
+    "task-management",
+    "schedule-management",
+    "timeline-management",
+    "gantt-view",
+    "gantt-chart-component",
+    "gantt-chart-control"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-gantt.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-gantt.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-gantt.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-gantt.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-gantt.mjs",
+  "typings": "syncfusion-ej2-angular-gantt.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-gantt.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-gantt.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-gantt.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-gantt.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-gantt.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-gantt.mjs"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@syncfusion/ej2-angular-heatmap",
+  "version": "32.1.1",
+  "description": "Feature rich data visulization control used to visualize the matrix data where the individual values are represented as colors for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-heatmap": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng-heatmap",
+    "ej2-ng-heatmap"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-heatmap.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-heatmap.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-heatmap.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-heatmap.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-heatmap.mjs",
+  "typings": "syncfusion-ej2-angular-heatmap.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-heatmap.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-heatmap.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-heatmap.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-heatmap.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-heatmap.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-heatmap.mjs"
+    }
+  }
+}

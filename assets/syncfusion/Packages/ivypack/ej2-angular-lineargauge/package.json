@@ -1,0 +1,43 @@
+{
+  "name": "@syncfusion/ej2-angular-lineargauge",
+  "version": "16.42.0",
+  "description": "Essential JS 2 LinearGauge Components for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-lineargauge": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng-lineargauge",
+    "ej2-ng-lineargauge"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-lineargauge.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-lineargauge.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-lineargauge.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-lineargauge.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-lineargauge.mjs",
+  "typings": "syncfusion-ej2-angular-lineargauge.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-lineargauge.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-lineargauge.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-lineargauge.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-lineargauge.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-lineargauge.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-lineargauge.mjs"
+    }
+  }
+}

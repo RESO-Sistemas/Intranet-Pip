@@ -1,0 +1,45 @@
+{
+  "name": "@syncfusion/ej2-angular-lists",
+  "version": "32.1.1",
+  "description": "The listview control allows you to select an item or multiple items from a list-like interface and represents the data in interactive hierarchical structure across different layouts or views. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-lists": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular listview",
+    "ej2 ng lists",
+    "list component",
+    "ng template",
+    "angular6"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-lists.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-lists.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-lists.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-lists.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-lists.mjs",
+  "typings": "syncfusion-ej2-angular-lists.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-lists.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-lists.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-lists.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-lists.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-lists.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-lists.mjs"
+    }
+  }
+}

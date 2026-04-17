@@ -1,0 +1,31 @@
+import { BlockManager } from '../../base/block-manager';
+import { BlockModel } from '../../../models/index';
+export declare class TableSelectionManager {
+    private parent;
+    private multiselectStartRow;
+    private multiselectEndRow;
+    private multiselectStartCol;
+    private multiselectEndCol;
+    constructor(parent: BlockManager);
+    private addEventListener;
+    private removeEventListener;
+    attachTableEvents(table: HTMLTableElement, blockElement: HTMLElement): void;
+    private ensureCellVisible;
+    getAllCellBlocks(tableBlock: HTMLElement): BlockModel[];
+    getSelectedCellBlocks(tableBlock: HTMLElement): BlockModel[];
+    private isCaretAtHeaderBoundary;
+    private shouldMoveHorizFromHeader;
+    private handleKeyDown;
+    private clearRangeAndSetCursor;
+    private shouldMoveCellFocus;
+    private shouldMoveToAdjacentCell;
+    private isSelectionWithinCell;
+    private getCellBlockContentElements;
+    private canAllowMultiSelection;
+    private handleMultiselect;
+    private moveCellFocus;
+    private updateRectangleFocus;
+    private moveFocus;
+    private exitTableNavigation;
+    private destroy;
+}

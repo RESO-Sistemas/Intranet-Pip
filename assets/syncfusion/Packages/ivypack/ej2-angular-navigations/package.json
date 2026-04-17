@@ -1,0 +1,74 @@
+{
+  "name": "@syncfusion/ej2-angular-navigations",
+  "version": "32.1.1",
+  "description": "A package of Essential JS 2 navigation components such as Tree-view, Tab, Toolbar, Context-menu, and Accordion which is used to navigate from one page to another for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-navigations": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng-template",
+    "ej2-ng-navigations",
+    "ej2-angular-navigations",
+    "angular-navigations",
+    "ng-navigations",
+    "angular-toolbar",
+    "ng-toolbar",
+    "angular-tab",
+    "ng-tab",
+    "angular-routing",
+    "ng-routing",
+    "angular-tab-routing",
+    "ng-tab-routing",
+    "ng-contextmenu",
+    "angular-contextmenu",
+    "angular-treeview",
+    "ng-tree",
+    "ng-treeview",
+    "angular tree",
+    "angular treeview",
+    "angular2-treeview",
+    "ng-menu",
+    "angular menu",
+    "angular menubar",
+    "angular breadcrumb",
+    "ng breadcrumb",
+    "angular carousel",
+    "ng carousel",
+    "angular appbar",
+    "ng appbar",
+    "angular stepper",
+    "ng stepper"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-navigations.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-navigations.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-navigations.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-navigations.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-navigations.mjs",
+  "typings": "syncfusion-ej2-angular-navigations.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-navigations.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-navigations.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-navigations.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-navigations.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-navigations.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-navigations.mjs"
+    }
+  }
+}

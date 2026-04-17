@@ -1,0 +1,44 @@
+{
+  "name": "@syncfusion/ej2-querybuilder",
+  "version": "33.1.44",
+  "description": "Essential JS 2 QueryBuilder",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "main": "./dist/ej2-querybuilder.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-querybuilder.es5.js",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-buttons": "*",
+    "@syncfusion/ej2-calendars": "*",
+    "@syncfusion/ej2-dropdowns": "*",
+    "@syncfusion/ej2-inputs": "*",
+    "@syncfusion/ej2-splitbuttons": "*"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/es6-promise": "0.0.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/requirejs": "^2.1.26"
+  },
+  "keywords": [
+    "ej2",
+    "syncfusion",
+    "JavaScript",
+    "TypeScript",
+    "query builder",
+    "querybuilder",
+    "query designer",
+    "filter",
+    "syncfusion filter",
+    "javascript query builder",
+    "typescript query builder",
+    "syncfusion query builder"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-javascript-ui-controls/tree/master/controls/querybuilder"
+  },
+  "typings": "index.d.ts"
+}

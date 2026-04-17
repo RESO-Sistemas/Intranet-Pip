@@ -1,0 +1,44 @@
+{
+  "name": "@syncfusion/ej2-blockeditor",
+  "version": "33.1.44",
+  "description": "Feature Rich Block Editor control with built in support editing, formatting content.",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "main": "./dist/ej2-blockeditor.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-blockeditor.es5.js",
+  "typings": "index.d.ts",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-inputs": "*",
+    "@syncfusion/ej2-popups": "*",
+    "@syncfusion/ej2-lists": "*",
+    "@syncfusion/ej2-buttons": "*",
+    "@syncfusion/ej2-splitbuttons": "*",
+    "@syncfusion/ej2-dropdowns": "*",
+    "@syncfusion/ej2-notifications": "*",
+    "@syncfusion/ej2-navigations": "*",
+    "@syncfusion/ej2-progressbar": "*"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/requirejs": "^2.1.26"
+  },
+  "keywords": [
+    "ej2",
+    "syncfusion",
+    "blockeditor",
+    "blocks",
+    "editor",
+    "notion",
+    "modular-editor",
+    "block-based",
+    "inline-editor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-javascript-ui-controls.git"
+  }
+}

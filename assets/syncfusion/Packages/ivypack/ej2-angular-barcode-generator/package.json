@@ -1,0 +1,44 @@
+{
+  "name": "@syncfusion/ej2-angular-barcode-generator",
+  "version": "32.1.1",
+  "description": "Barcode generator component is a pure JavaScript library which will convert a string to Barcode and show it to the user. This supports major 1D and 2D barcodes including coda bar, code 128, QR Code. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-barcode-generator": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "ng",
+    "ng-barcodes",
+    "ej2-ng-barcodes"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-barcode-generator.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-barcode-generator.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-barcode-generator.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-barcode-generator.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-barcode-generator.mjs",
+  "typings": "syncfusion-ej2-angular-barcode-generator.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-barcode-generator.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-barcode-generator.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-barcode-generator.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-barcode-generator.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-barcode-generator.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-barcode-generator.mjs"
+    }
+  }
+}

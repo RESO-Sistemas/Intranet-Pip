@@ -1,0 +1,55 @@
+{
+  "name": "@syncfusion/ej2-angular-charts",
+  "version": "32.1.1",
+  "description": "Feature-rich chart control with built-in support for over 25 chart types, technical indictors, trendline, zooming, tooltip, selection, crosshair and trackball. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-charts": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "angular-charts",
+    "angular-accumulation-chart",
+    "angular-pie-chart",
+    "angular-stock-chart",
+    "angular-rangenavigator",
+    "angular-rangeselector",
+    "angular-sparkline",
+    "angular-sparkline-chart",
+    "angular-smith-chart",
+    "angular-bullet-chart",
+    "angular-bullet-graph",
+    "angular-chart3d",
+    "angular-circularchart3d",
+    "angular-sankey"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-charts.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-charts.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-charts.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-charts.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-charts.mjs",
+  "typings": "syncfusion-ej2-angular-charts.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-charts.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-charts.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-charts.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-charts.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-charts.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-charts.mjs"
+    }
+  }
+}

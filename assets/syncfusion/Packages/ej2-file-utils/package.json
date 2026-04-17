@@ -1,0 +1,18 @@
+{
+  "name": "@syncfusion/ej2-file-utils",
+  "version": "33.1.44",
+  "description": "Essential JS 2 File Library",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "devDependencies": {
+    "@types/chai": "^3.4.28",
+    "@types/jasmine": "2.8.9",
+    "@types/jasmine-ajax": "^3.1.27",
+    "@types/requirejs": "^2.1.26"
+  },
+  "main": "./dist/ej2-file-utils.umd.min.js",
+  "module": "./index.js",
+  "es2015": "./dist/es6/ej2-file-utils.es5.js",
+  "dependencies": {},
+  "typings": "index.d.ts"
+}

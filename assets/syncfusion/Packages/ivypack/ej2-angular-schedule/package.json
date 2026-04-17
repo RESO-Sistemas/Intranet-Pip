@@ -1,0 +1,44 @@
+{
+  "name": "@syncfusion/ej2-angular-schedule",
+  "version": "32.1.1",
+  "description": "Flexible scheduling library with more built-in features and enhanced customization options similar to outlook and google calendar, allowing the users to plan and manage their appointments with efficient data-binding support. for Angular",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "schematics": "./schematics/collection.json",
+  "dependencies": {
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-angular-base": "*",
+    "@syncfusion/ej2-schedule": "*",
+    "tslib": "^2.3.0"
+  },
+  "keywords": [
+    "angular",
+    "angular-schedule",
+    "angular-scheduler",
+    "ej2-angular-scheduler"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syncfusion/ej2-angular-ui-components.git"
+  },
+  "sideEffects": true,
+  "module": "fesm2015/syncfusion-ej2-angular-schedule.mjs",
+  "es2020": "fesm2020/syncfusion-ej2-angular-schedule.mjs",
+  "esm2020": "esm2020/syncfusion-ej2-angular-schedule.mjs",
+  "fesm2020": "fesm2020/syncfusion-ej2-angular-schedule.mjs",
+  "fesm2015": "fesm2015/syncfusion-ej2-angular-schedule.mjs",
+  "typings": "syncfusion-ej2-angular-schedule.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./syncfusion-ej2-angular-schedule.d.ts",
+      "esm2020": "./esm2020/syncfusion-ej2-angular-schedule.mjs",
+      "es2020": "./fesm2020/syncfusion-ej2-angular-schedule.mjs",
+      "es2015": "./fesm2015/syncfusion-ej2-angular-schedule.mjs",
+      "node": "./fesm2015/syncfusion-ej2-angular-schedule.mjs",
+      "default": "./fesm2020/syncfusion-ej2-angular-schedule.mjs"
+    }
+  }
+}
