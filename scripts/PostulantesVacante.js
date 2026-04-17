@@ -1324,23 +1324,34 @@ function loadComparativoCandidatos() {
     // Ordenar de mayor a menor calificación (Top Candidates)
     candidatosUnicosInfo.sort((a, b) => b.Calificacion - a.Calificacion);
 
-    let htmlChecks = '';
-    candidatosUnicosInfo.forEach((candidatoObj, index) => {
-        // Seleccionar los mejores 5 por defecto
-        const isChecked = index < 5 ? 'checked' : '';
-        htmlChecks += `
-            <li>
-                <div class="form-check" style="white-space: nowrap;">
-                    <input class="form-check-input chk-candidato-comparar" type="checkbox" value="${candidatoObj.Nombre}" id="chkComp_${index}" ${isChecked} onchange="drawComparativoResultados()">
-                    <label class="form-check-label" style="display:inline-block;" for="chkComp_${index}">
-                        ${candidatoObj.Nombre}
-                    </label>
-                </div>
-            </li>
-        `;
+    // Inyectar opciones en el select de Select2
+    const $sel = $('#selCandidatosComparar');
+
+    // Destruir instancia previa de Select2 si existe
+    if ($sel.hasClass('select2-hidden-accessible')) {
+        $sel.select2('destroy');
+    }
+
+    $sel.empty();
+    candidatosUnicosInfo.forEach((candidatoObj) => {
+        const option = new Option(candidatoObj.Nombre, candidatoObj.Nombre, true, true);
+        $sel.append(option);
     });
 
-    $('#listCheckCandidatosComparar').html(htmlChecks);
+    // Solo pre-seleccionar los primeros 5
+    const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
+    $sel.val(primerosCinco);
+
+    // Inicializar Select2
+    $sel.select2({
+        placeholder: 'Seleccionar candidatos...',
+        allowClear: true,
+        width: '100%'
+    }).on('change', function () {
+        drawComparativoResultados();
+    });
+
+    $('#listCheckCandidatosComparar').html('');
     drawComparativoResultados();
 }
 
@@ -1351,11 +1362,8 @@ function drawComparativoResultados() {
     const seleccion = $('#selComparativoEvaluaciones').val();
     if (!seleccion) return;
 
-    // Obtener candidatos seleccionados
-    const candidatosSeleccionados = [];
-    $('.chk-candidato-comparar:checked').each(function () {
-        candidatosSeleccionados.push($(this).val());
-    });
+    // Obtener candidatos seleccionados desde el select de Select2
+    const candidatosSeleccionados = $('#selCandidatosComparar').val() || [];
 
     const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion && candidatosSeleccionados.includes(i.NombreCandidato));
 
@@ -1637,28 +1645,52 @@ async function abrirEvaluacionRespuestas() {
                     // Verdadero/Falso (True/False o 1/0)
                     let rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
 
-                    let isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
+                    // Determinar qué respondió el postulante
+                    let isTrueSelected  = (rPostBool == "1" || rPostBool == "true"  || rPostBool == "verdadero");
                     let isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
 
+                    // ¿Cuál opción es la correcta?
                     let trueIsCorrect = (item.BoolCorreta == "1");
 
-                    // Estilo Opcion Verdadero
+                    // --------- Estilo de la opción VERDADERO ---------
                     let bgTrue = "", iconTrue = "";
                     if (isTrueSelected) {
-                        if (trueIsCorrect) { bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
-                        else { bgTrue = "background-color: #f8d7da; border-color: #f5c6cb;"; iconTrue = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                        // El postulante eligió Verdadero
+                        if (trueIsCorrect) {
+                            // Correctamente elegida → verde
+                            bgTrue = "background-color: #d4edda; border-color: #c3e6cb;";
+                            iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                        } else {
+                            // Elegida pero incorrecta → rojo
+                            bgTrue = "background-color: #f8d7da; border-color: #f5c6cb;";
+                            iconTrue = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>';
+                        }
                     } else if (trueIsCorrect) {
-                        bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                        // No elegida pero es la correcta → verde tenue (indicamos cuál era)
+                        bgTrue = "background-color: #d4edda; border-color: #c3e6cb;";
+                        iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
                     }
+                    // Si no fue elegida y no es correcta → sin estilo
 
-                    // Estilo Opcion Falso
+                    // --------- Estilo de la opción FALSO ---------
                     let bgFalse = "", iconFalse = "";
                     if (isFalseSelected) {
-                        if (!trueIsCorrect) { bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
-                        else { bgFalse = "background-color: #f8d7da; border-color: #f5c6cb;"; iconFalse = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                        // El postulante eligió Falso
+                        if (!trueIsCorrect) {
+                            // Correctamente elegida → verde
+                            bgFalse = "background-color: #d4edda; border-color: #c3e6cb;";
+                            iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                        } else {
+                            // Elegida pero incorrecta → rojo
+                            bgFalse = "background-color: #f8d7da; border-color: #f5c6cb;";
+                            iconFalse = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>';
+                        }
                     } else if (!trueIsCorrect) {
-                        bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
+                        // No elegida pero es la correcta → verde tenue
+                        bgFalse = "background-color: #d4edda; border-color: #c3e6cb;";
+                        iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>';
                     }
+                    // Si no fue elegida y no es correcta → sin estilo
 
                     html += `
                     <div class="list-group ps-4 w-50">

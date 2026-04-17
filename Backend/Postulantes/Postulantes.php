@@ -726,14 +726,19 @@ class Postulantes extends Conexiones
                     e.Titulo AS NombreEvaluacion, 
                     pe.Calificacion,
                     IFNULL(c.Competencia, 'General') AS Competencia, 
+                    -- ScoreCompetencia: AVG solo de preguntas evaluables (con respuesta correcta definida).
+                    -- Las preguntas de tipo Rango/texto retornan NULL para que AVG las ignore,
+                    -- evitando que bajen el promedio de la competencia a 0.
                     ROUND(AVG(
                         CASE
                             WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.BoolCorreta IS NOT NULL THEN 0
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
                                 CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
                                 OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
                             ) THEN 100
-                            ELSE 0
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
+                            ELSE NULL
                         END
                     ), 2) AS ScoreCompetencia
                 FROM PostulantesEvaluaciones pe
@@ -839,14 +844,18 @@ class Postulantes extends Conexiones
                     pv.IdPostulanteVacante,
                     pe.Calificacion,
                     IFNULL(c.Competencia, 'General') AS Competencia, 
+                    -- ScoreCompetencia comparativo: mismo fix, preguntas de rango retornan NULL
+                    -- para ser ignoradas por AVG y no bajar el score de la competencia.
                     ROUND(AVG(
                         CASE
                             WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.BoolCorreta IS NOT NULL THEN 0
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
                                 CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
                                 OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
                             ) THEN 100
-                            ELSE 0
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
+                            ELSE NULL
                         END
                     ), 2) AS ScoreCompetencia
                 FROM PostulantesEvaluaciones pe

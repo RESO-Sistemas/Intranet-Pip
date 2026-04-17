@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -70,43 +70,20 @@
               <div class="col">
                 <div class="card">
                   <div class="card-body">
+                    <div class="row mb-4 align-items-center">
+                      <div class="col">
+                        <h5 class="fw-bold mb-0">Listado de Puestos</h5>
+                      </div>
+                      <div class="col text-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoPuesto">
+                          Nuevo Puesto
+                        </button>
+                      </div>
+                    </div>
+                    
                     <div class="row">
-                      <div class="col text-center">
-                        <h5 class="fw-bold">¿Nuevo Puesto?</h5>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-12 col-md-6">
-                        <label class="form-label fw-bold">Nombre del puesto:</label>
-                        <input id="txtNameP" type="text" class="form-control form-control-solid-bordered validate">
-                      </div>
-                      <div class="col-12 col-md-6">
-                        <label class="form-label fw-bold">¿A qué división pertenece el puesto?</label>
-                        <select id="slctDivision" class="form-select">
-                          <option value="" disabled selected>Listado de divisiones</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="row mt-4">
-                      <div class="col-12 text-end">
-                        <button type="button" class="btn btn-success" id="registraPuesto">Registrar</button>
-                      </div>
-                    </div>
-                    <div class="row mt-4">
-                      <div class="table-responsive">
-                        <table class="table display text-center" id="TablePuestos">
-                          <thead>
-                            <tr>
-                              <th>PUESTO</th>
-                              <th>DIVISION</th>
-                              <th>JEFE</th>
-                              <th>PERMISOS</th>
-                              <th>ACTUALIZAR</th>
-                              <th>MODIFICAR JEFE</th>
-                            </tr>
-                          </thead>
-                          <tbody></tbody>
-                        </table>
+                      <div class="col-12">
+                        <div id="TablePuestos"></div>
                       </div>
                     </div>
 
@@ -175,6 +152,39 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Modal Nuevo Puesto -->
+        <div class="modal fade" id="modalNuevoPuesto" tabindex="-1" aria-labelledby="modalNuevoPuestoLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+              <div class="modal-header bg-transparent border-0 pb-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold" id="modalNuevoPuestoLabel">Registrar Nuevo Puesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body px-4 py-4">
+                <div class="p-4 bg-light rounded-3 border">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label fw-bold text-muted mb-1">Nombre del puesto:</label>
+                      <input id="txtNameP" type="text" class="form-control form-control-solid-bordered validate" placeholder="Ej. Desarrollador Web">
+                    </div>
+                    <div class="col-12 mt-4">
+                      <label class="form-label fw-bold text-muted mb-1">¿A qué división pertenece el puesto?</label>
+                      <select id="slctDivision" class="form-select form-control-solid-bordered">
+                        <option value="" disabled selected>Seleccione una división</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer bg-transparent border-0 pt-0 pb-4 px-4">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success px-4" id="registraPuesto">Registrar Puesto</button>
               </div>
             </div>
           </div>

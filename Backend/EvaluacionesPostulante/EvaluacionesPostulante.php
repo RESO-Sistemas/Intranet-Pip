@@ -390,14 +390,19 @@ class EvaluacionesPostulante extends Conexiones
                 ]);
             }
 
-            // Calcular calificación (preguntas con respuesta correcta definida)
-            // RespuestaCorrectaOM guarda el idPreguntasPosiblesRespuestas (ID numérico)
-            // pero PostulantesRespuestas.Respuesta puede guardar el TEXTO de la opción.
-            // Se hace JOIN a PreguntasPosiblesRespuestas para resolver el texto de la
-            // respuesta correcta y comparar contra lo que guardó el postulante.
+            // Calcular calificación solo sobre preguntas evaluables (con respuesta correcta definida).
+            // Las preguntas de tipo Rango (tipo 3) y de texto libre no tienen BoolCorreta
+            // ni RespuestaCorrectaOM, así que se excluyen del denominador para no perjudicar
+            // la calificación del postulante.
             $Con4 = new Conexiones();
             $qCalc = "SELECT
-                        COUNT(*) AS TotalPreguntas,
+                        -- Total de preguntas que SÍ tienen respuesta correcta definida
+                        SUM(CASE
+                            WHEN pc.BoolCorreta IS NOT NULL THEN 1
+                            WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 1
+                            ELSE 0
+                        END) AS TotalEvaluables,
+                        -- Cuántas de esas fueron respondidas correctamente
                         SUM(CASE
                             WHEN pc.BoolCorreta IS NOT NULL AND BINARY pr.Respuesta = BINARY CAST(pc.BoolCorreta AS CHAR) THEN 1
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
@@ -413,9 +418,10 @@ class EvaluacionesPostulante extends Conexiones
                       WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
             $resCalc = $Con4->Select($qCalc);
 
-            $totalP     = max(intval($resCalc[0]['TotalPreguntas']), 1);
-            $correctas  = intval($resCalc[0]['Correctas'] ?? 0);
-            $calificacion = round(($correctas / $totalP) * 100, 2);
+            // Denominador = preguntas evaluables (evitar división por cero)
+            $totalEvaluables = max(intval($resCalc[0]['TotalEvaluables'] ?? 0), 1);
+            $correctas       = intval($resCalc[0]['Correctas'] ?? 0);
+            $calificacion    = round(($correctas / $totalEvaluables) * 100, 2);
 
             // Marcar como completada
             $Con5 = new Conexiones();
@@ -429,7 +435,7 @@ class EvaluacionesPostulante extends Conexiones
                 "Resultado"    => true,
                 "Siguiente"    => true,
                 "ConMsg"       => true,
-                "Msg"          => "¡Evaluación finalizada! Calificación: $calificacion%",
+                "Msg"          => "¡Evaluación completada con éxito!",
                 "Calificacion" => $calificacion
             ]);
         } catch (\Exception $e) {

@@ -310,8 +310,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                         </div>
                         <h3 class="text-3xl font-bold mb-3 text-green-400">¡Evaluación completada!</h3>
                         <p class="text-gray-400 mb-2">Has finalizado esta evaluación exitosamente.</p>
-                        <div class="text-6xl font-extrabold text-[#f2bb46] my-6" id="calificacion-final">--</div>
-                        <p class="text-sm text-gray-500 mb-8">Esta evaluación ya no puede ser modificada.</p>
+                        <p class="text-sm text-gray-500 my-8">Esta evaluación ya no puede ser modificada.</p>
                         <a href="EstatusPostulante.php" class="inline-flex items-center gap-2 px-8 py-4 bg-[#f2bb46] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#f2bb46]/30 transition-all">
                             <i data-lucide="arrow-left" class="w-4 h-4"></i>
                             Volver al Portal
@@ -337,14 +336,39 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                 <i data-lucide="check-circle-2" class="w-12 h-12 text-green-500"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-3">¡Evaluación finalizada!</h3>
-            <p class="text-gray-400 mb-2">Has completado la evaluación exitosamente.</p>
-            <div class="text-5xl font-extrabold text-[#f2bb46] my-6" id="modal-calificacion">--</div>
-            <p class="text-sm text-gray-500 mb-6">Puedes ver el resultado en tu portal.</p>
+            <p class="text-gray-400 my-6">Has completado esta evaluación exitosamente.</p>
+            <p class="text-sm text-gray-500 mb-6">Puedes ver tu progreso general en tu portal.</p>
             <button 
                 onclick="window.location.href='EstatusPostulante.php'" 
                 class="w-full px-8 py-4 bg-[#f2bb46] text-black font-bold rounded-xl hover:shadow-lg hover:shadow-[#f2bb46]/30 transition-all">
                 Volver al Portal
             </button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación (reemplaza confirm() nativo) -->
+    <div id="modal-confirmacion" class="modal-backdrop fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="modal-content-wrapper w-full max-w-md bg-[#1a1a1a] rounded-2xl border border-white/10 shadow-2xl p-8 text-center scale-95 opacity-0">
+            <div class="w-20 h-20 rounded-full bg-[#f2bb46]/20 flex items-center justify-center mb-5 mx-auto border border-[#f2bb46]/30">
+                <i data-lucide="help-circle" class="w-10 h-10 text-[#f2bb46]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">¿Finalizar evaluación?</h3>
+            <p class="text-gray-400 mb-8">Una vez finalizada no podrás modificar tus respuestas. ¿Estás seguro de continuar?</p>
+            
+            <div class="flex gap-4">
+                <button 
+                    onclick="cerrarModalConfirmacion()" 
+                    class="flex-1 px-6 py-3 bg-white/10 text-white font-bold rounded-xl border border-white/20 hover:bg-white/20 transition-all">
+                    Cancelar
+                </button>
+                <button 
+                    onclick="ejecutarFinalizarEvaluacion()" 
+                    id="btn-confirmar-finalizar"
+                    class="flex-1 px-6 py-3 bg-[#f2bb46] text-black font-extrabold rounded-xl hover:shadow-[0_0_20px_rgba(242,187,70,0.4)] transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    Finalizar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -730,7 +754,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
         // ==========================================
         // FINALIZAR EVALUACIÓN
         // ==========================================
-        async function finalizarEvaluacion() {
+        function finalizarEvaluacion() {
             if (ESTATUS_EVALUACION === 3) {
                 mostrarToast('Esta evaluación ya está completada', 'warning');
                 return;
@@ -742,9 +766,40 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                 return;
             }
             
-            if (!confirm('¿Estás seguro de finalizar esta evaluación? Una vez finalizada no podrás modificar tus respuestas.')) {
-                return;
-            }
+            // Mostrar modal de confirmación en lugar de alert/confirm nativo
+            mostrarModalConfirmacion();
+        }
+
+        function mostrarModalConfirmacion() {
+            const modal = document.getElementById('modal-confirmacion');
+            const modalContent = modal.querySelector('.modal-content-wrapper');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            lucide.createIcons();
+        }
+
+        function cerrarModalConfirmacion() {
+            const modal = document.getElementById('modal-confirmacion');
+            const modalContent = modal.querySelector('.modal-content-wrapper');
+            
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        async function ejecutarFinalizarEvaluacion() {
+            cerrarModalConfirmacion();
             
             const btnFinalizar = document.getElementById('btn-finalizar');
             const textoOriginal = btnFinalizar.innerHTML;
@@ -771,7 +826,7 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
                 renderDebugJson();
                 
                 if (data.Resultado) {
-                    mostrarModalExito(data.Calificacion);
+                    mostrarModalExito();
                 } else {
                     mostrarToast(data.Msg || 'Error al finalizar evaluación', 'error');
                     btnFinalizar.disabled = false;
@@ -803,11 +858,9 @@ $nombre_candidato = $_SESSION['nombre_candidato'];
         // ==========================================
         // MOSTRAR MODAL ÉXITO
         // ==========================================
-        function mostrarModalExito(calificacion) {
+        function mostrarModalExito() {
             const modal = document.getElementById('modal-exito');
             const modalContent = modal.querySelector('.modal-content-wrapper');
-            
-            document.getElementById('modal-calificacion').textContent = `${parseFloat(calificacion).toFixed(0)}%`;
             
             modal.classList.remove('hidden');
             modal.classList.add('flex');

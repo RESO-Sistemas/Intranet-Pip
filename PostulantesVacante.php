@@ -15,6 +15,8 @@
     <!-- Styles adicionales -->
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
     <link href="https://cdn.syncfusion.com/ej2/20.3.56/css/tailwind.css" rel="stylesheet">
+    <!-- Select2 para selectores mejorados -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
         .detail-section {
             background-color: #f8f9fa;
@@ -830,18 +832,10 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Seleccione Candidatos a comparar:</label>
-                            <div class="dropdown">
-                                <button
-                                    class="btn btn-outline-secondary w-100 text-start dropdown-toggle bg-white text-dark"
-                                    type="button" id="dropdownCandidatosComparar" data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside" aria-expanded="false">
-                                    Seleccionar candidatos...
-                                </button>
-                                <ul class="dropdown-menu w-100 p-3 shadow" aria-labelledby="dropdownCandidatosComparar"
-                                    id="listCheckCandidatosComparar" style="max-height: 250px; overflow-y: auto;">
-                                    <!-- Injected by JS -->
-                                </ul>
-                            </div>
+                            <select id="selCandidatosComparar" class="form-control" multiple="multiple"
+                                style="width: 100%;">
+                                <!-- Opciones inyectadas por JS -->
+                            </select>
                         </div>
                     </div>
                     <hr>
@@ -942,6 +936,8 @@
     <?php include("scripts.php"); ?>
 
     <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
     <script src="scripts/PostulantesVacante.js?v=<?php echo filemtime('scripts/PostulantesVacante.js'); ?>"></script>
 </body>
