@@ -145,7 +145,7 @@
 
                       <div class="col">
 
-                        <a class="btn btn-primary" id="#statusModal" href="Feed.php">Nuevo Feed</a>
+                        <a class="btn btn-primary" id="#statusModal" href="Feed.php?legacy=1">Nueva Publicacion</a>
 
                       </div>
 

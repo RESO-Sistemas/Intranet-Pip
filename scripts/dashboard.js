@@ -3,19 +3,37 @@
   'use strict';
 
   const API_DASHBOARD = 'Backend/Dashboard/App.php';
+  const DASHBOARD_POLL_MS = 45000;
   let kpiCharts = [];      // { chart, idKpi, total, cumplidos }
   let kpiDataArr = [];     // datos crudos de KPIs
   let checklistsData = []; // datos de checklists para mapeo
   let turnosData = [];     // datos de turnos para mapeo
+  let dashboardPollHandle = null;
+  let lastDashboardHash = '';
+  let dashboardRefreshQueued = false;
   let kpiPage = 0;
   const KPI_VISIBLE = 3;
   window.dashboardChecklist = { pending: null };
 
-  // ─── Init ────────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', async function () {
-    // Una sola petición para todo el dashboard
+  window.addEventListener('dashboard:refresh', function () {
+    if (dashboardRefreshQueued) return;
+    dashboardRefreshQueued = true;
+    setTimeout(function () {
+      dashboardRefreshQueued = false;
+      _refreshDashboard(false);
+    }, 250);
+  });
+
+  async function _refreshDashboard(forceRender = false) {
     try {
       const res = await $.ajax({ url: API_DASHBOARD, type: 'POST', data: { op: 'getDashboardAll' }, dataType: 'json' });
+      const currentHash = JSON.stringify(res || {});
+
+      if (!forceRender && currentHash === lastDashboardHash) {
+        return;
+      }
+
+      lastDashboardHash = currentHash;
       turnosData = res.turnos || [];
       kpiDataArr = res.kpis || [];
       _renderKpiGauges(kpiDataArr);
@@ -23,7 +41,7 @@
       checklistsData = res.checklists || [];
       _renderChecklists(checklistsData);
     } catch (e) {
-      console.error('Error cargando dashboard:', e);
+      console.error('Error actualizando dashboard:', e);
       // Fallback: intentar cargar por separado
       await Promise.all([
         _fetchTurnos(),
@@ -31,6 +49,32 @@
         _fetchEventos(),
         _fetchChecklists()
       ]);
+    }
+  }
+
+  // ─── Init ────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', async function () {
+    await _refreshDashboard(true);
+
+    if (dashboardPollHandle) {
+      clearInterval(dashboardPollHandle);
+    }
+
+    dashboardPollHandle = setInterval(function () {
+      if (document.hidden) return;
+      _refreshDashboard(false);
+    }, DASHBOARD_POLL_MS);
+  });
+
+  window.addEventListener('beforeunload', function () {
+    if (dashboardPollHandle) {
+      clearInterval(dashboardPollHandle);
+    }
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      _refreshDashboard(false);
     }
   });
 

@@ -65,7 +65,7 @@ $("#CrearFeed").click(function () {
           </div>`;
           showBootstrapAlertSuc(messageContent, "top-right", 5000);
           setTimeout(function () {
-            window.location.href = `index.php`;
+            window.location.href = `ListadoFeed.php`;
           }, 1000);
         } else if (response == "0") {
           // toastr.warning("Algo salió mal, Intente de nuevo");

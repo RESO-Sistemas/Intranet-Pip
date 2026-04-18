@@ -1,5 +1,6 @@
 <?php
   include("Feed.php");
+  require_once(__DIR__ . "/../../Backend/Sse/SseVersionStore.php");
   $Feed = new Feed();
   $op = $_POST["op"];
 
@@ -36,6 +37,7 @@
         $NombreArchivo = substr($NombreArchivo, 0, -1);
         $Feed2 = new Feed();
         $Feed2->AddNombreArchivoFeed($LAST_ID_FEED,$NombreArchivo);
+        SseVersionStore::bump('feed');
         echo "1";
     }else {
         return "Ingrese minimo un archivo";
@@ -50,21 +52,31 @@
     $NoEmpleado = $_POST["NoEmpleado"];
     $idFeed = $_POST["idFeed"];
     $Comentario = $_POST["Comentario"];
-    echo trim($Feed->addComentariosFeed($NoEmpleado,$idFeed,$Comentario));
+    $result = trim($Feed->addComentariosFeed($NoEmpleado,$idFeed,$Comentario));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "MeGustaFeed") {
     $NoEmpleado = $_POST["NoEmpleado"];
     $idFeed = $_POST["FeedId"];
     $idTipoReaccion = $_POST["idTipoReaccion"];
-    echo trim($Feed->MeGustaFeed($NoEmpleado,$idFeed,$idTipoReaccion));
+    $result = trim($Feed->MeGustaFeed($NoEmpleado,$idFeed,$idTipoReaccion));
+    SseVersionStore::bump('feed');
+    echo $result;
   }
 
   if ($op == "makeComment") {
     $commentary = nl2br($_POST["commentary"]);
     $i_Feed = $_POST["i_Feed"];
     $NoEmpleado = $_POST["NoEmpleado"];
-    echo trim($Feed->makeComment($commentary, $i_Feed, $NoEmpleado));
+    $result = trim($Feed->makeComment($commentary, $i_Feed, $NoEmpleado));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "addPublicationFromIndex") {
@@ -114,6 +126,7 @@
           // Actualizar nombre de archivos en la base de datos
           $insUpdateNameFile = new Feed();
           $insUpdateNameFile->AddNombreArchivoFeed($idGen, $NameFile);
+          SseVersionStore::bump('feed');
 
           // Respuesta JSON de éxito
           echo 1;
@@ -132,6 +145,10 @@
     $type = $_POST["type"];
     $comment = $_POST["comment"];
     $NoEmpleado = $_POST["NoEmpleado"];
-    echo trim($Feed->reactsToComment($type, $comment, $NoEmpleado));
+    $result = trim($Feed->reactsToComment($type, $comment, $NoEmpleado));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
  ?>

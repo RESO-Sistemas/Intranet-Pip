@@ -179,6 +179,86 @@ $MenuP = $Conf->getMenusPadre();
       padding: 0;
     }
 
+    .feed-empty-state {
+      background: linear-gradient(145deg, #ffffff, #fff8ef);
+      border: 1px solid #ffd7b2;
+      border-radius: 12px;
+      padding: 28px 20px;
+      text-align: center;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(255, 120, 40, .08);
+    }
+    .feed-empty-icon {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #fff0de;
+      color: #ff7a18;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.55rem;
+    }
+    .feed-empty-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #2f2f2f;
+      margin-bottom: 6px;
+    }
+    .feed-empty-text {
+      font-size: .86rem;
+      color: #666;
+      margin: 0;
+    }
+
+    .feed-skeleton-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .feed-skeleton-more { margin-top: 6px; }
+    .feed-skeleton-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .feed-skeleton-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #eceff1;
+    }
+    .feed-skeleton-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .feed-skeleton-line {
+      height: 12px;
+      border-radius: 999px;
+      background: #eceff1;
+    }
+    .feed-skeleton-line-sm { width: 35%; }
+    .feed-skeleton-line-md { width: 62%; }
+    .feed-skeleton-line-lg { width: 88%; }
+    .feed-skeleton-shimmer {
+      background-image: linear-gradient(90deg, #eceff1 0%, #f7f8fa 45%, #eceff1 100%);
+      background-size: 200% 100%;
+      animation: feedSkeletonShimmer 1.15s linear infinite;
+    }
+    @keyframes feedSkeletonShimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
 
     /* Tarjeta de post estilo Reddit */
     .reddit-post-card {
@@ -485,7 +565,7 @@ $MenuP = $Conf->getMenusPadre();
       color: #222;
       text-decoration: none;
     }
-    .rpc-action-btn.liked { color: #E91E63; }
+    .rpc-action-btn.liked { color: #FFC107; }
     .rpc-action-btn.congrat { color: #8E24AA; }
 
     /* Zona de comentarios dentro del post */
@@ -551,6 +631,28 @@ $MenuP = $Conf->getMenusPadre();
     }
 
     body.dark-mode .reddit-feed-wrapper { background: #1a1a1b; }
+    body.dark-mode .feed-empty-state {
+      background: linear-gradient(145deg, #272729, #1f1f20);
+      border-color: #3c3c3d;
+      box-shadow: none;
+    }
+    body.dark-mode .feed-empty-icon {
+      background: #333436;
+      color: #ffc107;
+    }
+    body.dark-mode .feed-empty-title { color: #f0f0f0; }
+    body.dark-mode .feed-empty-text { color: #b3b3b4; }
+    body.dark-mode .feed-skeleton-card {
+      background: #1f1f20;
+      border-color: #343536;
+    }
+    body.dark-mode .feed-skeleton-avatar,
+    body.dark-mode .feed-skeleton-line {
+      background: #2c2d2f;
+    }
+    body.dark-mode .feed-skeleton-shimmer {
+      background-image: linear-gradient(90deg, #2c2d2f 0%, #3a3b3d 45%, #2c2d2f 100%);
+    }
     body.dark-mode .reddit-post-card { background: #1a1a1b; border-color: #343536; }
     body.dark-mode .reddit-post-card:hover { border-color: #818384; }
     body.dark-mode .rpc-title { color: #d7dadc; }
@@ -620,21 +722,25 @@ $MenuP = $Conf->getMenusPadre();
             </div>
 
 
+            <div class="row">
+              <div class="col-12">
+                <!-- KPI Pills — fila scrollable horizontal de ancho completo -->
+                <div id="kpiCarouselWrapper">
+                  <div id="kpiCarouselContainer" class="kpi-pills-row">
+                    <!-- Se llena dinámicamente vía dashboard.js -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- NOVEDADES + ESPACIO DERECHA — Estilo Reddit -->
-            <div class="row g-3">
+            <div class="row g-3 align-items-start">
 
               <!-- ═══════════════════════════════════════
                    Columna principal: Feed estilo Reddit
               ═══════════════════════════════════════ -->
               <div class="col-12 col-lg-8">
 
-
-                <!-- KPI Pills — fila scrollable horizontal encima del feed -->
-                <div id="kpiCarouselWrapper">
-                  <div id="kpiCarouselContainer" class="kpi-pills-row">
-                    <!-- Se llena dinámicamente vía dashboard.js -->
-                  </div>
-                </div>
 
                 <!-- Post Compose Box — formulario inline expansible -->
                 <div class="post-compose-box" id="postComposeBox">
@@ -697,13 +803,15 @@ $MenuP = $Conf->getMenusPadre();
                           <i class="fas fa-paper-plane me-1"></i> Publicar
                         </button>
                       </div>
+                      <div id="composePublishStatus" class="small text-muted mt-2 d-none">
+                        <i class="fa fa-spinner fa-spin me-1"></i> Publicando tu post, espera un momento...
+                      </div>
                     </div>
                   </div>
 
                 </div><!-- /post-compose-box -->
 
                 <?php include("components/modalIncidencia.html"); ?>
-
 
                 <!-- Feed de publicaciones -->
                 <div class="reddit-feed-wrapper">
@@ -794,6 +902,9 @@ $MenuP = $Conf->getMenusPadre();
       }, 50);
     }
     function closeComposeForm() {
+      if (typeof setComposePublishingState === 'function') {
+        setComposePublishingState(false);
+      }
       // Mostrar trigger row / acciones
       document.getElementById('postComposeTriggerRow').style.display  = 'flex';
       document.getElementById('postComposeDivider').style.display     = 'block';
@@ -803,7 +914,17 @@ $MenuP = $Conf->getMenusPadre();
       // Limpiar campos
       var form = document.getElementById('formFeed');
       if (form) form.reset();
+      if (typeof resetFeedUploader === 'function') {
+        resetFeedUploader();
+      }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('compose') === '1') {
+        openComposeForm();
+      }
+    });
   </script>
 
 </body>

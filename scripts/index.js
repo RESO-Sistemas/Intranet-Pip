@@ -124,13 +124,17 @@ let modalComments = new tingle.modal({
 //   }
 // });
 
-// Inicializar fileUpload solo si el plugin y el elemento existen
-if ($("#fileUpload").length && typeof $.fn.fileUpload === 'function') {
-  $("#fileUpload").fileUpload({
-    id: "filesFeedForm",
-    multiple: true,
-  });
+function resetFeedUploader() {
+  if ($("#fileUpload").length && typeof $.fn.fileUpload === 'function') {
+    $("#fileUpload").fileUpload({
+      id: "filesFeedForm",
+      multiple: true,
+    });
+  }
 }
+
+// Inicializar fileUpload solo si el plugin y el elemento existen
+resetFeedUploader();
 
 //nuevo funcionamiento para el nuevo modal
 
@@ -156,17 +160,36 @@ if (btnActionGreen) {
   btnActionGreen.addEventListener("click", async function () {
     let resultV = await verifyInputs("formFeed");
     if (resultV) {
-      // Guardar el post
-      saveInfoFeed();
-
-      // Cerrar el formulario inline y restaurar el trigger
-      if (typeof closeComposeForm === 'function') {
-        closeComposeForm();
+      setComposePublishingState(true);
+      let saved = false;
+      try {
+        saved = await saveInfoFeed();
+      } finally {
+        setComposePublishingState(false);
       }
 
-      // Recargar el feed desde la primera página
-      currentFeedPage = 1;
-      loadFeeds(1);
+      if (saved) {
+        // Cerrar el formulario inline y restaurar el trigger
+        if (typeof closeComposeForm === 'function') {
+          closeComposeForm();
+        }
+
+        // Recargar el feed desde la primera página
+        currentFeedPage = 1;
+        if (window.EventSource && !document.hidden) {
+          if (publishRefreshFallbackTimer) {
+            clearTimeout(publishRefreshFallbackTimer);
+          }
+          publishRefreshFallbackTimer = setTimeout(function () {
+            publishRefreshFallbackTimer = null;
+            loadFeeds(1);
+          }, 3000);
+        } else {
+          loadFeeds(1);
+        }
+      } else {
+        toastr.error("No se pudo publicar. Intenta de nuevo.");
+      }
 
       // Ocultar modal Bootstrap si estuviera abierto (compatibilidad)
       if (typeof modal !== 'undefined') {
@@ -195,8 +218,8 @@ $(document).ready(function () {
       eventListToggler: false,
       calendarEvents: null,
     });
+    getAgenda();
   }
-  getAgenda();
 
   $(".zoom").hover(
     function () {
@@ -209,20 +232,423 @@ $(document).ready(function () {
 });
 
 var currentFeedPage = 1;
+var feedAutoRefreshHandle = null;
+var isFeedLoading = false;
+var feedRealtimeSource = null;
+var feedRealtimeReconnectTimer = null;
+var realtimeFeedVersion = 0;
+var realtimeDashboardVersion = 0;
+var deferredProfileDataScheduled = false;
+var divisionsLoaded = false;
+var collaboratorsLoaded = false;
+var publishRefreshFallbackTimer = null;
+var isFeedLoadingMore = false;
+var feedHasMorePages = true;
+var feedInfiniteObserver = null;
+var feedPageSize = 8;
+var hasFeedRenderedOnce = false;
+var feedPrefetchCache = {};
+var feedPrefetchInFlight = {};
+
+function setComposePublishingState(isPublishing) {
+  const composeStatus = document.getElementById("composePublishStatus");
+
+  if (btnActionGreen) {
+    if (!btnActionGreen.dataset.defaultLabel) {
+      btnActionGreen.dataset.defaultLabel = btnActionGreen.innerHTML;
+    }
+
+    if (isPublishing) {
+      btnActionGreen.disabled = true;
+      btnActionGreen.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Publicando...';
+    } else {
+      btnActionGreen.disabled = false;
+      btnActionGreen.innerHTML = btnActionGreen.dataset.defaultLabel;
+    }
+  }
+
+  if (composeStatus) {
+    composeStatus.classList.toggle("d-none", !isPublishing);
+  }
+}
+
+async function requestFeedPage(page) {
+  if (feedPrefetchCache[page]) {
+    return { valid: true, data: feedPrefetchCache[page] };
+  }
+
+  if (feedPrefetchInFlight[page]) {
+    const inflightData = await feedPrefetchInFlight[page];
+    return { valid: Array.isArray(inflightData), data: inflightData || [] };
+  }
+
+  const datos = { op: "loadFeeds", page: page, lightweight: 1, limit: feedPageSize };
+  const requestPromise = $.ajax({
+    type: "post",
+    url: "Backend/Feed/App.php",
+    data: datos,
+    dataType: "json",
+  })
+    .then(function (ajaxResponse) {
+      if (Array.isArray(ajaxResponse)) {
+        feedPrefetchCache[page] = ajaxResponse;
+        return ajaxResponse;
+      }
+      return null;
+    })
+    .catch(function (e) {
+      console.log("Error en requestFeedPage ajax:", e);
+      return null;
+    });
+
+  feedPrefetchInFlight[page] = requestPromise;
+  let resultData = null;
+  try {
+    resultData = await requestPromise;
+  } finally {
+    delete feedPrefetchInFlight[page];
+  }
+
+  return {
+    valid: Array.isArray(resultData),
+    data: Array.isArray(resultData) ? resultData : [],
+  };
+}
+
+function prefetchFeedPage(page) {
+  if (!feedHasMorePages) return;
+  if (page <= currentFeedPage) return;
+  if (feedPrefetchCache[page] || feedPrefetchInFlight[page]) return;
+  requestFeedPage(page);
+}
+
+function initPendingFeedGalleries() {
+  const pendingFeeds = Array.from(
+    document.querySelectorAll(".galleryImgCl:not(.ug-initialized)")
+  );
+
+  if (pendingFeeds.length === 0) return;
+
+  const batchSize = 2;
+
+  const runBatch = function (startIndex) {
+    const endIndex = Math.min(startIndex + batchSize, pendingFeeds.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const f = pendingFeeds[i];
+      f.classList.add("ug-initialized");
+      $(f).unitegallery({
+        gallery_images_selector: "> img", // Solo procesar hijos directos de tipo img
+        gallery_skin: "alexis",
+        gallery_width: "100%",
+        slider_scale_mode: "fit",
+        slider_transition: "fade",
+        thumb_overlay_color: "#363636",
+        strippanel_background_color: "#000c1f",
+        slider_enable_fullscreen_button: true,
+        theme_panel_position: "bottom",
+        slider_enable_zoom_panel: true,
+        slider_zoompanel_skin: "",
+        slider_zoompanel_align_hor: "right",
+        slider_zoompanel_align_vert: "top",
+        slider_zoompanel_offset_hor: 12,
+        slider_zoompanel_offset_vert: 10,
+        slider_enable_progress_indicator: true,
+        slider_enable_play_button: true,
+      });
+    }
+
+    if (endIndex < pendingFeeds.length) {
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(function () {
+          runBatch(endIndex);
+        });
+      } else {
+        setTimeout(function () {
+          runBatch(endIndex);
+        }, 0);
+      }
+      return;
+    }
+
+    $(".ug-slider-control.ug-button-play.ug-skin-alexis").click();
+    $(".ug-slider-control.ug-button-play.ug-skin-alexis").hide();
+  };
+
+  runBatch(0);
+}
+function buildFeedSkeletonMarkup(count = 3) {
+  let skeletonItems = "";
+  for (let i = 0; i < count; i++) {
+    skeletonItems += `
+      <div class="feed-skeleton-card">
+        <div class="feed-skeleton-avatar feed-skeleton-shimmer"></div>
+        <div class="feed-skeleton-body">
+          <div class="feed-skeleton-line feed-skeleton-line-sm feed-skeleton-shimmer"></div>
+          <div class="feed-skeleton-line feed-skeleton-line-lg feed-skeleton-shimmer"></div>
+          <div class="feed-skeleton-line feed-skeleton-line-md feed-skeleton-shimmer"></div>
+        </div>
+      </div>`;
+  }
+  return `<div class="feed-skeleton-wrap">${skeletonItems}</div>`;
+}
+
+function showFeedInitialSkeleton() {
+  $("#ContenidoFeed").html(buildFeedSkeletonMarkup(3));
+  $("#btnLoadMoreContainer").hide();
+}
+
+function showFeedLoadMoreSkeleton() {
+  if (document.getElementById("feedLoadMoreSkeleton")) return;
+  $("#ContenidoFeed").append(
+    `<div id="feedLoadMoreSkeleton" class="feed-skeleton-more">${buildFeedSkeletonMarkup(2)}</div>`
+  );
+}
+
+function hideFeedLoadMoreSkeleton() {
+  const skeletonMore = document.getElementById("feedLoadMoreSkeleton");
+  if (skeletonMore) {
+    skeletonMore.remove();
+  }
+}
+
+function initFeedInfiniteScroll() {
+  if (feedInfiniteObserver) return;
+
+  const loadMoreContainer = document.getElementById("btnLoadMoreContainer");
+  if (!loadMoreContainer || !window.IntersectionObserver) return;
+
+  feedInfiniteObserver = new IntersectionObserver(
+    function (entries) {
+      const firstEntry = entries[0];
+      if (!firstEntry || !firstEntry.isIntersecting) return;
+      if (!feedHasMorePages || isFeedLoading || isFeedLoadingMore || document.hidden) return;
+
+      currentFeedPage += 1;
+      loadFeeds(currentFeedPage);
+    },
+    {
+      root: null,
+      rootMargin: "1200px 0px 1200px 0px",
+      threshold: 0,
+    }
+  );
+
+  feedInfiniteObserver.observe(loadMoreContainer);
+}
+
+function closeRealtimeFeedStream() {
+  if (feedRealtimeSource) {
+    feedRealtimeSource.close();
+    feedRealtimeSource = null;
+  }
+}
+
+function scheduleRealtimeFeedReconnect(delayMs = 1500) {
+  if (feedRealtimeReconnectTimer) return;
+  feedRealtimeReconnectTimer = setTimeout(function () {
+    feedRealtimeReconnectTimer = null;
+    startRealtimeFeedStream();
+  }, delayMs);
+}
+
+function startRealtimeFeedStream() {
+  if (document.hidden) return;
+  if (!window.EventSource) return;
+
+  closeRealtimeFeedStream();
+
+  const params = new URLSearchParams({
+    op: "streamUpdates",
+    scope: "feed,dashboard",
+    feedV: String(realtimeFeedVersion),
+    dashV: String(realtimeDashboardVersion),
+  });
+
+  feedRealtimeSource = new EventSource(`Backend/Feed/App.php?${params.toString()}`);
+
+  feedRealtimeSource.addEventListener("feed_update", function (event) {
+    if (publishRefreshFallbackTimer) {
+      clearTimeout(publishRefreshFallbackTimer);
+      publishRefreshFallbackTimer = null;
+    }
+
+    try {
+      const data = JSON.parse(event.data || "{}");
+      realtimeFeedVersion = parseInt(data.version || realtimeFeedVersion, 10);
+    } catch (e) {
+      console.log("Error parseando feed_update SSE:", e);
+    }
+
+    if (currentFeedPage === 1) {
+      loadFeeds(1);
+    } else {
+      $("#btnLoadMoreContainer").show();
+    }
+
+    closeRealtimeFeedStream();
+    scheduleRealtimeFeedReconnect(1000);
+  });
+
+  feedRealtimeSource.addEventListener("dashboard_update", function (event) {
+    try {
+      const data = JSON.parse(event.data || "{}");
+      realtimeDashboardVersion = parseInt(data.version || realtimeDashboardVersion, 10);
+    } catch (e) {
+      console.log("Error parseando dashboard_update SSE:", e);
+    }
+
+    window.dispatchEvent(new CustomEvent("dashboard:refresh", {
+      detail: { source: "sse" }
+    }));
+
+    closeRealtimeFeedStream();
+    scheduleRealtimeFeedReconnect(1000);
+  });
+
+  feedRealtimeSource.addEventListener("done", function () {
+    closeRealtimeFeedStream();
+    scheduleRealtimeFeedReconnect(1000);
+  });
+
+  feedRealtimeSource.onerror = function () {
+    closeRealtimeFeedStream();
+    scheduleRealtimeFeedReconnect(4000);
+  };
+}
+
+startFeedAutoRefresh();
+initFeedInfiniteScroll();
 loadAll();
+
+function getInitialsFromName(fullName) {
+  if (!fullName) return "U";
+  const parts = String(fullName)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (parts.length === 0) return "U";
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+
+  return (
+    parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
+  ).toUpperCase();
+}
+
+function buildAvatarDataUriFromName(fullName) {
+  const palette = ["#ff7a18", "#00a896", "#3a86ff", "#2a9d8f", "#e76f51", "#6a4c93"];
+  const normalized = String(fullName || "Usuario");
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i += 1) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const bg = palette[Math.abs(hash) % palette.length];
+  const initials = getInitialsFromName(normalized);
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'><rect width='96' height='96' rx='48' fill='${bg}'/><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' fill='#ffffff' font-family='Arial, sans-serif' font-size='36' font-weight='700'>${initials}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function getProfileAvatarUrl(imageName, employeeNumber, fullName) {
+  if (imageName) {
+    return `Archivos/ImgEmpleados/${employeeNumber}/${imageName}`;
+  }
+  return buildAvatarDataUriFromName(fullName);
+}
+
 async function loadAll() {
   currentFeedPage = 1;
-  // Cargar todo en paralelo para que el feed no espere a las demás
+  // Carga crítica inicial para acelerar el primer render.
   await Promise.all([
     getDatosEmpleado(),
-    getColaboradores(),
-    loadFeeds(1),
-    llenadoSelectDivision()
+    loadFeeds(1)
   ]);
+
+  scheduleDeferredProfileDataLoad();
+  startRealtimeFeedStream();
 }
+
+function scheduleDeferredProfileDataLoad() {
+  if (deferredProfileDataScheduled) return;
+
+  const hasDivisionSelect = !!document.getElementById("slctDivision");
+  const hasCollaboratorsContainers = !!(
+    document.getElementById("divColaboradoreslvl") ||
+    document.getElementById("divColaboradoreslv2") ||
+    document.getElementById("divColaboradoreslv3") ||
+    document.getElementById("divColaboradoreslv4") ||
+    document.getElementById("divColaboradoreslv5") ||
+    document.getElementById("divColaboradoreslv6") ||
+    document.getElementById("divColaboradoreslv7")
+  );
+
+  if (!hasDivisionSelect && !hasCollaboratorsContainers) {
+    return;
+  }
+
+  deferredProfileDataScheduled = true;
+
+  const loadDeferredData = function () {
+    const jobs = [];
+    if (hasDivisionSelect) jobs.push(llenadoSelectDivision());
+    if (hasCollaboratorsContainers) jobs.push(getColaboradores());
+
+    Promise.all(jobs).catch(function (e) {
+      console.log("Error en carga diferida de datos de perfil:", e);
+    });
+  };
+
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(loadDeferredData, { timeout: 2500 });
+  } else {
+    setTimeout(loadDeferredData, 1200);
+  }
+}
+
+function startFeedAutoRefresh() {
+  if (feedAutoRefreshHandle) {
+    clearInterval(feedAutoRefreshHandle);
+  }
+
+  feedAutoRefreshHandle = setInterval(function () {
+    if (document.hidden) return;
+    if (currentFeedPage !== 1) return;
+    loadFeeds(1);
+  }, 120000);
+}
+
+window.addEventListener("beforeunload", function () {
+  if (feedAutoRefreshHandle) {
+    clearInterval(feedAutoRefreshHandle);
+  }
+  closeRealtimeFeedStream();
+  if (feedRealtimeReconnectTimer) {
+    clearTimeout(feedRealtimeReconnectTimer);
+    feedRealtimeReconnectTimer = null;
+  }
+  if (publishRefreshFallbackTimer) {
+    clearTimeout(publishRefreshFallbackTimer);
+    publishRefreshFallbackTimer = null;
+  }
+});
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+    closeRealtimeFeedStream();
+    return;
+  }
+
+  startRealtimeFeedStream();
+  if (currentFeedPage === 1) {
+    loadFeeds(1);
+  }
+});
 
 // Botón Cargar más
 $(document).on("click", "#btnLoadMoreFeeds", function() {
+  if (!feedHasMorePages || isFeedLoading || isFeedLoadingMore) {
+    return;
+  }
   currentFeedPage++;
   loadFeeds(currentFeedPage);
 });
@@ -267,15 +693,12 @@ async function getDatosEmpleado() {
     console.log(e);
   } finally {
     for (var i = 0; i < respuesta.length; i++) {
-      if (respuesta[i]["Imagen"] === null) {
-        urlImg = "assets/logoK.png";
-      } else {
-        urlImg =
-          "Archivos/ImgEmpleados/" +
-          respuesta[i]["NoEmpleado"] +
-          "/" +
-          respuesta[i]["Imagen"];
-      }
+      const employeeName = respuesta[i]["Nombre"] || "Usuario";
+      const urlImg = getProfileAvatarUrl(
+        respuesta[i]["Imagen"],
+        respuesta[i]["NoEmpleado"],
+        employeeName
+      );
       let urlImgFirma =
         "Archivos/ImgEmpleados/" +
         respuesta[i]["NoEmpleado"] +
@@ -306,12 +729,17 @@ async function getDatosEmpleado() {
       $("#ImgEmpleadoPerfil").attr("src", urlImg);
       $("#mensajeBienvenida").html(respuesta[i]["MensajeBienvenida"]);
       // Actualizar avatar de la barra "Crear publicación" estilo Reddit
-      $("#avatarCreatePost").attr("src", urlImg);
+      $("#avatarCreatePost").attr("src", urlImg).attr("alt", `Avatar de ${employeeName}`);
     }
   }
 }
 
 async function llenadoSelectDivision() {
+  if (divisionsLoaded) {
+    return;
+  }
+
+  let loadSuccess = false;
   let datos = await {
     op: "getDivisiones",
   };
@@ -323,6 +751,7 @@ async function llenadoSelectDivision() {
       data: datos,
       dataType: "json",
     });
+    loadSuccess = true;
   } catch (e) {
     console.log(e);
   } finally {
@@ -332,6 +761,9 @@ async function llenadoSelectDivision() {
       $("#slctDivision").append(`
         <option value="${idDivision}">${division}</option>
         `);
+    }
+    if (loadSuccess) {
+      divisionsLoaded = true;
     }
   }
 }
@@ -408,7 +840,8 @@ function updateFotoEmpleado() {
         if (response == "1") {
           Swal.fire("Actualizado", "Foto Actualizada", "success");
           setTimeout(function () {
-            location.reload();
+            getDatosEmpleado();
+            loadFeeds(1);
           }, 1000);
         } else {
           // toastr.warning("Algo salio mal, Intente de nuevo");
@@ -435,6 +868,11 @@ function updateFotoEmpleado() {
 }
 
 async function getColaboradores() {
+  if (collaboratorsLoaded) {
+    return;
+  }
+
+  let loadSuccess = false;
   let datos = await {
     op: "getColaboradores",
   };
@@ -446,6 +884,7 @@ async function getColaboradores() {
       data: datos,
       dataType: "json",
     });
+    loadSuccess = true;
   } catch (e) {
     console.log(e);
   } finally {
@@ -498,6 +937,9 @@ async function getColaboradores() {
           `);
       }
     }
+      if (loadSuccess) {
+        collaboratorsLoaded = true;
+      }
   }
 }
 
@@ -668,50 +1110,78 @@ async function getColaboradores() {
 //             </div>`;
 //         }
 async function loadFeeds(page = 1) {
-  let datos = { op: "loadFeeds", page: page };
+  if (page === 1 && isFeedLoading) {
+    return;
+  }
+  if (page > 1 && isFeedLoadingMore) {
+    return;
+  }
+
+  if (page === 1) {
+    isFeedLoading = true;
+    feedPrefetchCache = {};
+    feedPrefetchInFlight = {};
+    if (!hasFeedRenderedOnce) {
+      showFeedInitialSkeleton();
+    }
+  } else {
+    isFeedLoadingMore = true;
+    showFeedLoadMoreSkeleton();
+  }
+
   let response = [];
+  let isArrayResponse = true;
   
   // Iniciar estado de carga en el botón
   const $btnLoadMore = $("#btnLoadMoreFeeds");
-  const originalBtnHtml = "Cargar más publicaciones";
+  const originalBtnHtml = '<i class="fas fa-chevron-down me-1"></i> Ver más publicaciones';
   if (page > 1) {
     $btnLoadMore.html('<i class="fa fa-spinner fa-spin"></i> Cargando...').prop('disabled', true);
   }
 
   try {
-    response = await $.ajax({
-      type: "post",
-      url: "Backend/Feed/App.php",
-      data: datos,
-      dataType: "json",
-    });
-    console.log(response);
-  } catch (e) {
-    console.log("Error en loadFeeds ajax:", e);
+    const pageResult = await requestFeedPage(page);
+    response = pageResult.data;
+    isArrayResponse = pageResult.valid;
   } finally {
+    if (page === 1) {
+      isFeedLoading = false;
+    } else {
+      isFeedLoadingMore = false;
+    }
+    hideFeedLoadMoreSkeleton();
+
     // Restaurar estado del botón
     $btnLoadMore.html(originalBtnHtml).prop('disabled', false);
 
     // Validar que response sea un array
     if (!Array.isArray(response)) {
       console.log("Response no es un array:", response);
+      isArrayResponse = false;
       response = [];
     }
+
+    if (!isArrayResponse) {
+      // Si no hubo respuesta válida, mantenemos skeleton en primera página.
+      if (page === 1 && !hasFeedRenderedOnce) {
+        showFeedInitialSkeleton();
+      }
+      return;
+    }
     
-    response.sort(
-      (a, b) => new Date(b.Registro).getTime() - new Date(a.Registro).getTime()
-    );
     let contentHtmlFinal = "";
     let urlImgProfile = "";
-    console.log("Feeds a mostrar:", response);
 
     for (let i = 0; i < response.length; i++) {
       try {
       const feed = response[i];
-      let colorMg = feed.MeGusta == 1 ? "color:#E91E63;" : "color:black;";
+      let colorMg = feed.MeGusta == 1 ? "color:#FFC107;" : "color:black;";
       let colorCong =
         feed.Felicitacion == 1 ? "color:#8E24AA;" : "color:black;";
-      let cantComm = feed.ArrayComentarios ? feed.ArrayComentarios.length : 0;
+      let cantComm = parseInt(
+        feed.CantidadComentarios ?? (feed.ArrayComentarios ? feed.ArrayComentarios.length : 0),
+        10
+      ) || 0;
 
       let contentBtnFel = "";
       let contentHtmlImg = "";
@@ -851,9 +1321,8 @@ async function loadFeeds(page = 1) {
 
       }
 
-      urlImgProfile = feed.Imagen
-        ? `Archivos/ImgEmpleados/${feed.NoEmpleado}/${feed.Imagen}`
-        : "assets/logoK.png";
+      const authorName = feed.Nombre || feed.NombreEmpleado || 'Usuario';
+      urlImgProfile = getProfileAvatarUrl(feed.Imagen, feed.NoEmpleado, authorName);
 
       // --- Determinar badge de tipo ---
       let typeBadge = '';
@@ -876,7 +1345,7 @@ async function loadFeeds(page = 1) {
           <!-- Meta: avatar + autor + tiempo + badge tipo -->
           <div class="rpc-meta">
             <img src="${urlImgProfile}" alt="avatar">
-            <span class="rpc-author">${feed.Nombre || 'Usuario'}</span>
+            <span class="rpc-author">${authorName}</span>
             <span class="rpc-time">· hace ${feed.DiferenciaRegistro || '—'}</span>
             ${typeBadge}
           </div>
@@ -955,47 +1424,34 @@ async function loadFeeds(page = 1) {
     }
 
     if (page == 1) {
-      $("#ContenidoFeed").html(contentHtmlFinal);
+      if (Array.isArray(response) && response.length === 0) {
+        $("#ContenidoFeed").html(`
+          <div class="feed-empty-state">
+            <div class="feed-empty-icon"><i class="fas fa-check-circle"></i></div>
+            <h5 class="feed-empty-title">¡Estás al día!</h5>
+            <p class="feed-empty-text">No hay publicaciones pendientes por revisar en este momento.</p>
+          </div>
+        `);
+        hasFeedRenderedOnce = true;
+      } else {
+        $("#ContenidoFeed").html(contentHtmlFinal);
+        hasFeedRenderedOnce = true;
+      }
     } else {
       $("#ContenidoFeed").append(contentHtmlFinal);
     }
 
     // Manejar visibilidad del botón "Cargar más"
-    // Si recibimos menos de 5, significa que es la última página disponible
-    if (response.length < 5) {
+    // Si recibimos menos que el tamaño de página, ya no hay más resultados.
+    feedHasMorePages = response.length >= feedPageSize;
+    if (!feedHasMorePages) {
       $("#btnLoadMoreContainer").hide();
     } else {
       $("#btnLoadMoreContainer").show();
+      prefetchFeedPage(page + 1);
     }
 
-    const allFeeds = document.querySelectorAll(".galleryImgCl:not(.ug-initialized)");
-    if (allFeeds.length > 0) {
-      for (let i = 0; i < allFeeds.length; i++) {
-        const f = allFeeds[i];
-        f.classList.add('ug-initialized');
-        $(f).unitegallery({
-          gallery_images_selector: "> img", // Solo procesar hijos directos de tipo img
-          gallery_skin: "alexis",
-          gallery_width: "100%",
-          slider_scale_mode: "fit",
-          slider_transition: "fade",
-          thumb_overlay_color: "#363636",
-          strippanel_background_color: "#000c1f",
-          slider_enable_fullscreen_button: true,
-          theme_panel_position: "bottom",
-          slider_enable_zoom_panel: true,
-          slider_zoompanel_skin: "",
-          slider_zoompanel_align_hor: "right",
-          slider_zoompanel_align_vert: "top",
-          slider_zoompanel_offset_hor: 12,
-          slider_zoompanel_offset_vert: 10,
-          slider_enable_progress_indicator: true,
-          slider_enable_play_button: true,
-        });
-      }
-      $(".ug-slider-control.ug-button-play.ug-skin-alexis").click();
-      $(".ug-slider-control.ug-button-play.ug-skin-alexis").hide();
-    }
+    initPendingFeedGalleries();
   }
 }
 
@@ -1077,7 +1533,12 @@ function openFullscreenSwiper(initialSlideNumber) {
 }
 
 function insertaComentario(val) {
-  let comentario = $("#txtComentario" + val).val();
+  let comentarioInput = $("#f_newComentary" + val);
+  if (comentarioInput.length === 0) {
+    comentarioInput = $("#txtComentario" + val);
+  }
+
+  let comentario = (comentarioInput.val() || "").trim();
   if (comentario == "") {
     // toastr.info("Agregue un comentario");
     const messageContent = `
@@ -1088,40 +1549,7 @@ function insertaComentario(val) {
     showBootstrapAlert(messageContent, "top-right", 5000);
     return false;
   }
-  datos = {
-    op: "addComentariosFeed",
-    idFeed: val,
-    Comentario: comentario,
-  };
-  $.ajax({
-    type: "post",
-    url: "Backend/Feed/App.php",
-    data: datos,
-    success: function (response) {
-      if (response == "1") {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Comentario registrado",
-          showConfirmButton: false,
-          timer: 1000,
-        }).then(() => {
-          loadFeeds();
-        });
-      } else {
-        // toastr.info("Error al agregar el comentario");
-        const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">Error al agregar el comentario.</span>
-        </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-      }
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
-  });
+  makeComment(comentario, val);
 }
 
 function mostrarComentarios(val) {
@@ -1195,18 +1623,22 @@ async function MeGusta(valor, tipo) {
   } catch (e) {
     console.log(e);
   } finally {
+    if (!Array.isArray(response) || response.length === 0 || !response[0]) {
+      return;
+    }
+
     if (response[0]["TipoReaccion"] == "1") {
       $("#ulEmpleadosReaccionanMG" + response[0]["IdFeed"]).html("");
       $("#btnEventoMG" + response[0]["IdFeed"]).html(
         `<i class="fa-solid fa-heart"></i> ${response[0]["CantidadMeGusta"]} Me gusta`
       );
       if (response[0]["MeGusta"] == "1") {
-        $("#btnEventoMG" + response[0]["IdFeed"]).css({
-          color: "#E91E63",
+        $("#btnEventoMG" + response[0]["IdFeed"]).addClass("liked").css({
+          color: "#FFC107",
         });
       } else {
-        $("#btnEventoMG" + response[0]["IdFeed"]).css({
-          color: "black",
+        $("#btnEventoMG" + response[0]["IdFeed"]).removeClass("liked").css({
+          color: "",
         });
       }
     } else {
@@ -1433,13 +1865,21 @@ async function saveInfoFeed() {
   let form = $("#formFeed")[0];
   let dataSend = new FormData(form);
   dataSend.append("op", "addPublicationFromIndex"); // Puedes agregar datos adicionales si es necesario
-  let ajaxR = await pAjaxAsyncForm(url_m_Feed, dataSend, 1);
+  let ajaxR = await pAjaxAsyncForm(url_m_Feed, dataSend, 0);
+
+  if (typeof ajaxR === "string") {
+    try {
+      ajaxR = JSON.parse(ajaxR);
+    } catch (e) {
+      console.log("Respuesta no JSON en saveInfoFeed:", ajaxR);
+    }
+  }
+
   // Verificar que la respuesta existe antes de acceder a sus propiedades
   if (ajaxR && ajaxR.Resultado) {
-    setTimeout(function () {
-      location.reload();
-    }, 1500);
+    return true;
   }
+  return false;
 }
 
 function AddComentario(valor) {
@@ -1449,7 +1889,12 @@ function AddComentario(valor) {
 }
 
 function insertaComentario(val) {
-  let comentario = $("#txtComentario" + val).val();
+  let comentarioInput = $("#f_newComentary" + val);
+  if (comentarioInput.length === 0) {
+    comentarioInput = $("#txtComentario" + val);
+  }
+
+  let comentario = (comentarioInput.val() || "").trim();
   if (comentario == "") {
     // toastr.info("Agregue un comentario");
     const messageContent = `
@@ -1460,40 +1905,7 @@ function insertaComentario(val) {
     showBootstrapAlert(messageContent, "top-right", 5000);
     return false;
   }
-  datos = {
-    op: "addComentariosFeed",
-    idFeed: val,
-    Comentario: comentario,
-  };
-  $.ajax({
-    type: "post",
-    url: "Backend/Feed/App.php",
-    data: datos,
-    success: function (response) {
-      if (response == "1") {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Comentario registrado",
-          showConfirmButton: false,
-          timer: 1000,
-        }).then(() => {
-          loadFeeds();
-        });
-      } else {
-        // toastr.info("Error al agregar el comentario");
-        const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Error al agregar el comentario.</span>
-        </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
-  });
+  makeComment(comentario, val);
 }
 
 function mostrarComentarios(val) {

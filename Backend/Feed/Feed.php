@@ -164,10 +164,11 @@
         return $ArrRetorno;
     }
 
-    function loadFeeds ($page = 1, $limit = 5) {
+    function loadFeeds ($page = 1, $limit = 5, $lightweight = 0) {
       try {
       $page = intval($page);
       $limit = intval($limit);
+      $lightweight = intval($lightweight);
       if ($page < 1) $page = 1;
       if ($limit < 1) $limit = 5;
       $offset = ($page - 1) * $limit;
@@ -237,9 +238,8 @@
                     FROM Feed AS F
                     LEFT JOIN ArchivosFeed AS AF ON AF.idFeed = F.idFeed
                     INNER JOIN Empleados AS E ON E.NoEmpleado = F.NoEmpleado
-                    where (F.Tipo = 'FED' OR F.Tipo = 'FIN') AND YEAR(F.Registro) = '$actYear'
+                    where (F.Tipo = 'FED' OR F.Tipo = 'FIN')
                     GROUP BY F.idFeed
-                    having DDias < 45
                     ORDER BY F.Registro DESC) AS TABLA3
                     ORDER BY Registro DESC
                     LIMIT $offset, $limit;";
@@ -256,28 +256,29 @@
             }
             $feedIdsStr = implode(",", $feedIds);
 
-            // BATCH 1: Todos los comentarios de todos los feeds de una vez
-            $conn1 = new Conexiones();
-            $q2 = "SELECT CF.idFeed, CF.NoEmpleado, CF.Comentario, CF.Registro, E.Nombre, E.Email 
-                   FROM ComentariosFeed AS CF
-                   INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
-                   WHERE CF.idFeed IN ($feedIdsStr) AND CF.Autorizado = 1
-                   ORDER BY CF.Registro DESC;";
-            $allComments = $conn1->Select($q2);
-            // Agrupar comentarios por idFeed
             $commentsByFeed = [];
-            if ($allComments && is_array($allComments)) {
-              for ($j=0; $j < sizeof($allComments); $j++) {
-                $fid = $allComments[$j]["idFeed"];
-                if (!isset($commentsByFeed[$fid])) $commentsByFeed[$fid] = [];
-                $commentsByFeed[$fid][] = [
-                  "FeedId" => $fid,
-                  "ComentarioFeed" => $allComments[$j]["Comentario"],
-                  "FechaComentario" => $allComments[$j]["Registro"],
-                  "NoEmpleadoComentario" => $allComments[$j]["NoEmpleado"],
-                  "NombreEmpleadoComentario" => $allComments[$j]["Nombre"],
-                  "EmailEmpleadoComentario" => $allComments[$j]["Email"]
-                ];
+            if ($lightweight !== 1) {
+              // BATCH 1: Comentarios completos (solo cuando no se solicita modo ligero)
+              $conn1 = new Conexiones();
+              $q2 = "SELECT CF.idFeed, CF.NoEmpleado, CF.Comentario, CF.Registro, E.Nombre, E.Email 
+                     FROM ComentariosFeed AS CF
+                     INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
+                     WHERE CF.idFeed IN ($feedIdsStr) AND CF.Autorizado = 1
+                     ORDER BY CF.Registro DESC;";
+              $allComments = $conn1->Select($q2);
+              if ($allComments && is_array($allComments)) {
+                for ($j=0; $j < sizeof($allComments); $j++) {
+                  $fid = $allComments[$j]["idFeed"];
+                  if (!isset($commentsByFeed[$fid])) $commentsByFeed[$fid] = [];
+                  $commentsByFeed[$fid][] = [
+                    "FeedId" => $fid,
+                    "ComentarioFeed" => $allComments[$j]["Comentario"],
+                    "FechaComentario" => $allComments[$j]["Registro"],
+                    "NoEmpleadoComentario" => $allComments[$j]["NoEmpleado"],
+                    "NombreEmpleadoComentario" => $allComments[$j]["Nombre"],
+                    "EmailEmpleadoComentario" => $allComments[$j]["Email"]
+                  ];
+                }
               }
             }
 
@@ -540,6 +541,7 @@
     function getListFeeds(){
       $q = "SELECT idFeed,Titulo,Descripcion FROM Feed
               WHERE Tipo = 'FED'
+                 OR (Tipo = 'FIN' AND IFNULL(AutorizadoIndex,0) = 1)
               order by idFeed desc;";
       return json_encode($this->Select($q,array()));
     }
@@ -828,8 +830,16 @@
     function newFeedFromIndex ($nTitulo,$nDescripcion,$nHipervinculo) {
       try {
         $NoEmpleado = SessionManager::get("NoEmpleado");
-        
-        // Primero intentar con el procedimiento almacenado
+
+        // Camino rápido: inserción directa usando la conexión actual.
+        $qInsert = "INSERT INTO Feed (Titulo, Descripcion, NoEmpleado, Hipervinculo, Tipo, Registro, AutorizadoIndex) 
+                    VALUES (?, ?, ?, ?, 'FED', NOW(), 1)";
+        $lastId = $this->InsertAndGetId($qInsert, [$nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo]);
+        if ($lastId) {
+          return ["f_idFeed" => $lastId, "Titulo" => $nTitulo];
+        }
+
+        // Respaldo de compatibilidad: intentar SP legacy si el insert directo falla.
         try {
           $q = "CALL sp_newFedFromIndex (?,?,?,?)";
           $cons = $this->ProcedureWithParam($q,[$nTitulo,$nDescripcion,$NoEmpleado,$nHipervinculo]);
@@ -837,30 +847,7 @@
             return $cons[0];
           }
         } catch (\Exception $spError) {
-          // SP no existe o falló, continuar con INSERT directo
-        }
-        
-        // Si el SP falla, usar INSERT directo con PDO lastInsertId
-        $nTituloEsc = addslashes($nTitulo);
-        $nDescripcionEsc = addslashes($nDescripcion);
-        $nHipervinculoEsc = addslashes($nHipervinculo);
-        
-        // Crear conexión PDO directa para poder usar lastInsertId
-        $dsn = "mysql:host=162.240.213.3;dbname=klynet_datosdemo;charset=utf8mb4";
-        $pdo = new PDO($dsn, 'klynet_usrdatosdemo', 'Us3rK1yns2@25', [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        ]);
-        
-        $qInsert = "INSERT INTO Feed (Titulo, Descripcion, NoEmpleado, Hipervinculo, Tipo, Registro, AutorizadoIndex) 
-                    VALUES (?, ?, ?, ?, 'FED', NOW(), 1)";
-        $stmt = $pdo->prepare($qInsert);
-        $stmt->execute([$nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo]);
-        
-        $lastId = $pdo->lastInsertId();
-        $pdo = null;
-        
-        if ($lastId) {
-          return ["f_idFeed" => $lastId, "Titulo" => $nTitulo];
+          error_log("SP sp_newFedFromIndex no disponible: " . $spError->getMessage());
         }
         
         return null;

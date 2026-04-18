@@ -136,3 +136,12 @@
         }
     }
 }
+
+.file-container.dragover .file-upload {
+    box-shadow: var(--shadow);
+}
+
+.file-container.dragover .file-upload > div {
+    border-color: #ff7a18;
+    background-color: #fff5eb;
+}

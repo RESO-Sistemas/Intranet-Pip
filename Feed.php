@@ -1,4 +1,10 @@
 <?php include("AutorizaPagina.php"); ?>
+<?php
+if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
+  header("Location: index.php?compose=1");
+  exit;
+}
+?>
 <!DOCTYPE html>
 <html>
 

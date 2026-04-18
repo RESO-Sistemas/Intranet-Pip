@@ -1,8 +1,117 @@
 <?php
   ob_start(); // Iniciar buffer de salida
   include("Feed.php");
+  require_once(__DIR__ . "/../Sse/SseVersionStore.php");
   $Feed = new Feed();
   $op = $_POST["op"] ?? $_GET["op"] ?? '';
+
+  function sendSseEvent($eventName, $payload = []) {
+    echo "event: " . $eventName . "\n";
+    echo "data: " . json_encode($payload) . "\n\n";
+  }
+
+  function flushSse() {
+    @ob_flush();
+    @flush();
+  }
+
+  function streamUpdatesSse() {
+    if (!SessionManager::isLoggedIn()) {
+      if (ob_get_level() > 0) {
+        while (ob_get_level() > 0) {
+          @ob_end_clean();
+        }
+      }
+      header('Content-Type: text/event-stream');
+      http_response_code(401);
+      sendSseEvent('error', [
+        'message' => 'unauthorized'
+      ]);
+      flushSse();
+      exit;
+    }
+
+    if (ob_get_level() > 0) {
+      while (ob_get_level() > 0) {
+        @ob_end_clean();
+      }
+    }
+
+    @ini_set('zlib.output_compression', 0);
+    @ini_set('output_buffering', 'off');
+    @set_time_limit(30);
+
+    header('Content-Type: text/event-stream');
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Connection: keep-alive');
+    header('X-Accel-Buffering: no');
+
+    $scope = $_GET['scope'] ?? 'feed';
+    $watchFeed = (strpos($scope, 'feed') !== false);
+    $watchDashboard = (strpos($scope, 'dashboard') !== false);
+
+    $knownFeedVersion = isset($_GET['feedV']) ? intval($_GET['feedV']) : 0;
+    $knownDashboardVersion = isset($_GET['dashV']) ? intval($_GET['dashV']) : 0;
+
+    echo "retry: 5000\n\n";
+    flushSse();
+
+    $startTime = time();
+    $lastPingAt = 0;
+
+    while ((time() - $startTime) < 25) {
+      if (connection_aborted()) {
+        break;
+      }
+
+      $state = SseVersionStore::readState();
+      $currentFeedVersion = intval($state['feed']);
+      $currentDashboardVersion = intval($state['dashboard']);
+      $sentUpdate = false;
+
+      if ($watchFeed && $currentFeedVersion > $knownFeedVersion) {
+        sendSseEvent('feed_update', [
+          'version' => $currentFeedVersion,
+          'ts' => time(),
+        ]);
+        $knownFeedVersion = $currentFeedVersion;
+        $sentUpdate = true;
+      }
+
+      if ($watchDashboard && $currentDashboardVersion > $knownDashboardVersion) {
+        sendSseEvent('dashboard_update', [
+          'version' => $currentDashboardVersion,
+          'ts' => time(),
+        ]);
+        $knownDashboardVersion = $currentDashboardVersion;
+        $sentUpdate = true;
+      }
+
+      if ($sentUpdate) {
+        flushSse();
+        exit;
+      }
+
+      if ((time() - $lastPingAt) >= 10) {
+        echo ": ping\n\n";
+        flushSse();
+        $lastPingAt = time();
+      }
+
+      sleep(2);
+    }
+
+    sendSseEvent('done', [
+      'ts' => time(),
+    ]);
+    flushSse();
+    exit;
+  }
+
+  if ($op == "streamUpdates") {
+    streamUpdatesSse();
+  }
 
   // Endpoint para obtener archivo BLOB de la BD (permitir GET para acceso directo por URL)
   if ($op == "getArchivoFeed") {
@@ -83,27 +192,43 @@
         $NombreArchivo = substr($NombreArchivo, 0, -1);
         $Feed2 = new Feed();
         $Feed2->AddNombreArchivoFeed($LAST_ID_FEED,$NombreArchivo);
+        SseVersionStore::bump('feed');
         echo "1";
     } else {
+      SseVersionStore::bump('feed');
       echo "1";
     }
   }
 
   if ($op == "loadFeeds") {
     $page = $_POST["page"] ?? 1;
-    echo trim($Feed->loadFeeds($page));
+    $lightweight = $_POST["lightweight"] ?? 0;
+    $limit = intval($_POST["limit"] ?? 8);
+    if ($limit < 3) {
+      $limit = 3;
+    }
+    if ($limit > 12) {
+      $limit = 12;
+    }
+    echo trim($Feed->loadFeeds($page, $limit, $lightweight));
   }
 
   if ($op == "addComentariosFeed") {
     $idFeed = $_POST["idFeed"];
     $Comentario = $_POST["Comentario"];
-    echo trim($Feed->addComentariosFeed($idFeed,$Comentario));
+    $result = trim($Feed->addComentariosFeed($idFeed,$Comentario));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "MeGustaFeed") {
     $idFeed = $_POST["FeedId"];
     $idTipoReaccion = $_POST["idTipoReaccion"];
-    echo trim($Feed->MeGustaFeed($idFeed,$idTipoReaccion));
+    $result = trim($Feed->MeGustaFeed($idFeed,$idTipoReaccion));
+    SseVersionStore::bump('feed');
+    echo $result;
   }
 
   if ($op == "getListFeeds") {
@@ -160,12 +285,20 @@
     }
     $NombreArchivo = substr($NombreArchivo, 0, -1);
     $Feed2 = new Feed();
-    echo trim($Feed2->UpdateFeed($NombreArchivo,$Titulo,$Descripcion,$idFeed,$Hipervinculo));
+    $result = trim($Feed2->UpdateFeed($NombreArchivo,$Titulo,$Descripcion,$idFeed,$Hipervinculo));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "eliminarFeed") {
     $nidFeed = $_POST["idFeed"];
-    echo trim($Feed->eliminarFeed($nidFeed));
+    $result = trim($Feed->eliminarFeed($nidFeed));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "getPostRequests") {
@@ -179,12 +312,16 @@
   if ($op == "executeActionPostRequest") {
     $post = $_POST["post"];
     $action = $_POST["action"];
-    echo trim($Feed->executeActionPostRequest($post, $action));
+    $result = trim($Feed->executeActionPostRequest($post, $action));
+    SseVersionStore::bump('feed');
+    echo $result;
   }
   if ($op == "executeActionComments") {
     $data = $_POST["data"];
     $action = $_POST["action"];
-    echo trim($Feed->executeActionComments($data, $action));
+    $result = trim($Feed->executeActionComments($data, $action));
+    SseVersionStore::bump('feed');
+    echo $result;
   }
 
   if ($op == "getCommentsFeedSelected") {
@@ -259,8 +396,7 @@
                   $dataUri = 'data:' . $mimeType . ';base64,' . base64_encode($binary);
 
                   // Guardar Data URI en la columna Archivo de ArchivosFeed (TEXT/LONGTEXT)
-                  $insArchivo = new Feed();
-                  $insArchivo->addArchivoDataUri($idGen, $dataUri);
+                    $Feed->addArchivoDataUri($idGen, $dataUri);
               }
           } catch (Exception $e) {
               error_log("Error procesando imágenes Feed: " . $e->getMessage());
@@ -275,6 +411,7 @@
           "Msg" => "Publicación realizada.",
           "idFeed" => $idGen
       ];
+        SseVersionStore::bump('feed');
       echo json_encode($arrReturn);
       exit;
   }
@@ -282,7 +419,11 @@
   if ($op == "makeComment") {
     $commentary = nl2br($_POST["commentary"]);
     $i_Feed = $_POST["i_Feed"];
-    echo trim($Feed->makeComment($commentary, $i_Feed));
+    $result = trim($Feed->makeComment($commentary, $i_Feed));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
 
   if ($op == "getDataFeedSelected") {
@@ -296,12 +437,18 @@
 
   if ($op == "rejectCommentsF") {
     $data = $_POST["data"];
-    echo trim($Feed->rejectCommentsF($data));
+    $result = trim($Feed->rejectCommentsF($data));
+    SseVersionStore::bump('feed');
+    echo $result;
   }
 
   if ($op == "reactsToComment") {
     $type = $_POST["type"];
     $comment = $_POST["comment"];
-    echo trim($Feed->reactsToComment($type, $comment));
+    $result = trim($Feed->reactsToComment($type, $comment));
+    if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
   }
  ?>

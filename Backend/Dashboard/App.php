@@ -1,6 +1,7 @@
 <?php
 
   include("Dashboard.php");
+  require_once(__DIR__ . "/../Sse/SseVersionStore.php");
 
   $Dashboard = new Dashboard();
 
@@ -29,7 +30,12 @@
   if ($op == "responderChecklist") {
     $idChecklist = intval($_POST["idChecklist"]);
     $respuesta = intval($_POST["respuesta"]);
-    echo trim($Dashboard->responderChecklist($idChecklist, $respuesta));
+    $result = trim($Dashboard->responderChecklist($idChecklist, $respuesta));
+    $decoded = json_decode($result, true);
+    if (is_array($decoded) && isset($decoded["Resultado"]) && $decoded["Resultado"] === true) {
+      SseVersionStore::bump('dashboard');
+    }
+    echo $result;
   }
 
   if ($op == "getProximosEventos") {
