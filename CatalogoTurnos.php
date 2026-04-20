@@ -98,11 +98,11 @@
                     <div class="row g-3 mt-2">
                       <div class="col-12 col-md-6">
                         <label class="form-label fw-bold">Hora de inicio:</label>
-                        <input id="txtHoraInicio" type="time" class="form-control form-control-solid-bordered">
+                        <input id="txtHoraInicio" type="text" class="form-control form-control-solid-bordered" placeholder="hh:mm AM/PM" autocomplete="off">
                       </div>
                       <div class="col-12 col-md-6">
                         <label class="form-label fw-bold">Hora de fin:</label>
-                        <input id="txtHoraFin" type="time" class="form-control form-control-solid-bordered">
+                        <input id="txtHoraFin" type="text" class="form-control form-control-solid-bordered" placeholder="hh:mm AM/PM" autocomplete="off">
                       </div>
                     </div>
                   </div>
@@ -171,11 +171,11 @@
           <div class="row g-3 mt-2">
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold">Hora de inicio:</label>
-              <input id="modalHoraInicio" type="time" class="form-control form-control-solid-bordered">
+              <input id="modalHoraInicio" type="text" class="form-control form-control-solid-bordered" placeholder="hh:mm AM/PM" autocomplete="off">
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold">Hora de fin:</label>
-              <input id="modalHoraFin" type="time" class="form-control form-control-solid-bordered">
+              <input id="modalHoraFin" type="text" class="form-control form-control-solid-bordered" placeholder="hh:mm AM/PM" autocomplete="off">
             </div>
           </div>
         </div>

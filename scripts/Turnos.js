@@ -4,6 +4,42 @@ let listaPuestosTurnos = [];
 let tablaTurnosInstance = null;
 let turnosData = [];
 
+function formato12hDesde24h(value) {
+  if (!value) return "";
+  const clean = String(value).trim();
+  const match = clean.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (!match) return clean;
+
+  let hora = parseInt(match[1], 10);
+  const minutos = match[2];
+  const periodo = hora >= 12 ? "PM" : "AM";
+  hora = hora % 12;
+  if (hora === 0) hora = 12;
+
+  return `${String(hora).padStart(2, "0")}:${minutos} ${periodo}`;
+}
+
+function formato24hDesde12h(value) {
+  if (!value) return "";
+  const clean = String(value).trim().toUpperCase();
+  const match = clean.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+  if (!match) return "";
+
+  let hora = parseInt(match[1], 10);
+  const minutos = match[2];
+  const periodo = match[3];
+
+  if (hora < 1 || hora > 12) return "";
+
+  if (periodo === "AM") {
+    if (hora === 12) hora = 0;
+  } else if (hora !== 12) {
+    hora += 12;
+  }
+
+  return `${String(hora).padStart(2, "0")}:${minutos}`;
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
   try {
     const [puestos, turnos] = await Promise.all([
@@ -74,6 +110,28 @@ function getNombrePuestoTurno(id) {
   return puesto ? puesto.Puesto : id;
 }
 
+function seleccionarPuestoEnModal(idPuesto) {
+  const $select = $("#modalSlctPuesto");
+  if (!$select.length) return;
+
+  const valorBuscado = String(idPuesto || "").trim();
+  if (!valorBuscado) {
+    $select.val("").trigger("change");
+    return;
+  }
+
+  const opcion = $select.find("option").filter(function () {
+    return String($(this).val() || "").trim() === valorBuscado;
+  }).first();
+
+  if (opcion.length) {
+    $select.val(opcion.val()).trigger("change");
+    return;
+  }
+
+  $select.val("").trigger("change");
+}
+
 async function getTurnos() {
   try {
     const respuesta = await $.ajax({
@@ -118,7 +176,7 @@ function _renderTablaTurnos(respuesta) {
         headerText: "HORA INICIO",
         width: 140,
         valueAccessor: function (field, data) {
-          return data.HoraInicio ? data.HoraInicio.substring(0, 5) : "";
+          return formato12hDesde24h(data.HoraInicio || "");
         }
       },
       {
@@ -126,7 +184,7 @@ function _renderTablaTurnos(respuesta) {
         headerText: "HORA FIN",
         width: 140,
         valueAccessor: function (field, data) {
-          return data.HoraFin ? data.HoraFin.substring(0, 5) : "";
+          return formato12hDesde24h(data.HoraFin || "");
         }
       },
       {
@@ -211,13 +269,17 @@ function _renderTablaTurnos(respuesta) {
 
 async function guardarTurno() {
   const nombre = $("#slctNombreTurno").val();
-  const horaInicio = $("#txtHoraInicio").val();
-  const horaFin = $("#txtHoraFin").val();
+  const horaInicioInput = $("#txtHoraInicio").val();
+  const horaFinInput = $("#txtHoraFin").val();
   const idPuesto = $("#slctPuesto").val();
+  const horaInicio = formato24hDesde12h(horaInicioInput);
+  const horaFin = formato24hDesde12h(horaFinInput);
 
   if (!nombre) { toastr.warning("Seleccione el tipo de turno."); return; }
-  if (!horaInicio) { toastr.warning("Ingrese la hora de inicio."); return; }
-  if (!horaFin) { toastr.warning("Ingrese la hora de fin."); return; }
+  if (!horaInicioInput) { toastr.warning("Ingrese la hora de inicio."); return; }
+  if (!horaInicio) { toastr.warning("Formato invalido en hora de inicio. Use hh:mm AM/PM."); return; }
+  if (!horaFinInput) { toastr.warning("Ingrese la hora de fin."); return; }
+  if (!horaFin) { toastr.warning("Formato invalido en hora de fin. Use hh:mm AM/PM."); return; }
   if (!idPuesto) { toastr.warning("Seleccione un puesto."); return; }
 
   const existe = turnosData.some(function (t) {
@@ -242,9 +304,9 @@ async function guardarTurno() {
 function editarTurno(idEncoded, nombre, horaInicio, horaFin, idPuesto) {
   $("#modalIdTurno").val(idEncoded);
   $("#modalNombreTurno").val(nombre).trigger("change");
-  $("#modalHoraInicio").val(horaInicio);
-  $("#modalHoraFin").val(horaFin);
-  $("#modalSlctPuesto").val(idPuesto).trigger("change");
+  $("#modalHoraInicio").val(formato12hDesde24h(horaInicio));
+  $("#modalHoraFin").val(formato12hDesde24h(horaFin));
+  seleccionarPuestoEnModal(idPuesto);
 
   const modalEl = document.getElementById("modalEditarTurno");
   const modal = new bootstrap.Modal(modalEl, { backdrop: "static", keyboard: false });
@@ -254,13 +316,17 @@ function editarTurno(idEncoded, nombre, horaInicio, horaFin, idPuesto) {
 async function guardarEdicionTurno() {
   const idTurno = $("#modalIdTurno").val();
   const nombre = $("#modalNombreTurno").val();
-  const horaInicio = $("#modalHoraInicio").val();
-  const horaFin = $("#modalHoraFin").val();
+  const horaInicioInput = $("#modalHoraInicio").val();
+  const horaFinInput = $("#modalHoraFin").val();
   const idPuesto = $("#modalSlctPuesto").val();
+  const horaInicio = formato24hDesde12h(horaInicioInput);
+  const horaFin = formato24hDesde12h(horaFinInput);
 
   if (!nombre) { toastr.warning("Seleccione el tipo de turno."); return; }
-  if (!horaInicio) { toastr.warning("Ingrese la hora de inicio."); return; }
-  if (!horaFin) { toastr.warning("Ingrese la hora de fin."); return; }
+  if (!horaInicioInput) { toastr.warning("Ingrese la hora de inicio."); return; }
+  if (!horaInicio) { toastr.warning("Formato invalido en hora de inicio. Use hh:mm AM/PM."); return; }
+  if (!horaFinInput) { toastr.warning("Ingrese la hora de fin."); return; }
+  if (!horaFin) { toastr.warning("Formato invalido en hora de fin. Use hh:mm AM/PM."); return; }
   if (!idPuesto) { toastr.warning("Seleccione un puesto."); return; }
 
   const idTurnoDec = atob(idTurno);
