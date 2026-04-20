@@ -194,47 +194,57 @@
       }
       $DatosComentarios = [];
       $ArrayRetorno = [];
+      // Query optimizada: subconsultas TIMESTAMPDIFF convertidas a expresiones directas
+      // eliminando sub-consultas correlacionadas redundantes por fila
       $q = "SELECT * FROM  (
                     SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoBirthday' as Archivo,'PIP By Lugo' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
-                    (select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) as DMinutos,
-                    (select TIMESTAMPDIFF(HOUR,F.Registro,NOW())) as DHoras,
-                    (select TIMESTAMPDIFF(DAY,F.Registro,NOW())) as DDias,
+                    TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) as DMinutos,
+                    TIMESTAMPDIFF(HOUR,F.Registro,NOW()) as DHoras,
+                    TIMESTAMPDIFF(DAY,F.Registro,NOW()) as DDias,
                     F.Tipo,
-                    if((select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) < 60,(select concat(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')),
-                    if((select TIMESTAMPDIFF(HOUR,F.Registro,NOW()))< 24,(select concat(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas'))
-                    ,(SELECT CONCAT(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Dias')))) as DiferenciaRegistro
+                    CASE
+                      WHEN TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) < 60
+                        THEN CONCAT(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')
+                      WHEN TIMESTAMPDIFF(HOUR,F.Registro,NOW()) < 24
+                        THEN CONCAT(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas')
+                      ELSE CONCAT(TIMESTAMPDIFF(DAY,F.Registro,NOW()), ' Dias')
+                    END as DiferenciaRegistro
                     FROM Feed AS F
-                    LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = F.idFeed
-                    LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
                     where F.Tipo = 'CMP' AND date_format(F.Registro,'%m-%d') = date_format(NOW(),'%m-%d') AND YEAR(F.Registro) = '$actYear'
                     GROUP BY F.idFeed
                     ORDER BY F.Registro DESC
                     ) AS TABLA1
                     UNION ALL
         SELECT * FROM (SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoAnniversary' as Archivo,'PIP By Lugo' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
-                    (select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) as DMinutos,
-                    (select TIMESTAMPDIFF(HOUR,F.Registro,NOW())) as DHoras,
-                    (select TIMESTAMPDIFF(DAY,F.Registro,NOW())) as DDias,
+                    TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) as DMinutos,
+                    TIMESTAMPDIFF(HOUR,F.Registro,NOW()) as DHoras,
+                    TIMESTAMPDIFF(DAY,F.Registro,NOW()) as DDias,
                     F.Tipo,
-                    if((select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) < 60,(select concat(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')),
-                    if((select TIMESTAMPDIFF(HOUR,F.Registro,NOW()))< 24,(select concat(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas'))
-                    ,(SELECT CONCAT(TIMESTAMPDIFF(DAY,F.Registro,NOW()), ' Dias')))) as DiferenciaRegistro
+                    CASE
+                      WHEN TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) < 60
+                        THEN CONCAT(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')
+                      WHEN TIMESTAMPDIFF(HOUR,F.Registro,NOW()) < 24
+                        THEN CONCAT(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas')
+                      ELSE CONCAT(TIMESTAMPDIFF(DAY,F.Registro,NOW()), ' Dias')
+                    END as DiferenciaRegistro
                     FROM Feed AS F
-                    LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = F.idFeed
-                    LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
                     where F.Tipo = 'ANY' AND date_format(F.Registro,'%m-%d') = date_format(NOW(),'%m-%d') AND YEAR(F.Registro) = '$actYear'
                     GROUP BY F.idFeed
                     ORDER BY F.Registro DESC) AS TABLA2
                     UNION ALL
         SELECT * FROM (
                     SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,GROUP_CONCAT(AF.Archivo) as Archivo,E.Nombre,E.NoEmpleado,E.Imagen,
-                    (select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) as DMinutos,
-                    (select TIMESTAMPDIFF(HOUR,F.Registro,NOW())) as DHoras,
-                    (select TIMESTAMPDIFF(DAY,F.Registro,NOW())) as DDias,
+                    TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) as DMinutos,
+                    TIMESTAMPDIFF(HOUR,F.Registro,NOW()) as DHoras,
+                    TIMESTAMPDIFF(DAY,F.Registro,NOW()) as DDias,
                     F.Tipo,
-                    if((select TIMESTAMPDIFF(MINUTE,F.Registro,NOW())) < 60,(select concat(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')),
-                    if((select TIMESTAMPDIFF(HOUR,F.Registro,NOW())) < 24,(select concat(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas'))
-                    ,(SELECT CONCAT(TIMESTAMPDIFF(DAY,F.Registro,NOW()), ' Dias')))) as DiferenciaRegistro
+                    CASE
+                      WHEN TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) < 60
+                        THEN CONCAT(TIMESTAMPDIFF(MINUTE,F.Registro,NOW()), ' Minutos')
+                      WHEN TIMESTAMPDIFF(HOUR,F.Registro,NOW()) < 24
+                        THEN CONCAT(TIMESTAMPDIFF(HOUR,F.Registro,NOW()), ' Horas')
+                      ELSE CONCAT(TIMESTAMPDIFF(DAY,F.Registro,NOW()), ' Dias')
+                    END as DiferenciaRegistro
                     FROM Feed AS F
                     LEFT JOIN ArchivosFeed AS AF ON AF.idFeed = F.idFeed
                     INNER JOIN Empleados AS E ON E.NoEmpleado = F.NoEmpleado
@@ -251,148 +261,138 @@
 
             // Recopilar todos los idFeed para hacer consultas batch
             $feedIds = [];
-            for ($i=0; $i < sizeof($cons); $i++) {
-              $feedIds[] = "'" . $cons[$i]["idFeed"] . "'";
+            for ($i = 0; $i < sizeof($cons); $i++) {
+              $feedIds[] = intval($cons[$i]["idFeed"]);
             }
             $feedIdsStr = implode(",", $feedIds);
 
+            // ── OPTIMIZACION: reutilizar $this en lugar de crear new Conexiones() ──
+            // Antes se abrían 6 conexiones TCP nuevas al servidor remoto por cada llamada.
+            // Ahora todo usa la misma conexion PDO ya establecida ($this->dbh).
+
             $commentsByFeed = [];
             if ($lightweight !== 1) {
-              // BATCH 1: Comentarios completos (solo cuando no se solicita modo ligero)
-              $conn1 = new Conexiones();
+              // BATCH comentarios completos (solo en modo normal)
               $q2 = "SELECT CF.idFeed, CF.NoEmpleado, CF.Comentario, CF.Registro, E.Nombre, E.Email 
                      FROM ComentariosFeed AS CF
                      INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
                      WHERE CF.idFeed IN ($feedIdsStr) AND CF.Autorizado = 1
-                     ORDER BY CF.Registro DESC;";
-              $allComments = $conn1->Select($q2);
+                     ORDER BY CF.Registro DESC";
+              $allComments = $this->Select($q2);
               if ($allComments && is_array($allComments)) {
-                for ($j=0; $j < sizeof($allComments); $j++) {
-                  $fid = $allComments[$j]["idFeed"];
+                foreach ($allComments as $row) {
+                  $fid = $row["idFeed"];
                   if (!isset($commentsByFeed[$fid])) $commentsByFeed[$fid] = [];
                   $commentsByFeed[$fid][] = [
-                    "FeedId" => $fid,
-                    "ComentarioFeed" => $allComments[$j]["Comentario"],
-                    "FechaComentario" => $allComments[$j]["Registro"],
-                    "NoEmpleadoComentario" => $allComments[$j]["NoEmpleado"],
-                    "NombreEmpleadoComentario" => $allComments[$j]["Nombre"],
-                    "EmailEmpleadoComentario" => $allComments[$j]["Email"]
+                    "FeedId"                   => $fid,
+                    "ComentarioFeed"           => $row["Comentario"],
+                    "FechaComentario"          => $row["Registro"],
+                    "NoEmpleadoComentario"     => $row["NoEmpleado"],
+                    "NombreEmpleadoComentario" => $row["Nombre"],
+                    "EmailEmpleadoComentario"  => $row["Email"]
                   ];
                 }
               }
             }
 
-            // BATCH 2: Contadores de reacciones para todos los feeds
-            $conn2 = new Conexiones();
-            $q3 = "SELECT RF.idFeed,
-                   SUM(CASE WHEN RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS CantidadMeGusta,
-                   SUM(CASE WHEN RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS CantidadFelicitaciones
-                   FROM ReaccionFeed AS RF
-                   WHERE RF.idFeed IN ($feedIdsStr) AND RF.NoEmpleado <> 0
-                   GROUP BY RF.idFeed;";
-            $allReactionCounts = $conn2->Select($q3);
+            // ── QUERY CONSOLIDADA: reacciones + reaccion usuario + contadores comentarios ──
+            // Reemplaza 4 queries separadas (conn2, conn3, conn4, conn5) con 1 sola query.
+            $qConsolidada = "SELECT
+                FI.idFeed,
+                SUM(CASE WHEN RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS CantidadMeGusta,
+                SUM(CASE WHEN RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS CantidadFelicitaciones,
+                MAX(CASE WHEN RF.NoEmpleado = $NoEmpleado AND RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS MeGusta_User,
+                MAX(CASE WHEN RF.NoEmpleado = $NoEmpleado AND RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS Felicitacion_User,
+                COUNT(DISTINCT CF.idComentariosFeed) AS CantidadComentarios
+              FROM (SELECT DISTINCT idFeed FROM Feed WHERE idFeed IN ($feedIdsStr)) AS FI
+              LEFT JOIN ReaccionFeed AS RF ON RF.idFeed = FI.idFeed AND RF.NoEmpleado <> 0
+              LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = FI.idFeed AND CF.Autorizado = 1
+              GROUP BY FI.idFeed";
+            $consolidada = $this->Select($qConsolidada);
             $reactionCountsByFeed = [];
-            if ($allReactionCounts && is_array($allReactionCounts)) {
-              for ($j=0; $j < sizeof($allReactionCounts); $j++) {
-                $reactionCountsByFeed[$allReactionCounts[$j]["idFeed"]] = $allReactionCounts[$j];
+            $userReactionsByFeed  = [];
+            $commentCountsByFeed  = [];
+            if ($consolidada && is_array($consolidada)) {
+              foreach ($consolidada as $row) {
+                $fid = $row["idFeed"];
+                $reactionCountsByFeed[$fid] = [
+                  "CantidadMeGusta"       => $row["CantidadMeGusta"],
+                  "CantidadFelicitaciones" => $row["CantidadFelicitaciones"]
+                ];
+                if ($row["MeGusta_User"]) $userReactionsByFeed[$fid][] = 1;
+                if ($row["Felicitacion_User"]) $userReactionsByFeed[$fid][] = 2;
+                $commentCountsByFeed[$fid] = $row["CantidadComentarios"];
               }
             }
 
-            // Contadores de comentarios
-            $conn3 = new Conexiones();
-            $qCC = "SELECT idFeed, COUNT(*) AS CantidadComentarios FROM ComentariosFeed WHERE idFeed IN ($feedIdsStr) GROUP BY idFeed;";
-            $allCommentCounts = $conn3->Select($qCC);
-            $commentCountsByFeed = [];
-            if ($allCommentCounts && is_array($allCommentCounts)) {
-              for ($j=0; $j < sizeof($allCommentCounts); $j++) {
-                $commentCountsByFeed[$allCommentCounts[$j]["idFeed"]] = $allCommentCounts[$j]["CantidadComentarios"];
-              }
-            }
-
-            // Reacciones del usuario actual
-            $conn4 = new Conexiones();
-            $qUserR = "SELECT idFeed, idTipoReaccion FROM ReaccionFeed WHERE idFeed IN ($feedIdsStr) AND NoEmpleado = '$NoEmpleado';";
-            $userReactions = $conn4->Select($qUserR);
-            $userReactionsByFeed = [];
-            if ($userReactions && is_array($userReactions)) {
-              for ($j=0; $j < sizeof($userReactions); $j++) {
-                $fid = $userReactions[$j]["idFeed"];
-                if (!isset($userReactionsByFeed[$fid])) $userReactionsByFeed[$fid] = [];
-                $userReactionsByFeed[$fid][] = $userReactions[$j]["idTipoReaccion"];
-              }
-            }
-
-            // BATCH 3: Empleados que reaccionaron
-            $conn5 = new Conexiones();
-            $q4r = "SELECT RF.idFeed, E.Nombre, RF.idTipoReaccion FROM ReaccionFeed AS RF
+            // ── QUERY empleados que reaccionaron (necesita JOIN separado) ──
+            $q4r = "SELECT RF.idFeed, E.Nombre, RF.idTipoReaccion
+                    FROM ReaccionFeed AS RF
                     INNER JOIN Empleados AS E ON E.NoEmpleado = RF.NoEmpleado
-                    WHERE RF.idFeed IN ($feedIdsStr) AND RF.NoEmpleado <> 0;";
-            $allEmpReactions = $conn5->Select($q4r);
+                    WHERE RF.idFeed IN ($feedIdsStr) AND RF.NoEmpleado <> 0";
+            $allEmpReactions = $this->Select($q4r);
             $empReactionsByFeed = [];
             if ($allEmpReactions && is_array($allEmpReactions)) {
-              for ($j=0; $j < sizeof($allEmpReactions); $j++) {
-                $fid = $allEmpReactions[$j]["idFeed"];
+              foreach ($allEmpReactions as $row) {
+                $fid = $row["idFeed"];
                 if (!isset($empReactionsByFeed[$fid])) $empReactionsByFeed[$fid] = [];
                 $empReactionsByFeed[$fid][] = [
-                  "EmpleadoReaccion" => $allEmpReactions[$j]["Nombre"],
-                  "TipoReaccion" => $allEmpReactions[$j]["idTipoReaccion"]
+                  "EmpleadoReaccion" => $row["Nombre"],
+                  "TipoReaccion"     => $row["idTipoReaccion"]
                 ];
               }
             }
 
-            // BATCH 4: Archivos de todos los feeds
-            // Se detecta el tipo: Data URI base64 (nuevo patrón), BLOB binario (legacy) o nombre en disco (antiguo)
-            $conn6 = new Conexiones();
-            $q4a = "SELECT idArchivosFeed, idFeed, Archivo, 
+            // ── QUERY archivos (Data URI, BLOB o disco) ──
+            $q4a = "SELECT idArchivosFeed, idFeed, Archivo,
                     (CASE WHEN Content IS NOT NULL AND LENGTH(Content) > 0 THEN 1 ELSE 0 END) AS hasBlob,
                     (CASE WHEN Archivo LIKE 'data:image/%' THEN 1 ELSE 0 END) AS isDataUri
                     FROM ArchivosFeed WHERE idFeed IN ($feedIdsStr)";
-            $allArchivos = $conn6->Select($q4a);
+            $allArchivos = $this->Select($q4a);
             $archivosByFeed = [];
             if ($allArchivos && is_array($allArchivos)) {
-              for ($j=0; $j < sizeof($allArchivos); $j++) {
-                $fid = $allArchivos[$j]["idFeed"];
+              foreach ($allArchivos as $row) {
+                $fid = $row["idFeed"];
                 if (!isset($archivosByFeed[$fid])) $archivosByFeed[$fid] = [];
                 $archivosByFeed[$fid][] = [
-                  "idArchivosFeed" => $allArchivos[$j]["idArchivosFeed"],
-                  // Si es Data URI, enviarlo completo al frontend; si es nombre de archivo, solo el nombre
-                  "Archivo"        => $allArchivos[$j]["Archivo"],
-                  "hasBlob"        => intval($allArchivos[$j]["hasBlob"]),
-                  "isDataUri"      => intval($allArchivos[$j]["isDataUri"])
+                  "idArchivosFeed" => $row["idArchivosFeed"],
+                  "Archivo"        => $row["Archivo"],
+                  "hasBlob"        => intval($row["hasBlob"]),
+                  "isDataUri"      => intval($row["isDataUri"])
                 ];
               }
             }
 
             // Armar el array de retorno usando los datos ya cargados
-            for ($i=0; $i < sizeof($cons); $i++) {
+            for ($i = 0; $i < sizeof($cons); $i++) {
               $idFeed = $cons[$i]["idFeed"];
-              $rc = isset($reactionCountsByFeed[$idFeed]) ? $reactionCountsByFeed[$idFeed] : ["CantidadMeGusta" => 0, "CantidadFelicitaciones" => 0];
-              $userR = isset($userReactionsByFeed[$idFeed]) ? $userReactionsByFeed[$idFeed] : [];
+              $rc    = $reactionCountsByFeed[$idFeed] ?? ["CantidadMeGusta" => 0, "CantidadFelicitaciones" => 0];
+              $userR = $userReactionsByFeed[$idFeed]  ?? [];
 
-              array_push($ArrayRetorno,[
-                "idFeed" => $idFeed,
-                "Titulo" => $cons[$i]["Titulo"],
-                "Descripcion" => $cons[$i]["Descripcion"],
-                "Registro" => $cons[$i]["Registro"],
-                "Archivo" => $cons[$i]["Archivo"],
-                "ArrayArchivos" => isset($archivosByFeed[$idFeed]) ? $archivosByFeed[$idFeed] : [],
-                "Nombre" => $cons[$i]["Nombre"],
-                "NoEmpleado" => $cons[$i]["NoEmpleado"],
-                "Imagen" => $cons[$i]["Imagen"],
-                "DMinutos" => $cons[$i]["DMinutos"],
-                "DHoras" => $cons[$i]["DHoras"],
-                "DDias" => $cons[$i]["DDias"],
-                "ArrayComentarios" => isset($commentsByFeed[$idFeed]) ? $commentsByFeed[$idFeed] : [],
-                "CantidadComentarios" => isset($commentCountsByFeed[$idFeed]) ? $commentCountsByFeed[$idFeed] : 0,
-                "CantidadMeGusta" => $rc["CantidadMeGusta"],
-                "MeGusta" => in_array(1, $userR) ? 1 : 0,
+              $ArrayRetorno[] = [
+                "idFeed"               => $idFeed,
+                "Titulo"               => $cons[$i]["Titulo"],
+                "Descripcion"          => $cons[$i]["Descripcion"],
+                "Registro"             => $cons[$i]["Registro"],
+                "Archivo"              => $cons[$i]["Archivo"],
+                "ArrayArchivos"        => $archivosByFeed[$idFeed]       ?? [],
+                "Nombre"               => $cons[$i]["Nombre"],
+                "NoEmpleado"           => $cons[$i]["NoEmpleado"],
+                "Imagen"               => $cons[$i]["Imagen"],
+                "DMinutos"             => $cons[$i]["DMinutos"],
+                "DHoras"               => $cons[$i]["DHoras"],
+                "DDias"                => $cons[$i]["DDias"],
+                "ArrayComentarios"     => $commentsByFeed[$idFeed]       ?? [],
+                "CantidadComentarios"  => $commentCountsByFeed[$idFeed]  ?? 0,
+                "CantidadMeGusta"      => $rc["CantidadMeGusta"],
+                "MeGusta"              => in_array(1, $userR) ? 1 : 0,
                 "CantidadFelicitaciones" => $rc["CantidadFelicitaciones"],
-                "Felicitacion" => in_array(2, $userR) ? 1 : 0,
-                "Tipo" => $cons[$i]["Tipo"],
-                "DiferenciaRegistro" => $cons[$i]["DiferenciaRegistro"],
-                "Hipervinculo" => $cons[$i]["Hipervinculo"],
-                "EmpleadosReaccion" => isset($empReactionsByFeed[$idFeed]) ? $empReactionsByFeed[$idFeed] : []
-              ]);
+                "Felicitacion"         => in_array(2, $userR) ? 1 : 0,
+                "Tipo"                 => $cons[$i]["Tipo"],
+                "DiferenciaRegistro"   => $cons[$i]["DiferenciaRegistro"],
+                "Hipervinculo"         => $cons[$i]["Hipervinculo"],
+                "EmpleadosReaccion"    => $empReactionsByFeed[$idFeed]   ?? []
+              ];
             }
       return json_encode($ArrayRetorno);
       } catch (\Exception $e) {
@@ -423,40 +423,44 @@
       try {
         $ArrayRetorno = [];
         $NoEmpleado = SessionManager::get("NoEmpleado");
+        // Reutilizar $this en lugar de new Conexiones() para evitar conexion TCP extra
         $q = "SELECT * FROM ReaccionFeed WHERE idFeed = '$idFeed' AND NoEmpleado = '$NoEmpleado' and idTipoReaccion = '$idTipoReaccion'";
         $cons = $this->Select($q,array());
-        $Conexiones2 = new Conexiones();
         if (sizeof($cons) > 0) {
           $q2 = "DELETE FROM ReaccionFeed WHERE idFeed = '$idFeed' AND NoEmpleado = '$NoEmpleado' and idTipoReaccion = '$idTipoReaccion';";
         }else {
           $q2 = "INSERT INTO ReaccionFeed (idFeed,NoEmpleado,Registro,idTipoReaccion) VALUES ('$idFeed','$NoEmpleado',now(),'$idTipoReaccion');";
         }
-        $Conexiones2->ExecuteQuery($q2,array());
+        $this->ExecuteQuery($q2, array());
 
-        $FeedReaccion = new Feed();
-        $ArrDatosReaccion = [];
-        $ArrRegistros = $FeedReaccion->getEmpleadosReaccionFeed($idFeed);
+        // Obtener empleados que reaccionaron (reutiliza $this)
+        $ArrRegistros = $this->getEmpleadosReaccionFeed($idFeed);
 
-        $Conexiones3 = new Conexiones();
-        $q3 = "SELECT (SELECT count(idFeed) FROM ReaccionFeed WHERE idTipoReaccion = 1 AND  idFeed = '$idFeed' AND NoEmpleado <> 0) AS CantidadMeGusta,
-                (SELECT count(idFeed) FROM ReaccionFeed WHERE idTipoReaccion = 2 AND  idFeed = '$idFeed' AND NoEmpleado <> 0) AS CantidadFelicitaciones,
-                (SELECT count(idFeed) FROM ComentariosFeed WHERE idFeed = '$idFeed') AS CantidadComentarios,
-                (SELECT count(MGF.idFeed) FROM Feed AS F LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
-                  WHERE  MGF.idFeed = '$idFeed' and MGF.NoEmpleado = '$NoEmpleado' and idTipoReaccion = 1) AS MeGusta,
-                (SELECT count(MGF.idFeed) FROM Feed AS F LEFT JOIN ReaccionFeed AS MGF ON MGF.idFeed = F.idFeed
-                  WHERE  MGF.idFeed = '$idFeed' and MGF.NoEmpleado = '$NoEmpleado' and idTipoReaccion = 2) AS Felicitacion";
-        $cons3 = $Conexiones3->Select($q3,array());
+        // Query consolidada: reemplaza las 5 subconsultas correlacionadas
+        // por una sola query con LEFT JOINs usando $this
+        $q3 = "SELECT
+                 SUM(CASE WHEN RF.idTipoReaccion = 1 AND RF.NoEmpleado <> 0 THEN 1 ELSE 0 END) AS CantidadMeGusta,
+                 SUM(CASE WHEN RF.idTipoReaccion = 2 AND RF.NoEmpleado <> 0 THEN 1 ELSE 0 END) AS CantidadFelicitaciones,
+                 COUNT(DISTINCT CF.idComentariosFeed) AS CantidadComentarios,
+                 MAX(CASE WHEN RF.NoEmpleado = '$NoEmpleado' AND RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS MeGusta,
+                 MAX(CASE WHEN RF.NoEmpleado = '$NoEmpleado' AND RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS Felicitacion
+               FROM Feed F
+               LEFT JOIN ReaccionFeed RF ON RF.idFeed = F.idFeed
+               LEFT JOIN ComentariosFeed CF ON CF.idFeed = F.idFeed
+               WHERE F.idFeed = '$idFeed'";
+        $cons3 = $this->Select($q3);
 
         $Datos = [
-          "TipoReaccion" => $idTipoReaccion,
-          "EmpleadosReaccion" => $ArrRegistros,
-          "CantidadMeGusta" => $cons3[0]["CantidadMeGusta"],
+          "TipoReaccion"          => $idTipoReaccion,
+          "EmpleadosReaccion"     => $ArrRegistros,
+          "CantidadMeGusta"       => $cons3[0]["CantidadMeGusta"],
           "CantidadFelicitaciones" => $cons3[0]["CantidadFelicitaciones"],
-          "MeGusta" => $cons3[0]["MeGusta"],
-          "Felicitacion" => $cons3[0]["Felicitacion"],
-          "IdFeed" => $idFeed
+          "CantidadComentarios"   => $cons3[0]["CantidadComentarios"],
+          "MeGusta"               => $cons3[0]["MeGusta"],
+          "Felicitacion"          => $cons3[0]["Felicitacion"],
+          "IdFeed"                => $idFeed
         ];
-        array_push($ArrayRetorno,$Datos);
+        array_push($ArrayRetorno, $Datos);
         return json_encode($ArrayRetorno);
       } catch (\Exception $e) {
         return "0";
@@ -773,8 +777,8 @@
     function getCommentsFeedSelected($iFeed){
       try {
         $user = SessionManager::get("NoEmpleado");
-        $insReactionC = new Feed();
-        $reactionC = $insReactionC->getReactionCommentsFeed($iFeed);
+        // Query optimizada: obtiene comentarios Y reacciones en una sola consulta
+        // usando LEFT JOIN, evitando el doble viaje a la BD
         $q = "SELECT
                 CF.idFeed,
                 CF.NoEmpleado,
@@ -783,47 +787,69 @@
                 E.ImagenEmpleado,
                 E.Nombre,
                 CASE WHEN CF.NoEmpleado = ? THEN 1 ELSE 2 END AS TypeCommentUs,
-                CF.idComentariosFeed
+                CF.idComentariosFeed,
+                RC.NoEmpleado  AS RC_NoEmpleado,
+                RE.Nombre       AS RC_Nombre,
+                RC.TipoReaccion AS RC_TipoReaccion,
+                RC.idReaccionComentario
               FROM ComentariosFeed AS CF
               INNER JOIN (
                 SELECT NoEmpleado, Nombre,
-                CASE WHEN Imagen = '' OR Imagen IS NULL THEN CONCAT(0,'/0.png') ELSE CONCAT(NoEmpleado,'/',Imagen) END AS ImagenEmpleado
+                  CASE WHEN Imagen = '' OR Imagen IS NULL
+                    THEN CONCAT(0,'/0.png')
+                    ELSE CONCAT(NoEmpleado,'/',Imagen)
+                  END AS ImagenEmpleado
                 FROM Empleados
               ) AS E ON E.NoEmpleado = CF.NoEmpleado
-              WHERE idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1
-              ORDER BY CF.Registro ASC";
+              LEFT JOIN ReaccionComentario AS RC ON RC.idComentariosFeed = CF.idComentariosFeed
+              LEFT JOIN Empleados AS RE ON RE.NoEmpleado = RC.NoEmpleado
+              WHERE CF.idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1
+              ORDER BY CF.Registro ASC, RC.idReaccionComentario ASC";
         $res = $this->ExecuteQueryWithParam($q, [$user, $iFeed]);
-        $cantR = count($res);
+        $cantR = count($res) ?: 0;
         $arrFinal = [];
-        if ($cantR > 0) {
-          for ($i=0; $i < $cantR ; $i++) {
-            $idComentariosFeed = $res[$i]["idComentariosFeed"];
-            if (!isset($arrFinal[$idComentariosFeed])) {
-              $arrFinal[$idComentariosFeed] = $res[$i];
-            }
-            $arrFinal[$idComentariosFeed]["reactionsC"] = [];
+
+        for ($i = 0; $i < $cantR; $i++) {
+          $idC = $res[$i]["idComentariosFeed"];
+          if (!isset($arrFinal[$idC])) {
+            $arrFinal[$idC] = [
+              "idFeed"           => $res[$i]["idFeed"],
+              "NoEmpleado"       => $res[$i]["NoEmpleado"],
+              "Comentario"       => $res[$i]["Comentario"],
+              "Registro"         => $res[$i]["Registro"],
+              "ImagenEmpleado"   => $res[$i]["ImagenEmpleado"],
+              "Nombre"           => $res[$i]["Nombre"],
+              "TypeCommentUs"    => $res[$i]["TypeCommentUs"],
+              "idComentariosFeed" => $idC,
+              "inReaction"       => false,
+              "reactionsC"       => []
+            ];
           }
-          $cantReaction = count($reactionC);
-          if ($cantReaction > 0) {
-            $inReaction = false;
-            for ($i=0; $i < $cantReaction ; $i++) {
-              if ($reactionC[$i]["NoEmpleado"] == $user && $inReaction == false) {
-                $inReaction = true;
-                $arrFinal[$reactionC[$i]["idComentariosFeed"]]["inReaction"] = true;
-              }
-              array_push($arrFinal[$reactionC[$i]["idComentariosFeed"]]["reactionsC"], $reactionC[$i]);
+          // Agregar reacción si existe en esta fila
+          if ($res[$i]["idReaccionComentario"]) {
+            if ($res[$i]["RC_NoEmpleado"] == $user) {
+              $arrFinal[$idC]["inReaction"] = true;
             }
+            $arrFinal[$idC]["reactionsC"][] = [
+              "NoEmpleado"         => $res[$i]["RC_NoEmpleado"],
+              "Nombre"             => $res[$i]["RC_Nombre"],
+              "TipoReaccion"       => $res[$i]["RC_TipoReaccion"],
+              "idComentariosFeed"  => $idC,
+              "idReaccionComentario" => $res[$i]["idReaccionComentario"]
+            ];
           }
         }
-        $arrFinal = array_merge($arrFinal);
+
+        $arrFinal = array_values($arrFinal);
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
-          "Data" => $arrFinal
+          "Data"      => $arrFinal
         ];
         return json_encode($arrReturn);
       } catch (\Exception $e) {
-        return $e;
+        error_log("Error en getCommentsFeedSelected: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Data" => []]);
       }
     }
 
@@ -861,42 +887,37 @@
     function makeComment($commentary, $i_Feed){
       try {
         $NoEmpleado = SessionManager::get("NoEmpleado");
-        $q = "CALL sp_makeCommentFeed(?,?,?)";
-        $res = $this->ProcedureWithParam($q, [$i_Feed, $NoEmpleado, $commentary]);
-        
-        // --- Aprobar el comentario para que sea visible inmediatamente ---
-        $ConUpd = new Conexiones();
-        $qUpd = "UPDATE ComentariosFeed SET Revisado = 1, Autorizado = 1 WHERE idFeed = ? AND NoEmpleado = ? AND Revisado = 0";
-        $ConUpd->ExecuteQueryWithParam($qUpd, [$i_Feed, $NoEmpleado]);
-        // -----------------------------------------------------------------
+        // Inserción optimizada: una sola query con Revisado=1, Autorizado=1
+        // Elimina el double-trip (SP + UPDATE) que causaba lentitud al comentar
+        $qInsert = "INSERT INTO ComentariosFeed (idFeed, NoEmpleado, Comentario, Registro, Revisado, Autorizado) 
+                    VALUES (?, ?, ?, NOW(), 1, 1)";
+        $this->ExecuteQueryWithParam($qInsert, [$i_Feed, $NoEmpleado, $commentary]);
         
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
           "ConMsg" => true,
-          "Msg" => "Comentario realizado",
-          "Data" => $res[0]
+          "Msg" => "Comentario realizado"
         ];
         return json_encode($arrReturn);
       } catch (\Exception $e) {
-        return $e;
+        error_log("Error en makeComment: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => "Error al guardar el comentario."]);
       }
     }
 
     function getDataFeedSelected($feed){
       try {
-        $insDetailFeed = new Feed();
-        $resDetailFeed = $insDetailFeed->getDetailGeneralFeedSelected($feed);
-        $insFilesFeed = new Feed();
-        $resFilesFeed = $insFilesFeed->getFilesFeedSelected($feed);
-        $insCommentsFeed = new Feed();
-        $resCommentsFeed = $insCommentsFeed->getCommentsFeedSelectedDetail($feed);
+        // Reutilizar $this en lugar de crear 3 instancias Feed() (3 conexiones TCP)
+        $resDetailFeed  = $this->getDetailGeneralFeedSelected($feed);
+        $resFilesFeed   = $this->getFilesFeedSelected($feed);
+        $resCommentsFeed = $this->getCommentsFeedSelectedDetail($feed);
         $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
           "Data" => [
-            "generalData" => $resDetailFeed,
-            "filesData" => $resFilesFeed,
+            "generalData"  => $resDetailFeed,
+            "filesData"    => $resFilesFeed,
             "commentsData" => $resCommentsFeed
           ],
         ];
@@ -933,9 +954,8 @@
 
     function getCommentsFeedSelectedDetail($feed){
       try {
-        $insReactionC = new Feed();
-        $reactionC = $insReactionC->getReactionCommentsFeed($feed);
         $user = SessionManager::get("NoEmpleado");
+        // Query unificada: comentarios + reacciones en un solo round-trip
         $q = "SELECT
                 CF.idFeed,
                 CF.NoEmpleado,
@@ -944,42 +964,61 @@
                 E.ImagenEmpleado,
                 E.Nombre,
                 CASE WHEN CF.NoEmpleado = ? THEN 1 ELSE 2 END AS TypeCommentUs,
-                CF.idComentariosFeed
+                CF.idComentariosFeed,
+                RC.NoEmpleado    AS RC_NoEmpleado,
+                RE.Nombre         AS RC_Nombre,
+                RC.TipoReaccion   AS RC_TipoReaccion,
+                RC.idReaccionComentario
               FROM ComentariosFeed AS CF
               INNER JOIN (
                 SELECT NoEmpleado, Nombre,
-                CASE WHEN Imagen = '' OR Imagen IS NULL THEN CONCAT(0,'/0.png') ELSE CONCAT(NoEmpleado,'/',Imagen) END AS ImagenEmpleado
+                  CASE WHEN Imagen = '' OR Imagen IS NULL
+                    THEN CONCAT(0,'/0.png')
+                    ELSE CONCAT(NoEmpleado,'/',Imagen)
+                  END AS ImagenEmpleado
                 FROM Empleados
               ) AS E ON E.NoEmpleado = CF.NoEmpleado
-              WHERE idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1
-              ORDER BY CF.Registro DESC";
+              LEFT JOIN ReaccionComentario AS RC ON RC.idComentariosFeed = CF.idComentariosFeed
+              LEFT JOIN Empleados AS RE ON RE.NoEmpleado = RC.NoEmpleado
+              WHERE CF.idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1
+              ORDER BY CF.Registro DESC, RC.idReaccionComentario ASC";
         $res = $this->ExecuteQueryWithParam($q, [$user, $feed]);
-        $cantR = count($res);
+        $cantR = count($res) ?: 0;
         $arrFinal = [];
-        if ($cantR > 0) {
-          for ($i=0; $i < $cantR ; $i++) {
-            $idComentariosFeed = $res[$i]["idComentariosFeed"];
-            if (!isset($arrFinal[$idComentariosFeed])) {
-              $arrFinal[$idComentariosFeed] = $res[$i];
-            }
-            $arrFinal[$idComentariosFeed]["reactionsC"] = [];
+
+        for ($i = 0; $i < $cantR; $i++) {
+          $idC = $res[$i]["idComentariosFeed"];
+          if (!isset($arrFinal[$idC])) {
+            $arrFinal[$idC] = [
+              "idFeed"            => $res[$i]["idFeed"],
+              "NoEmpleado"        => $res[$i]["NoEmpleado"],
+              "Comentario"        => $res[$i]["Comentario"],
+              "Registro"          => $res[$i]["Registro"],
+              "ImagenEmpleado"    => $res[$i]["ImagenEmpleado"],
+              "Nombre"            => $res[$i]["Nombre"],
+              "TypeCommentUs"     => $res[$i]["TypeCommentUs"],
+              "idComentariosFeed" => $idC,
+              "inReaction"        => false,
+              "reactionsC"        => []
+            ];
           }
-          $cantReaction = count($reactionC);
-          if ($cantReaction > 0) {
-            $inReaction = false;
-            for ($i=0; $i < $cantReaction ; $i++) {
-              if ($reactionC[$i]["NoEmpleado"] == $user && $inReaction == false) {
-                $inReaction = true;
-                $arrFinal[$reactionC[$i]["idComentariosFeed"]]["inReaction"] = true;
-              }
-              array_push($arrFinal[$reactionC[$i]["idComentariosFeed"]]["reactionsC"], $reactionC[$i]);
+          if ($res[$i]["idReaccionComentario"]) {
+            if ($res[$i]["RC_NoEmpleado"] == $user) {
+              $arrFinal[$idC]["inReaction"] = true;
             }
+            $arrFinal[$idC]["reactionsC"][] = [
+              "NoEmpleado"           => $res[$i]["RC_NoEmpleado"],
+              "Nombre"               => $res[$i]["RC_Nombre"],
+              "TipoReaccion"         => $res[$i]["RC_TipoReaccion"],
+              "idComentariosFeed"    => $idC,
+              "idReaccionComentario" => $res[$i]["idReaccionComentario"]
+            ];
           }
         }
-        $arrFinal = array_merge($arrFinal);
-        return $arrFinal;
+        return array_values($arrFinal);
       } catch (\Exception $e) {
-        return $e;
+        error_log("Error en getCommentsFeedSelectedDetail: " . $e->getMessage());
+        return [];
       }
     }
 

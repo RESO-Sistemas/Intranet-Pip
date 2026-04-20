@@ -5,7 +5,7 @@
 
   $Dashboard = new Dashboard();
 
-  $op = $_POST["op"];
+  $op = $_POST["op"] ?? $_GET["op"] ?? '';
 
 
 
@@ -47,16 +47,13 @@
   }
 
   if ($op == "getDashboardAll") {
-    // Endpoint consolidado: devuelve todo en una sola petición
-    $d1 = new Dashboard();
-    $d2 = new Dashboard();
-    $d3 = new Dashboard();
-    
+    // Endpoint consolidado: reutiliza el objeto $Dashboard ya instanciado
+    // para evitar abrir 3 conexiones TCP adicionales al servidor remoto.
     $result = [
-      "turnos" => json_decode($Dashboard->getTurnos()),
-      "kpis" => json_decode($d1->getKpisDashboard()),
-      "eventos" => json_decode($d2->getProximosEventos()),
-      "checklists" => json_decode($d3->getChecklistsEmpleado())
+      "turnos"     => json_decode($Dashboard->getTurnos()),
+      "kpis"       => json_decode($Dashboard->getKpisDashboard()),
+      "eventos"    => json_decode($Dashboard->getProximosEventos()),
+      "checklists" => json_decode($Dashboard->getChecklistsEmpleado())
     ];
     echo json_encode($result);
   }

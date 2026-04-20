@@ -170,59 +170,44 @@ class Dashboard extends Conexiones{
         return json_encode([]);
       }
       
-      // Consulta directa para obtener checklists del puesto del empleado
-      // filtrados por turno actual según la hora del servidor
-      $q = "SELECT 
+      // Query optimizada: LEFT JOINs en lugar de 3 subconsultas correlacionadas
+      // que se ejecutaban N veces por cada item de checklist.
+      $q = 'SELECT
               C.IdChecklist,
               C.Nombre,
               C.Tipo,
               C.RespuestaEsperada,
               C.IdKpi,
               C.AbreIncidencia,
-              IFNULL(
-                (SELECT GROUP_CONCAT(CT.IdTurno) 
-                 FROM ChecklistTurnos CT 
-                 WHERE CT.IdChecklist = C.IdChecklist), 
-                ''
-              ) AS Turnos,
-              CASE 
-                WHEN EXISTS (
-                  SELECT 1 FROM ChecklistEmpleados CE 
-                  WHERE CE.IdChecklist = C.IdChecklist 
-                    AND CE.NoEmpleado = ? 
-                    AND DATE(CE.HoraRevision) = CURDATE()
-                ) THEN 1 
-                ELSE 0 
-              END AS YaContestado,
-              (SELECT CE.Respuesta 
-               FROM ChecklistEmpleados CE 
-               WHERE CE.IdChecklist = C.IdChecklist 
-                 AND CE.NoEmpleado = ? 
-                 AND DATE(CE.HoraRevision) = CURDATE()
-               LIMIT 1
-              ) AS RespuestaEmpleado
+              GROUP_CONCAT(DISTINCT CT_all.IdTurno) AS Turnos,
+              CASE WHEN CE.IdChecklistEmpleado IS NOT NULL THEN 1 ELSE 0 END AS YaContestado,
+              CE.Respuesta AS RespuestaEmpleado
             FROM Checklists C
+            LEFT JOIN ChecklistTurnos CT_all ON CT_all.IdChecklist = C.IdChecklist
+            LEFT JOIN (
+              SELECT IdChecklist, IdChecklistEmpleado, Respuesta
+              FROM ChecklistEmpleados
+              WHERE NoEmpleado = ? AND DATE(HoraRevision) = CURDATE()
+              LIMIT 500
+            ) CE ON CE.IdChecklist = C.IdChecklist
+            LEFT JOIN ChecklistTurnos CT_active
+              INNER JOIN Turnos T_active ON T_active.IdTurno = CT_active.IdTurno
+                AND (
+                  (T_active.HoraInicio <= T_active.HoraFin AND CURTIME() BETWEEN T_active.HoraInicio AND T_active.HoraFin)
+                  OR (T_active.HoraInicio > T_active.HoraFin AND (CURTIME() >= T_active.HoraInicio OR CURTIME() <= T_active.HoraFin))
+                )
+              ON CT_active.IdChecklist = C.IdChecklist
             WHERE C.IdPuesto = ?
               AND (
-                -- Checklists sin turno asignado: mostrar siempre
-                NOT EXISTS (SELECT 1 FROM ChecklistTurnos CT WHERE CT.IdChecklist = C.IdChecklist)
+                CT_all.IdChecklist IS NULL
                 OR
-                -- Checklists con turno activo según la hora actual
-                EXISTS (
-                  SELECT 1 
-                  FROM ChecklistTurnos CT 
-                  INNER JOIN Turnos T ON T.IdTurno = CT.IdTurno
-                  WHERE CT.IdChecklist = C.IdChecklist
-                    AND (
-                      (T.HoraInicio <= T.HoraFin AND CURTIME() BETWEEN T.HoraInicio AND T.HoraFin)
-                      OR
-                      (T.HoraInicio > T.HoraFin AND (CURTIME() >= T.HoraInicio OR CURTIME() <= T.HoraFin))
-                    )
-                )
+                CT_active.IdChecklist IS NOT NULL
               )
-            ORDER BY C.Nombre ASC";
+            GROUP BY C.IdChecklist, C.Nombre, C.Tipo, C.RespuestaEsperada, C.IdKpi, C.AbreIncidencia,
+                     CE.IdChecklistEmpleado, CE.Respuesta
+            ORDER BY C.Nombre ASC';
       
-      $resultado = $this->ExecuteQueryWithParam($q, array($noEmpleado, $noEmpleado, $idPuesto));
+      $resultado = $this->ExecuteQueryWithParam($q, array($noEmpleado, $idPuesto));
       
       // Si el resultado está vacío, devolver array vacío
       if (empty($resultado)) {

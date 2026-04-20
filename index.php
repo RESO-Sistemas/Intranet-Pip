@@ -40,9 +40,6 @@ $MenuP = $Conf->getMenusPadre();
   <link rel="stylesheet" href="plugins/tingle-master/dist/tingle.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined">
   <link rel="stylesheet" href="/plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.css">
-  <link rel="stylesheet" href="/plugins/unitegallery-master/dist/css/unite-gallery.css">
-  <link rel="stylesheet" href="/plugins/unitegallery-master/package/unitegallery/themes/default/ug-theme-default.css">
-  <link rel="stylesheet" href="/plugins/unitegallery-master/source/unitegallery/skins/alexis/alexis.css">
   
   <!-- Moment.js necesario para FullCalendar -->
   <script src="assets/libs/moment/min/moment.min.js"></script>
@@ -80,12 +77,20 @@ $MenuP = $Conf->getMenusPadre();
     /* ============================================================
        Evento item — SIN CAMBIOS
     ============================================================ */
-    .evento-item {
+     .evento-item {
+
       display: flex;
       align-items: flex-start;
       gap: 10px;
       padding: 8px 0;
       border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color .15s ease, transform .15s ease;
+    }
+    .evento-item:hover {
+      background: #f8f9fb;
+      transform: translateX(2px);
     }
     .evento-item:last-child { border-bottom: none; }
     .evento-date-box {
@@ -102,6 +107,77 @@ $MenuP = $Conf->getMenusPadre();
     .evento-date-box .ev-month { font-size: .65rem; text-transform: uppercase; }
     .evento-info .ev-title { font-size: .85rem; font-weight: 600; color: #333; }
     .evento-info .ev-time { font-size: .75rem; color: #888; }
+
+    .event-detail-modal .modal-content {
+      border: none;
+      border-radius: 14px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .18);
+      overflow: hidden;
+    }
+    .event-detail-modal .modal-header {
+      background: linear-gradient(120deg, #ffc107, #ff9f1a);
+      border-bottom: none;
+      padding: 14px 16px;
+    }
+    .event-detail-modal .modal-title {
+      color: #222;
+      font-size: .98rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+    .event-detail-modal .btn-close {
+      background-size: .8rem;
+      opacity: .7;
+    }
+    .event-detail-modal .btn-close:hover { opacity: 1; }
+    .event-detail-modal .modal-body {
+      padding: 16px;
+      background: #fff;
+    }
+    .event-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .event-detail-chip {
+      background: #f6f8fb;
+      border: 1px solid #eef1f4;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .event-detail-label {
+      font-size: .68rem;
+      font-weight: 700;
+      color: #7a7f87;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+    }
+    .event-detail-value {
+      font-size: .88rem;
+      color: #24292f;
+      font-weight: 600;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    .event-detail-description {
+      background: #fbfcfd;
+      border: 1px solid #edf1f5;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .event-detail-description .event-detail-value {
+      white-space: pre-wrap;
+      font-weight: 500;
+      color: #38404a;
+    }
+    @media (max-width: 576px) {
+      .event-detail-grid { grid-template-columns: 1fr; }
+    }
 
     /* ============================================================
        Checklist items — SIN CAMBIOS
@@ -158,14 +234,99 @@ $MenuP = $Conf->getMenusPadre();
     .container { padding-top: 0 !important; }
     #kpiCarouselWrapper { margin-top: -5px !important; }
 
-    /* Evitar que las imágenes del feed se desborden */
-    .galleryImgCl, .ug-gallery-wrapper {
+    /* Swiper para imágenes del feed */
+    .galleryImgCl {
       max-width: 100% !important;
       width: 100% !important;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f7f8fa;
     }
-    .galleryImgCl img {
-      max-width: 100% !important;
-      height: auto !important;
+    .feed-swiper-instance {
+      width: 100%;
+    }
+    .feed-swiper-instance .swiper-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f7f8fa;
+      min-height: 220px;
+      cursor: zoom-in;
+    }
+    .feed-swiper-image {
+      width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      background: #fff;
+    }
+    .feed-swiper-instance .swiper-button-next,
+    .feed-swiper-instance .swiper-button-prev {
+      color: #ff6f00;
+      background: rgba(255, 255, 255, 0.92);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .feed-swiper-instance .swiper-button-next:after,
+    .feed-swiper-instance .swiper-button-prev:after {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .feed-swiper-instance .swiper-pagination-bullet-active {
+      background: #ff4500;
+    }
+
+    #fullscreen-swiper {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      padding: 4.5vh 4vw;
+    }
+    #fullscreen-swiper .feed-fullscreen-swiper,
+    #fullscreen-swiper .swiper-wrapper,
+    #fullscreen-swiper .swiper-slide {
+      height: 100%;
+    }
+    #fullscreen-swiper .swiper-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+    #fullscreen-swiper .swiper-slide img {
+      max-width: 95%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #111;
+    }
+    #fullscreen-swiper-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.9);
+    }
+    #fullscreen-swiper-close {
+      color: #fff;
+      cursor: pointer;
+      font-size: 28px;
+      position: absolute;
+      top: 16px;
+      right: 22px;
+      z-index: 10001;
+    }
+    .no-scroll {
+      height: 100%;
+      overflow: hidden;
     }
 
     /* ============================================================
@@ -482,7 +643,7 @@ $MenuP = $Conf->getMenusPadre();
     }
     .rpc-meta .rpc-author {
       font-weight: 700;
-      color: #0079d3;
+      color: #222222;
       font-size: .78rem;
     }
     .rpc-meta .rpc-time { color: #878a8c; }
@@ -617,7 +778,7 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 6px;
     }
     .reddit-sidebar .card-header {
-      background: #FF4500;
+      background: #ffc407;
       color: #fff;
       font-size: .82rem;
       font-weight: 700;
@@ -658,7 +819,7 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .rpc-title { color: #d7dadc; }
     body.dark-mode .rpc-desc { color: #9a9a9b; }
     body.dark-mode .rpc-meta { color: #818384; }
-    body.dark-mode .rpc-meta .rpc-author { color: #4fbdff; }
+    body.dark-mode .rpc-meta .rpc-author { color: #ffc407; }
     body.dark-mode .rpc-actions { border-top-color: #343536; }
     body.dark-mode .rpc-action-btn { color: #818384; }
     body.dark-mode .rpc-action-btn:hover { background: #333436; color: #d7dadc; }
@@ -668,8 +829,19 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .reddit-sidebar .card-body { background: #1a1a1b; }
     body.dark-mode .kpi-gauge-card { background: #1e1e2d; }
     body.dark-mode .kpi-gauge-card .kpi-name { color: #ccc; }
-    body.dark-mode .evento-date-box { background: #555; color: #fff; }
+    body.dark-mode .evento-date-box { background: #ffc407; color: #222222; }
+    body.dark-mode .evento-item:hover { background: #2a2d31; }
     body.dark-mode .evento-info .ev-title { color: #ccc; }
+    body.dark-mode .event-detail-modal .modal-content { background: #1a1a1b; }
+    body.dark-mode .event-detail-modal .modal-body { background: #1a1a1b; }
+    body.dark-mode .event-detail-chip,
+    body.dark-mode .event-detail-description {
+      background: #242526;
+      border-color: #303236;
+    }
+    body.dark-mode .event-detail-label { color: #98a0ab; }
+    body.dark-mode .event-detail-value { color: #e6e8eb; }
+    body.dark-mode .event-detail-description .event-detail-value { color: #ced4da; }
     body.dark-mode .checklist-item { background: #1e1e2d; border-left-color: #ffc407; }
     body.dark-mode .checklist-item:hover { background: #2a2a3d; box-shadow: 0 1px 4px rgba(255,196,7,.15); }
     body.dark-mode .checklist-item .chk-name { color: #ddd; }
@@ -678,6 +850,15 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .checklist-item .badge.bg-info { background-color: #138496 !important; }
     body.dark-mode .turno-header { color: #17a2b8; border-bottom-color: #17a2b8; }
     body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
+    body.dark-mode .galleryImgCl { background: #1f1f20; }
+    body.dark-mode .feed-swiper-instance .swiper-slide { background: #1f1f20; }
+    body.dark-mode .feed-swiper-image { background: #121213; }
+    body.dark-mode .feed-swiper-instance .swiper-button-next,
+    body.dark-mode .feed-swiper-instance .swiper-button-prev {
+      color: #ffc107;
+      background: rgba(31, 31, 32, 0.88);
+    }
+    body.dark-mode #fullscreen-swiper .swiper-slide img { background: #050506; }
   </style>
 
   <!-- Custom styles para KPI Carousel y flechas ahora en neptune/css/custom.css -->
@@ -833,7 +1014,7 @@ $MenuP = $Conf->getMenusPadre();
 
                   <!-- Próximos Eventos -->
                   <div class="card mb-3">
-                    <div class="card-header">
+                    <div class="card-header text-dark">
                       <i class="fas fa-calendar-alt"></i> Próximos Eventos
                     </div>
                     <div class="card-body">
@@ -845,7 +1026,7 @@ $MenuP = $Conf->getMenusPadre();
 
                   <!-- Checklist del día -->
                   <div class="card">
-                    <div class="card-header">
+                    <div class="card-header text-dark">
                       <i class="fas fa-check-square"></i> Checklist del día
                     </div>
                     <div class="card-body">
@@ -860,6 +1041,22 @@ $MenuP = $Conf->getMenusPadre();
 
             </div>
             <!-- /NOVEDADES + ESPACIO DERECHA -->
+
+            <div class="modal fade event-detail-modal" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title text-dark" id="eventDetailModalLabel">
+                      <i class="fas fa-calendar-day"></i>
+                      Detalle del evento
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" id="eventDetailModalBody"></div>
+                </div>
+              </div>
+            </div>
+
             <div id="fullscreen-swiper"></div>
             <div id="fullscreen-swiper-backdrop"></div>
           </div>
@@ -879,12 +1076,10 @@ $MenuP = $Conf->getMenusPadre();
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
   <script src="plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.js" charset="utf-8"></script>
-  <script src="plugins/unitegallery-master/dist/js/unitegallery.min.js" charset="utf-8"></script>
-  <script src="plugins/unitegallery-master/package/unitegallery/themes/slider/ug-theme-slider.js" charset="utf-8"></script>
   
   <!-- Scripts específicos de la página - SIEMPRE AL FINAL -->
-  <script src="scripts/index.js" charset="utf-8"></script>
-  <script src="scripts/dashboard.js" charset="utf-8"></script>
+  <script src="scripts/index.js?<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/dashboard.js?<?= time() ?>" charset="utf-8"></script>
 
   <!-- Script: abrir/cerrar formulario inline de publicación -->
   <script>

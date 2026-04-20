@@ -3,7 +3,7 @@
   'use strict';
 
   const API_DASHBOARD = 'Backend/Dashboard/App.php';
-  const DASHBOARD_POLL_MS = 45000;
+  const DASHBOARD_POLL_MS = 120000; // Aumentado a 2 min: los SSE cubren actualizaciones en tiempo real
   let kpiCharts = [];      // { chart, idKpi, total, cumplidos }
   let kpiDataArr = [];     // datos crudos de KPIs
   let checklistsData = []; // datos de checklists para mapeo
@@ -305,7 +305,7 @@
     var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     var html = '';
 
-    eventos.forEach(function (ev) {
+    eventos.forEach(function (ev, idx) {
       var fecha = new Date(ev.FechaInicio + 'T00:00:00');
       var dia = fecha.getDate();
       var mes = meses[fecha.getMonth()];
@@ -313,7 +313,7 @@
       var horaFin = ev.HoraFin ? ev.HoraFin.substring(0, 5) : '';
       var horario = horaIni && horaFin ? horaIni + ' - ' + horaFin : (horaIni || '');
 
-      html += '<div class="evento-item">' +
+      html += '<div class="evento-item" role="button" tabindex="0" data-event-index="' + idx + '">' +
         '<div class="evento-date-box">' +
           '<div class="ev-day">' + dia + '</div>' +
           '<div class="ev-month">' + mes + '</div>' +
@@ -326,6 +326,102 @@
     });
 
     el.innerHTML = html;
+
+    el.querySelectorAll('.evento-item').forEach(function (eventEl) {
+      eventEl.addEventListener('click', function () {
+        var eventIndex = parseInt(this.getAttribute('data-event-index'), 10);
+        if (isNaN(eventIndex) || !eventos[eventIndex]) return;
+        _openEventDetailModal(eventos[eventIndex]);
+      });
+
+      eventEl.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        this.click();
+      });
+    });
+  }
+
+  function _safeText(value, fallback) {
+    var txt = (value == null ? '' : String(value)).trim();
+    return txt ? txt : fallback;
+  }
+
+  function _formatDateLabel(dateStr) {
+    if (!dateStr) return 'Sin fecha';
+    var date = new Date(dateStr + 'T00:00:00');
+    if (isNaN(date.getTime())) return _safeText(dateStr, 'Sin fecha');
+
+    return date.toLocaleDateString('es-MX', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  function _formatHourLabel(hourStr) {
+    if (!hourStr) return '';
+    return _safeText(hourStr, '').substring(0, 5);
+  }
+
+  function _openEventDetailModal(ev) {
+    var modalBody = document.getElementById('eventDetailModalBody');
+    var modalTitle = document.getElementById('eventDetailModalLabel');
+    var modalElement = document.getElementById('eventDetailModal');
+    if (!modalBody || !modalTitle || !modalElement) return;
+
+    var title = _safeText(ev.Titulo, 'Evento sin título');
+    var dateLabel = _formatDateLabel(ev.FechaInicio);
+    var hourStart = _formatHourLabel(ev.HoraInicio);
+    var hourEnd = _formatHourLabel(ev.HoraFin);
+    var hourLabel = hourStart && hourEnd ? (hourStart + ' - ' + hourEnd) : (hourStart || 'Sin horario');
+    var location = _safeText(ev.Ubicacion || ev.Lugar || ev.Sede, 'No especificada');
+    var category = _safeText(ev.TipoEvento || ev.Tipo || ev.Categoria, 'General');
+    var description = _safeText(ev.Descripcion || ev.Detalle || ev.Observaciones, 'No hay descripción disponible para este evento.');
+
+    modalTitle.innerHTML = '<i class="fas fa-calendar-day"></i> ' + _escapeHtml(title);
+    modalBody.innerHTML =
+      '<div class="event-detail-grid">' +
+        '<div class="event-detail-chip">' +
+          '<div class="event-detail-label">Fecha</div>' +
+          '<div class="event-detail-value">' + _escapeHtml(dateLabel) + '</div>' +
+        '</div>' +
+        '<div class="event-detail-chip">' +
+          '<div class="event-detail-label">Horario</div>' +
+          '<div class="event-detail-value">' + _escapeHtml(hourLabel) + '</div>' +
+        '</div>' +
+        '<div class="event-detail-chip">' +
+          '<div class="event-detail-label">Categoría</div>' +
+          '<div class="event-detail-value">' + _escapeHtml(category) + '</div>' +
+        '</div>' +
+        '<div class="event-detail-chip">' +
+          '<div class="event-detail-label">Ubicación</div>' +
+          '<div class="event-detail-value">' + _escapeHtml(location) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="event-detail-description">' +
+        '<div class="event-detail-label">Descripción</div>' +
+        '<div class="event-detail-value">' + _escapeHtml(description) + '</div>' +
+      '</div>';
+
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+      var modal = null;
+      if (typeof bootstrap.Modal.getOrCreateInstance === 'function') {
+        modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+      } else {
+        modal = new bootstrap.Modal(modalElement);
+      }
+
+      if (modal && typeof modal.show === 'function') {
+        modal.show();
+        return;
+      }
+    }
+
+    if (typeof $ !== 'undefined' && typeof $.fn.modal === 'function') {
+      $(modalElement).modal('show');
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -364,7 +460,7 @@
     // Render badge-primary next to header
     var html = '<div class="turno-header d-flex align-items-center">' +
       '<i class="fas fa-clipboard-check me-2" style="color: #ffc407;"></i>' +
-      '<span class="fw-bold mb-0">Mi Checklist del Día</span>' +
+      '<span class="fw-bold mb-0 text-dark">Mi Checklist del Día</span>' +
       '<span class="badge badge-primary ms-2">' + turnoLabel + '</span>' +
     '</div>';
 

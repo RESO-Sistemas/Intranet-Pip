@@ -322,9 +322,107 @@ function prefetchFeedPage(page) {
   requestFeedPage(page);
 }
 
-function initPendingFeedGalleries() {
-  const pendingFeeds = Array.from(
-    document.querySelectorAll(".galleryImgCl:not(.ug-initialized)")
+function buildFeedSlideImageMarkup(sourceImage) {
+  const imageClone = sourceImage.cloneNode(true);
+  imageClone.classList.add("feed-swiper-image");
+  imageClone.removeAttribute("data-image");
+  imageClone.removeAttribute("data-description");
+  return imageClone.outerHTML;
+}
+
+function initFeedSwiperOnElement(galleryElement) {
+  if (!galleryElement || galleryElement.dataset.swiperInitialized === "1") {
+    return;
+  }
+
+  const rawImages = Array.from(galleryElement.querySelectorAll("img")).filter(
+    function (img) {
+      const imgSrc = (img.getAttribute("src") || "").trim();
+      return imgSrc !== "";
+    }
+  );
+
+  if (rawImages.length === 0) {
+    return;
+  }
+
+  const slideImages = rawImages.map(buildFeedSlideImageMarkup);
+  const hasMultipleSlides = slideImages.length > 1;
+
+  galleryElement._swiperSlideImages = slideImages;
+  galleryElement.dataset.swiperInitialized = "1";
+  galleryElement.classList.remove("d-none");
+  galleryElement.style.display = "block";
+
+  galleryElement.innerHTML = `
+    <div class="swiper feed-swiper-instance">
+      <div class="swiper-wrapper">
+        ${slideImages
+          .map(function (slideImage) {
+            return `<div class="swiper-slide">${slideImage}</div>`;
+          })
+          .join("")}
+      </div>
+      ${
+        hasMultipleSlides
+          ? `<div class="swiper-button-prev"></div>
+             <div class="swiper-button-next"></div>
+             <div class="swiper-pagination"></div>`
+          : ""
+      }
+    </div>
+  `;
+
+  const swiperElement = galleryElement.querySelector(".feed-swiper-instance");
+  if (!swiperElement) {
+    return;
+  }
+
+  const swiperOptions = {
+    slidesPerView: 1,
+    spaceBetween: 6,
+    autoHeight: true,
+    watchOverflow: true,
+  };
+
+  if (hasMultipleSlides) {
+    swiperOptions.loop = true;
+    swiperOptions.pagination = {
+      el: galleryElement.querySelector(".swiper-pagination"),
+      clickable: true,
+    };
+    swiperOptions.navigation = {
+      nextEl: galleryElement.querySelector(".swiper-button-next"),
+      prevEl: galleryElement.querySelector(".swiper-button-prev"),
+    };
+  }
+
+  new Swiper(swiperElement, swiperOptions);
+}
+
+function initPendingFeedGalleries(scopeSelector) {
+  const scopeRoot = scopeSelector
+    ? document.querySelector(scopeSelector)
+    : document;
+
+  if (!scopeRoot) return;
+
+  const pendingFeeds = [];
+
+  if (
+    scopeRoot.classList &&
+    scopeRoot.classList.contains("galleryImgCl") &&
+    scopeRoot.dataset.swiperInitialized !== "1"
+  ) {
+    pendingFeeds.push(scopeRoot);
+  }
+
+  pendingFeeds.push(
+    ...Array.from(scopeRoot.querySelectorAll(".galleryImgCl")).filter(function (
+      gallery
+    ) {
+      return gallery.dataset.swiperInitialized !== "1";
+    })
   );
 
   if (pendingFeeds.length === 0) return;
@@ -335,27 +433,7 @@ function initPendingFeedGalleries() {
     const endIndex = Math.min(startIndex + batchSize, pendingFeeds.length);
 
     for (let i = startIndex; i < endIndex; i++) {
-      const f = pendingFeeds[i];
-      f.classList.add("ug-initialized");
-      $(f).unitegallery({
-        gallery_images_selector: "> img", // Solo procesar hijos directos de tipo img
-        gallery_skin: "alexis",
-        gallery_width: "100%",
-        slider_scale_mode: "fit",
-        slider_transition: "fade",
-        thumb_overlay_color: "#363636",
-        strippanel_background_color: "#000c1f",
-        slider_enable_fullscreen_button: true,
-        theme_panel_position: "bottom",
-        slider_enable_zoom_panel: true,
-        slider_zoompanel_skin: "",
-        slider_zoompanel_align_hor: "right",
-        slider_zoompanel_align_vert: "top",
-        slider_zoompanel_offset_hor: 12,
-        slider_zoompanel_offset_vert: 10,
-        slider_enable_progress_indicator: true,
-        slider_enable_play_button: true,
-      });
+      initFeedSwiperOnElement(pendingFeeds[i]);
     }
 
     if (endIndex < pendingFeeds.length) {
@@ -368,11 +446,7 @@ function initPendingFeedGalleries() {
           runBatch(endIndex);
         }, 0);
       }
-      return;
     }
-
-    $(".ug-slider-control.ug-button-play.ug-skin-alexis").click();
-    $(".ug-slider-control.ug-button-play.ug-skin-alexis").hide();
   };
 
   runBatch(0);
@@ -1272,6 +1346,7 @@ async function loadFeeds(page = 1) {
                 // El campo Archivo contiene el string 'data:image/...;base64,...'
                 contentHtmlImg += `
                   <img alt="Imagen adjunta" src="${archivoObj.Archivo}"
+                       loading="lazy"
                        data-image="${archivoObj.Archivo}"
                        data-description="Imagen"
                        style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
@@ -1280,6 +1355,7 @@ async function loadFeeds(page = 1) {
                 const fUrl = `Backend/Feed/App.php?op=getArchivoFeed&idArchivo=${archivoObj.idArchivosFeed}`;
                 contentHtmlImg += `
                   <img alt="Imagen Adjunta" src="${fUrl}"
+                       loading="lazy"
                        data-image="${fUrl}"
                        data-description="${(archivoObj.Archivo || '').trim()}"
                        style="max-width: 100%; max-height: 400px; object-fit: contain;">`;
@@ -1292,6 +1368,7 @@ async function loadFeeds(page = 1) {
                   let fUrlRoot = `Archivos/Feed/${fName.trim()}`;
                   contentHtmlImg += `
                     <img alt="Image Feed" 
+                         loading="lazy"
                          src="${fUrlID}"
                          onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlRoot}'; } else { this.style.display='none'; }"
                          data-image="${fUrlID}"
@@ -1311,6 +1388,7 @@ async function loadFeeds(page = 1) {
               
               contentHtmlImg += `
                 <img alt="Image Feed Legacy" 
+                     loading="lazy"
                      src="${fUrlLegacyID}"
                      onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlLegacyRoot}'; } else { this.style.display='none'; }"
                      data-image="${fUrlLegacyID}"
@@ -1362,7 +1440,7 @@ async function loadFeeds(page = 1) {
           <!-- Galería de imágenes -->
           ${
             (feed.ArrayArchivos && feed.ArrayArchivos.length > 0) || feed.Archivo
-              ? `<div class="rpc-gallery"><div id="galleryFeed${feed.idFeed}" class="galleryImgCl" style="display:none; max-width:100%;">${contentHtmlImg}</div></div>`
+              ? `<div class="rpc-gallery"><div id="galleryFeed${feed.idFeed}" class="galleryImgCl" style="max-width:100%;">${contentHtmlImg}</div></div>`
               : ''
           }
 
@@ -1477,59 +1555,101 @@ $(document).on("mouseleave", ".TooltipHoverF", function () {
   $(".menuFelicitacion").fadeOut();
 });
 
-$(document).on("click", ".swiper-slide", function () {
-  let slideId = $(this).attr("data-idfeed");
-  openFullscreenSwiper(slideId);
+$(document).on("click", ".feed-swiper-instance .swiper-slide", function () {
+  const galleryContainer = this.closest(".galleryImgCl");
+  if (!galleryContainer || !Array.isArray(galleryContainer._swiperSlideImages)) {
+    return;
+  }
+
+  let initialSlide = parseInt(
+    $(this).attr("data-swiper-slide-index"),
+    10
+  );
+
+  if (Number.isNaN(initialSlide) || initialSlide < 0) {
+    initialSlide = 0;
+  }
+
+  openFullscreenSwiper(galleryContainer._swiperSlideImages, initialSlide);
 });
 
-function openFullscreenSwiper(initialSlideNumber) {
-  var mainSwiperMarkup = $("#ContentSwp" + initialSlideNumber).html();
-  console.log(mainSwiperMarkup);
-  if ($("#fullscreen-swiper").is(":visible")) {
-  } else {
-    $("#fullscreen-swiper")
-      .append(
-        mainSwiperMarkup +
-          "<div id='fullscreen-swiper-close'><i class='fa-light fa-circle-xmark'></i></div>"
-      )
-      .fadeIn();
-    var fullscreenSwiper = new Swiper("#fullscreen-swiper", {
-      initialSlide: 2,
-      zoom: true,
-      direction: "horizontal",
-      loop: true,
-      effect: "coverflow",
-      speed: 1000,
-      spaceBetween: 32,
-      loop: true,
-      centeredSlides: true,
-      roundLengths: true,
-      // mousewheel: true,
-      grabCursor: false,
-      pagination: {
-        el: ".swiper-pagination",
-        // type: "progressbar",
-        // clickable: true,
-        hide: true,
-      },
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-      scrollbar: {
-        el: ".swiper-scrollbar",
-      },
-    });
-
-    $("#fullscreen-swiper-backdrop").fadeIn();
-    $("body, html").addClass("no-scroll");
-
-    $("#fullscreen-swiper-close").on("click", function () {
-      $("#fullscreen-swiper").hide().empty();
-      $("#fullscreen-swiper-backdrop").fadeOut();
-      $("body, html").removeClass("no-scroll");
-    });
+function openFullscreenSwiper(slideImages, initialSlideNumber) {
+  if (!Array.isArray(slideImages) || slideImages.length === 0) {
+    return;
   }
+
+  if ($("#fullscreen-swiper").is(":visible")) {
+    return;
+  }
+
+  const maxIndex = slideImages.length - 1;
+  const safeInitialSlide = Math.max(
+    0,
+    Math.min(parseInt(initialSlideNumber, 10) || 0, maxIndex)
+  );
+  const hasMultipleSlides = slideImages.length > 1;
+
+  const fullscreenMarkup = `
+    <div class="swiper feed-fullscreen-swiper">
+      <div class="swiper-wrapper">
+        ${slideImages
+          .map(function (slideImage) {
+            return `<div class="swiper-slide">${slideImage}</div>`;
+          })
+          .join("")}
+      </div>
+      ${
+        hasMultipleSlides
+          ? `<div class="swiper-button-prev"></div>
+             <div class="swiper-button-next"></div>
+             <div class="swiper-pagination"></div>`
+          : ""
+      }
+    </div>
+    <div id='fullscreen-swiper-close'><i class='fa-light fa-circle-xmark'></i></div>
+  `;
+
+  $("#fullscreen-swiper").html(fullscreenMarkup).fadeIn();
+
+  const fullscreenOptions = {
+    initialSlide: safeInitialSlide,
+    zoom: true,
+    direction: "horizontal",
+    speed: 380,
+    spaceBetween: 24,
+    centeredSlides: true,
+    roundLengths: true,
+    grabCursor: false,
+  };
+
+  if (hasMultipleSlides) {
+    fullscreenOptions.loop = true;
+    fullscreenOptions.pagination = {
+      el: "#fullscreen-swiper .swiper-pagination",
+      clickable: true,
+    };
+    fullscreenOptions.navigation = {
+      nextEl: "#fullscreen-swiper .swiper-button-next",
+      prevEl: "#fullscreen-swiper .swiper-button-prev",
+    };
+  }
+
+  new Swiper("#fullscreen-swiper .feed-fullscreen-swiper", fullscreenOptions);
+
+  const closeFullscreenSwiper = function () {
+    $("#fullscreen-swiper").hide().empty();
+    $("#fullscreen-swiper-backdrop").fadeOut();
+    $("body, html").removeClass("no-scroll");
+  };
+
+  $("#fullscreen-swiper-backdrop").fadeIn();
+  $("body, html").addClass("no-scroll");
+  $("#fullscreen-swiper-close")
+    .off("click")
+    .on("click", closeFullscreenSwiper);
+  $("#fullscreen-swiper-backdrop")
+    .off("click")
+    .on("click", closeFullscreenSwiper);
 }
 
 function insertaComentario(val) {
@@ -1924,7 +2044,28 @@ const showCommentsMain = (content) => {
   if (dvContent) {
     if (dvContent.style.display == "none") {
       dvContent.style.display = "";
-      getCommentsFeedSelected(content);
+      // Mostrar skeleton inmediatamente para dar feedback visual
+      if (dvContentFeed && !feedCommentsData[content]) {
+        dvContentFeed.innerHTML = `
+          <div class="chat-box p-3">
+            <ul class="list-unstyled mb-0">
+              ${[1,2,3].map(() => `
+                <li class="d-flex mb-4">
+                  <div class="me-3">
+                    <div style="width:48px;height:48px;border-radius:50%;background:#eceff1;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div style="height:10px;border-radius:8px;background:#eceff1;width:30%;margin-bottom:8px;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
+                    <div style="height:10px;border-radius:8px;background:#eceff1;width:80%;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
+                  </div>
+                </li>`).join('')}
+            </ul>
+          </div>`;
+      }
+      // Solo hacer petición si no hay datos en cache o ya está cargando
+      if (!feedCommentsLoading[content]) {
+        getCommentsFeedSelected(content);
+      }
     } else {
       dvContent.style.display = "none";
       dvContentFeed.innerHTML = "";
@@ -1934,13 +2075,24 @@ const showCommentsMain = (content) => {
 
 let feedCommentsState = {};
 let feedCommentsData = {};
+let feedCommentsLoading = {}; // Previene peticiones duplicadas al abrir comentarios
 
 const getCommentsFeedSelected = async (content, forceReload = false) => {
+  // Evitar peticiones duplicadas simultáneas
+  if (feedCommentsLoading[content]) return;
+  // Usar cache si los datos ya existen y no se forzó recarga
+  if (feedCommentsData[content] && !forceReload) {
+    renderCommentsFeedInline(content);
+    return;
+  }
+
+  feedCommentsLoading[content] = true;
   let dataSend = {
     op: "getCommentsFeedSelected",
     iFeed: content,
   };
   let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
+  feedCommentsLoading[content] = false;
   if (ajaxR !== undefined) {
     let cant = ajaxR.Data.length;
     feedCommentsData[content] = ajaxR.Data;
@@ -1948,7 +2100,7 @@ const getCommentsFeedSelected = async (content, forceReload = false) => {
     if (!feedCommentsState[content] || !forceReload) {
         if (!feedCommentsState[content]) feedCommentsState[content] = 5;
     } else {
-        feedCommentsState[content] = cant; // Expande lo suficiente para revelar el nuevo comentario al final
+        feedCommentsState[content] = cant; // Expande para revelar el nuevo comentario
     }
     
     let btnComm = document.getElementById(`btnComment${content}`);
@@ -2090,18 +2242,68 @@ const makeCommentM = async (content, i_Feed) => {
 };
 
 const makeComment = async (content, i_Feed) => {
+  // Prevenir doble-clic: deshabilitar controles durante el envío
+  let inpText = document.getElementById(`f_newComentary${i_Feed}`);
+  let btnComment = inpText ? inpText.closest('.rpc-comments-area')?.querySelector('.btn-comment') : null;
+
+  if (btnComment) {
+    btnComment.disabled = true;
+    btnComment.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+  }
+  if (inpText) inpText.disabled = true;
+
   let dataSend = {
     op: "makeComment",
     commentary: content,
     i_Feed: i_Feed,
   };
-  let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
-  if (ajaxR !== undefined) {
-    let inpText = document.getElementById(`f_newComentary${i_Feed}`);
-    $(inpText).val("");
-    
-    // Recargar la lista de comentarios para mostrar el nuevo comentario insertado
-    getCommentsFeedSelected(i_Feed, true);
+  try {
+    let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
+    if (ajaxR !== undefined && ajaxR.Resultado) {
+      if (inpText) $(inpText).val("");
+
+      // Actualizar contador del botón
+      let btnComm = document.getElementById(`btnComment${i_Feed}`);
+      if (btnComm) {
+        let currentCount = parseInt((btnComm.textContent.match(/\d+/) || ['0'])[0], 10);
+        btnComm.innerHTML = `<i class="far fa-comments"></i> ${currentCount + 1} Comentarios`;
+      }
+
+      // Insertar comentario en cache local (Optimistic UI):
+      // evitamos un segundo round-trip completo al servidor.
+      if (feedCommentsData[i_Feed]) {
+        // El nombre del usuario ya está en el DOM
+        let nombreEl = document.getElementById('NameEmpleado');
+        let nombre = nombreEl ? nombreEl.textContent.trim() : 'Tú';
+        let ahora = new Date().toLocaleString('es-MX');
+        let nuevoComentario = {
+          idFeed: i_Feed,
+          Comentario: content,
+          Registro: ahora,
+          Nombre: nombre,
+          ImagenEmpleado: '0/0.png',
+          TypeCommentUs: 1,
+          idComentariosFeed: 'tmp_' + Date.now(),
+          inReaction: false,
+          reactionsC: []
+        };
+        // Agregar al inicio para que sea visible inmediatamente
+        feedCommentsData[i_Feed].unshift(nuevoComentario);
+        renderCommentsFeedInline(i_Feed);
+      } else {
+        // Primera vez: traer todos los comentarios del servidor
+        delete feedCommentsData[i_Feed];
+        feedCommentsState[i_Feed] = null;
+        getCommentsFeedSelected(i_Feed, true);
+      }
+    }
+  } finally {
+    // Rehabilitar controles siempre, incluso si hay error
+    if (btnComment) {
+      btnComment.disabled = false;
+      btnComment.innerHTML = 'Comentar';
+    }
+    if (inpText) inpText.disabled = false;
   }
 };
 
@@ -2279,7 +2481,7 @@ const viewAllCommentsFeed = async (feed) => {
 
   <!-- Galería -->
   <div class="col-12 mb-3">
-    <div id="gallery" class="d-none">
+    <div id="gallery" class="galleryImgCl">
       ${contentImg}
     </div>
     <hr>
@@ -2311,27 +2513,8 @@ const viewAllCommentsFeed = async (feed) => {
 	`);
   modalComments.open();
   setTimeout(function () {
-    $("#gallery").unitegallery({
-      gallery_skin: "alexis",
-      slider_scale_mode: "fit",
-      slider_transition: "fade",
-      thumb_overlay_color: "#363636",
-      strippanel_background_color: "#000c1f",
-      slider_enable_fullscreen_button: true,
-      theme_panel_position: "bottom",
-      slider_enable_zoom_panel: true,
-      slider_zoompanel_skin: "",
-      slider_zoompanel_align_hor: "right",
-      slider_zoompanel_align_vert: "top",
-      slider_zoompanel_offset_hor: 12,
-      slider_zoompanel_offset_vert: 10,
-      slider_enable_progress_indicator: true,
-      slider_enable_play_button: true,
-    });
-
-    $(".ug-slider-control.ug-button-play.ug-skin-alexis").click();
-    $(".ug-slider-control.ug-button-play.ug-skin-alexis").hide();
-  }, 1500);
+    initPendingFeedGalleries("#gallery");
+  }, 100);
 };
 
 $(document).on("mouseenter", ".hover-actionCmm", function () {

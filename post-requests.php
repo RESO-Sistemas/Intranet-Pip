@@ -45,11 +45,52 @@
 
   <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
 
-  <link rel="stylesheet" href="/plugins/unitegallery-master/dist/css/unite-gallery.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.css">
 
-  <link rel="stylesheet" href="/plugins/unitegallery-master/package/unitegallery/themes/default/ug-theme-default.css">
+  <style>
+    .post-request-swiper-instance {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f8f9fb;
+    }
 
-  <link rel="stylesheet" href="/plugins/unitegallery-master/source/unitegallery/skins/alexis/alexis.css">
+    .post-request-swiper-instance .swiper-slide {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      background: #f8f9fb;
+    }
+
+    .post-request-swiper-image {
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .post-request-swiper-instance .swiper-button-next,
+    .post-request-swiper-instance .swiper-button-prev {
+      color: #ff6f00;
+      background: rgba(255, 255, 255, 0.9);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-request-swiper-instance .swiper-button-next:after,
+    .post-request-swiper-instance .swiper-button-prev:after {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .post-request-swiper-instance .swiper-pagination-bullet-active {
+      background: #ff6f00;
+    }
+  </style>
 
 
 
@@ -187,9 +228,7 @@
 
 
 
-  <script src="/plugins/unitegallery-master/dist/js/unitegallery.min.js" charset="utf-8"></script>
-
-  <script src="/plugins/unitegallery-master/package/unitegallery/themes/default/ug-theme-default.js" charset="utf-8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.js"></script>
 
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
 

@@ -130,20 +130,7 @@
                         </button>
                       </div>
                     </div>
-                    <div class="table-responsive">
-                      <table class="table display text-center" id="TableTurnos">
-                        <thead>
-                          <tr>
-                            <th>TURNO</th>
-                            <th>HORA INICIO</th>
-                            <th>HORA FIN</th>
-                            <th>PUESTO</th>
-                            <th>ACCIONES</th>
-                          </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
-                    </div>
+                    <div id="TableTurnos"></div>
                   </div>
                 </div>
               </div>
@@ -209,8 +196,8 @@
   <script>
     function limpiarFormularioTurno() {
       $('#txtIdTurno').val('');
-      $('#slctNombreTurno').val('');
-      $('#slctPuesto').val('');
+      $('#slctNombreTurno').val('').trigger('change');
+      $('#slctPuesto').val('').trigger('change');
       $('#txtHoraInicio').val('');
       $('#txtHoraFin').val('');
     }
