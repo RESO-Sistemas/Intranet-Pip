@@ -4,7 +4,7 @@
 
   const API_DASHBOARD = 'Backend/Dashboard/App.php';
   const DASHBOARD_POLL_MS = 120000; // Aumentado a 2 min: los SSE cubren actualizaciones en tiempo real
-  let kpiCharts = [];      // { chart, idKpi, total, cumplidos }
+  let kpiCharts = [];      // { chart, idKpi, total, cumplidos, respondidos, index }
   let kpiDataArr = [];     // datos crudos de KPIs
   let checklistsData = []; // datos de checklists para mapeo
   let turnosData = [];     // datos de turnos para mapeo
@@ -120,7 +120,7 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // KPI GAUGES con 3 zonas de color (rojo · amarillo · verde)
+  // KPI GAUGES (Syncfusion CircularGauge)
   // ═══════════════════════════════════════════════════════════════════════════
   async function _fetchKpis() {
     try {
@@ -133,82 +133,133 @@
     }
   }
 
-  // ─── SVG Gauge (semicírculo con 3 rebanadas de color rellenas) ─────────
-  function _wedge(cx, cy, r, startDeg, endDeg, color) {
-    var s = startDeg * Math.PI / 180;
-    var e = endDeg   * Math.PI / 180;
-    var x1 = cx + r * Math.cos(s), y1 = cy - r * Math.sin(s);
-    var x2 = cx + r * Math.cos(e), y2 = cy - r * Math.sin(e);
-    var lg = (endDeg - startDeg) > 180 ? 1 : 0;
-    return '<path d="M ' + cx + ' ' + cy +
-      ' L ' + x1 + ' ' + y1 +
-      ' A ' + r + ' ' + r + ' 0 ' + lg + ' 0 ' + x2 + ' ' + y2 +
-      ' Z" fill="' + color + '"/>';
+  function _clamp(val, min, max) {
+    return Math.min(max, Math.max(min, val));
   }
 
-  function _buildGaugeSVG(pct) {
-    var W = 200, H = 115, CX = 100, CY = 105, R = 85;
-    var ID = Math.floor(Math.random() * 10000);
+  function _toNumber(value) {
+    var n = parseFloat(value);
+    return isFinite(n) ? n : null;
+  }
 
-    function _wedge(cx, cy, r, startDeg, endDeg, fill, hasGloss = true) {
-      var s = startDeg * Math.PI / 180, e = endDeg * Math.PI / 180;
-      var x1 = cx + r * Math.cos(s), y1 = cy - r * Math.sin(s);
-      var x2 = cx + r * Math.cos(e), y2 = cy - r * Math.sin(e);
-      var lg = (endDeg - startDeg) > 180 ? 1 : 0;
-      
-      // Base arc with shadow filter
-      var path = '<path d="M ' + cx + ' ' + cy + ' L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 0 ' + x2 + ' ' + y2 + ' Z" fill="' + fill + '" filter="url(#shadowDash' + ID + ')"/>';
-      
-      // Glossy reflection overlay
-      if (hasGloss) {
-        var rInner = r * 0.75;
-        var x1g = cx + rInner * Math.cos(s), y1g = cy - rInner * Math.sin(s);
-        var x2g = cx + rInner * Math.cos(e), y2g = cy - rInner * Math.sin(e);
-        path += '<path d="M ' + x1g + ' ' + y1g + ' A ' + rInner + ' ' + rInner + ' 0 ' + lg + ' 0 ' + x2g + ' ' + y2g + ' L ' + x2 + ' ' + y2 + ' A ' + r + ' ' + r + ' 0 ' + lg + ' 1 ' + x1 + ' ' + y1 + ' Z" fill="url(#glossGradDash' + ID + ')" opacity="0.6"/>';
+  function _getNumericByKeys(obj, keys) {
+    for (var i = 0; i < keys.length; i++) {
+      if (Object.prototype.hasOwnProperty.call(obj, keys[i])) {
+        var n = _toNumber(obj[keys[i]]);
+        if (n !== null) return n;
       }
-      return path;
+    }
+    return null;
+  }
+
+  function _resolveKpiThresholds(kpi) {
+    var rawBaja = _getNumericByKeys(kpi, ['ValorBaja', 'valorBaja', 'Baja', 'PorcentajeBaja']);
+    var rawMedia = _getNumericByKeys(kpi, ['ValorMedia', 'valorMedia', 'Media', 'PorcentajeMedia']);
+    var rawAlta = _getNumericByKeys(kpi, ['ValorAlta', 'valorAlta', 'Alta', 'PorcentajeAlta']);
+
+    var values = [rawBaja, rawMedia, rawAlta].filter(function (v) { return v !== null; });
+    if (values.length < 3) {
+      return { baja: 40, media: 75, alta: 100 };
     }
 
-    function sepLine(deg) {
-      var rad = deg * Math.PI / 180;
-      var x = CX + R * Math.cos(rad), y = CY - R * Math.sin(rad);
-      return '<line x1="' + CX + '" y1="' + CY + '" x2="' + x + '" y2="' + y + '" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>';
+    values.sort(function (a, b) { return a - b; });
+    var baja = _clamp(values[0], 5, 95);
+    var media = _clamp(values[1], baja + 1, 99);
+    var alta = _clamp(values[2], media + 1, 100);
+
+    return { baja: baja, media: media, alta: alta };
+  }
+
+  function _buildGaugeFallback(pct) {
+    return '<div class="small fw-bold text-center" style="line-height:84px;color:#444;">' + pct + '%</div>';
+  }
+
+  function _createSyncfusionGauge(mountId, pct, thresholds) {
+    if (!window.ej || !ej.circulargauge || !ej.circulargauge.CircularGauge) {
+      return null;
     }
 
-    var txtColor = pct < 40 ? '#e74c3c' : (pct < 75 ? '#d68910' : '#229954');
+    var gauge = new ej.circulargauge.CircularGauge({
+      background: 'transparent',
+      width: '132px',
+      height: '84px',
+      centerY: '82%',
+      axes: [{
+        minimum: 0,
+        maximum: 100,
+        startAngle: 230,
+        endAngle: 130,
+        radius: '100%',
+        lineStyle: { width: 0 },
+        majorTicks: { width: 0, height: 0 },
+        minorTicks: { width: 0, height: 0 },
+        labelStyle: {
+          position: 'Inside',
+          offset: 0,
+          font: { size: '0px' }
+        },
+        pointers: [{
+          value: 90,
+          radius: '50%',
+          color: '#2f2f2f',
+          needleStartWidth: 1,
+          needleEndWidth: 4,  
+          cap: {
+            radius: 5,
+            color: '#2f2f2f',
+            border: { width: 0 }
+          },
+          needleTail: {
+            length: '1%',
+            color: '#2f2f2f'
+          },
+          animation: {
+            enable: true,
+            duration: 600
+          }
+        }],
+        ranges: [{
+          start: 0,
+          end: thresholds.baja,
+          radius: '100%',
+          startWidth: 12,
+          endWidth: 12,
+          roundedCornerRadius: 6,
+          color: '#dc3545'
+        }, {
+          start: thresholds.baja,
+          end: thresholds.media,
+          radius: '100%',
+          startWidth: 12,
+          endWidth: 12,
+          roundedCornerRadius: 6,
+          color: '#f4b400'
+        }, {
+          start: thresholds.media,
+          end: 100,
+          radius: '100%',
+          startWidth: 12,
+          endWidth: 12,
+          roundedCornerRadius: 6,
+          color: '#28a745'
+        }]
+      }]
+    });
 
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1))">' +
-      '<defs>' +
-        '<linearGradient id="redGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
-          '<stop offset="0%" stop-color="#ff9a9e" /><stop offset="50%" stop-color="#ff4b2b" /><stop offset="100%" stop-color="#c0392b" />' +
-        '</linearGradient>' +
-        '<linearGradient id="yelGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
-          '<stop offset="0%" stop-color="#ffeaa7" /><stop offset="50%" stop-color="#feca28" /><stop offset="100%" stop-color="#f39c12" />' +
-        '</linearGradient>' +
-        '<linearGradient id="greGD' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
-          '<stop offset="0%" stop-color="#b8e994" /><stop offset="50%" stop-color="#2ecc71" /><stop offset="100%" stop-color="#218c74" />' +
-        '</linearGradient>' +
-        '<linearGradient id="glossGradDash' + ID + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
-          '<stop offset="0%" stop-color="white" stop-opacity="0.5"/><stop offset="100%" stop-color="white" stop-opacity="0"/>' +
-        '</linearGradient>' +
-        '<filter id="shadowDash' + ID + '" x="-20%" y="-20%" width="140%" height="140%">' +
-          '<feGaussianBlur in="SourceAlpha" stdDeviation="1.5" /><feOffset dx="0" dy="1" /><feComponentTransfer><feFuncA type="linear" slope="0.3" /></feComponentTransfer><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>' +
-        '</filter>' +
-      '</defs>' +
-      _wedge(CX, CY, R, 108, 180, 'url(#redGD' + ID + ')') +
-      _wedge(CX, CY, R, 45, 108, 'url(#yelGD' + ID + ')') +
-      _wedge(CX, CY, R, 0, 45, 'url(#greGD' + ID + ')') +
-      /* Semicírculo blanco central - Ahora recortado a la mitad */
-      '<path d="M ' + (CX - 45) + ' ' + CY + ' A 45 45 0 0 1 ' + (CX + 45) + ' ' + CY + ' Z" fill="#fff"/>' +
-      sepLine(108) + sepLine(45) +
-      '<line x1="' + (CX - R) + '" y1="' + CY + '" x2="' + (CX + R) + '" y2="' + CY + '" stroke="#fff" stroke-width="3"/>' +
-      '<polygon points="' + (CX + (R-12) * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180)) + ',' + (CY - (R-12) * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 + Math.PI/2)) + ' ' + (CX + 5 * Math.cos((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + ',' + (CY - 5 * Math.sin((180 - (pct / 100) * 180) * Math.PI / 180 - Math.PI/2)) + '" fill="#333"/>' +
-      '<circle cx="' + CX + '" cy="' + CY + '" r="7" fill="#444"/>' +
-      '<circle cx="' + CX + '" cy="' + CY + '" r="3.5" fill="#fff"/>' +
-      '<text x="' + CX + '" y="' + (CY - 14) + '" text-anchor="middle" font-size="23" font-weight="700" font-family="sans-serif" fill="' + txtColor + '">' + pct + '%</text>' +
-      '</svg>';
+    gauge.appendTo('#' + mountId);
+    return gauge;
+  }
 
-    return svg;
+  function _destroyKpiGauges() {
+    kpiCharts.forEach(function (entry) {
+      if (entry && entry.chart && typeof entry.chart.destroy === 'function') {
+        try {
+          entry.chart.destroy();
+        } catch (e) {
+          console.warn('No se pudo destruir gauge KPI:', e);
+        }
+      }
+    });
   }
 
   function _renderKpiGauges(kpis) {
@@ -220,6 +271,7 @@
       return;
     }
 
+    _destroyKpiGauges();
     container.innerHTML = '';
     kpiCharts = [];
 
@@ -229,31 +281,35 @@
       var respondidos = parseInt(kpi.ChecklistsRespondidos) || 0;
       var pct = total > 0 ? Math.round((cumplidos / total) * 100) : 0;
 
-      // Color del texto según porcentaje
-      var txtColor = pct < 40 ? '#e74c3c' : (pct < 75 ? '#d68910' : '#229954');
-
-      // SVG mini para la pill (viewBox compacto)
-      var miniSvg = _buildGaugeSVG(pct);
+      var thresholds = _resolveKpiThresholds(kpi);
+      var gaugeMountId = 'kpiChart' + i;
 
       var pill = document.createElement('div');
       pill.className = 'kpi-pill';
       pill.setAttribute('data-kpi-id', kpi.IdKpi);
       pill.innerHTML =
-        '<div class="kpi-pill-gauge" id="kpiChart' + i + '" style="width:90px;height:52px;overflow:hidden;">' +
-          miniSvg +
-        '</div>' +
+        '<div class="kpi-pill-gauge" id="' + gaugeMountId + '" style="width:132px;height:84px;overflow:hidden;"></div>' +
         '<div class="kpi-pill-info">' +
           '<span class="kpi-pill-name" title="' + _escapeHtml(kpi.NombreKpi) + '">' + _escapeHtml(kpi.NombreKpi) + '</span>' +
+          '<span class="kpi-pill-percent" id="kpiPercent' + i + '">' + pct + '%</span>' +
           '<span class="kpi-pill-fraction" id="kpiFraction' + i + '">' + respondidos + '/' + total + '</span>' +
         '</div>';
       container.appendChild(pill);
 
+      var gauge = _createSyncfusionGauge(gaugeMountId, pct, thresholds);
+      if (!gauge) {
+        var fallbackEl = document.getElementById(gaugeMountId);
+        if (fallbackEl) fallbackEl.innerHTML = _buildGaugeFallback(pct);
+      }
+
       kpiCharts.push({
+        chart: gauge,
         idKpi: kpi.IdKpi,
         total: total,
         cumplidos: cumplidos,
         respondidos: respondidos,
-        index: i
+        index: i,
+        thresholds: thresholds
       });
     });
   }
@@ -267,9 +323,16 @@
     if (esCorrecta) entry.cumplidos++;
     var pct = entry.total > 0 ? Math.round((entry.cumplidos / entry.total) * 100) : 0;
 
-    // Re-render mini SVG dentro de la pill
-    var chartEl = document.getElementById('kpiChart' + entry.index);
-    if (chartEl) chartEl.innerHTML = _buildGaugeSVG(pct);
+    // Actualizar pointer del gauge
+    if (entry.chart && typeof entry.chart.setPointerValue === 'function') {
+      entry.chart.setPointerValue(0, 0, _clamp(pct, 0, 100));
+    } else {
+      var chartEl = document.getElementById('kpiChart' + entry.index);
+      if (chartEl) chartEl.innerHTML = _buildGaugeFallback(pct);
+    }
+
+    var percentEl = document.getElementById('kpiPercent' + entry.index);
+    if (percentEl) percentEl.textContent = pct + '%';
 
     // Actualizar texto de fracción
     var fractionEl = document.getElementById('kpiFraction' + entry.index);

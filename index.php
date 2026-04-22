@@ -40,10 +40,11 @@ $MenuP = $Conf->getMenusPadre();
   <link rel="stylesheet" href="plugins/tingle-master/dist/tingle.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined">
   <link rel="stylesheet" href="/plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.css">
+
   
   <!-- Moment.js necesario para FullCalendar -->
   <script src="assets/libs/moment/min/moment.min.js"></script>
-
+  <script src="assets/syncfusion/Packages/ej2-circulargauge/circular-gauge.js"></script>
   <style>
     /* ============================================================
        KPI Gauge cards — SIN CAMBIOS
@@ -448,32 +449,58 @@ $MenuP = $Conf->getMenusPadre();
       flex: 0 0 auto;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       background: #fff;
       border: 1px solid #e0e0e0;
-      border-radius: 50px;
-      padding: 8px 18px 8px 10px;
+      border-radius: 18px;
+      padding: 9px 16px 9px 10px;
       box-shadow: 0 1px 4px rgba(0,0,0,.07);
       cursor: default;
-      min-width: 180px;
+      min-width: 285px;
     }
-    .kpi-pill-gauge { flex-shrink: 0; }
+    .kpi-pill-gauge {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     .kpi-pill-info {
       display: flex;
       flex-direction: column;
       line-height: 1.2;
+      min-width: 0;
+      flex: 1;
+    }
+    .kpi-pill-percent {
+      font-size: .8rem;
+      font-weight: 700;
+      color: #2f2f2f;
+      margin-top: 1px;
     }
     .kpi-pill-name {
-      font-size: .78rem;
+      font-size: .82rem;
       font-weight: 700;
       color: #333;
       white-space: normal;
-      max-width: 150px;
+      max-width: 135px;
       word-break: break-word;
     }
     .kpi-pill-fraction {
       font-size: .68rem;
       color: #888;
+    }
+    @media (max-width: 768px) {
+      .kpi-pill {
+        min-width: 255px;
+        padding: 8px 12px 8px 8px;
+      }
+      .kpi-pill-gauge {
+        transform: scale(.92);
+        transform-origin: left center;
+      }
+      .kpi-pill-name {
+        max-width: 120px;
+      }
     }
 
     /* Post Compose Box — campo para crear publicación */
@@ -605,6 +632,7 @@ $MenuP = $Conf->getMenusPadre();
 
     body.dark-mode .kpi-pill { background: #272729; border-color: #3c3c3d; }
     body.dark-mode .kpi-pill-name { color: #d7dadc; }
+    body.dark-mode .kpi-pill-percent { color: #f0f0f0; }
     body.dark-mode .kpi-pill-fraction { color: #818384; }
     body.dark-mode .post-compose-box { background: #272729; border-color: #3c3c3d; }
     body.dark-mode .post-compose-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,.3); }
@@ -786,10 +814,13 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 5px 5px 0 0;
     }
     .reddit-sidebar .card-header i { margin-right: 6px; }
-    .reddit-sidebar .card-body {
-      padding: 10px 12px;
-      background: #fff;
-    }
+     .reddit-sidebar .card-body {
+       padding: 10px 12px;
+       background: #fff;
+       min-height: auto;
+       max-height: none;
+       overflow: visible;
+     }
 
     body.dark-mode .reddit-feed-wrapper { background: #1a1a1b; }
     body.dark-mode .feed-empty-state {
@@ -1012,29 +1043,29 @@ $MenuP = $Conf->getMenusPadre();
               <div class="col-12 col-lg-4">
                 <div class="reddit-sidebar">
 
-                  <!-- Próximos Eventos -->
-                  <div class="card mb-3">
-                    <div class="card-header text-dark">
-                      <i class="fas fa-calendar-alt"></i> Próximos Eventos
-                    </div>
-                    <div class="card-body">
-                      <div id="listaEventos" style="max-height: 200px; overflow-y: auto;">
-                        <p class="text-muted small text-center mb-0">Cargando eventos...</p>
-                      </div>
-                    </div>
-                  </div>
+                   <!-- Próximos Eventos -->
+                   <div class="card mb-3">
+                     <div class="card-header text-dark">
+                       <i class="fas fa-calendar-alt"></i> Próximos Eventos
+                     </div>
+                     <div class="card-body">
+                       <div id="listaEventos">
+                         <p class="text-muted small text-center mb-0">Cargando eventos...</p>
+                       </div>
+                     </div>
+                   </div>
 
-                  <!-- Checklist del día -->
-                  <div class="card">
-                    <div class="card-header text-dark">
-                      <i class="fas fa-check-square"></i> Checklist del día
-                    </div>
-                    <div class="card-body">
-                      <div id="listaChecklist" style="max-height: 380px; overflow-y: auto;">
-                        <p class="text-muted small text-center mb-0">Cargando checklist...</p>
-                      </div>
-                    </div>
-                  </div>
+                   <!-- Checklist del día -->
+                   <div class="card">
+                     <div class="card-header text-dark">
+                       <i class="fas fa-check-square"></i> Checklist del día
+                     </div>
+                     <div class="card-body">
+                       <div id="listaChecklist">
+                         <p class="text-muted small text-center mb-0">Cargando checklist...</p>
+                       </div>
+                     </div>
+                   </div>
 
                 </div>
               </div><!-- /col sidebar -->
@@ -1083,6 +1114,9 @@ $MenuP = $Conf->getMenusPadre();
 
   <!-- Script: abrir/cerrar formulario inline de publicación -->
   <script>
+    // Registering Syncfusion license key
+ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+
     function openComposeForm() {
       // Ocultar trigger row / acciones
       document.getElementById('postComposeTriggerRow').style.display  = 'none';

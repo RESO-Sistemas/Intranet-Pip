@@ -152,6 +152,54 @@ class Dashboard extends Conexiones{
     $noEmpleado = SessionManager::get("NoEmpleado");
     $q = "CALL spGetKpisDashboard(?, ?)";
     $resultado = $this->ProcedureWithParam($q, array($idPuesto, $noEmpleado));
+
+    if (!empty($resultado) && is_array($resultado)) {
+      $needThresholds = false;
+      foreach ($resultado as $row) {
+        if (!isset($row['ValorBaja']) || !isset($row['ValorMedia']) || !isset($row['ValorAlta'])) {
+          $needThresholds = true;
+          break;
+        }
+      }
+
+      if ($needThresholds) {
+        $ids = [];
+        foreach ($resultado as $row) {
+          if (isset($row['IdKpi']) && is_numeric($row['IdKpi'])) {
+            $ids[] = (int)$row['IdKpi'];
+          }
+        }
+
+        $ids = array_values(array_unique($ids));
+        if (!empty($ids)) {
+          $placeholders = implode(',', array_fill(0, count($ids), '?'));
+          $qThresholds = "SELECT IdKpi, ValorAlta, ValorMedia, ValorBaja FROM Kpis WHERE IdKpi IN ($placeholders)";
+          $rowsThresholds = $this->ExecuteQueryWithParam($qThresholds, $ids);
+
+          $mapThresholds = [];
+          foreach ($rowsThresholds as $t) {
+            $mapThresholds[(int)$t['IdKpi']] = $t;
+          }
+
+          foreach ($resultado as &$row) {
+            $idKpi = isset($row['IdKpi']) ? (int)$row['IdKpi'] : 0;
+            if ($idKpi > 0 && isset($mapThresholds[$idKpi])) {
+              if (!isset($row['ValorAlta'])) {
+                $row['ValorAlta'] = $mapThresholds[$idKpi]['ValorAlta'];
+              }
+              if (!isset($row['ValorMedia'])) {
+                $row['ValorMedia'] = $mapThresholds[$idKpi]['ValorMedia'];
+              }
+              if (!isset($row['ValorBaja'])) {
+                $row['ValorBaja'] = $mapThresholds[$idKpi]['ValorBaja'];
+              }
+            }
+          }
+          unset($row);
+        }
+      }
+    }
+
     return json_encode($resultado);
   }
 
@@ -244,4 +292,3 @@ class Dashboard extends Conexiones{
 
 
 ?>
-

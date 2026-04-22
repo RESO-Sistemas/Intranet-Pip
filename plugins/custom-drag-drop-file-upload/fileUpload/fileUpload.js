@@ -236,6 +236,7 @@
             fileUploadDiv.find(`#${fileUploadId}`).on("change", function () {
                 addFiles(this.files);
                 this.value = "";
+                syncInputFiles(); // Restaurar archivos del DataTransfer tras limpiar value
             });
 
             renderTable();

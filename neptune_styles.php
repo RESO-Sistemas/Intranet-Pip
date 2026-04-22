@@ -72,7 +72,7 @@
 </style>
 
 <script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
-<script src="./scripts/syncfusion-config.js"></script>
+<script src="./scripts/syncfusion-config.js?<?= time() ?>"></script>
 
 <?php
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
