@@ -169,24 +169,18 @@ if (btnActionGreen) {
       }
 
       if (saved) {
-        // Cerrar el formulario inline y restaurar el trigger
         if (typeof closeComposeForm === 'function') {
           closeComposeForm();
         }
-
-        // Recargar el feed desde la primera página
-        currentFeedPage = 1;
-        if (window.EventSource && !document.hidden) {
-          if (publishRefreshFallbackTimer) {
-            clearTimeout(publishRefreshFallbackTimer);
-          }
-          publishRefreshFallbackTimer = setTimeout(function () {
-            publishRefreshFallbackTimer = null;
-            loadFeeds(1);
-          }, 3000);
-        } else {
-          loadFeeds(1);
-        }
+        Swal.fire({
+          icon: 'success',
+          title: '¡Publicación enviada!',
+          html: 'Tu publicación fue recibida y está <strong>pendiente de revisión</strong>.<br>Un administrador la aprobará pronto.',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#FF4500',
+          timer: 8000,
+          timerProgressBar: true,
+        });
       } else {
         toastr.error("No se pudo publicar. Intenta de nuevo.");
       }
@@ -2007,22 +2001,28 @@ async function getEventosDetalle(val) {
 async function saveInfoFeed() {
   let form = $("#formFeed")[0];
   let dataSend = new FormData(form);
-  dataSend.append("op", "addPublicationFromIndex"); // Puedes agregar datos adicionales si es necesario
-  let ajaxR = await pAjaxAsyncForm(url_m_Feed, dataSend, 0);
+  dataSend.append("op", "addPublicationFromIndex");
 
-  if (typeof ajaxR === "string") {
-    try {
-      ajaxR = JSON.parse(ajaxR);
-    } catch (e) {
-      console.log("Respuesta no JSON en saveInfoFeed:", ajaxR);
-    }
-  }
-
-  // Verificar que la respuesta existe antes de acceder a sus propiedades
-  if (ajaxR && ajaxR.Resultado) {
-    return true;
-  }
-  return false;
+  return new Promise(function (resolve) {
+    $.ajax({
+      type: "POST",
+      url: url_m_Feed,
+      data: dataSend,
+      processData: false,
+      contentType: false,
+      timeout: 120000,
+      success: function (res) {
+        try {
+          if (typeof res === "string") res = JSON.parse(res);
+        } catch (e) {}
+        resolve(!!(res && res.Resultado));
+      },
+      error: function (xhr, status, err) {
+        console.warn("saveInfoFeed error:", status, err, xhr.responseText);
+        resolve(false);
+      },
+    });
+  });
 }
 
 function AddComentario(valor) {

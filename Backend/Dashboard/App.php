@@ -47,13 +47,21 @@
   }
 
   if ($op == "getDashboardAll") {
-    // Endpoint consolidado: reutiliza el objeto $Dashboard ya instanciado
-    // para evitar abrir 3 conexiones TCP adicionales al servidor remoto.
+    $safeCall = function($fn) {
+      ob_start();
+      $r = null;
+      try { $r = $fn(); } catch (Exception $e) { /* ignore */ }
+      ob_end_clean();
+      if ($r === null) return [];
+      $d = json_decode($r, true);
+      return ($d !== null) ? $d : [];
+    };
+    http_response_code(200);
     $result = [
-      "turnos"     => json_decode($Dashboard->getTurnos()),
-      "kpis"       => json_decode($Dashboard->getKpisDashboard()),
-      "eventos"    => json_decode($Dashboard->getProximosEventos()),
-      "checklists" => json_decode($Dashboard->getChecklistsEmpleado())
+      "turnos"     => $safeCall(function() use ($Dashboard) { return $Dashboard->getTurnos(); }),
+      "kpis"       => $safeCall(function() use ($Dashboard) { return $Dashboard->getKpisDashboard(); }),
+      "eventos"    => $safeCall(function() use ($Dashboard) { return $Dashboard->getProximosEventos(); }),
+      "checklists" => $safeCall(function() use ($Dashboard) { return $Dashboard->getChecklistsEmpleado(); })
     ];
     echo json_encode($result);
   }

@@ -38,8 +38,21 @@
 
   <!-- <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet"> -->
 
-  <style media="screen">
+  <link href="assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+  <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined">
 
+  <style>
+    .modal-archivo-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      background: #fafbfc;
+    }
   </style>
 
 </head>
@@ -145,7 +158,10 @@
 
                       <div class="col">
 
-                        <a class="btn btn-primary" id="#statusModal" href="Feed.php?legacy=1">Nueva Publicacion</a>
+                        <button class="btn btn-primary" onclick="abrirModalCrear()">
+                          <span class="material-symbols-outlined" style="vertical-align:middle;font-size:1rem;">add</span>
+                          Nueva Publicación
+                        </button>
 
                       </div>
 
@@ -183,21 +199,120 @@
 
 
 
+  <!-- Modal Crear Feed -->
+  <div class="modal fade" id="modalCrearFeed" tabindex="-1" aria-labelledby="modalCrearFeedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalCrearFeedLabel">
+            <span class="material-symbols-outlined me-1" style="vertical-align:middle;">add_circle</span>
+            Nueva publicación
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="crearTxtTitulo" class="form-label fw-bold">Título <span class="text-danger">*</span></label>
+            <textarea id="crearTxtTitulo" class="form-control" rows="2" placeholder="Escribe el título..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="crearTxtDescripcion" class="form-label fw-bold">Descripción <span class="text-danger">*</span></label>
+            <textarea id="crearTxtDescripcion" class="form-control" rows="5" placeholder="¿Qué quieres comunicar?"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="crearTxtHV" class="form-label fw-bold">Hipervínculo <span class="text-muted fw-normal" style="font-size:.8rem;">(opcional)</span></label>
+            <input type="url" id="crearTxtHV" class="form-control" placeholder="https://...">
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Imágenes <span class="text-muted fw-normal" style="font-size:.8rem;">(opcional)</span></label>
+            <input type="file" id="crearFileInput" class="form-control" multiple accept="image/jpeg,image/png,image/gif,image/webp">
+            <div id="crearPreviewNuevos" class="d-flex flex-wrap gap-1 mt-2"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnGuardarCrearFeed" onclick="publicarNuevoFeed()">
+            <i class="fas fa-paper-plane me-1"></i> Publicar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Feed -->
+  <div class="modal fade" id="modalEditarFeed" tabindex="-1" aria-labelledby="modalEditarFeedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarFeedLabel">
+            <span class="material-symbols-outlined me-1" style="vertical-align:middle;">edit</span>
+            Editar publicación
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="modalTxtTitulo" class="form-label fw-bold">Título <span class="text-danger">*</span></label>
+            <textarea id="modalTxtTitulo" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="modalTxtDescripcion" class="form-label fw-bold">Descripción <span class="text-danger">*</span></label>
+            <textarea id="modalTxtDescripcion" class="form-control" rows="5"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="modalTxtHV" class="form-label fw-bold">Hipervínculo <span class="text-muted fw-normal" style="font-size:.8rem;">(opcional)</span></label>
+            <input type="url" id="modalTxtHV" class="form-control" placeholder="https://...">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Archivos actuales</label>
+            <div id="modalArchivosActuales"></div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Agregar imágenes <span class="text-muted fw-normal" style="font-size:.8rem;">(opcional)</span></label>
+            <input type="file" id="modalFileInput" class="form-control" multiple accept="image/jpeg,image/png,image/gif,image/webp">
+            <div id="modalPreviewNuevos" class="d-flex flex-wrap gap-1 mt-2"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success" id="btnGuardarModalFeed" onclick="guardarFeedDesdeModal()">
+            <i class="fas fa-save me-1"></i> Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Administrar Comentarios -->
+  <div class="modal fade" id="modalAdminComentarios" tabindex="-1" aria-labelledby="modalAdminComentariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAdminComentariosLabel">
+            <span class="material-symbols-outlined me-1" style="vertical-align:middle;">forum</span>
+            Administrar Comentarios
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="modalAdminComentariosBody">
+          <!-- Comentarios se cargarán aquí -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- neptune Javascripts -->
 
   <?php include("neptune_js.php");  ?>
 
   <!-- neptune Javascripts -->
 
-
-
   <?php include("scripts.php"); ?>
 
-
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script src="scripts/ListadoFeed.js?<?= time() ?>" charset="utf-8"></script>
 

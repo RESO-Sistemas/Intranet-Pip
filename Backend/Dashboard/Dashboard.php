@@ -277,9 +277,19 @@ class Dashboard extends Conexiones{
   }
 
   function getProximosEventos() {
-    $q = "CALL spGetProximosEventos()";
-    $resultado = $this->Procedure($q);
-    return json_encode($resultado);
+    try {
+      $hoy = date('Y-m-d');
+      $q = "SELECT Titulo, Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Status, idEventos
+            FROM Eventos
+            WHERE Status = 1 AND FechaFin >= '$hoy'
+            ORDER BY FechaInicio ASC
+            LIMIT 10";
+      $resultado = $this->Select($q, array());
+      return json_encode($resultado ?: []);
+    } catch (Exception $e) {
+      error_log("Error en getProximosEventos: " . $e->getMessage());
+      return json_encode([]);
+    }
   }
 
   function getTurnos() {

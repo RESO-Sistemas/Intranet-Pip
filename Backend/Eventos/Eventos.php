@@ -171,8 +171,8 @@
 
     function addEvento ($Titulo,$Descripcion,$FechaInicio,$FechaFin,$HoraInicio,$HoraFin) {
       try {
-        $q = "INSERT INTO Eventos (Titulo,Descripcion,FechaInicio,FechaFin,HoraInicio,HoraFin,Registro)
-  			values ('$Titulo','$Descripcion','$FechaInicio','$FechaFin','$HoraInicio','$HoraFin',now());";
+        $q = "INSERT INTO Eventos (Titulo,Descripcion,FechaInicio,FechaFin,HoraInicio,HoraFin,Status,Registro)
+  			values ('$Titulo','$Descripcion','$FechaInicio','$FechaFin','$HoraInicio','$HoraFin',1,now());";
         $this->ExecuteQuery($q,array());
         return "1";
       } catch (\Exception $e) {
@@ -209,7 +209,16 @@
       } catch (\Exception $e) {
         return "0";
       }
+    }
 
+    function getProximosEventos() {
+      $hoy = date('Y-m-d');
+      $q = "SELECT Titulo, Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Status, idEventos
+            FROM Eventos
+            WHERE Status = 1 AND FechaFin >= '$hoy'
+            ORDER BY FechaInicio ASC
+            LIMIT 10";
+      return json_encode($this->Select($q, array()));
     }
   }
  ?>

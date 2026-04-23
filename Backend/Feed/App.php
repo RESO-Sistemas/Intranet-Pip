@@ -355,63 +355,53 @@
       
       $idGen = $resInsert["f_idFeed"];
 
-      // ── Procesar imágenes adjuntas ─────────────────────────────────────────
-      // Se convierte cada imagen a Data URI base64 y se guarda como texto en la BD.
-      // Este es el mismo patrón que usa el módulo de Incidencias (simple y robusto).
+      // ── Procesar imágenes adjuntas — almacenamiento en disco (rápido) ─────────
       if (isset($_FILES['filesFeedForm']) && !empty($_FILES['filesFeedForm']['name'][0])) {
           try {
-              $allowed  = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-              $cantFiles = count($_FILES['filesFeedForm']['name']);
+              $extValida  = ['png', 'jpeg', 'jpg', 'gif', 'webp'];
+              $cantFiles  = count($_FILES['filesFeedForm']['name']);
+              $carpeta    = "../../Archivos/Feed/$idGen/";
+              $fechaActual = date('d-m-Y H:i:s');
+              $contador   = 0;
+              $archivosGuardados = '';
 
               for ($i = 0; $i < $cantFiles; $i++) {
                   if (!isset($_FILES['filesFeedForm']['name'][$i]) || $_FILES['filesFeedForm']['name'][$i] == '') {
                       continue;
                   }
-
-                  $file_tmp = $_FILES['filesFeedForm']['tmp_name'][$i];
                   $namefile = $_FILES['filesFeedForm']['name'][$i];
-
-                  // Detectar MIME real con finfo (más seguro que confiar en el cliente)
-                  $mimeType = $_FILES['filesFeedForm']['type'][$i];
-                  if (function_exists('finfo_open')) {
-                      $finfo    = finfo_open(FILEINFO_MIME_TYPE);
-                      $detected = finfo_file($finfo, $file_tmp);
-                      if ($detected) $mimeType = $detected;
-                      finfo_close($finfo);
-                  }
-
-                  // Rechazar archivos que no sean imágenes
-                  if (!in_array($mimeType, $allowed)) {
-                      error_log("addPublicationFromIndex - Tipo no permitido: $mimeType ($namefile)");
+                  $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
+                  if (!in_array($ext, $extValida)) {
+                      error_log("addPublicationFromIndex - ext no permitida: $ext ($namefile)");
                       continue;
                   }
-
-                  // Leer binario → convertir a Data URI base64 (igual que Incidencias)
-                  $binary = file_get_contents($file_tmp);
-                  if ($binary === false) {
-                      error_log("addPublicationFromIndex - No se pudo leer: $namefile");
-                      continue;
+                  $contador++;
+                  $nameArchivo = "$idGen$fechaActual$contador.$ext";
+                  $path = $carpeta . $nameArchivo;
+                  if (!file_exists($carpeta)) {
+                      mkdir($carpeta, 0777, true);
                   }
-
-                  $dataUri = 'data:' . $mimeType . ';base64,' . base64_encode($binary);
-
-                  // Guardar Data URI en la columna Archivo de ArchivosFeed (TEXT/LONGTEXT)
-                    $Feed->addArchivoDataUri($idGen, $dataUri);
+                  if (move_uploaded_file($_FILES['filesFeedForm']['tmp_name'][$i], $path)) {
+                      $archivosGuardados .= $nameArchivo . ',';
+                  }
+              }
+              if ($archivosGuardados) {
+                  $archivosGuardados = rtrim($archivosGuardados, ',');
+                  $Feed->AddNombreArchivoFeed($idGen, $archivosGuardados);
               }
           } catch (Exception $e) {
               error_log("Error procesando imágenes Feed: " . $e->getMessage());
           }
       }
       
-      // Respuesta JSON de éxito
+      // Respuesta JSON de éxito — post queda pendiente de revisión (AutorizadoIndex=0)
       header('Content-Type: application/json');
       $arrReturn = [
           "Resultado" => true,
           "Siguiente" => true,
-          "Msg" => "Publicación realizada.",
+          "Msg" => "Publicación enviada a revisión.",
           "idFeed" => $idGen
       ];
-        SseVersionStore::bump('feed');
       echo json_encode($arrReturn);
       exit;
   }
@@ -442,11 +432,38 @@
     echo $result;
   }
 
+  if ($op == "setAutorizadoFeed") {
+    $idFeed = $_POST["idFeed"];
+    $value  = $_POST["value"];
+    $result = trim($Feed->setAutorizadoFeed($idFeed, $value));
+    $decoded = json_decode($result, true);
+    if ($decoded && isset($decoded["Resultado"]) && $decoded["Resultado"]) {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
+  }
+
   if ($op == "reactsToComment") {
     $type = $_POST["type"];
     $comment = $_POST["comment"];
     $result = trim($Feed->reactsToComment($type, $comment));
     if ($result === "1") {
+      SseVersionStore::bump('feed');
+    }
+    echo $result;
+  }
+
+  if ($op == "getCommentsForAdmin") {
+    $iFeed = $_POST["iFeed"];
+    echo trim($Feed->getCommentsForAdmin($iFeed));
+  }
+
+  if ($op == "toggleCommentStatus") {
+    $idComentario = $_POST["idComentario"];
+    $status = $_POST["status"];
+    $result = trim($Feed->toggleCommentStatus($idComentario, $status));
+    $decoded = json_decode($result, true);
+    if ($decoded && isset($decoded["Resultado"]) && $decoded["Resultado"]) {
       SseVersionStore::bump('feed');
     }
     echo $result;

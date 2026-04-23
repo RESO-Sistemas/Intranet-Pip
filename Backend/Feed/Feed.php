@@ -248,7 +248,7 @@
                     FROM Feed AS F
                     LEFT JOIN ArchivosFeed AS AF ON AF.idFeed = F.idFeed
                     INNER JOIN Empleados AS E ON E.NoEmpleado = F.NoEmpleado
-                    where (F.Tipo = 'FED' OR F.Tipo = 'FIN')
+                    where (F.Tipo = 'FED' OR (F.Tipo = 'FIN' AND F.AutorizadoIndex = 1))
                     GROUP BY F.idFeed
                     ORDER BY F.Registro DESC) AS TABLA3
                     ORDER BY Registro DESC
@@ -543,11 +543,35 @@
     }
 
     function getListFeeds(){
-      $q = "SELECT idFeed,Titulo,Descripcion FROM Feed
-              WHERE Tipo = 'FED'
-                 OR (Tipo = 'FIN' AND IFNULL(AutorizadoIndex,0) = 1)
-              order by idFeed desc;";
+      $q = "SELECT
+              F.idFeed,
+              F.Titulo,
+              LEFT(F.Descripcion, 120) AS Descripcion,
+              F.Tipo,
+              F.AutorizadoIndex,
+              F.Registro,
+              F.NoEmpleado,
+              E.Nombre AS NombreEmpleado,
+              (SELECT COUNT(*) FROM ComentariosFeed CF WHERE CF.idFeed = F.idFeed AND CF.Autorizado = 1) AS TotalComentarios,
+              (SELECT COUNT(*) FROM ReaccionFeed RF WHERE RF.idFeed = F.idFeed) AS TotalReacciones
+            FROM Feed F
+            LEFT JOIN Empleados E ON E.NoEmpleado = F.NoEmpleado
+            WHERE F.Tipo IN ('FED', 'FIN')
+            ORDER BY F.idFeed DESC;";
       return json_encode($this->Select($q,array()));
+    }
+
+    function setAutorizadoFeed($idFeed, $value) {
+      try {
+        $idFeed = base64_decode($idFeed);
+        $value  = intval($value) === 1 ? 1 : 0;
+        $q = "UPDATE Feed SET AutorizadoIndex = ? WHERE idFeed = ? AND Tipo = 'FIN'";
+        $this->ExecuteQueryWithParam($q, [$value, $idFeed]);
+        return json_encode(["Resultado" => true, "Msg" => $value === 1 ? "Publicación activada." : "Publicación desactivada."]);
+      } catch (\Exception $e) {
+        error_log("Error en setAutorizadoFeed: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => "Error al cambiar estado."]);
+      }
     }
 
     function getArchivosActualesFeed ($idFeed) {
@@ -858,8 +882,8 @@
         $NoEmpleado = SessionManager::get("NoEmpleado");
 
         // Camino rápido: inserción directa usando la conexión actual.
-        $qInsert = "INSERT INTO Feed (Titulo, Descripcion, NoEmpleado, Hipervinculo, Tipo, Registro, AutorizadoIndex) 
-                    VALUES (?, ?, ?, ?, 'FED', NOW(), 1)";
+        $qInsert = "INSERT INTO Feed (Titulo, Descripcion, NoEmpleado, Hipervinculo, Tipo, Registro, AutorizadoIndex)
+                    VALUES (?, ?, ?, ?, 'FIN', NOW(), 0)";
         $lastId = $this->InsertAndGetId($qInsert, [$nTitulo, $nDescripcion, $NoEmpleado, $nHipervinculo]);
         if ($lastId) {
           return ["f_idFeed" => $lastId, "Titulo" => $nTitulo];
@@ -1114,6 +1138,37 @@
         ]);
       } catch (\Exception $e) {
         return $e;
+      }
+    }
+
+    function getCommentsForAdmin($iFeed) {
+      try {
+        $q = "SELECT
+                CF.idComentariosFeed,
+                CF.Comentario,
+                CF.Registro,
+                CF.Autorizado,
+                E.Nombre AS NombreEmpleado
+              FROM ComentariosFeed AS CF
+              INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
+              WHERE CF.idFeed = ?
+              ORDER BY CF.Registro DESC";
+        $res = $this->ExecuteQueryWithParam($q, [$iFeed]);
+        return json_encode(["Resultado" => true, "Data" => $res]);
+      } catch (\Exception $e) {
+        error_log("Error getCommentsForAdmin: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Data" => []]);
+      }
+    }
+
+    function toggleCommentStatus($idComentario, $status) {
+      try {
+        $q = "UPDATE ComentariosFeed SET Autorizado = ?, Revisado = ? WHERE idComentariosFeed = ?";
+        $this->ExecuteQueryWithParam($q, [$status, $status, $idComentario]);
+        return json_encode(["Resultado" => true]);
+      } catch (\Exception $e) {
+        error_log("Error toggleCommentStatus: " . $e->getMessage());
+        return json_encode(["Resultado" => false, "Msg" => "Error al actualizar estado."]);
       }
     }
   }

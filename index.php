@@ -1127,6 +1127,52 @@ $MenuP = $Conf->getMenusPadre();
   <script src="scripts/index.js?<?= time() ?>" charset="utf-8"></script>
   <script src="scripts/dashboard.js?<?= time() ?>" charset="utf-8"></script>
 
+  <script>
+    // Carga directa de eventos — misma lógica que Eventos.js
+    (function cargarEventos() {
+      $.ajax({
+        type: 'POST',
+        url: 'Backend/Eventos/App.php',
+        data: { op: 'getProximosEventos' },
+        success: function(response) {
+          var eventos;
+          try { eventos = JSON.parse(response); } catch(e) { eventos = []; }
+          var el = document.getElementById('listaEventos');
+          if (!el) return;
+          if (!eventos || eventos.length === 0) {
+            el.innerHTML = '<p class="text-muted small text-center py-2">No hay eventos próximos</p>';
+            return;
+          }
+          var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+          var html = '';
+          eventos.forEach(function(ev) {
+            var fecha = new Date(ev.FechaInicio + 'T00:00:00');
+            var dia = fecha.getDate();
+            var mes = meses[fecha.getMonth()];
+            var horaIni = ev.HoraInicio ? ev.HoraInicio.substring(0,5) : '';
+            var horaFin = ev.HoraFin ? ev.HoraFin.substring(0,5) : '';
+            var horario = horaIni && horaFin ? horaIni + ' - ' + horaFin : '';
+            html += '<div class="evento-item">' +
+              '<div class="evento-date-box">' +
+                '<div class="ev-day">' + dia + '</div>' +
+                '<div class="ev-month">' + mes + '</div>' +
+              '</div>' +
+              '<div class="evento-info">' +
+                '<div class="ev-title">' + $('<div>').text(ev.Titulo).html() + '</div>' +
+                (horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' + horario + '</div>' : '') +
+              '</div>' +
+            '</div>';
+          });
+          el.innerHTML = html;
+        },
+        error: function() {
+          var el = document.getElementById('listaEventos');
+          if (el) el.innerHTML = '<p class="text-muted small text-center py-2">Error al cargar eventos</p>';
+        }
+      });
+    })();
+  </script>
+
   <!-- Script: abrir/cerrar formulario inline de publicación -->
   <script>
     // Registering Syncfusion license key

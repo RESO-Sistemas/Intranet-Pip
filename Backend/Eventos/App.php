@@ -47,4 +47,7 @@
     $idEventos = $_POST["idEventos"];
     echo trim($Eventos->updateStatusEvento($Status,$idEventos));
   }
+  if ($op == "getProximosEventos") {
+    echo trim($Eventos->getProximosEventos());
+  }
  ?>

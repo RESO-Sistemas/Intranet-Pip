@@ -1,4 +1,7 @@
-<?php include("AutorizaPagina.php"); ?>
+<?php
+header('Location: ListadoFeed.php');
+exit;
+?>
 <!DOCTYPE html>
 
 <html>

@@ -347,7 +347,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
   async function _fetchEventos() {
     try {
-      const res = await $.ajax({ url: API_DASHBOARD, type: 'POST', data: { op: 'getProximosEventos' } });
+      const res = await $.ajax({ url: 'Backend/Eventos/App.php', type: 'POST', data: { op: 'getProximosEventos' } });
       const eventos = JSON.parse(res);
       _renderEventos(eventos);
     } catch (e) {
