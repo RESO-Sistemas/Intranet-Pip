@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-04-23 10:30:00] 🧹 chore: limpiar archivos demo y actualizar Feed
+
+- 🧹 **Limpieza:** Eliminación de archivos de prueba e imágenes temporales de desarrollo (26 archivos de incidencias, capacitaciones y firmas demo).
+- 🧹 **SQL Obsoletos:** Remoción de 19 archivos SQL de scripts demo y pruebas.
+- ✨ **Feed Backend:** Actualización de módulos Backend/Feed/App.php y Backend/Feed/Feed.php con nuevas funcionalidades.
+- ✨ **Feed Frontend:** Mejoras en scripts/ListadoFeed.js con 644 líneas de cambios.
+- ✨ **Dashboard/Eventos:** Ajustes en Backend/Dashboard y Backend/Eventos.
+- ✨ **Nuevo SQL:** Agregado archivo consolidado intranet-pip-actualizada.sql.
+- 📝 **Index:** Actualización de index.php con 46 líneas nuevas.
+
 ## [2026-04-23 09:55:00] 🎨 style: mejorar UI del Feed y Checklist
 
 - 🎨 **Checklist:** Eliminación de bordes left color amarillo, uso de backgrounds más limpios.
