@@ -520,11 +520,8 @@
     // Mostrar encabezado del turno actual
     var turnoActual = _getTurnoActual();
     var turnoLabel = turnoActual ? turnoActual.Nombre : 'Turno actual';
-    // Render badge-primary next to header
     var html = '<div class="turno-header d-flex align-items-center">' +
-      '<i class="fas fa-clipboard-check me-2" style="color: #ffc407;"></i>' +
-      '<span class="fw-bold mb-0 text-dark">Mi Checklist del Día</span>' +
-      '<span class="badge badge-primary ms-2">' + turnoLabel + '</span>' +
+      '<span class="badge badge-primary ms-0"></span>' +
     '</div>';
 
     // Renderizar todos los checklists (ya vienen filtrados del servidor)

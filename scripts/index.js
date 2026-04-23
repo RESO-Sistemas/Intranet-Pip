@@ -249,6 +249,7 @@ var feedPageSize = 8;
 var hasFeedRenderedOnce = false;
 var feedPrefetchCache = {};
 var feedPrefetchInFlight = {};
+var fullscreenFeedSwiper = null;
 
 function setComposePublishingState(isPublishing) {
   const composeStatus = document.getElementById("composePublishStatus");
@@ -1606,7 +1607,9 @@ function openFullscreenSwiper(slideImages, initialSlideNumber) {
           : ""
       }
     </div>
-    <div id='fullscreen-swiper-close'><i class='fa-light fa-circle-xmark'></i></div>
+    <button type="button" id="fullscreen-swiper-close" aria-label="Cerrar visor">
+      <i class="fa fa-times"></i>
+    </button>
   `;
 
   $("#fullscreen-swiper").html(fullscreenMarkup).fadeIn();
@@ -1634,12 +1637,20 @@ function openFullscreenSwiper(slideImages, initialSlideNumber) {
     };
   }
 
-  new Swiper("#fullscreen-swiper .feed-fullscreen-swiper", fullscreenOptions);
+  if (fullscreenFeedSwiper && typeof fullscreenFeedSwiper.destroy === "function") {
+    fullscreenFeedSwiper.destroy(true, true);
+  }
+  fullscreenFeedSwiper = new Swiper("#fullscreen-swiper .feed-fullscreen-swiper", fullscreenOptions);
 
   const closeFullscreenSwiper = function () {
+    if (fullscreenFeedSwiper && typeof fullscreenFeedSwiper.destroy === "function") {
+      fullscreenFeedSwiper.destroy(true, true);
+      fullscreenFeedSwiper = null;
+    }
     $("#fullscreen-swiper").hide().empty();
     $("#fullscreen-swiper-backdrop").fadeOut();
     $("body, html").removeClass("no-scroll");
+    $(document).off("keydown.feedFullscreen");
   };
 
   $("#fullscreen-swiper-backdrop").fadeIn();
@@ -1650,6 +1661,18 @@ function openFullscreenSwiper(slideImages, initialSlideNumber) {
   $("#fullscreen-swiper-backdrop")
     .off("click")
     .on("click", closeFullscreenSwiper);
+
+  $("#fullscreen-swiper")
+    .off("click", ".swiper-slide img")
+    .on("click", ".swiper-slide img", closeFullscreenSwiper);
+
+  $(document)
+    .off("keydown.feedFullscreen")
+    .on("keydown.feedFullscreen", function (e) {
+      if (e.key === "Escape" || e.keyCode === 27) {
+        closeFullscreenSwiper();
+      }
+    });
 }
 
 function insertaComentario(val) {

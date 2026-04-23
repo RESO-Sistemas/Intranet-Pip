@@ -190,17 +190,17 @@ $MenuP = $Conf->getMenusPadre();
       padding: 10px 12px;
       margin-bottom: 6px;
       background: #fffdf3;
-      border-left: 3px solid #ffc407;
+      border-left: none;
       border-radius: 6px;
       transition: all .2s ease;
     }
     .checklist-item:hover { background: #fff8dc; box-shadow: 0 1px 4px rgba(255,196,7,.2); }
     .checklist-item .chk-name { font-size: .84rem; color: #333; font-weight: 500; }
     .checklist-item .chk-badge { font-size: .65rem; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
-    .checklist-item.ya-contestado { opacity: .55; border-left-color: #ccc; background: #f9f9f9; }
+    .checklist-item.ya-contestado { opacity: .55; background: #f9f9f9; }
     .checklist-item.ya-contestado .chk-name { text-decoration: line-through; color: #999 !important; }
-    .checklist-item.chk-respondido-si { border-left-color: #28a745; background: #f0faf3; }
-    .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #fef5f5; }
+    .checklist-item.chk-respondido-si { background: #f0faf3; }
+    .checklist-item.chk-respondido-no { background: #fef5f5; }
     .chk-btn-group { display: flex; gap: 5px; flex-shrink: 0; align-self: center; }
     .chk-btn-group .btn { width: 22px; height: 22px; padding: 0; border-radius: 4px; transition: all .2s; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
     .chk-btn-group .btn svg { width: 12px; height: 12px; display: block; }
@@ -324,6 +324,15 @@ $MenuP = $Conf->getMenusPadre();
       top: 16px;
       right: 22px;
       z-index: 10001;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      background: rgba(0, 0, 0, 0.55);
     }
     .no-scroll {
       height: 100%;
@@ -806,12 +815,13 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 6px;
     }
     .reddit-sidebar .card-header {
-      background: #ffc407;
-      color: #fff;
+      background: #f3f5f7;
+      color: #2f2f2f;
       font-size: .82rem;
       font-weight: 700;
       padding: 8px 12px;
       border-radius: 5px 5px 0 0;
+      border-bottom: 1px solid #e6eaef;
     }
     .reddit-sidebar .card-header i { margin-right: 6px; }
      .reddit-sidebar .card-body {
@@ -873,14 +883,19 @@ $MenuP = $Conf->getMenusPadre();
     body.dark-mode .event-detail-label { color: #98a0ab; }
     body.dark-mode .event-detail-value { color: #e6e8eb; }
     body.dark-mode .event-detail-description .event-detail-value { color: #ced4da; }
-    body.dark-mode .checklist-item { background: #1e1e2d; border-left-color: #ffc407; }
+    body.dark-mode .checklist-item { background: #1e1e2d; }
     body.dark-mode .checklist-item:hover { background: #2a2a3d; box-shadow: 0 1px 4px rgba(255,196,7,.15); }
     body.dark-mode .checklist-item .chk-name { color: #ddd; }
-    body.dark-mode .checklist-item.ya-contestado { background: #1a1a28; border-left-color: #555; }
-    body.dark-mode .checklist-item.chk-respondido-si { border-left-color: #28a745; background: #1a2e1f; }
+    body.dark-mode .checklist-item.ya-contestado { background: #1a1a28; }
+    body.dark-mode .checklist-item.chk-respondido-si { background: #1a2e1f; }
     body.dark-mode .checklist-item .badge.bg-info { background-color: #138496 !important; }
     body.dark-mode .turno-header { color: #17a2b8; border-bottom-color: #17a2b8; }
-    body.dark-mode .checklist-item.chk-respondido-no { border-left-color: #dc3545; background: #2e1a1a; }
+    body.dark-mode .checklist-item.chk-respondido-no { background: #2e1a1a; }
+    body.dark-mode .reddit-sidebar .card-header {
+      background: #242526;
+      color: #d7dadc;
+      border-bottom-color: #343536;
+    }
     body.dark-mode .galleryImgCl { background: #1f1f20; }
     body.dark-mode .feed-swiper-instance .swiper-slide { background: #1f1f20; }
     body.dark-mode .feed-swiper-image { background: #121213; }
