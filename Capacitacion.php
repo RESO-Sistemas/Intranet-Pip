@@ -86,23 +86,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="table-responsive">
-                                                    <table class="display align-middle text-center" id="tableCapacitacion">
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col">Descripción</th>
-                                                                <th scope="col">Días</th>
-                                                                <th scope="col">Fecha Inicio</th>
-                                                                <th scope="col">Fecha Fin</th>
-                                                                <th scope="col">Hora Inicio</th>
-                                                                <th scope="col">Hora Fin</th>
-                                                                <th scope="col">Estatus</th>
-                                                                <th scope="col">Acciones</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <!-- Aquí van las filas generadas dinámicamente -->
-                                                        </tbody>
-                                                    </table>
+                                                  <div id="tableCapacitacion"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -123,7 +107,7 @@
     <!-- neptune Javascripts -->
     
     <!-- Scripts específicos de esta página -->
-    <script src="scripts/Capacitacion.js" charset="utf-8"></script>
+        <script src="scripts/Capacitacion.js?v=<?= time() ?>" charset="utf-8"></script>
 </body>
 
 </html>

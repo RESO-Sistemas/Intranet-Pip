@@ -110,7 +110,7 @@
 
     <!-- ============================================================== -->
 
-    <div class="preloader">
+    <!-- <div class="preloader">
 
       <div class="loader">
 
@@ -120,7 +120,7 @@
 
       </div>
 
-    </div>
+    </div> -->
 
     <div id="Menu">
 
@@ -224,7 +224,6 @@
 
 
 
-  <?php include("scripts.php"); ?>
 
 
 

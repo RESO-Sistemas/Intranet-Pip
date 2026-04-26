@@ -1,4 +1,9 @@
-const myKeysValues = window.location.search;
+import re
+
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/SolicitudesVacacionesFinales.js', 'r') as f:
+    original_code = f.read()
+
+new_code = """const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const SV = urlParams.get("SV");
 
@@ -121,104 +126,13 @@ function getMisSolicitudesFinales() {
       }
   });
 }
+"""
 
-function realizarAccionSolicitud(solicitud, accion) {
+# Extract the rest of the file
+match_realizar = re.search(r'(function realizarAccionSolicitud.*?\}\s*\})', original_code, re.DOTALL)
+match_regresar = re.search(r'(async function regresarEstadoSolicitudNomina.*?\}\s*\})', original_code, re.DOTALL)
 
-  let mensaje = "";
-
-  if (accion == 1) {
-
-    mensaje = "Desea aceptar la solicitud?";
-
-  } else {
-
-    mensaje = "Desea denegar la solicitud?";
-
-  }
-
-  Swal.fire({
-
-    title: `${mensaje}`,
-
-    text: "",
-
-    icon: "warning",
-
-    showCancelButton: true,
-
-    confirmButtonColor: "#ffc407",
-
-    cancelButtonColor: "#d33",
-
-    cancelButtonText: "Cancelar",
-
-    confirmButtonText: "Confirmar",
-
-  }).then((result) => {
-
-    if (result.isConfirmed) {
-
-      datos = {
-
-        op: "realizarAccionSolicitudFinal",
-
-        idSolicitudesVacaciones: solicitud,
-
-        Status: accion,
-
-      };
-
-      $.ajax({
-
-        type: "post",
-
-        url: "Backend/Empleados/App.php",
-
-        data: datos,
-
-        success: function (response) {
-
-          if (response == 1) {
-
-            // toastr.success("Acción realizada con éxito.");
-
-            const messageContent = `
-
-          <div class="alert-content">
-
-             <span class="alert-title">Completado!</span>
-
-              <span class="alert-text">Acción realizada con éxito.</span>
-
-          </div>`;
-
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-
-            getMisSolicitudesFinales();
-
-            getHistoricoSolicitudesNomina();
-
-          } else {
-
-            // toastr.info(response);
-
-            const messageContent = `
-
-        <div class="alert-content">
-
-             <span class="alert-title">Información!</span>
-
-              <span class="alert-text">S${response}</span>
-
-        </div>`;
-
-            showBootstrapAlert(messageContent, "top-right", 5000);
-
-          }
-
-        }
-
-
+historico_code = """
 let gridHistoricoNomina = null;
 
 async function getHistoricoSolicitudesNomina() {
@@ -330,216 +244,12 @@ async function getHistoricoSolicitudesNomina() {
     gridHistoricoNomina.appendTo("#tableHistorico");
   }
 }
-
-
-async function regresarEstadoSolicitudNomina(val) {
-
-//   alertify
-
-//     .confirm(
-
-//       "Confirmación de acción.",
-
-//       `<div class="row">
-
-//     <div class="col s12 l12" style="text-align:center">
-
-//       ¿Desea regresar el estado de la solicitud a" Solicitud pendiente de revisar"?
-
-//     </div>
-
-//   </div>`,
-
-//       async function () {
-
-//         let datos = await {
-
-//           op: "regresarEstadoSolicitudNomina",
-
-//           idSolicitudesVacaciones: val,
-
-//         };
-
-//         let respuesta = "";
-
-//         try {
-
-//           respuesta = await $.ajax({
-
-//             type: "post",
-
-//             url: "Backend/Empleados/App.php",
-
-//             data: datos,
-
-//           });
-
-//         } catch (e) {
-
-//           console.log(e);
-
-//         } finally {
-
-//           if (respuesta == "1") {
-
-//             alertify.success(
-
-//               'Estado de solicitud regresado a" Solicitud pendiente de revisar".'
-
-//             );
-
-//             getMisSolicitudesFinales();
-
-//             getHistoricoSolicitudesNomina();
-
-//           } else {
-
-//             alertify.warning("ERROR!");
-
-//           }
-
-//         }
-
-//       },
-
-//       async function () {
-
-//         alertify.error("Cancelado");
-
-//       }
-
-//     )
-
-//     .set({ labels: { ok: "Aceptar", cancel: "Cancelar" }, padding: false });
-
-// }
-
-async function regresarEstadoSolicitudNomina(val) {
-
-  const result = await Swal.fire({
-
-    title: "Confirmación de acción",
-
-    html: `
-
-      <div class="row">
-
-        <div class="col-12 text-center">
-
-          ¿Desea regresar el estado de la solicitud a 
-
-          <strong>"Solicitud pendiente de revisar"</strong>?
-
-        </div>
-
-      </div>
-
-    `,
-
-    icon: "question",
-
-    showCancelButton: true,
-
-    confirmButtonColor: "#ffc407",
-
-    cancelButtonColor: "#d33",
-
-    confirmButtonText: "Aceptar",
-
-    cancelButtonText: "Cancelar",
-
-  });
-
-
-
-  if (result.isConfirmed) {
-
-    let datos = {
-
-      op: "regresarEstadoSolicitudNomina",
-
-      idSolicitudesVacaciones: val,
-
-    };
-
-
-
-    let respuesta = "";
-
-    try {
-
-      respuesta = await $.ajax({
-
-        type: "post",
-
-        url: "Backend/Empleados/App.php",
-
-        data: datos,
-
-      });
-
-    } catch (e) {
-
-      console.log(e);
-
-    } finally {
-
-      if (respuesta == "1") {
-
-        // Swal.fire({
-
-        //   icon: "success",
-
-        //   title: "Éxito",
-
-        //   text: 'Estado de solicitud regresado a "Solicitud pendiente de revisar".',
-
-        //   timer: 2000,
-
-        //   showConfirmButton: false,
-
-        // });
-
-        const messageContent = `
-
-          <div class="alert-content">
-
-             <span class="alert-title">Completado!</span>
-
-              <span class="alert-text">Estado de solicitud regresado a "Solicitud pendiente de revisar".</span>
-
-          </div>`;
-
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-
-        getMisSolicitudesFinales();
-
-        getHistoricoSolicitudesNomina();
-
-      } else {
-
-        // Swal.fire({
-
-        //   icon: "error",
-
-        //   title: "ERROR",
-
-        //   text: "Hubo un problema al regresar el estado de la solicitud.",
-
-        // });
-
-        const messageContent = `
-
-            <div class="alert-content">
-
-             <span class="alert-title">Alerta!</span>
-
-              <span class="alert-text">Hubo un problema al regresar el estado de la solicitud.</span>
-
-            </div>`;
-
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-
-      }
-
-    }
+"""
+
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/SolicitudesVacacionesFinales.js', 'w') as f:
+    f.write(new_code)
+    if match_realizar: f.write('\n' + match_realizar.group(1) + '\n')
+    f.write('\n' + historico_code + '\n')
+    if match_regresar: f.write('\n' + match_regresar.group(1) + '\n')
+
+print("SolicitudesVacacionesFinales.js updated!")

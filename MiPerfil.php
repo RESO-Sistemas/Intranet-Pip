@@ -103,7 +103,7 @@ $MenuP = $Conf->getMenusPadre();
 
     <!-- ============================================================== -->
 
-    <div class="preloader">
+    <!-- <div class="preloader">
 
       <div class="loader">
 
@@ -113,7 +113,7 @@ $MenuP = $Conf->getMenusPadre();
 
       </div>
 
-    </div>
+    </div> -->
 
     <div id="Menu">
 
@@ -503,7 +503,6 @@ $MenuP = $Conf->getMenusPadre();
 
 
 
-  <?php include("scripts.php"); ?>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 

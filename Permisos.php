@@ -28,12 +28,12 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
@@ -74,7 +74,6 @@
   </div>
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>
-  <?php include("scripts.php"); ?>
   <!-- neptune Javascripts -->
 
   <script src="scripts/Permisos.js?v=<?= time() ?>" charset="utf-8"></script>

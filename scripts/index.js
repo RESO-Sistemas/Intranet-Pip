@@ -2067,22 +2067,11 @@ const showCommentsMain = (content) => {
   if (dvContent) {
     if (dvContent.style.display == "none") {
       dvContent.style.display = "";
-      // Mostrar skeleton inmediatamente para dar feedback visual
       if (dvContentFeed && !feedCommentsData[content]) {
         dvContentFeed.innerHTML = `
-          <div class="chat-box p-3">
-            <ul class="list-unstyled mb-0">
-              ${[1,2,3].map(() => `
-                <li class="d-flex mb-4">
-                  <div class="me-3">
-                    <div style="width:48px;height:48px;border-radius:50%;background:#eceff1;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <div style="height:10px;border-radius:8px;background:#eceff1;width:30%;margin-bottom:8px;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
-                    <div style="height:10px;border-radius:8px;background:#eceff1;width:80%;background-image:linear-gradient(90deg,#eceff1 0%,#f7f8fa 45%,#eceff1 100%);background-size:200% 100%;animation:feedSkeletonShimmer 1.15s linear infinite;"></div>
-                  </div>
-                </li>`).join('')}
-            </ul>
+          <div class="feed-comments-skeleton">
+            <div class="fcs-item"><div class="fcs-lines"><div class="fcs-line" style="width:35%"></div><div class="fcs-line" style="width:70%"></div></div></div>
+            <div class="fcs-item"><div class="fcs-lines"><div class="fcs-line" style="width:42%"></div><div class="fcs-line" style="width:58%"></div></div></div>
           </div>`;
       }
       // Solo hacer petición si no hay datos en cache o ya está cargando
@@ -2101,20 +2090,26 @@ let feedCommentsData = {};
 let feedCommentsLoading = {}; // Previene peticiones duplicadas al abrir comentarios
 
 const getCommentsFeedSelected = async (content, forceReload = false) => {
-  // Evitar peticiones duplicadas simultáneas
   if (feedCommentsLoading[content]) return;
-  // Usar cache si los datos ya existen y no se forzó recarga
   if (feedCommentsData[content] && !forceReload) {
     renderCommentsFeedInline(content);
     return;
   }
+
+  // Skeleton mientras carga
+  const dvSkel = document.getElementById(`dv_contentCommentsFeed${content}`);
+  if (dvSkel) dvSkel.innerHTML = `
+    <div class="feed-comments-skeleton">
+      <div class="fcs-item"><div class="fcs-avatar"></div><div class="fcs-lines"><div class="fcs-line" style="width:38%"></div><div class="fcs-line" style="width:72%"></div></div></div>
+      <div class="fcs-item"><div class="fcs-avatar"></div><div class="fcs-lines"><div class="fcs-line" style="width:45%"></div><div class="fcs-line" style="width:60%"></div></div></div>
+    </div>`;
 
   feedCommentsLoading[content] = true;
   let dataSend = {
     op: "getCommentsFeedSelected",
     iFeed: content,
   };
-  let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
+  let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 0);
   feedCommentsLoading[content] = false;
   if (ajaxR !== undefined) {
     let cant = ajaxR.Data.length;
@@ -2141,72 +2136,59 @@ const loadMoreCommentsFeed = (content) => {
 };
 
 const renderCommentsFeedInline = (content) => {
-    let comments = feedCommentsData[content] || [];
-    let limit = feedCommentsState[content] || 5;
-    let showing = comments.slice(0, limit);
-    let cant = comments.length;
-    
-    let contentHtml = "";
-    if (cant > 0) {
-        showing.forEach((c) => {
-          let colorReaction = c.inReaction ? "#ffc407" : "black";
-          let cantReactions = c.reactionsC ? c.reactionsC.length : 0;
-          let employeesRLike = "";
-          if (cantReactions > 0) {
-            c.reactionsC.forEach((r) => {
-                employeesRLike += `<li>${r.Nombre}</li>`;
-            });
-          } else {
-            employeesRLike = "<li>Sin registros...</li>";
-          }
+  const comments = feedCommentsData[content] || [];
+  const limit    = feedCommentsState[content] || 5;
+  const showing  = comments.slice(0, limit);
+  const cant     = comments.length;
 
-          contentHtml += `
-        <li class="d-flex mb-4">
-          <div class="me-3">
-            <img src="Archivos/ImgEmpleados/${c.ImagenEmpleado}" alt="user" class="rounded-circle shadow-sm" width="48" height="48">
+  let contentHtml = '';
+  if (cant > 0) {
+    showing.forEach((c) => {
+      const reacted       = !!c.inReaction;
+      const cantReactions = c.reactionsC ? c.reactionsC.length : 0;
+
+      let employeesRLike = cantReactions > 0
+        ? c.reactionsC.map(r => `<li>${r.Nombre}</li>`).join('')
+        : '<li>Sin registros...</li>';
+
+      contentHtml += `
+      <div class="feed-comment-item">
+        <div class="feed-comment-body">
+          <div class="feed-comment-header">
+            <span class="feed-comment-author">${c.Nombre}</span>
+            <span class="feed-comment-time">${c.Registro}</span>
           </div>
-          <div class="flex-grow-1" style="position:relative;">
-            <div class="border rounded-3 p-3 shadow-sm" style="background-color: var(--bs-body-bg); color: var(--bs-body-color);">
-              <h6 class="mb-1 fw-semibold">${c.Nombre}</h6>
-              <p class="mb-2 small" style="color: inherit;">${c.Comentario}</p>
-              <div class="d-inline-flex align-items-center px-2 py-1 rounded-pill bg-white border shadow-sm hover-actionCmm" style="cursor: pointer;" onclick="reactsToComment('1', '${c.idComentariosFeed}')" data-comment="${c.idComentariosFeed}">
-                <i id="icon-1-CommentP-${c.idComentariosFeed}" class="fa fa-thumbs-up me-1" style="color: ${colorReaction}; font-size: 16px;"></i>
-                <span id="span-1-CommentP-${c.idComentariosFeed}" class="small">${cantReactions}</span>
-              </div>
-            </div>
-            <small class="text-muted d-block mt-1">${c.Registro}</small>
-            <!-- Ventana reacciones -->
-            <div class="mt-2 text-dark reactionComm" style="display:none; position:absolute; z-index:9999; bottom:100%; left:20px; min-width:200px;" id="WindowReactionComm${c.idComentariosFeed}">
-              <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <h6 class="fw-semibold mb-2">Personas que reaccionaron</h6>
-                <ul id="employeesReactionComm-1-${c.idComentariosFeed}" class="list-unstyled small mb-0">${employeesRLike}</ul>
+          <p class="feed-comment-text">${c.Comentario}</p>
+          <div style="position:relative; display:inline-block;">
+            <button class="feed-comment-reaction${reacted ? ' reacted' : ''}"
+                    onclick="reactsToComment('1','${c.idComentariosFeed}')"
+                    id="icon-1-CommentP-${c.idComentariosFeed}"
+                    data-comment="${c.idComentariosFeed}">
+              👍 <span id="span-1-CommentP-${c.idComentariosFeed}">${cantReactions}</span>
+            </button>
+            <div class="reactionComm" style="display:none; position:absolute; z-index:9999; bottom:calc(100% + 4px); left:0; min-width:180px;" id="WindowReactionComm${c.idComentariosFeed}">
+              <div class="p-2 border rounded-3 bg-white shadow-sm">
+                <p class="fw-semibold mb-1" style="font-size:11px;">Reacciones</p>
+                <ul id="employeesReactionComm-1-${c.idComentariosFeed}" class="list-unstyled mb-0" style="font-size:11px;">${employeesRLike}</ul>
               </div>
             </div>
           </div>
-        </li>`;
-        });
-    }
+        </div>
+      </div>`;
+    });
+  } else {
+    contentHtml = '<p class="feed-comment-empty">Sin comentarios aún.</p>';
+  }
 
-    let verMasBtn = "";
-    if (cant > limit) {
-        verMasBtn = `
-        <div class="text-center mt-3 mb-2">
-            <h6 class="text-primary fw-semibold" style="cursor: pointer;" onclick="loadMoreCommentsFeed('${content}')">
-                Ver más comentarios <i class="fa-solid fa-chevron-down"></i>
-            </h6>
-        </div>`;
-    }
+  const verMasBtn = cant > limit ? `
+    <div class="text-center mt-1 mb-1">
+      <button class="feed-comment-load-more" onclick="loadMoreCommentsFeed('${content}')">
+        Ver más comentarios <i class="fa-solid fa-chevron-down ms-1"></i>
+      </button>
+    </div>` : '';
 
-    let resultHtml = `
-    <div class="chat-box p-3">
-      <ul class="list-unstyled mb-0">
-        ${contentHtml}
-      </ul>
-      ${verMasBtn}
-    </div>`;
-    
-    let dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
-    if (dvContent) dvContent.innerHTML = resultHtml;
+  const dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
+  if (dvContent) dvContent.innerHTML = `<div class="feed-comments-list">${contentHtml}</div>${verMasBtn}`;
 };
 
 const checkComment = (i_Feed) => {

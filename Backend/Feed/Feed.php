@@ -808,7 +808,10 @@
                 CF.NoEmpleado,
                 CF.Comentario,
                 CF.Registro,
-                E.ImagenEmpleado,
+                CASE WHEN E.Imagen = '' OR E.Imagen IS NULL
+                  THEN CONCAT(0,'/0.png')
+                  ELSE CONCAT(E.NoEmpleado,'/',E.Imagen)
+                END AS ImagenEmpleado,
                 E.Nombre,
                 CASE WHEN CF.NoEmpleado = ? THEN 1 ELSE 2 END AS TypeCommentUs,
                 CF.idComentariosFeed,
@@ -817,14 +820,7 @@
                 RC.TipoReaccion AS RC_TipoReaccion,
                 RC.idReaccionComentario
               FROM ComentariosFeed AS CF
-              INNER JOIN (
-                SELECT NoEmpleado, Nombre,
-                  CASE WHEN Imagen = '' OR Imagen IS NULL
-                    THEN CONCAT(0,'/0.png')
-                    ELSE CONCAT(NoEmpleado,'/',Imagen)
-                  END AS ImagenEmpleado
-                FROM Empleados
-              ) AS E ON E.NoEmpleado = CF.NoEmpleado
+              INNER JOIN Empleados AS E ON E.NoEmpleado = CF.NoEmpleado
               LEFT JOIN ReaccionComentario AS RC ON RC.idComentariosFeed = CF.idComentariosFeed
               LEFT JOIN Empleados AS RE ON RE.NoEmpleado = RC.NoEmpleado
               WHERE CF.idFeed = ? AND CF.Revisado = 1 AND CF.Autorizado = 1

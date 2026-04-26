@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 // Variables de estado
 let editando = false;
-let tableKpis; // referencia a la tabla DataTable
+let gridKpis = null; // referencia al Grid de Syncfusion
 let listaPuestos = []; // cache de puestos para mostrar nombres
 
 
@@ -84,72 +84,37 @@ function _renderTablaKpis(respuesta) {
     respuesta = respuesta.slice().sort(function (a, b) { return b.IdKpi - a.IdKpi; });
   }
 
-  tableKpis = $('#TableKpis').DataTable({
-    destroy: true,
-    language: {
-      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-      zeroRecords: "NO HAY KPIs REGISTRADOS",
-      info: "PÁGINA _PAGE_ DE _PAGES_",
-      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-      infoFiltered: "",
-      search: "BUSCAR",
-      paginate: {
-        previous: "ANTERIOR",
-        next: "SIGUIENTE"
-      }
-    },
-    bSort: false,
-    bPaginate: true,
-    bFilter: true,
-    bInfo: false,
-    data: respuesta,
+  if (gridKpis) {
+      gridKpis.destroy();
+  }
 
-    columns: [
-      { data: "Nombre" },
-      {
-        data: "ValorAlta",
-        render: function (data) {
-          return parseFloat(data).toFixed(2);
-        }
-      },
-      {
-        data: "ValorMedia",
-        render: function (data) {
-          return parseFloat(data).toFixed(2);
-        }
-      },
-      {
-        data: "ValorBaja",
-        render: function (data) {
-          return parseFloat(data).toFixed(2);
-        }
-      },
-      {
-        data: "Puestos",
-        render: function (data, type, row) {
-          if (!data || data === 'TODOS') {
-            return '<span class="badge bg-info text-white">Todos</span>';
-          }
-          const ids = data.split(',').map(function (id) { return id.trim(); });
+  let mappedData = respuesta.map(row => {
+      let ValorAltaFormat = parseFloat(row.ValorAlta).toFixed(2);
+      let ValorMediaFormat = parseFloat(row.ValorMedia).toFixed(2);
+      let ValorBajaFormat = parseFloat(row.ValorBaja).toFixed(2);
+      
+      let htmlPuestos = "";
+      if (!row.Puestos || row.Puestos === 'TODOS') {
+          htmlPuestos = '<span class="badge bg-info text-white">Todos</span>';
+      } else {
+          const ids = row.Puestos.split(',').map(function (id) { return id.trim(); });
           const MAX = 2;
           const uid = 'pp_' + row.IdKpi;
           const visibles = ids.slice(0, MAX);
           const ocultos  = ids.slice(MAX);
 
-          let html = '<div class="d-flex flex-wrap gap-1 justify-content-center">';
+          htmlPuestos = '<div class="d-flex flex-wrap gap-1 justify-content-center">';
           visibles.forEach(function (id) {
-            html += '<span class="badge badge-puesto">' + getNombrePuesto(id) + '</span>';
+            htmlPuestos += '<span class="badge badge-puesto">' + getNombrePuesto(id) + '</span>';
           });
 
           if (ocultos.length > 0) {
-            // badges ocultos
-            html += '<div id="' + uid + '" style="display:none;flex-wrap:wrap;gap:4px;">';
+            htmlPuestos += '<div id="' + uid + '" style="display:none;flex-wrap:wrap;gap:4px;">';
             ocultos.forEach(function (id) {
-              html += '<span class="badge badge-puesto">' + getNombrePuesto(id) + '</span>';
+              htmlPuestos += '<span class="badge badge-puesto">' + getNombrePuesto(id) + '</span>';
             });
-            html += '</div>';
-            // botón toggle
-            html += '<span class="badge bg-warning text-dark" style="cursor:pointer;" '
+            htmlPuestos += '</div>';
+            htmlPuestos += '<span class="badge bg-warning text-dark" style="cursor:pointer;" '
                   + 'onclick="(function(el,btn){'
                   +   'var hidden=document.getElementById(\'' + uid + '\');'
                   +   'if(hidden.style.display===\'none\'){'
@@ -160,135 +125,114 @@ function _renderTablaKpis(respuesta) {
                   + '})(this)">'
                   + '+' + ocultos.length + ' más</span>';
           }
+          htmlPuestos += '</div>';
+      }
 
-          html += '</div>';
-          return html;
-        }
-      },
-      {
-        data: "Activo",
-        render: function (data) {
-          if (data == 1) {
-            return '<span class="badge-activo">Activo</span>';
-          } else {
-            return '<span class="badge-inactivo">Inactivo</span>';
-          }
-        }
-      },
-      {
-        data: null,
-        orderable: false,
-        render: function (data, type, row) {
-          const idEncoded = btoa(row.IdKpi);
-          const toggleIcon = row.Activo == 1 ? 'toggle_on' : 'toggle_off';
-          const toggleColor = row.Activo == 1 ? 'btn-success' : 'btn-danger';
-          const toggleTitle = row.Activo == 1 ? 'Desactivar' : 'Activar';
-          const nuevoEstado = row.Activo == 1 ? 0 : 1;
-          const puestosData = row.Puestos ? row.Puestos.replace(/'/g, "\\'") : 'TODOS';
+      let badgeEstado = row.Activo == 1 ? '<span class="badge-activo">Activo</span>' : '<span class="badge-inactivo">Inactivo</span>';
 
-          return `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <button class="btn btn-primary btn-accion" title="Editar" onclick="editarKpi('${idEncoded}', '${row.Nombre}', '${row.ValorAlta}', '${row.ValorMedia}', '${row.ValorBaja}', '${row.Prioridad}', '${puestosData}')">
+      const idEncoded = btoa(row.IdKpi);
+      const toggleIcon = row.Activo == 1 ? 'toggle_on' : 'toggle_off';
+      const toggleColor = row.Activo == 1 ? 'btn-success' : 'btn-danger';
+      const toggleTitle = row.Activo == 1 ? 'Desactivar' : 'Activar';
+      const nuevoEstado = row.Activo == 1 ? 0 : 1;
+      const puestosData = row.Puestos ? row.Puestos.replace(/'/g, "\'") : 'TODOS';
+
+      let btnAcciones = `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
+            <button class="btn btn-primary btn-accion btn-editar-kpi" title="Editar">
               <span class="material-symbols-outlined">edit</span>
             </button>
-            <button class="btn ${toggleColor} btn-accion" title="${toggleTitle}" onclick="toggleKpi('${idEncoded}', ${nuevoEstado})">
+            <button class="btn ${toggleColor} btn-accion btn-toggle-kpi" title="${toggleTitle}">
               <span class="material-symbols-outlined">${toggleIcon}</span>
             </button>
-            <button class="btn btn-danger btn-accion" title="Eliminar" onclick="eliminarKpi('${idEncoded}')">
+            <button class="btn btn-danger btn-accion btn-delete-kpi" title="Eliminar">
               <span class="material-symbols-outlined">delete</span>
             </button>
           </div>`;
+
+      return {
+          ...row,
+          ValorAltaFormat: ValorAltaFormat,
+          ValorMediaFormat: ValorMediaFormat,
+          ValorBajaFormat: ValorBajaFormat,
+          HtmlPuestos: htmlPuestos,
+          BadgeEstado: badgeEstado,
+          BtnAcciones: btnAcciones,
+          idEncoded: idEncoded,
+          nuevoEstado: nuevoEstado,
+          puestosData: puestosData
+      };
+  });
+
+  gridKpis = new ej.grids.Grid({
+    dataSource: mappedData,
+    toolbar: ["Search"],
+    allowPaging: true,
+    pageSettings: { pageSize: 10 },
+    emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height: 320px; background-color: #fafbfc; border-radius: 12px; border: 1px dashed #dee2e6;">
+        <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f1f3f5; border-radius: 50%;">
+            <span class="material-symbols-outlined" style="font-size: 40px; color: #adb5bd;">query_stats</span>
+        </div>
+        <h5 class="text-dark mb-2" style="font-weight: 600;">Sin KPIs</h5>
+        <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">No hay KPIs registrados en el sistema.</p>
+      </div>`,
+    columns: [
+        { field: "Nombre", headerText: "NOMBRE", width: 200 },
+        { field: "ValorAltaFormat", headerText: "VALOR ALTA", width: 130 },
+        { field: "ValorMediaFormat", headerText: "VALOR MEDIA", width: 130 },
+        { field: "ValorBajaFormat", headerText: "VALOR BAJA", width: 130 },
+        { field: "HtmlPuestos", headerText: "ASIGNADO A", width: 250, disableHtmlEncode: false },
+        { field: "BadgeEstado", headerText: "ESTADO", width: 120, disableHtmlEncode: false },
+        { field: "BtnAcciones", headerText: "ACCIONES", width: 160, textAlign: "Center", disableHtmlEncode: false }
+    ],
+    dataBound: function () {
+        const gridElement = this.element;
+        const toolbar = gridElement.querySelector(".e-toolbar");
+        const header = gridElement.querySelector(".e-gridheader");
+        const pager = gridElement.querySelector(".e-gridpager");
+        const gridContent = gridElement.querySelector(".e-gridcontent");
+        if (this.currentViewData.length === 0) {
+            if (toolbar) toolbar.style.display = "none";
+            if (header) header.style.display = "none";
+            if (pager) pager.style.display = "none";
+            gridElement.style.border = "none";
+            if (gridContent) gridContent.style.border = "none";
+        } else {
+            if (toolbar) toolbar.style.display = "";
+            if (header) header.style.display = "";
+            if (pager) pager.style.display = "";
+            gridElement.style.border = "";
+            if (gridContent) gridContent.style.border = "";
         }
-      },
-      {
-        data: null,
-        orderable: false,
-        className: 'reorder-handle text-center',
-        defaultContent: '<span class="material-symbols-outlined" style="cursor:grab;color:#bbb;font-size:22px;vertical-align:middle">drag_indicator</span>'
-      }
-    ]
+    },
+    recordClick: function(args) {
+        const clickedElement = args.target;
+        if (!clickedElement || typeof clickedElement.closest !== "function") return;
+        const rowData = args.rowData;
+        if (clickedElement.closest(".btn-editar-kpi")) {
+            editarKpi(rowData.idEncoded, rowData.Nombre, rowData.ValorAlta, rowData.ValorMedia, rowData.ValorBaja, rowData.Prioridad, rowData.puestosData);
+        }
+        if (clickedElement.closest(".btn-toggle-kpi")) {
+            toggleKpi(rowData.idEncoded, rowData.nuevoEstado);
+        }
+        if (clickedElement.closest(".btn-delete-kpi")) {
+            eliminarKpi(rowData.idEncoded);
+        }
+    },
+    created: function () {
+        const searchInput = document.getElementById(this.element.id + "_searchbar");
+        if (searchInput && !searchInput.hasListener) {
+        searchInput.hasListener = true;
+        const grid = this;
+        searchInput.addEventListener("keyup", function (event) {
+            grid.search(event.target.value);
+        });
+        }
+    }
   });
 
-  // Rebind drag-drop tras cada redibujado (paginación, búsqueda)
-  tableKpis.on('draw.dt', function () { initDragDrop(); });
-  initDragDrop();
-
+  gridKpis.appendTo("#TableKpis");
 }
 
-/**
- * Guarda el orden actual visible de la tabla en localStorage
- */
-function saveKpisOrder() {
-  const ids = [];
-  document.querySelectorAll('#TableKpis tbody tr').forEach(function (row) {
-    const data = tableKpis.row(row).data();
-    if (data) ids.push(data.IdKpi);
-  });
-  if (ids.length > 0) {
-    localStorage.setItem('kpis_custom_order', JSON.stringify(ids));
-  }
-}
-
-/**
- * Inicializa drag-and-drop HTML5 en las filas de la tabla
- */
-function initDragDrop() {
-  const tbody = document.querySelector('#TableKpis tbody');
-  if (!tbody) return;
-  let dragRow = null;
-
-  tbody.querySelectorAll('tr').forEach(function (row) {
-    const handle = row.querySelector('td.reorder-handle');
-    if (!handle) return;
-
-    // Solo activar draggable al presionar el handle
-    handle.addEventListener('mousedown', function () {
-      row.draggable = true;
-    });
-
-    row.addEventListener('dragstart', function (e) {
-      dragRow = row;
-      e.dataTransfer.effectAllowed = 'move';
-      setTimeout(function () { row.style.opacity = '0.4'; }, 0);
-    });
-
-    row.addEventListener('dragend', function () {
-      row.style.opacity = '';
-      row.draggable = false;
-      tbody.querySelectorAll('tr').forEach(function (r) {
-        r.style.boxShadow = '';
-      });
-      saveKpisOrder();
-      dragRow = null;
-    });
-
-    row.addEventListener('dragover', function (e) {
-      e.preventDefault();
-      if (!dragRow || row === dragRow) return;
-      e.dataTransfer.dropEffect = 'move';
-      tbody.querySelectorAll('tr').forEach(function (r) { r.style.boxShadow = ''; });
-      row.style.boxShadow = 'inset 0 2px 0 0 #ffc407';
-    });
-
-    row.addEventListener('dragleave', function () {
-      row.style.boxShadow = '';
-    });
-
-    row.addEventListener('drop', function (e) {
-      e.preventDefault();
-      row.style.boxShadow = '';
-      if (!dragRow || row === dragRow) return;
-      // Insertar antes o después según posición relativa
-      const rows = Array.from(tbody.querySelectorAll('tr'));
-      const srcIdx = rows.indexOf(dragRow);
-      const dstIdx = rows.indexOf(row);
-      if (srcIdx < dstIdx) {
-        tbody.insertBefore(dragRow, row.nextSibling);
-      } else {
-        tbody.insertBefore(dragRow, row);
-      }
-    });
-  });
-}
 
 /**
  * Guardar KPI (insertar o actualizar)

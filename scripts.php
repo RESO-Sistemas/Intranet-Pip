@@ -3,9 +3,6 @@
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 ?>
 
-<!-- Perfect Scrollbar -->
-<script src="assets/libs/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.min.js"></script>
-
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/2e7c1ffc8a.js" crossorigin="anonymous"></script>
 
@@ -38,10 +35,3 @@ if (in_array($current_page, $chartist_pages)):
 <script src="dist/js/pages/dashboards/dashboard1.js"></script>
 <?php endif; ?>
 
-<!-- FullCalendar DESHABILITADO - Solo usamos EvoCalendar en index.php -->
-<?php if ($current_page === 'dashboard_disabled'): ?>
-<script src="assets/libs/fullcalendar/dist/fullcalendar.min.js"></script>
-<script src="dist/js/pages/calendar/cal-init.js"></script>
-<script src="assets/extra-libs/tiny-editable/mindmup-editabletable.js"></script>
-<script src="assets/extra-libs/tiny-editable/numeric-input-example.js"></script>
-<?php endif; ?>

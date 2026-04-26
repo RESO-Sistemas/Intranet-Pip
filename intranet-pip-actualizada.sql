@@ -1402,7 +1402,8 @@ CREATE TABLE `ReaccionComentario` (
   `FechaRegistro` datetime DEFAULT CURRENT_TIMESTAMP,
   `TipoReaccion` int(11) DEFAULT NULL,
   `idComentariosFeed` int(11) NOT NULL,
-  PRIMARY KEY (`idReaccionComentario`)
+  PRIMARY KEY (`idReaccionComentario`),
+  KEY `idx_reaccion_comentario_feed` (`idComentariosFeed`)
 ) ENGINE=MyISAM AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

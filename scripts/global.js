@@ -1061,34 +1061,17 @@ async function pAjaxAsync(url, datos, pcarga) {
 //   });
 // }
 function Cargando() {
-  $.blockUI({
-    message: `
-      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%; height:100%; color:white;">
-        <img src="assets/images/logo-pip.png" alt="Logo" width="120" style="margin-bottom:1rem;">
-      </div>
-    `,
-    css: {
-      border: "none",
-      backgroundColor: "transparent", // quitamos fondo del bloque
-      color: "#fff",
-      top: "0",
-      left: "0",
-      width: "100%",
-      height: "100%",
-      padding: "0",
-      margin: "0"
-    },
-    overlayCSS: {
-      backgroundColor: "rgba(0,0,0,0.6)",
-      opacity: 1,
-      cursor: "wait"
-    }
-  });
+  if (document.getElementById('_pip_overlay')) return;
+  const el = document.createElement('div');
+  el.id = '_pip_overlay';
+  el.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:wait;';
+  el.innerHTML = '<img src="assets/images/logo-pip.png" alt="Logo" width="120">';
+  document.body.appendChild(el);
 }
 
-
 function QuitarCargando() {
-  $.unblockUI();
+  const el = document.getElementById('_pip_overlay');
+  if (el) el.remove();
 }
 
 async function dialogConfirmSAlert(title, text = "", icon = "warning") {

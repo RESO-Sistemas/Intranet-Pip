@@ -65,12 +65,12 @@
 
 <body>
   <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php include("menus.php"); ?>
     </div>
@@ -176,21 +176,7 @@
                       </div>
                     </div>
                     <div class="table-responsive">
-                      <table class="table display text-center" id="TableChecklists">
-                        <thead>
-                          <tr>
-                            <th>NOMBRE</th>
-                            <th>PUESTO</th>
-                            <th>TURNOS</th>
-                            <th>TIPO</th>
-                            <th>RESPUESTA</th>
-                            <th>KPI</th>
-                            <th>INCIDENCIA</th>
-                            <th>ACCIONES</th>
-                          </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
+                      <div id="TableChecklists"></div>
                     </div>
                   </div>
                 </div>
@@ -275,9 +261,8 @@
   </div>
 
   <?php include("neptune_js.php"); ?>
-  <?php include("scripts.php"); ?>
 
-  <script src="scripts/Checklists.js?v=<?= time() ?>" charset="utf-8"></script>
+    <script src="scripts/Checklists.js?v=<?= time() ?>" charset="utf-8"></script>
   <script>
     function limpiarFormularioChecklist() {
       $('#txtNombreChecklist').val('');

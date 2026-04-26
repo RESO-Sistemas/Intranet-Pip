@@ -23,17 +23,7 @@ $MenuP = $Conf->getMenusPadre();
   <?php include("neptune_styles.php");  ?>
 
   <!-- Styles neptune -->
-
-  <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
-  <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
-  <link href="assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="plugins/evo-calendar/css/evo-calendar.css" />
-  <!-- <link rel="stylesheet" type="text/css" href="plugins/evo-calendar/css/evo-calendar.orange-coral.css" /> -->
-  <!-- <script src="componentes/PerfilEmpleadoLateral.js" charset="utf-8"></script> -->
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="plugins/emoji-picker/css/emoji.css">
-  <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.css">
   <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
@@ -43,7 +33,6 @@ $MenuP = $Conf->getMenusPadre();
 
   
   <!-- Moment.js necesario para FullCalendar -->
-  <script src="assets/libs/moment/min/moment.min.js"></script>
   <script src="assets/syncfusion/Packages/ej2-circulargauge/circular-gauge.js"></script>
   <style>
     /* ============================================================
@@ -766,12 +755,75 @@ $MenuP = $Conf->getMenusPadre();
     .rpc-action-btn.liked { color: #FFC107; }
     .rpc-action-btn.congrat { color: #8E24AA; }
 
-    /* Zona de comentarios dentro del post */
+    /* ── Zona de comentarios ── */
     .rpc-comments-area {
-      background: #f6f7f8;
-      border-radius: 4px;
-      padding: 10px;
-      margin-top: 8px;
+      background: transparent;
+      padding: 8px 0 0;
+      margin-top: 4px;
+    }
+
+    /* Lista de comentarios */
+    .feed-comments-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+
+    .feed-comment-item { display: flex; }
+    .feed-comment-body {
+      flex: 1;
+      background: #f0f2f5;
+      border-radius: 10px;
+      padding: 8px 11px;
+      min-width: 0;
+    }
+    .feed-comment-header {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 3px;
+    }
+    .feed-comment-author { font-size: 12px; font-weight: 700; color: #1c1e21; }
+    .feed-comment-time   { font-size: 10px; color: #90949c; }
+    .feed-comment-text   { font-size: 13px; color: #1c1e21; line-height: 1.45; margin: 0 0 5px; word-break: break-word; }
+    .feed-comment-reaction {
+      background: none;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: #90949c;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: background .15s;
+    }
+    .feed-comment-reaction:hover { background: #e4e6ea; }
+    .feed-comment-reaction.reacted { color: #ffc407; }
+    .feed-comment-empty { font-size: 12px; color: #90949c; font-style: italic; margin: 0; }
+    .feed-comment-load-more {
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffc407;
+      cursor: pointer;
+      padding: 2px 8px;
+    }
+    .feed-comment-load-more:hover { text-decoration: underline; }
+
+    /* Skeleton comentarios */
+    .feed-comments-skeleton { display: flex; flex-direction: column; gap: 10px; }
+    .fcs-item { display: flex; gap: 10px; align-items: flex-start; }
+    .fcs-avatar {
+      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      background: #e4e6ea;
+      animation: fcs-shimmer 1.2s infinite linear;
+    }
+    .fcs-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+    .fcs-line  { height: 10px; border-radius: 5px; background: #e4e6ea; animation: fcs-shimmer 1.2s infinite linear; }
+    @keyframes fcs-shimmer {
+      0%   { opacity: 1; }
+      50%  { opacity: .45; }
+      100% { opacity: 1; }
     }
 
     /* Textarea de comentario */
@@ -780,29 +832,47 @@ $MenuP = $Conf->getMenusPadre();
       gap: 8px;
       align-items: flex-start;
       margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e4e6ea;
     }
     .rpc-comment-input-row textarea {
       flex: 1;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      padding: 6px 10px;
-      font-size: .82rem;
+      border-radius: 20px;
+      border: 1px solid #dde0e4;
+      padding: 7px 14px;
+      font-size: .83rem;
       resize: none;
-      min-height: 34px;
-      background: #fff;
+      min-height: 36px;
+      background: #f0f2f5;
+      transition: border-color .2s;
     }
+    .rpc-comment-input-row textarea:focus { outline: none; border-color: #ffc407; background: #fff; }
     .rpc-comment-input-row .btn-comment {
-      background: #FF4500;
-      color: #fff;
+      background: #ffc407;
+      color: #1c1e21;
       border: none;
       border-radius: 20px;
-      padding: 6px 16px;
+      padding: 7px 16px;
       font-size: .78rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
+      transition: background .15s;
     }
-    .rpc-comment-input-row .btn-comment:hover { background: #e03d00; }
+    .rpc-comment-input-row .btn-comment:hover { background: #e6ad00; }
+    .rpc-comment-input-row .btn-comment:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Dark mode comentarios */
+    body.dark-mode .rpc-comments-area { background: transparent; }
+    body.dark-mode .feed-comment-body { background: #2a2d31; }
+    body.dark-mode .feed-comment-author { color: #e4e6eb; }
+    body.dark-mode .feed-comment-text { color: #d4d6da; }
+    body.dark-mode .feed-comment-time { color: #6a6d75; }
+    body.dark-mode .feed-comment-reaction:hover { background: #3a3d42; }
+    body.dark-mode .fcs-avatar, body.dark-mode .fcs-line { background: #3a3d42; }
+    body.dark-mode .rpc-comment-input-row { border-top-color: #3a3d42; }
+    body.dark-mode .rpc-comment-input-row textarea { background: #2a2d31; border-color: #3c3c3d; color: #d7dadc; }
+    body.dark-mode .rpc-comment-input-row textarea:focus { border-color: #ffc407; background: #232528; }
 
     /* Sidebar sticky */
     .reddit-sidebar {
@@ -916,12 +986,12 @@ $MenuP = $Conf->getMenusPadre();
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
@@ -1115,11 +1185,7 @@ $MenuP = $Conf->getMenusPadre();
   <?php include("neptune_js.php");  ?>
   <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
-  
-  <script src="plugins/evo-calendar/js/evo-calendar.js"></script>
   <script src="plugins/tingle-master/dist/tingle.min.js" charset="utf-8"></script>
-  <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
   <script src="plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.js" charset="utf-8"></script>
   

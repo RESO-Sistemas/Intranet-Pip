@@ -3,9 +3,6 @@
 <!-- jQuery siempre primero -->
 <script src="./neptune/plugins/jquery/jquery-3.5.1.min.js"></script>
 
-<!-- BlockUI - debe cargarse después de jQuery y antes de global.js -->
-<script src="./assets/libs/block-ui/jquery.blockUI.js"></script>
-
 <!-- Bootstrap y dependencias -->
 <script src="./neptune/plugins/bootstrap/js/popper.min.js"></script>
 <script src="./neptune/plugins/bootstrap/js/bootstrap.min.js"></script>
@@ -45,5 +42,19 @@ if ($current_page !== 'login'):
 
 <!-- SweetAlert -->
 <script src="./assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/2e7c1ffc8a.js" crossorigin="anonymous"></script>
+
+<?php if ($current_page !== 'login'): ?>
+<!-- Toastr -->
+<script src="./assets/libs/toastr/build/toastr.min.js"></script>
+<script src="./assets/extra-libs/toastr/toastr-init.js"></script>
+<!-- Alertify -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<!-- pdfmake para DataTables PDF export -->
+<script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/pdfmake.min.js"></script>
+<script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/vfs_fonts.js"></script>
+<?php endif; ?>
 
 <!-- Neptune Javascripts -->

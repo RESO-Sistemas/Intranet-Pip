@@ -1,52 +1,103 @@
 let globalEvento = "0";
-getEventos();
+let gridEventos = null;
+
+$(document).ready(function() {
+  getEventos();
+});
+
 function getEventos() {
   let division = $("#slctDivision").val();
-  datasend = {
-    op: "getEventosAdmin",
-  };
-  var TableEventos = $("#TableEventos").dataTable({
-    destroy: true,
-    language: {
-      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-      zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-      info: "PÁGINA _PAGE_ DE _PAGES_",
-      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-      infoFiltered: "",
-      search: "BUSCAR",
-      paginate: {
-        previous: "ANTERIOR",
-        next: "SIGUIENTE"
-      }
-    },
-    ajax: {
+  let datasend = { op: "getEventosAdmin" };
+  
+  if (gridEventos) {
+    gridEventos.destroy();
+  }
+  
+  $.ajax({
       type: "POST",
       url: "Backend/Eventos/App.php",
       data: datasend,
+      dataType: "json",
       success: function (response) {
-        let StatusTexto = "";
-        TableEventos.fnClearTable();
-        for (var i = 0; i < response.length; i++) {
-          if (response[i]["Status"] == "1") {
-            StatusTexto = "Activo";
-          } else {
-            StatusTexto = "Inactivo";
-          }
-          TableEventos.fnAddData([
-            response[i]["Titulo"],
-            response[i]["Descripcion"],
-            response[i]["FechaInicio"],
-            response[i]["FechaFin"],
-            StatusTexto,
-            `<a class="btn btn-warning"  onclick="TipoAccion(${response[i]["idEventos"]})"><span class="material-symbols-outlined">edit</span></a>`,
-            `<a class="btn btn-success"  onclick="updateStatus(${response[i]["Status"]},${response[i]["idEventos"]})"><span class="material-symbols-outlined">autorenew</span></a>`,
-          ]);
-        }
-      },
-      complete: function () {
-        // $.unblockUI();
-      },
-    },
+        let mappedData = response.map(item => {
+          let StatusTexto = (item.Status == "1") ? "Activo" : "Inactivo";
+          
+          let btnEditar = `<a class="btn btn-warning btn-accion btn-editar-ev" title="Editar"><span class="material-symbols-outlined">edit</span></a>`;
+          let btnStatus = `<a class="btn btn-success btn-accion btn-status-ev" title="Actualizar Estatus"><span class="material-symbols-outlined">autorenew</span></a>`;
+          
+          return {
+              ...item,
+              StatusTexto: StatusTexto,
+              BtnEditar: btnEditar,
+              BtnStatus: btnStatus
+          };
+        });
+
+        gridEventos = new ej.grids.Grid({
+            dataSource: mappedData,
+            toolbar: ["Search"],
+            allowPaging: true,
+            pageSettings: { pageSize: 10 },
+            emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height: 320px; background-color: #fafbfc; border-radius: 12px; border: 1px dashed #dee2e6;">
+                <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f1f3f5; border-radius: 50%;">
+                    <span class="material-symbols-outlined" style="font-size: 40px; color: #adb5bd;">event</span>
+                </div>
+                <h5 class="text-dark mb-2" style="font-weight: 600;">Sin eventos</h5>
+                <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">No hay eventos registrados en el sistema.</p>
+              </div>`,
+            columns: [
+              { field: "Titulo", headerText: "TITULO", width: 200 },
+              { field: "Descripcion", headerText: "DESCRIPCIÓN", width: 250 },
+              { field: "FechaInicio", headerText: "FECHA INICIO", width: 130 },
+              { field: "FechaFin", headerText: "FECHA FIN", width: 130 },
+              { field: "StatusTexto", headerText: "STATUS", width: 120 },
+              { field: "BtnEditar", headerText: "EDITAR", width: 100, textAlign: "Center", disableHtmlEncode: false },
+              { field: "BtnStatus", headerText: "EDITAR STATUS", width: 140, textAlign: "Center", disableHtmlEncode: false }
+            ],
+            dataBound: function () {
+              const gridElement = this.element;
+              const toolbar = gridElement.querySelector(".e-toolbar");
+              const header = gridElement.querySelector(".e-gridheader");
+              const pager = gridElement.querySelector(".e-gridpager");
+              const gridContent = gridElement.querySelector(".e-gridcontent");
+              if (this.currentViewData.length === 0) {
+                if (toolbar) toolbar.style.display = "none";
+                if (header) header.style.display = "none";
+                if (pager) pager.style.display = "none";
+                gridElement.style.border = "none";
+                if (gridContent) gridContent.style.border = "none";
+              } else {
+                if (toolbar) toolbar.style.display = "";
+                if (header) header.style.display = "";
+                if (pager) pager.style.display = "";
+                gridElement.style.border = "";
+                if (gridContent) gridContent.style.border = "";
+              }
+            },
+            recordClick: function(args) {
+                const clickedElement = args.target;
+                if (!clickedElement || typeof clickedElement.closest !== "function") return;
+                const rowData = args.rowData;
+                if (clickedElement.closest(".btn-editar-ev")) {
+                    TipoAccion(rowData.idEventos);
+                }
+                if (clickedElement.closest(".btn-status-ev")) {
+                    updateStatus(rowData.Status, rowData.idEventos);
+                }
+            },
+            created: function () {
+              const searchInput = document.getElementById(this.element.id + "_searchbar");
+              if (searchInput && !searchInput.hasListener) {
+                searchInput.hasListener = true;
+                const grid = this;
+                searchInput.addEventListener("keyup", function (event) {
+                  grid.search(event.target.value);
+                });
+              }
+            }
+        });
+        gridEventos.appendTo("#TableEventos");
+      }
   });
 }
 

@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -11,7 +11,7 @@
   <title>PIP by Lugo</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
 
 
@@ -35,12 +35,12 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
@@ -72,16 +72,20 @@
                   <h1>Solicitudes de Vacaciones</h1>
                   <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">Mis Solicitudes</button>
+                      <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1"
+                        type="button" role="tab" aria-controls="tab1" aria-selected="true">Mis Solicitudes</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">Autorización de vacaciones</button>
+                      <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button"
+                        role="tab" aria-controls="tab2" aria-selected="false">Autorización de vacaciones</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">Solicitudes canceladas por mí.</button>
+                      <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button"
+                        role="tab" aria-controls="tab3" aria-selected="false">Solicitudes canceladas por mí.</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab" aria-controls="tab4" aria-selected="false">Solicitudes aceptadas por mí.</button>
+                      <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button"
+                        role="tab" aria-controls="tab4" aria-selected="false">Solicitudes aceptadas por mí.</button>
                     </li>
                   </ul>
                 </div>
@@ -97,39 +101,14 @@
                         <div class="col d-flex justify-content-end mb-4">
                           <a href="SolicitudNueva.php" class="btn btn-primary">Nueva Solicitud</a>
                         </div>
-                        <div class="table-responsive">
-                          <table id="ContenidoMisSolicitudes" class="display" style="width:100%">
-                            <thead>
-                              <tr>
-                                <th>Motivo de Solicitud</th>
-                                <th>Estado de la Solicitud</th>
-                                <th>Fecha de Solicitud</th>
-                                <th>Ver Solicitud</th>
-                              </tr>
-                            </thead>
-                          </table>
-                        </div>
+                        <div id="ContenidoMisSolicitudes"></div>
                       </div>
                     </div>
                   </div>
                   <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                     <div class="card">
                       <div class="card-body">
-                        <div class="table-responsive">
-                          <table id="ContenidoSolicitudesPend" class="display" style="width:100%">
-                            <thead>
-                              <tr>
-                                <th>Empleado</th>
-                                <th>Fecha de Solicitud</th>
-                                <th>Fecha de Inicio</th>
-                                <th>Fecha de Fin</th>
-                                <th>Motivo Vacaciones</th>
-                                <th>Ver Solicitud</th>
-                                <th>Op</th>
-                              </tr>
-                            </thead>
-                          </table>
-                        </div>
+                        <div id="ContenidoSolicitudesPend"></div>
                       </div>
                     </div>
                   </div>
@@ -138,17 +117,7 @@
                     <div class="card">
                       <div class="card-body">
                         <div class="table-responsive">
-                          <table id="tableSolicitudesCanceladas" class="display" style="width:100%">
-                            <thead>
-                              <tr>
-                                <th>Empleado</th>
-                                <th>Motivo de Solicitud</th>
-                                <th>Fecha de Solicitud</th>
-                                <th>Regresar a pendiente de revisión</th>
-                                <th>Ver Solicitud</th>
-                              </tr>
-                            </thead>
-                          </table>
+                          <div id="tableSolicitudesCanceladas"></div>
                         </div>
                       </div>
                     </div>
@@ -157,20 +126,7 @@
                   <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
                     <div class="card">
                       <div class="card-body">
-                        <div class="table-responsive">
-                          <table id="ContenidoSolicitudesNomina" class="display" style="width:100%">
-                            <thead>
-                              <tr>
-                                <th>Empleado</th>
-                                <th>Motivo de solicitud</th>
-                                <th>Fecha de Solicitud</th>
-                                <th>Estatus en nómina</th>
-                                <th>Regresar a pendiente de revisión</th>
-                                <th>Ver solicitud</th>
-                              </tr>
-                            </thead>
-                          </table>
-                        </div>
+                        <div id="ContenidoSolicitudesNomina"></div>
                       </div>
                     </div>
                   </div>
@@ -185,18 +141,21 @@
 
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+    integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+    integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <script src="scripts/SolicitudVacaciones.js" charset="utf-8"></script>
-  <script src="scripts/detallesEmpleadoLogeado.js"></script>
+  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
+    <script src="scripts/SolicitudVacaciones.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/detallesEmpleadoLogeado.js?v=<?= time() ?>"></script>
   <script type="text/javascript">
     function onlynumber(e) {
       tecla = (document.all) ? e.keyCode : e.which;

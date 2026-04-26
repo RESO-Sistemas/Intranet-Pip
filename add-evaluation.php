@@ -73,7 +73,7 @@ $MenuP = $Conf->getMenusPadre();
 
     <!-- ============================================================== -->
 
-    <div class="preloader">
+    <!-- <div class="preloader">
 
       <div class="loader">
 
@@ -83,7 +83,7 @@ $MenuP = $Conf->getMenusPadre();
 
       </div>
 
-    </div>
+    </div> -->
 
     <div id="Menu">
 
@@ -474,7 +474,6 @@ $MenuP = $Conf->getMenusPadre();
 
 
 
-  <?php include("scripts.php"); ?>
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js" charset="utf-8"></script> -->
 

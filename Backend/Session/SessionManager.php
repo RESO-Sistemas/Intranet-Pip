@@ -2,12 +2,9 @@
 
 class SessionManager
 {
-    /**
-     * Inicia la sesión si no está iniciada
-     */
     public static function init()
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
     }

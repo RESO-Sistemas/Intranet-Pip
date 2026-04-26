@@ -55,7 +55,7 @@
 
     <!-- ============================================================== -->
 
-    <div class="preloader">
+    <!-- <div class="preloader">
 
       <div class="loader">
 
@@ -65,7 +65,7 @@
 
       </div>
 
-    </div>
+    </div> -->
 
     <div id="Menu">
 
@@ -115,7 +115,9 @@
                 <div class="card">
                   <div class="card-body">
                     <label class="form-label">En este apartado se muestra un listado de todas las evaluaciones disponibles por completar.</label>
-                    <div id="table_listEvaluations"></div>
+                    <div class="table-responsive">
+                      <div id="table_listEvaluations"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -178,7 +180,6 @@
 
   <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
 
   <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
 

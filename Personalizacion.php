@@ -114,7 +114,7 @@
 
         <!-- ============================================================== -->
 
-        <div class="preloader">
+        <!-- <div class="preloader">
 
             <div class="loader">
 
@@ -124,7 +124,7 @@
 
             </div>
 
-        </div>
+        </div> -->
 
         <div id="Menu">
 
@@ -561,7 +561,6 @@ include("menus.php");
     <!-- neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
     <!-- neptune Javascripts -->
-    <?php include("scripts.php"); ?>
 
     <!-- Scripts específicos de esta página -->
     <script src="scripts/Personalizacion.js?v=<?php echo time(); ?>"></script>

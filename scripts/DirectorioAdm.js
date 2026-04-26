@@ -1,874 +1,485 @@
+// ─── Grids globales ───────────────────────────────────────────────────────────
+let gridSucursal = null;
+let gridEmTelMap  = {};   // clave: idDirectoriosCorreosTelefonos
+let gridExtMap    = {};   // clave: idDirectorioExtensiones
+let gridPersonalEmTel  = null;
+let gridPersonalExtMap = null;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
 $(document).ready(function () {
-  $(".js-example-basic-multiple").select2();
+  // Select2 dentro de modales
+  $("#slctDivisionEm").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"), width: "100%", placeholder: "Divisiones", allowClear: true });
+  $("#slctPuestoEm").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"), width: "100%", placeholder: "Puestos", allowClear: true });
+  $("#slctSucursalEm").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"), width: "100%", placeholder: "Sucursales", allowClear: true });
+  $("#slctDivisionEmExt").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"), width: "100%", placeholder: "Divisiones", allowClear: true });
+  $("#slctPuestoEmExt").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"), width: "100%", placeholder: "Puestos", allowClear: true });
+  $("#slctSucursalEmExt").select2({ dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"), width: "100%", placeholder: "Sucursales", allowClear: true });
+  $("#slctListadoSucursalesDisp").select2({ dropdownParent: $("#modalAddSucursalesDirectorio"), width: "100%", placeholder: "Sucursales Disponibles", allowClear: true });
+
+  getTiposExtensionesDirectorioExtensiones().catch(e => console.warn(e));
+  loadDirecorioEmailTel().catch(e => console.warn(e));
+  loadDirectorioExtensiones().catch(e => console.warn(e));
+  getDirectorioSucursal().catch(e => console.warn(e));
 });
-getTiposExtensionesDirectorioExtensiones();
-loadDirecorioEmailTel();
-loadDirectorioExtensiones();
-async function loadDirecorioEmailTel() {
-  const DirEmailTel = await getDirecorioEmailTel();
 
-  let ContenidoDirEmailTel = "";
-  DirEmailTel.forEach((ContenidoDirectorio) => {
-    let ArrayRegistrosDirectorioTipo = [];
-    ContenidoDirectorio.Tipos.map((Registros) => {
-      ContenidoDirEmailTel += `
-        <div class="table-responsive">
-          <table id="${Registros.idDirectoriosCorreosTelefonos}" class="table striped m-b-10 display text-center">
-            <thead>
-              <tr>
-                <th colspan="12">
-                  <div class="row">
-                    <div class="col-12 text-center">
-                      <span class="badge badge-primary">${Registros.Tipo}</span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col" style="text-align:left">
-                      <button type="button" class="btn btn-success" onclick="openModalAddEmpCorreosTelefonos(${Registros.idDirectoriosCorreosTelefonos},'${Registros.Tipo}')">
-                        <span class="material-symbols-outlined">add_call</span>
-                      </button>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-              <tr>
-                <th class="text-center">NOMBRE</th>
-                <th class="text-center">PUESTO</th>
-                <th class="text-center">CORREO</th>
-                <th class="text-center">TELEFONO</th>
-                <th class="text-center">MARCACION CORTA</th>
-                <th class="text-center">ACTUALIZAR</th>
-                <th class="text-center">ELIMINAR</th>
-              </tr>
-            </thead>
-            <tbody>`;
-
-      ContenidoDirectorio.Detalle.filter((Detalle) => {
-        if (
-          Detalle.idDirectoriosCorreosTelefonos ==
-          Registros.idDirectoriosCorreosTelefonos
-        ) {
-          ContenidoDirEmailTel += `
-            <tr>
-              <td class="text-center align-middle">${Detalle.Nombre}</td>
-              <td class="text-center align-middle">${Detalle.Puesto}</td>
-              <td class="text-center align-middle">
-                <input class="form-control form-control-solid-bordered text-center d-block mx-auto" 
-                       type="email" value="${Detalle.Email}" 
-                       id="emailDir${Detalle.idDetalleDirectoriosCorreosTelefonos}" 
-                       style="width: 120px;">
-              </td>
-              <td class="text-center align-middle">
-                <input class="form-control form-control-solid-bordered text-center d-block mx-auto" 
-                       type="text" value="${Detalle.Movil}" 
-                       id="movilDir${Detalle.idDetalleDirectoriosCorreosTelefonos}" 
-                       style="width: 120px;" onkeypress="return onlynumber(event)" maxlength="10">
-              </td>
-              <td class="text-center align-middle">
-                <input class="form-control form-control-solid-bordered text-center d-block mx-auto" 
-                       type="text" value="${Detalle.MarcacionCorta}" 
-                       id="MCortaDir${Detalle.idDetalleDirectoriosCorreosTelefonos}" 
-                       style="width: 120px;" onkeypress="return onlynumber(event)" maxlength="4">
-              </td>
-              <td class="text-center align-middle">
-                <button class="btn btn-warning d-flex justify-content-center align-items-center mx-auto" 
-                        style="width: 50px; height: 40px;" 
-                        onclick="updateRegistroDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})">
-                  <span class="material-symbols-outlined" style="font-size:20px;">edit</span>
-                </button>
-              </td>
-              <td class="text-center align-middle">
-                <button class="btn btn-danger d-flex justify-content-center align-items-center mx-auto" 
-                        style="width: 50px; height: 40px;" 
-                        onclick="deleteEmpleadosDirectorioCorreosTelefonos(${Detalle.idDetalleDirectoriosCorreosTelefonos})">
-                  <span class="material-symbols-outlined" style="font-size:20px;">delete</span>
-                </button>
-              </td>
-            </tr>`;
-        }
-      });
-
-      ContenidoDirEmailTel += `
-            </tbody>
-          </table>
-        </div>`;
-    });
-  });
-
-  $("#contenidoDirectorioEmailTelefonos").html(ContenidoDirEmailTel);
-}
-
-async function updateRegistroDirectorioCorreosTelefonos(val) {
-  const result = await Swal.fire({
-    title: "Confirmación de acción",
-    text: "¿Desea confirmar los datos actualizados?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, confirmar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      let Email = $("#emailDir" + val).val();
-      
-      if (Email !== "" && !validateEmail(Email)) {
-        const messageContent = `
-          <div class="alert-content">
-            <span class="alert-title">Formato incorrecto!</span>
-            <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-        return;
-      }
-
-      let Telefono = $("#movilDir" + val).val();
-      let MCorta = $("#MCortaDir" + val).val();
-
-      let datos = {
-        op: "updateRegistroDirectorioCorreosTelefonos",
-        Email: Email,
-        Telefono: Telefono,
-        Registro: val,
-        MCorta: MCorta,
-      };
-
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == "1") {
-        // Swal.fire("Actualizado", "Actualizado correctamente.", "success");
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Actualizado correctamente.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        loadDirecorioEmailTel();
-      } else {
-        // Swal.fire("Error", respuesta, "error");
-        const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">${respuesta}.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      //   Swal.fire("Error", "Ocurrió un error inesperado.", "error");
-      const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Ocurrió un error inesperado.</span>
-            </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    // Swal.fire("Cancelado", "Se canceló la acción.", "info");
-    const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">Se canceló la acción.</span>
-        </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-  }
-}
-
-async function getDirecorioEmailTel() {
-  let datos = await {
-    op: "getDirectorioCorreosTelefonos",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    return respuesta;
-  }
-}
-
-async function openModalAddEmpCorreosTelefonos(idTipo, Nombre) {
-  // Mostrar pantalla de carga
-  $.blockUI({
-    message: '<h5><i class="fa fa-spinner fa-spin"></i>',
-    css: {
-      border: "none",
-      padding: "15px",
-      backgroundColor: "#000",
-      "-webkit-border-radius": "10px",
-      "-moz-border-radius": "10px",
-      opacity: 0.5,
-      color: "#ffc407",
+// ─── Helper: Syncfusion grid común ───────────────────────────────────────────
+function syncGridOptions(extraOpts) {
+  return Object.assign({
+    allowPaging: true,
+    pageSettings: { pageSize: 10 },
+    toolbar: ["Search"],
+    dataBound: function () {
+      const el  = this.element;
+      const tb  = el.querySelector(".e-toolbar");
+      const hd  = el.querySelector(".e-gridheader");
+      const pg  = el.querySelector(".e-gridpager");
+      const gc  = el.querySelector(".e-gridcontent");
+      const empty = this.currentViewData.length === 0;
+      if (tb) tb.style.display  = empty ? "none" : "";
+      if (hd) hd.style.display  = empty ? "none" : "";
+      if (pg) pg.style.display  = empty ? "none" : "";
+      el.style.border = empty ? "none" : "";
+      if (gc) gc.style.border   = empty ? "none" : "";
     },
-  });
+    created: function () {
+      const inp = document.getElementById(this.element.id + "_searchbar");
+      if (inp && !inp._bound) {
+        inp._bound = true;
+        const g = this;
+        inp.addEventListener("keyup", e => g.search(e.target.value));
+      }
+    }
+  }, extraOpts);
+}
 
+// ─── TAB 1: Correos-Teléfonos ─────────────────────────────────────────────────
+function getDirecorioEmailTel() {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: "post", url: "Backend/Directorios/App.php",
+      data: { op: "getDirectorioCorreosTelefonos" }, dataType: "json",
+      success: resolve, error: reject
+    });
+  });
+}
+
+function loadDirecorioEmailTel() {
+  return getDirecorioEmailTel().then(resp => {
+    const container = $("#contenidoDirectorioEmailTelefonos").empty();
+    if (!resp || !resp.length) { container.html("<p class='text-muted p-3'>Sin datos</p>"); return; }
+
+    const tipos   = resp[0].Tipos  || [];
+    const detalle = resp[0].Detalle || [];
+
+    if (!tipos.length) { container.html("<p class='text-muted p-3'>Sin tipos registrados</p>"); return; }
+
+    tipos.forEach(tipo => {
+      const id  = tipo.idDirectoriosCorreosTelefonos;
+      const gid = "gridEmTel_" + id;
+      const rows = detalle.filter(d => d.idDirectoriosCorreosTelefonos == id);
+
+      container.append(`
+        <div class="mb-5">
+          <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+            <span class="badge bg-primary" style="font-size:.85rem;">${tipo.Tipo}</span>
+            <button class="btn btn-success btn-sm" onclick="openModalAddEmpCorreosTelefonos(${id},'${tipo.Tipo}')">
+              <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">add_call</span> Agregar
+            </button>
+          </div>
+          <div id="${gid}"></div>
+        </div>`);
+
+      if (gridEmTelMap[id]) { gridEmTelMap[id].destroy(); }
+
+      gridEmTelMap[id] = new ej.grids.Grid(syncGridOptions({
+        dataSource: rows,
+        emptyRecordTemplate: `<div class="text-center text-muted py-4">Sin registros para <strong>${tipo.Tipo}</strong></div>`,
+        columns: [
+          { field: "Nombre",  headerText: "NOMBRE",  width: 180 },
+          { field: "Puesto",  headerText: "PUESTO",  width: 150 },
+          { headerText: "CORREO", width: 175, disableHtmlEncode: false,
+            template: r => `<input class="form-control form-control-sm" type="email" id="emailDir${r.idDetalleDirectoriosCorreosTelefonos}" value="${r.Email||''}" style="min-width:145px;">` },
+          { headerText: "TELÉFONO", width: 145, disableHtmlEncode: false,
+            template: r => `<input class="form-control form-control-sm" type="text" id="movilDir${r.idDetalleDirectoriosCorreosTelefonos}" value="${r.Movil||''}" maxlength="10" onkeypress="return onlynumber(event)" style="min-width:115px;">` },
+          { headerText: "MARC.CORTA", width: 130, disableHtmlEncode: false,
+            template: r => `<input class="form-control form-control-sm text-center" type="text" id="MCortaDir${r.idDetalleDirectoriosCorreosTelefonos}" value="${r.MarcacionCorta||''}" maxlength="4" onkeypress="return onlynumber(event)" style="width:90px;">` },
+          { headerText: "EDITAR", width: 80, textAlign: "Center", disableHtmlEncode: false,
+            template: r => `<button class="btn btn-warning btn-accion btn-edit-emtel" data-id="${r.idDetalleDirectoriosCorreosTelefonos}" title="Editar"><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>` },
+          { headerText: "ELIMINAR", width: 90, textAlign: "Center", disableHtmlEncode: false,
+            template: r => `<button class="btn btn-danger btn-accion btn-del-emtel" data-id="${r.idDetalleDirectoriosCorreosTelefonos}" title="Eliminar"><span class="material-symbols-outlined" style="font-size:20px;">delete</span></button>` },
+        ],
+        recordClick: function(args) {
+          const el = args.target;
+          if (!el || !el.closest) return;
+          const btnE = el.closest(".btn-edit-emtel");
+          const btnD = el.closest(".btn-del-emtel");
+          if (btnE) updateRegistroDirectorioCorreosTelefonos(parseInt(btnE.dataset.id));
+          if (btnD) deleteEmpleadosDirectorioCorreosTelefonos(parseInt(btnD.dataset.id));
+        }
+      }));
+      gridEmTelMap[id].appendTo("#" + gid);
+    });
+  }).catch(e => console.warn("loadDirecorioEmailTel error:", e));
+}
+
+// ─── TAB 2: Extensiones ───────────────────────────────────────────────────────
+function getTiposExtensionesDirectorioExtensiones() {
+  return new Promise((resolve) => {
+    $.ajax({
+      type: "post", url: "Backend/Directorios/App.php",
+      data: { op: "getTiposExtensionesDirectorioExtensiones" }, dataType: "json",
+      success: function(resp) {
+        if (resp && resp.length) {
+          resp.forEach(t => $("#tiposExtension").append(`<option value="${t.idDirectorioExtensiones}">${t.Tipo}</option>`));
+        }
+        resolve();
+      },
+      error: function() { resolve(); }
+    });
+  });
+}
+
+function getDirectorioExtensiones() {
+  return new Promise((resolve, reject) => {
+    const sel = $("#tiposExtension").val();
+    $.ajax({
+      type: "post", url: "Backend/Directorios/App.php",
+      data: { op: "getDirectorioExtensiones", TiposExtSelected: sel || [] }, dataType: "json",
+      success: resolve, error: reject
+    });
+  });
+}
+
+function loadDirectorioExtensiones() {
+  return getDirectorioExtensiones().then(resp => {
+    const container = $("#contenidoDirectorioExtensiones").empty();
+    if (!resp || !resp.length) { container.html("<p class='text-muted p-3'>Sin datos</p>"); return; }
+
+    const tipos   = resp[0].Tipos  || [];
+    const detalle = resp[0].Detalle || [];
+
+    if (!tipos.length) { container.html("<p class='text-muted p-3'>Sin tipos registrados</p>"); return; }
+
+    tipos.forEach(tipo => {
+      const id  = tipo.idDirectorioExtensiones;
+      const gid = "gridExt_" + id;
+      const rows = detalle.filter(d => d.idDirectorioExtensiones == id);
+
+      container.append(`
+        <div class="mb-5">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-primary" style="font-size:.85rem;">${tipo.Tipo}</span>
+            <button class="btn btn-success btn-sm" onclick="openModalAddEmpExtensiones(${id},'${tipo.Tipo}')">
+              <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">add_call</span> Agregar
+            </button>
+          </div>
+          <div id="${gid}"></div>
+        </div>`);
+
+      if (gridExtMap[id]) { gridExtMap[id].destroy(); }
+
+      gridExtMap[id] = new ej.grids.Grid(syncGridOptions({
+        dataSource: rows,
+        emptyRecordTemplate: `<div class="text-center text-muted py-4">Sin registros para <strong>${tipo.Tipo}</strong></div>`,
+        columns: [
+          { field: "Nombre", headerText: "NOMBRE", width: 220 },
+          { headerText: "EXTENSIÓN", width: 200, disableHtmlEncode: false,
+            template: r => `<div class="d-flex align-items-center gap-1">
+              <input class="form-control form-control-sm text-center" type="text" id="Extension${r.idDetalleDirectorioExtensiones}" value="${r.Extension||''}" maxlength="4" onkeypress="return onlynumber(event)" style="width:90px;">
+              <button class="btn btn-warning btn-sm" onclick="updateExtesionEmp(${r.idDetalleDirectorioExtensiones},${id})">
+                <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+              </button>
+            </div>` },
+          { headerText: "ELIMINAR", width: 100, textAlign: "Center", disableHtmlEncode: false,
+            template: r => `<button class="btn btn-danger btn-accion btn-del-ext" data-id="${r.idDetalleDirectorioExtensiones}" title="Eliminar"><span class="material-symbols-outlined" style="font-size:20px;">delete</span></button>` },
+        ],
+        recordClick: function(args) {
+          const el = args.target;
+          if (!el || !el.closest) return;
+          const btn = el.closest(".btn-del-ext");
+          if (btn) deleteEmpleadosDirectorioExtension(parseInt(btn.dataset.id));
+        }
+      }));
+      gridExtMap[id].appendTo("#" + gid);
+    });
+  }).catch(e => console.warn("loadDirectorioExtensiones error:", e));
+}
+
+// ─── TAB 3: Sucursales ────────────────────────────────────────────────────────
+function getDirectorioSucursal() {
+  return new Promise((resolve) => {
+    $.ajax({
+      type: "post", url: "Backend/Directorios/App.php",
+      data: { op: "getDirectorioSucursal" }, dataType: "json",
+      success: function(resp) {
+        if (!resp) resp = [];
+
+        // Agrupar por idDirectorioSucursales
+        const map = {};
+        resp.forEach(r => {
+          if (!map[r.idDirectorioSucursales]) {
+            map[r.idDirectorioSucursales] = { ...r, _empleados: [] };
+          }
+          if (r.Nombre) map[r.idDirectorioSucursales]._empleados.push({ Nombre: r.Nombre, Puesto: r.Puesto });
+        });
+        const rows = Object.values(map);
+
+        if (gridSucursal) { gridSucursal.destroy(); gridSucursal = null; }
+
+        gridSucursal = new ej.grids.Grid(syncGridOptions({
+          dataSource: rows,
+          emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height:280px;">
+            <span class="material-symbols-outlined mb-2" style="font-size:48px;color:#adb5bd;">location_city</span>
+            <h6 class="text-muted">Sin sucursales registradas</h6>
+          </div>`,
+          columns: [
+            { field: "Sucursal", headerText: "SUCURSAL", width: 140 },
+            { headerText: "DIRECCIÓN", width: 180, disableHtmlEncode: false,
+              template: r => `<input class="form-control form-control-sm" type="text" id="DirSucur${r.idDirectorioSucursales}" value="${r.Direccion||''}" style="min-width:150px;">` },
+            { headerText: "TELÉFONO", width: 140, disableHtmlEncode: false,
+              template: r => `<input class="form-control form-control-sm text-center" type="text" id="TelSucur${r.idDirectorioSucursales}" value="${r.Telefono||''}" maxlength="10" onkeypress="return onlynumber(event)" style="width:120px;">` },
+            { headerText: "NUM.RED", width: 110, disableHtmlEncode: false,
+              template: r => `<input class="form-control form-control-sm text-center" type="text" id="NumRedSucur${r.idDirectorioSucursales}" value="${r.NumRed||''}" maxlength="10" onkeypress="return onlynumber(event)" style="width:90px;">` },
+            { headerText: "EMPLEADO(S)", width: 160, disableHtmlEncode: false,
+              template: r => r._empleados.map(e => `<div><strong>${e.Nombre}</strong></div>`).join("") || "—" },
+            { headerText: "PUESTO(S)", width: 140, disableHtmlEncode: false,
+              template: r => r._empleados.map(e => `<div>${e.Puesto||''}</div>`).join("") || "—" },
+            { headerText: "CORREO", width: 170, disableHtmlEncode: false,
+              template: r => `<input class="form-control form-control-sm" type="email" id="CorreoSucur${r.idDirectorioSucursales}" value="${r.Correo||''}" style="min-width:140px;">` },
+            { field: "FechaApertura", headerText: "APERTURA", width: 110 },
+            { field: "años_transcurridos", headerText: "ANTIGÜEDAD", width: 110, textAlign: "Center",
+              template: r => r.años_transcurridos != null ? `${r.años_transcurridos} año(s)` : "—" },
+            { headerText: "MARC.CORTA", width: 120, disableHtmlEncode: false,
+              template: r => `<input class="form-control form-control-sm text-center" type="text" id="MCorta${r.idDirectorioSucursales}" value="${r.MarcacionCorta||''}" maxlength="4" onkeypress="return onlynumber(event)" style="width:90px;">` },
+            { headerText: "GUARDAR", width: 90, textAlign: "Center", disableHtmlEncode: false,
+              template: r => `<button class="btn btn-warning btn-accion btn-upd-sucursal" data-id="${r.idDirectorioSucursales}" title="Actualizar"><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>` },
+          ],
+          recordClick: function(args) {
+            const el = args.target;
+            if (!el || !el.closest) return;
+            const btn = el.closest(".btn-upd-sucursal");
+            if (btn) updateRegistroDirectorioSucursal(parseInt(btn.dataset.id));
+          }
+        }));
+        gridSucursal.appendTo("#tableDirectorioSucursal");
+        resolve();
+      },
+      error: function(e) { console.warn("getDirectorioSucursal error:", e); resolve(); }
+    });
+  });
+}
+
+// ─── Modal Correos-Teléfonos ──────────────────────────────────────────────────
+async function openModalAddEmpCorreosTelefonos(idTipo, Nombre) {
+  $.blockUI({ message: '<h5><i class="fa fa-spinner fa-spin"></i></h5>', css: { border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#ffc407" } });
   $("#NameDirectorio").html(`Directorio: ${Nombre}`);
   $("#IdTipoEmTel").val(idTipo);
-  $("#slctDivisionEm").val("");
-  $("#slctPuestoEm").val("");
-  $("#slctSucursalEm").val("");
-
+  $("#slctDivisionEm, #slctPuestoEm, #slctSucursalEm").val("").trigger("change");
   try {
-    await Promise.all([
-      getPuestos(),
-      getDivisiones(),
-      getSucursales(),
-      getListadoPersonal(),
-    ]);
-
-    var modal = new bootstrap.Modal(
-      document.getElementById("modalAddEmpleadosDirectorioEmTel")
-    );
+    await Promise.all([getPuestos(), getDivisiones(), getSucursales()]);
+    const modal = new bootstrap.Modal(document.getElementById("modalAddEmpleadosDirectorioEmTel"));
     modal.show();
-  } catch (err) {
-    console.error("Error cargando datos:", err);
-  } finally {
-    // Quitar pantalla de carga
-    $.unblockUI();
-  }
+    await getListadoPersonal();
+  } catch(e) { console.error(e); } finally { $.unblockUI(); }
 }
 
 function getListadoPersonal() {
   return new Promise((resolve, reject) => {
-    let puesto = $("#slctPuestoEm").val();
-    let sucursal = $("#slctSucursalEm").val();
-    let division = $("#slctDivisionEm").val();
-    let TipoDirectorio = Number($("#IdTipoEmTel").val());
-
-    let datasend = {
+    const datasend = {
       op: "getPersonalDirectorioEmailTel",
-      puesto: puesto,
-      sucursal: sucursal,
-      division: division,
-      idDirectoriosCorreosTelefonos: TipoDirectorio,
+      puesto:   $("#slctPuestoEm").val(),
+      sucursal: $("#slctSucursalEm").val(),
+      division: $("#slctDivisionEm").val(),
+      idDirectoriosCorreosTelefonos: Number($("#IdTipoEmTel").val()),
     };
-
-    let tableEmpleadosEmTel = $("#tableEmpleadosEmTel").dataTable({
-      destroy: true,
-      language: {
-        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-        info: "PÁGINA _PAGE_ DE _PAGES_",
-        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-        infoFiltered: "",
-        search: "BUSCAR",
-        paginate: {
-          previous: "ANTERIOR",
-          next: "SIGUIENTE"
-        }
-      },
-      ajax: {
-        type: "POST",
-        url: "Backend/Empleados/App.php",
-        data: datasend,
-        success: function (response) {
-          tableEmpleadosEmTel.fnClearTable();
-          for (var i = 0; i < response.length; i++) {
-            tableEmpleadosEmTel.fnAddData([
-              response[i]["NoEmpleado"],
-              response[i]["Nombre"],
-              `<div class="row">
-                  <div class="col">
-                    <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoDirEmTel(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')"><span class="material-symbols-outlined">add</span></button>
-                  </div>
-              </div>`,
-            ]);
+    $.ajax({
+      type: "POST", url: "Backend/Empleados/App.php", data: datasend, dataType: "json",
+      success: function(resp) {
+        if (!Array.isArray(resp)) resp = [];
+        const rows = resp.map(r => ({ ...r, _sel: r.NoEmpleado }));
+        if (gridPersonalEmTel) { gridPersonalEmTel.destroy(); gridPersonalEmTel = null; }
+        gridPersonalEmTel = new ej.grids.Grid({
+          dataSource: rows, allowPaging: true, pageSettings: { pageSize: 8 }, toolbar: ["Search"],
+          columns: [
+            { field: "NoEmpleado", headerText: "NO EMP.", width: 100, textAlign: "Center" },
+            { field: "Nombre",     headerText: "NOMBRE",  width: 200 },
+            { headerText: "SELEC.", width: 80, textAlign: "Center", disableHtmlEncode: false,
+              template: r => `<button class="btn btn-success btn-sm btn-sel-emtel" data-no="${r.NoEmpleado}" data-nombre="${r.Nombre}"><span class="material-symbols-outlined" style="font-size:18px;">add</span></button>` },
+          ],
+          recordClick: function(args) {
+            const el = args.target;
+            if (!el || !el.closest) return;
+            const btn = el.closest(".btn-sel-emtel");
+            if (btn) SeleccionarEmpleadoDirEmTel(btn.dataset.no, btn.dataset.nombre);
+          },
+          created: function() {
+            const inp = document.getElementById(this.element.id + "_searchbar");
+            if (inp && !inp._bound) { inp._bound = true; const g = this; inp.addEventListener("keyup", e => g.search(e.target.value)); }
           }
-        },
-        complete: function () {
-          resolve(); // 🔑 aquí le decimos a la Promise que terminó
-        },
-        error: function (err) {
-          reject(err);
-        },
+        });
+        gridPersonalEmTel.appendTo("#tableEmpleadosEmTel");
+        resolve();
       },
+      error: reject
     });
   });
 }
-
-// function getListadoPersonal() {
-//   let puesto = $("#slctPuestoEm").val();
-//   let sucursal = $("#slctSucursalEm").val();
-//   let division = $("#slctDivisionEm").val();
-//   let TipoDirectorio = Number($("#IdTipoEmTel").val());
-//   datasend = {
-//     op: "getPersonalDirectorioEmailTel",
-//     puesto: puesto,
-//     sucursal: sucursal,
-//     division: division,
-//     idDirectoriosCorreosTelefonos: TipoDirectorio,
-//   };
-//   let tableEmpleadosEmTel = $("#tableEmpleadosEmTel").dataTable({
-//     destroy: true,
-//     ajax: {
-//       type: "POST",
-//       url: "Backend/Empleados/App.php",
-//       data: datasend,
-//       success: function (response) {
-//         tableEmpleadosEmTel.fnClearTable();
-//         for (var i = 0; i < response.length; i++) {
-//           tableEmpleadosEmTel.fnAddData([
-//             response[i]["NoEmpleado"],
-//             response[i]["Nombre"],
-//             `<div class="row">
-//                     <div class="col s12 l6 offset-l3">
-//                       <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoDirEmTel(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')"><span class="material-symbols-outlined">add</span></button>
-//                     </div>
-//                 </div>`,
-//           ]);
-//         }
-//       },
-//       complete: function () {
-//         // $.unblockUI();
-//       },
-//     },
-//   });
-// }
 
 async function SeleccionarEmpleadoDirEmTel(id, nameEmpleado) {
   $("#EmpleadoSelectedEmTel").val(id);
   $("#EmpleadoSeleccionadoEmTel").html(nameEmpleado);
-  $("#txtCorreoEmTel").val("");
-  $("#txtTelEmTel").val("");
-  $("#txtMCortaEmTel").val("");
+  $("#txtCorreoEmTel, #txtTelEmTel, #txtMCortaEmTel").val("");
 }
 
 async function addEmpleadosDirectorioCorreosTelefonos() {
-  const result = await Swal.fire({
-    title: "Confirmación de acción",
-    text: "¿Desea confirmar los datos ingresados?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, confirmar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    let Em = $("#EmpleadoSelectedEmTel").val();
-    let Directorio = Number($("#IdTipoEmTel").val());
-    let Email = $("#txtCorreoEmTel").val();
-
-    if (Email !== "" && !validateEmail(Email)) {
-      const messageContent = `
-        <div class="alert-content">
-          <span class="alert-title">Formato incorrecto!</span>
-          <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-      return;
-    }
-
-    let Telefono = $("#txtTelEmTel").val();
-    let MarcacionCorta = $("#txtMCortaEmTel").val();
-
-    let datos = {
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  const Email = $("#txtCorreoEmTel").val();
+  if (Email && !validateEmail(Email)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data: {
       op: "addEmpleadosDirectorioCorreosTelefonos",
-      idDirectoriosCorreosTelefonos: Directorio,
-      NoEmpleado: Em,
-      Email: Email,
-      Telefono: Telefono,
-      MarcacionCorta: MarcacionCorta,
-    };
-
-    try {
-      const respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == 1) {
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "Agregado",
-        //   timer: 1500,
-        //   showConfirmButton: false,
-        // });
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Agregado.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        loadDirecorioEmailTel();
-        $("#EmpleadoSelectedEmTel").val("");
-        $("#EmpleadoSeleccionadoEmTel").html("");
-        $("#txtCorreoEmTel").val("");
-        $("#txtTelEmTel").val("");
-        $("#txtMCortaEmTel").val("");
-        getListadoPersonal();
-      } else {
-        // Swal.fire({
-        //   icon: "info",
-        //   title: "Aviso",
-        //   text: respuesta,
-        // });
-        const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">${respuesta}.</span>
-        </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.error(error);
-      //   Swal.fire({
-      //     icon: "error",
-      //     title: "Error",
-      //     text: "Ocurrió un error al procesar la solicitud",
-      //   });
-      const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Ocurrió un error al procesar la solicitud.</span>
-            </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
+      idDirectoriosCorreosTelefonos: Number($("#IdTipoEmTel").val()),
+      NoEmpleado: $("#EmpleadoSelectedEmTel").val(),
+      Email, Telefono: $("#txtTelEmTel").val(), MarcacionCorta: $("#txtMCortaEmTel").val()
+    }});
+    if (resp == 1) {
+      showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Agregado.</span></div>`, "top-right", 5000);
+      loadDirecorioEmailTel();
+      $("#EmpleadoSelectedEmTel, #txtCorreoEmTel, #txtTelEmTel, #txtMCortaEmTel").val("");
+      $("#EmpleadoSeleccionadoEmTel").html("");
+      getListadoPersonal();
+    } else {
+      showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
     }
-  } else if (result.dismiss === Swal.DismissReason.cancel) {
-    // Swal.fire({
-    //   icon: "error",
-    //   title: "Cancelado",
-    //   timer: 1200,
-    //   showConfirmButton: false,
-    // });
-    const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Cancelado.</span>
-            </div>`;
-    showBootstrapAlertWar(messageContent, "top-right", 5000);
-  }
+  } catch(e) { console.error(e); showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
+}
+
+async function updateRegistroDirectorioCorreosTelefonos(val) {
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos actualizados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  const Email = $("#emailDir"+val).val();
+  if (Email && !validateEmail(Email)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data: {
+      op:"updateRegistroDirectorioCorreosTelefonos", Email, Telefono:$("#movilDir"+val).val(), Registro:val, MCorta:$("#MCortaDir"+val).val()
+    }});
+    if (resp == 1) {
+      showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Actualizado.</span></div>`, "top-right", 5000);
+      loadDirecorioEmailTel();
+    } else {
+      showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
+    }
+  } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
+}
+
+async function deleteEmpleadosDirectorioCorreosTelefonos(val) {
+  const result = await Swal.fire({ title:"Confirmación",html:"<h6>¿Eliminar empleado del directorio?</h6>",icon:"warning",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"deleteEmpleadosDirectorioCorreosTelefonos",idDetalleDirectoriosCorreosTelefonos:val} });
+    if (resp == 1) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Eliminado correctamente.</span></div>`, "top-right", 5000); loadDirecorioEmailTel(); }
+    else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">No se pudo eliminar.</span></div>`, "top-right", 5000); }
+  } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
 }
 
 function getPuestos() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Puestos/App.php",
-    data: "op=getPuestos",
-    success: function (response) {
-      $("#slctPuestoEm").html("");
-      $("#slctPuestoEm").append(`
-            <option value="">Puestos</option>
-        `);
-      response = JSON.parse(response.trim());
-      for (var i = 0; i < response.length; i++) {
-        $("#slctPuestoEm").append(`
-          <option value='${response[i]["IdPuesto"]}'>${response[i]["Puesto"]}</option>
-          `);
-      }
-      $("#slctPuestoEm").trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({ type:"post", url:"Backend/Puestos/App.php", data:"op=getPuestos",
+      success: function(resp) {
+        resp = JSON.parse(resp.trim());
+        $("#slctPuestoEm").html(`<option value="">Puestos</option>`);
+        resp.forEach(r => $("#slctPuestoEm").append(`<option value="${r.IdPuesto}">${r.Puesto}</option>`));
+        $("#slctPuestoEm").trigger("change");
+        resolve();
+      }, error: resolve
+    });
   });
 }
-$(document).ready(function () {
-  $("#slctDivisionEm").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"),
-    width: "100%",
-    placeholder: "Seleccione una división",
-    allowClear: true,
-  });
-  $("#slctPuestoEm").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"),
-    width: "100%",
-    placeholder: "Seleccione un puesto",
-    allowClear: true,
-  });
-  $("#slctSucursalEm").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioEmTel"),
-    width: "100%",
-    placeholder: "Seleccione una sucursal",
-    allowClear: true,
-  });
-});
 
 function getDivisiones() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Divisiones/App.php",
-    data: { op: "getDivisiones" },
-    success: function (response) {
-      try {
-        response = JSON.parse(response.trim());
-      } catch (e) {
-        console.error("Respuesta no es JSON válido:", response);
-        return;
-      }
-
-      let $select = $("#slctDivisionEm");
-      $select.empty().append(`<option value="">Divisiones</option>`);
-
-      for (let i = 0; i < response.length; i++) {
-        $select.append(
-          `<option value="${response[i].IdDivision}">${response[i].Division}</option>`
-        );
-      }
-
-      // 🔥 Refrescar la UI de Select2
-      $select.trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({ type:"post", url:"Backend/Divisiones/App.php", data:{op:"getDivisiones"},
+      success: function(resp) {
+        try { resp = JSON.parse(resp.trim()); } catch(e) { resolve(); return; }
+        $("#slctDivisionEm").empty().append(`<option value="">Divisiones</option>`);
+        resp.forEach(r => $("#slctDivisionEm").append(`<option value="${r.IdDivision}">${r.Division}</option>`));
+        $("#slctDivisionEm").trigger("change");
+        resolve();
+      }, error: resolve
+    });
   });
 }
 
 function getSucursales() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Sucursal/App.php",
-    data: "op=getSucursales",
-    success: function (response) {
-      $("#slctSucursalEm").html("");
-      $("#slctSucursalEm").append(`
-            <option value="">Sucursales</option>
-        `);
-      response = JSON.parse(response.trim());
-      for (var i = 0; i < response.length; i++) {
-        $("#slctSucursalEm").append(`
-          <option value="${response[i]["IdSucursal"]}">${response[i]["Sucursal"]}</option>
-          `);
-      }
-      $("#slctSucursalEm").trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({ type:"post", url:"Backend/Sucursal/App.php", data:"op=getSucursales",
+      success: function(resp) {
+        resp = JSON.parse(resp.trim());
+        $("#slctSucursalEm").html(`<option value="">Sucursales</option>`);
+        resp.forEach(r => $("#slctSucursalEm").append(`<option value="${r.IdSucursal}">${r.Sucursal}</option>`));
+        $("#slctSucursalEm").trigger("change");
+        resolve();
+      }, error: resolve
+    });
   });
 }
 
-async function deleteEmpleadosDirectorioCorreosTelefonos(val) {
-  const result = await Swal.fire({
-    title: "Confirmación",
-    html: "<h6>¿Desea eliminar al Empleado del Directorio?</h6>",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      let datos = {
-        op: "deleteEmpleadosDirectorioCorreosTelefonos",
-        idDetalleDirectoriosCorreosTelefonos: val,
-      };
-
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == 1) {
-        // Swal.fire("Eliminado", "Empleado eliminado correctamente.", "success");
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Empleado eliminado correctamente.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        loadDirecorioEmailTel();
-      } else {
-        // Swal.fire("Error", "No se pudo eliminar el empleado.", "error");
-        const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">No se pudo eliminar el empleado.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      //   Swal.fire("Error", "Ocurrió un error inesperado.", "error");
-      const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Ocurrió un error inesperado.</span>
-            </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    // Swal.fire("Cancelado", "Se canceló la acción.", "info");
-    const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Se canceló la acción.</span>
-            </div>`;
-    showBootstrapAlertWar(messageContent, "top-right", 5000);
-  }
-}
-
-async function getTiposExtensionesDirectorioExtensiones() {
-  let datos = await {
-    op: "getTiposExtensionesDirectorioExtensiones",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    console.log(respuesta);
-    respuesta.forEach((tipos) => {
-      $("#tiposExtension").append(`
-                <option value="${tipos.idDirectorioExtensiones}">${tipos.Tipo}</option>
-            `);
-    });
-  }
-}
-
-async function getDirectorioExtensiones() {
-  let TiposExtSelected = $("#tiposExtension").val();
-  let datos = await {
-    op: "getDirectorioExtensiones",
-    TiposExtSelected: TiposExtSelected,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    return respuesta;
-  }
-}
-
-// async function openModalAddEmpExtensiones(idTipo, Nombre) {
-//   getPuestosExtensiones();
-//   getDivisionesExtensiones();
-//   getSucursalesExtensiones();
-//   $("#NameDirectorioExtension").html(`Directorio : ${Nombre}`);
-//   $("#IdTipoExtensiones").val(idTipo);
-//   $("#slctPuestoEmExt").val("");
-//   $("#slctDivisionEmExt").val("");
-//   $("#slctSucursalEmExt").val("");
-//   $("#txtExtension").val("");
-//   $("#EmpleadoSeleccionadoDirExt").html("");
-//   $("#EmpleadoSelectedExtension").val("");
-
-//   // Bootstrap 5 modal
-//   var modal = new bootstrap.Modal(
-//     document.getElementById("modalAddEmpleadosDirectorioExtensiones")
-//   );
-//   modal.show();
-
-//   getListadoPersonalExtensiones();
-// }
-
-// function getListadoPersonalExtensiones() {
-//   let puesto = $("#slctPuestoEmExt").val();
-//   let sucursal = $("#slctSucursalEmExt").val();
-//   let division = $("#slctDivisionEmExt").val();
-//   let TipoDirectorio = Number($("#IdTipoEmTel").val());
-//   datasend = {
-//     op: "getPersonalDirectorioExtensiones",
-//     puesto: puesto,
-//     sucursal: sucursal,
-//     division: division,
-//     idDirectorioExtensiones: TipoDirectorio,
-//   };
-//   let tableEmpleadosExtensiones = $("#tableEmpleadosExtensiones").dataTable({
-//     destroy: true,
-//     ajax: {
-//       type: "POST",
-//       url: "Backend/Empleados/App.php",
-//       data: datasend,
-//       success: function (response) {
-//         tableEmpleadosExtensiones.fnClearTable();
-//         for (var i = 0; i < response.length; i++) {
-//           tableEmpleadosExtensiones.fnAddData([
-//             response[i]["NoEmpleado"],
-//             response[i]["Nombre"],
-//             `<div class="row">
-//                       <div class="col s12 l6 offset-l3">
-//                         <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoExt(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')"><span class="material-symbols-outlined">add</span></button>
-//                       </div>
-//                   </div>`,
-//           ]);
-//         }
-//       },
-//       complete: function () {
-//         // $.unblockUI();
-//       },
-//     },
-//   });
-// }
-
+// ─── Modal Extensiones ────────────────────────────────────────────────────────
 async function openModalAddEmpExtensiones(idTipo, Nombre) {
-  // Mostrar pantalla de carga
-  $.blockUI({
-    message: '<h5><i class="fa fa-spinner fa-spin"></i></h5>',
-    css: {
-      border: "none",
-      padding: "15px",
-      backgroundColor: "#000",
-      "-webkit-border-radius": "10px",
-      "-moz-border-radius": "10px",
-      opacity: 0.5,
-      color: "#ffc407",
-    },
-  });
-
-  $("#NameDirectorioExtension").html(`Directorio : ${Nombre}`);
+  $.blockUI({ message:'<h5><i class="fa fa-spinner fa-spin"></i></h5>', css:{border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#ffc407"} });
+  $("#NameDirectorioExtension").html(`Directorio: ${Nombre}`);
   $("#IdTipoExtensiones").val(idTipo);
-  $("#slctPuestoEmExt").val("");
-  $("#slctDivisionEmExt").val("");
-  $("#slctSucursalEmExt").val("");
-  $("#txtExtension").val("");
+  $("#slctDivisionEmExt, #slctPuestoEmExt, #slctSucursalEmExt").val("").trigger("change");
+  $("#txtExtension, #EmpleadoSelectedExtension").val("");
   $("#EmpleadoSeleccionadoDirExt").html("");
-  $("#EmpleadoSelectedExtension").val("");
-
   try {
-    // Esperar a que se carguen todos los datos
-    await Promise.all([
-      getPuestosExtensiones(),
-      getDivisionesExtensiones(),
-      getSucursalesExtensiones(),
-      getListadoPersonalExtensiones(),
-    ]);
-
-    // Mostrar modal
-    var modal = new bootstrap.Modal(
-      document.getElementById("modalAddEmpleadosDirectorioExtensiones")
-    );
+    await Promise.all([getPuestosExtensiones(), getDivisionesExtensiones(), getSucursalesExtensiones()]);
+    const modal = new bootstrap.Modal(document.getElementById("modalAddEmpleadosDirectorioExtensiones"));
     modal.show();
-  } catch (err) {
-    console.error("Error cargando datos:", err);
-  } finally {
-    // Quitar pantalla de carga
-    $.unblockUI();
-  }
+    await getListadoPersonalExtensiones();
+  } catch(e) { console.error(e); } finally { $.unblockUI(); }
 }
 
-// Hacemos que la función retorne una Promise
 function getListadoPersonalExtensiones() {
   return new Promise((resolve, reject) => {
-    let puesto = $("#slctPuestoEmExt").val();
-    let sucursal = $("#slctSucursalEmExt").val();
-    let division = $("#slctDivisionEmExt").val();
-    let TipoDirectorio = Number($("#IdTipoExtensiones").val());
-
-    let datasend = {
+    const datasend = {
       op: "getPersonalDirectorioExtensiones",
-      puesto: puesto,
-      sucursal: sucursal,
-      division: division,
-      idDirectorioExtensiones: TipoDirectorio,
+      puesto:   $("#slctPuestoEmExt").val(),
+      sucursal: $("#slctSucursalEmExt").val(),
+      division: $("#slctDivisionEmExt").val(),
+      idDirectorioExtensiones: Number($("#IdTipoExtensiones").val()),
     };
-
-    let tableEmpleadosExtensiones = $("#tableEmpleadosExtensiones").dataTable({
-      destroy: true,
-      language: {
-        lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-        zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-        info: "PÁGINA _PAGE_ DE _PAGES_",
-        infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-        infoFiltered: "",
-        search: "BUSCAR",
-        paginate: {
-          previous: "ANTERIOR",
-          next: "SIGUIENTE"
-        }
-      },
-      ajax: {
-        type: "POST",
-        url: "Backend/Empleados/App.php",
-        data: datasend,
-        success: function (response) {
-          tableEmpleadosExtensiones.fnClearTable();
-          for (var i = 0; i < response.length; i++) {
-            tableEmpleadosExtensiones.fnAddData([
-              response[i]["NoEmpleado"],
-              response[i]["Nombre"],
-              `<div class="row">
-                  <div class="col">
-                    <button type="button" class="btn btn-success" onclick="SeleccionarEmpleadoExt(${response[i]["NoEmpleado"]},'${response[i]["Nombre"]}')">
-                      <span class="material-symbols-outlined">add</span>
-                    </button>
-                  </div>
-              </div>`,
-            ]);
+    $.ajax({
+      type:"POST", url:"Backend/Empleados/App.php", data: datasend, dataType:"json",
+      success: function(resp) {
+        if (!Array.isArray(resp)) resp = [];
+        if (gridPersonalExtMap) { gridPersonalExtMap.destroy(); gridPersonalExtMap = null; }
+        gridPersonalExtMap = new ej.grids.Grid({
+          dataSource: resp, allowPaging: true, pageSettings:{pageSize:8}, toolbar:["Search"],
+          columns: [
+            { field:"NoEmpleado", headerText:"NO EMP.", width:100, textAlign:"Center" },
+            { field:"Nombre",     headerText:"NOMBRE",  width:200 },
+            { headerText:"SELEC.", width:80, textAlign:"Center", disableHtmlEncode:false,
+              template: r => `<button class="btn btn-success btn-sm btn-sel-ext" data-no="${r.NoEmpleado}" data-nombre="${r.Nombre}"><span class="material-symbols-outlined" style="font-size:18px;">add</span></button>` },
+          ],
+          recordClick: function(args) {
+            const el = args.target;
+            if (!el || !el.closest) return;
+            const btn = el.closest(".btn-sel-ext");
+            if (btn) SeleccionarEmpleadoExt(btn.dataset.no, btn.dataset.nombre);
+          },
+          created: function() {
+            const inp = document.getElementById(this.element.id + "_searchbar");
+            if (inp && !inp._bound) { inp._bound = true; const g = this; inp.addEventListener("keyup", e => g.search(e.target.value)); }
           }
-        },
-        complete: function () {
-          resolve(); // Avisamos que terminó la Promise
-        },
-        error: function (err) {
-          reject(err);
-        },
+        });
+        gridPersonalExtMap.appendTo("#tableEmpleadosExtensiones");
+        resolve();
       },
+      error: reject
     });
   });
-}
-
-async function addEmpleadoDirectorioExtensiones() {
-  let idDirectorioExtensiones = await Number($("#IdTipoExtensiones").val());
-  let NoEmpleado = await $("#EmpleadoSelectedExtension").val();
-  let Extension = await $("#txtExtension").val();
-  if (NoEmpleado == "") {
-    toastr.info("Seleccione un empleado.");
-    return false;
-  } else if (Extension == "") {
-    toastr.info("Ingrese una extensión.");
-    return false;
-  } else {
-    let datos = await {
-      op: "addEmpleadoDirectorioExtensiones",
-      idDirectorioExtensiones: idDirectorioExtensiones,
-      NoEmpleado: NoEmpleado,
-      Extension: Extension,
-    };
-    respuesta = "";
-    try {
-      respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      if (respuesta == 1) {
-        toastr.success("Agregado");
-        $("#txtExtension").val("");
-        $("#EmpleadoSeleccionadoDirExt").html("");
-        $("#EmpleadoSelectedExtension").val("");
-        loadDirectorioExtensiones();
-        getListadoPersonalExtensiones();
-      } else {
-        toastr.info(respuesta);
-      }
-    }
-  }
 }
 
 async function SeleccionarEmpleadoExt(id, nameEmpleado) {
@@ -877,725 +488,154 @@ async function SeleccionarEmpleadoExt(id, nameEmpleado) {
   $("#txtExtension").val("");
 }
 
-$(document).ready(function () {
-  $("#slctDivisionEmExt").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"),
-    width: "100%",
-    placeholder: "Seleccione una división",
-    allowClear: true,
-  });
-  $("#slctPuestoEmExt").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"),
-    width: "100%",
-    placeholder: "Seleccione un puesto",
-    allowClear: true,
-  });
-  $("#slctSucursalEmExt").select2({
-    dropdownParent: $("#modalAddEmpleadosDirectorioExtensiones"),
-    width: "100%",
-    placeholder: "Seleccione una sucursal",
-    allowClear: true,
-  });
-});
+async function addEmpleadoDirectorioExtensiones() {
+  const NoEmpleado = $("#EmpleadoSelectedExtension").val();
+  const Extension  = $("#txtExtension").val();
+  if (!NoEmpleado) { toastr.info("Seleccione un empleado."); return; }
+  if (!Extension)  { toastr.info("Ingrese una extensión."); return; }
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{
+      op:"addEmpleadoDirectorioExtensiones", idDirectorioExtensiones:Number($("#IdTipoExtensiones").val()), NoEmpleado, Extension
+    }});
+    if (resp == 1) {
+      toastr.success("Agregado");
+      $("#txtExtension, #EmpleadoSelectedExtension").val("");
+      $("#EmpleadoSeleccionadoDirExt").html("");
+      loadDirectorioExtensiones();
+      getListadoPersonalExtensiones();
+    } else { toastr.info(resp); }
+  } catch(e) { console.error(e); }
+}
+
+async function deleteEmpleadosDirectorioExtension(val) {
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Eliminar empleado del directorio?",icon:"warning",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"deleteEmpleadosDirectorioExtension",idDetalleDirectorioExtensiones:val} });
+    if (resp == 1) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Eliminado correctamente.</span></div>`, "top-right", 5000); loadDirectorioExtensiones(); }
+    else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al eliminar.</span></div>`, "top-right", 5000); }
+  } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
+}
+
+async function updateExtesionEmp(DetalleId, Directorio) {
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Actualizar extensión?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{
+      op:"updateExtensionEmpleado", idDetalleDirectorioExtensiones:DetalleId, Extension:$("#Extension"+DetalleId).val(), Directorio
+    }});
+    if (resp == 1) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Extensión actualizada.</span></div>`, "top-right", 5000); loadDirectorioExtensiones(); }
+    else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000); }
+  } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
+}
 
 function getPuestosExtensiones() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Puestos/App.php",
-    data: "op=getPuestos",
-    success: function (response) {
-      $("#slctPuestoEmExt").html("");
-      $("#slctPuestoEmExt").append(`
-            <option value="">Puestos</option>
-        `);
-      response = JSON.parse(response.trim());
-      for (var i = 0; i < response.length; i++) {
-        $("#slctPuestoEmExt").append(`
-            <option value='${response[i]["IdPuesto"]}'>${response[i]["Puesto"]}</option>
-            `);
-      }
-      $("#slctPuestoEmExt").trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise(resolve => {
+    $.ajax({ type:"post", url:"Backend/Puestos/App.php", data:"op=getPuestos",
+      success: function(resp) {
+        resp = JSON.parse(resp.trim());
+        $("#slctPuestoEmExt").html(`<option value="">Puestos</option>`);
+        resp.forEach(r => $("#slctPuestoEmExt").append(`<option value="${r.IdPuesto}">${r.Puesto}</option>`));
+        $("#slctPuestoEmExt").trigger("change"); resolve();
+      }, error: resolve
+    });
   });
 }
+
 function getDivisionesExtensiones() {
-  $("#slctDivision").html("");
-  $.ajax({
-    type: "post",
-    url: "Backend/Divisiones/App.php",
-    data: "op=getDivisiones",
-    success: function (response) {
-      response = JSON.parse(response.trim());
-      $("#slctDivisionEmExt").html("");
-      $("#slctDivisionEmExt").append(`
-            <option value="">Divisiones</option>
-        `);
-      for (var i = 0; i < response.length; i++) {
-        $("#slctDivisionEmExt").append(`
-            <option value="${response[i]["IdDivision"]}">${response[i]["Division"]}</option>
-            `);
-      }
-      $("#slctDivisionEmExt").trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise(resolve => {
+    $.ajax({ type:"post", url:"Backend/Divisiones/App.php", data:"op=getDivisiones",
+      success: function(resp) {
+        resp = JSON.parse(resp.trim());
+        $("#slctDivisionEmExt").html(`<option value="">Divisiones</option>`);
+        resp.forEach(r => $("#slctDivisionEmExt").append(`<option value="${r.IdDivision}">${r.Division}</option>`));
+        $("#slctDivisionEmExt").trigger("change"); resolve();
+      }, error: resolve
+    });
   });
 }
 
 function getSucursalesExtensiones() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Sucursal/App.php",
-    data: "op=getSucursales",
-    success: function (response) {
-      $("#slctSucursalEmExt").html("");
-      $("#slctSucursalEmExt").append(`
-            <option value="">Sucursales</option>
-        `);
-      response = JSON.parse(response.trim());
-      for (var i = 0; i < response.length; i++) {
-        $("#slctSucursalEmExt").append(`
-          <option value="${response[i]["IdSucursal"]}">${response[i]["Sucursal"]}</option>
-          `);
-      }
-      $("#slctSucursalEmExt").trigger("change");
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
-  });
-}
-
-async function loadDirectorioExtensiones() {
-  const Directorio = await getDirectorioExtensiones();
-  let ContenidoDirectorioHTML = "";
-  Directorio.forEach((ContenidoDirectorio) => {
-    let ArrayRegistrosDirectorioTipo = [];
-    ContenidoDirectorio.Tipos.map((Registros) => {
-      ContenidoDirectorioHTML += `
-                <div class="table-responsive">
-                    <table id="${Registros.idDirectorioExtensiones}" class="table striped m-b-10 display text-center">
-                        <thead>
-                            <tr>
-                                <th colspan="12" >
-                                <div class="row">
-                                    <div class="col text-center">
-                                       <span class="badge badge-primary">${Registros.Tipo}</span>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col" style="text-align:left">
-                                        <button type="button" class="btn btn-success"  onclick="openModalAddEmpExtensiones(${Registros.idDirectorioExtensiones},'${Registros.Tipo}')"><span class="material-symbols-outlined">add_call</span></button>
-                                    </div>
-                                </div>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>NOMBRE</th>
-                                <th>EXTENSION</th>
-                                <th>ELIMINAR</th>
-                            </tr>
-                        </thead>
-                        <tbody> `;
-      ContenidoDirectorio.Detalle.filter((Detalle) => {
-        if (
-          Detalle.idDirectorioExtensiones == Registros.idDirectorioExtensiones
-        ) {
-          ContenidoDirectorioHTML += `
-                                    <tr>
-                                       
-                                        <td>${Detalle.Nombre}</td>
-                                        <td>
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="row">
-                                                            <div class="col-8">
-                                                                <input class="form-control form-control-solid-bordered" value="${Detalle.Extension}" style="text-align: center" onkeypress="return onlynumber(event)" maxlength="4" id="Extension${Detalle.idDetalleDirectorioExtensiones}"></input>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <button class="btn btn-warning" role="button" onclick="updateExtesionEmp(${Detalle.idDetalleDirectorioExtensiones},${Registros.idDirectorioExtensiones})" ><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>
-                                                            </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><button class="btn btn-danger" role="button" onclick="deleteEmpleadosDirectorioExtension(${Detalle.idDetalleDirectorioExtensiones})"> <span class="material-symbols-outlined" style="font-size:20px;">delete</span></button></td>
-                                    </tr>
-                                `;
-        }
-      });
-      ContenidoDirectorioHTML += `    
-                        </tbody>      
-                     </table>
-                </div>
-            `;
+  return new Promise(resolve => {
+    $.ajax({ type:"post", url:"Backend/Sucursal/App.php", data:"op=getSucursales",
+      success: function(resp) {
+        resp = JSON.parse(resp.trim());
+        $("#slctSucursalEmExt").html(`<option value="">Sucursales</option>`);
+        resp.forEach(r => $("#slctSucursalEmExt").append(`<option value="${r.IdSucursal}">${r.Sucursal}</option>`));
+        $("#slctSucursalEmExt").trigger("change"); resolve();
+      }, error: resolve
     });
   });
-
-  $("#contenidoDirectorioExtensiones").html(ContenidoDirectorioHTML);
 }
 
-async function deleteEmpleadosDirectorioExtension(val) {
-  const result = await Swal.fire({
-    title: "Confirmación",
-    text: "¿Desea eliminar al empleado del directorio?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      let datos = {
-        op: "deleteEmpleadosDirectorioExtension",
-        idDetalleDirectorioExtensiones: val,
-      };
-
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == 1) {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-             <span class="alert-text">Empleado eliminado correctamente.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        loadDirectorioExtensiones();
-      } else {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-             <span class="alert-text">Error al eliminar el empleado.</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      const messageContent = `
-        <div class="alert-content">
-           <span class="alert-title">Alerta!</span>
-           <span class="alert-text">Ocurrió un error inesperado.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    const messageContent = `
-      <div class="alert-content">
-         <span class="alert-title">Información!</span>
-         <span class="alert-text">Se canceló la acción.</span>
-      </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-  }
-}
-
-async function updateExtesionEmp(DetalleId, Directorio) {
-  const result = await Swal.fire({
-    title: "Confirmación",
-    text: "¿Desea actualizar la extensión?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, actualizar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      let Extension = $("#Extension" + DetalleId).val();
-
-      let datos = {
-        op: "updateExtensionEmpleado",
-        idDetalleDirectorioExtensiones: DetalleId,
-        Extension: Extension,
-        Directorio: Directorio,
-      };
-
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == 1) {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-             <span class="alert-text">Extensión actualizada correctamente.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        loadDirectorioExtensiones();
-      } else {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-             <span class="alert-text">${respuesta}</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      const messageContent = `
-        <div class="alert-content">
-           <span class="alert-title">Alerta!</span>
-           <span class="alert-text">Ocurrió un error inesperado.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    const messageContent = `
-      <div class="alert-content">
-         <span class="alert-title">Información!</span>
-         <span class="alert-text">Se canceló la acción.</span>
-      </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-  }
-}
-
-$("#btnOpenModalSucursal").click(function () {
-    // Cargar datos
+// ─── Sucursales CRUD ─────────────────────────────────────────────────────────
+$(document).ready(function() {
+  $("#btnOpenModalSucursal").click(function() {
     getSucursalesDisponiblesDirectorio();
+    $("#txtDireccionSucursal, #txtTelefono, #txtNumRed, #txtCorreo, #txtMarcacionCorta, #inpFechaApertura").val("");
+    new bootstrap.Modal(document.getElementById("modalAddSucursalesDirectorio")).show();
+  });
 
-    // Limpiar inputs
-    $("#txtDireccionSucursal").val("");
-    $("#txtTelefono").val("");
-    $("#txtNumRed").val("");
-    $("#txtCorreo").val("");
-    $("#txtMarcacionCorta").val("");
-    $("#inpFechaApertura").val("");
+  $("#btnAgregaSucursalDirectorio").click(async function() {
+    const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, agregar",cancelButtonText:"Cancelar" });
+    if (!result.isConfirmed) return;
 
-    // Abrir modal con Bootstrap 5
-    var modal = new bootstrap.Modal(document.getElementById("modalAddSucursalesDirectorio"));
-    modal.show();
-});
+    const IdSucursal     = $("#slctListadoSucursalesDisp").val();
+    const Direccion      = $("#txtDireccionSucursal").val();
+    const Telefono       = $("#txtTelefono").val();
+    const Correo         = $("#txtCorreo").val();
+    const FechaApertura  = $("#inpFechaApertura").val();
+    const MarcacionCorta = $("#txtMarcacionCorta").val();
+    const NumRed         = $("#txtNumRed").val();
 
-$(document).ready(function () {
-  $("#slctListadoSucursalesDisp").select2({
-    dropdownParent: $("#modalAddSucursalesDirectorio"),
-    width: "100%",
-    placeholder: "Sucursales Disponibles",
-    allowClear: true,
+    if (!IdSucursal || !Direccion || !Telefono || !Correo || !FechaApertura || !MarcacionCorta) {
+      showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Ingrese todos los datos.</span></div>`, "top-right", 5000);
+      return;
+    }
+    if (!validateEmail(Correo)) {
+      showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000);
+      return;
+    }
+    try {
+      const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"addSucursalesDirectorio",IdSucursal,Direccion,Telefono,NumRed,Correo,FechaApertura,MarcacionCorta} });
+      if (resp == "1") {
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Sucursal agregada.</span></div>`, "top-right", 5000);
+        $("#txtDireccionSucursal, #txtTelefono, #txtNumRed, #txtCorreo, #txtMarcacionCorta, #inpFechaApertura").val("");
+        getDirectorioSucursal();
+        bootstrap.Modal.getInstance(document.getElementById("modalAddSucursalesDirectorio")).hide();
+      } else {
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
+      }
+    } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
   });
 });
+
 async function getSucursalesDisponiblesDirectorio() {
-  $("#slctListadoSucursalesDisp").html("");
-  let datos = await {
-    op: "getSucursalesDisponiblesDirectorio",
-  };
-  let respuesta = [];
   try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    console.log(respuesta);
-    $("#slctListadoSucursalesDisp").append(`
-            <option value="" selected disabled> Sucursales Disponibles </option>
-        `);
-    respuesta.forEach((contenido) => {
-      $("#slctListadoSucursalesDisp").append(`
-                  <option value="${contenido.IdSucursal}">${contenido.Sucursal}</option>
-            `);
-    });
-  }
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"getSucursalesDisponiblesDirectorio"}, dataType:"json" });
+    $("#slctListadoSucursalesDisp").html(`<option value="" selected disabled>Sucursales Disponibles</option>`);
+    (resp||[]).forEach(c => $("#slctListadoSucursalesDisp").append(`<option value="${c.IdSucursal}">${c.Sucursal}</option>`));
+  } catch(e) { console.warn(e); }
 }
 
-async function getEmpleadosSucursal(sucursal) {
-  $("#slctEmpleadosDisp").html("");
-  let datos = await {
-    op: "getEmpleadosSucursalSelected",
-    IdSucursal: sucursal,
-  };
-  respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    respuesta.forEach((contenido) => {
-      $("#slctEmpleadosDisp").append(`
-                <option value="${contenido.NoEmpleado}">${contenido.Nombre}</option>
-            `);
-    });
-  }
-}
-
-$("#btnAgregaSucursalDirectorio").click(async function () {
-  const result = await Swal.fire({
-    title: "Confirmación",
-    text: "¿Desea confirmar los datos ingresados?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, agregar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    let IdSucursal = $("#slctListadoSucursalesDisp").val();
-    let Direccion = $("#txtDireccionSucursal").val();
-    let Telefono = $("#txtTelefono").val();
-    let Correo = $("#txtCorreo").val();
-    let FechaApertura = $("#inpFechaApertura").val();
-    let MarcacionCorta = $("#txtMarcacionCorta").val();
-    let NumRed = $("#txtNumRed").val();
-
-    if (
-      IdSucursal == "" ||
-      Direccion == "" ||
-      Telefono == "" ||
-      Correo == "" ||
-      FechaApertura == "" ||
-      MarcacionCorta == ""
-    ) {
-      const messageContent = `
-        <div class="alert-content">
-          <span class="alert-title">Información!</span>
-          <span class="alert-text">Ingrese todos los datos, por favor.</span>
-        </div>`;
-      showBootstrapAlert(messageContent, "top-right", 5000);
-      return false;
-    }
-
-    if (Correo !== "" && !validateEmail(Correo)) {
-      const messageContent = `
-        <div class="alert-content">
-          <span class="alert-title">Formato incorrecto!</span>
-          <span class="alert-text">Por favor ingrese un correo electrónico válido para la sucursal.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-      return false;
-    }
-
-    let datos = {
-      op: "addSucursalesDirectorio",
-      IdSucursal: IdSucursal,
-      Direccion: Direccion,
-      Telefono: Telefono,
-      Correo: Correo,
-      FechaApertura: FechaApertura,
-      MarcacionCorta: MarcacionCorta,
-      NumRed: NumRed,
-    };
-
-    try {
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == "1") {
-        const messageContent = `
-          <div class="alert-content">
-            <span class="alert-title">Completado!</span>
-            <span class="alert-text">Agregado correctamente al directorio.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-
-        // Limpiar inputs
-        $("#txtDireccionSucursal").val("");
-        $("#txtTelefono").val("");
-        $("#txtNumRed").val("");
-        $("#txtCorreo").val("");
-        $("#txtMarcacionCorta").val("");
-        $("#inpFechaApertura").val("");
-
-        // Recargar tabla de sucursales
-        getDirectorioSucursal();
-
-        // Cerrar modal Bootstrap 5
-        var modal = bootstrap.Modal.getInstance(document.getElementById("modalAddSucursalesDirectorio"));
-        modal.hide();
-      } else {
-        const messageContent = `
-          <div class="alert-content">
-            <span class="alert-title">Alerta!</span>
-            <span class="alert-text">${respuesta}</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      const messageContent = `
-        <div class="alert-content">
-          <span class="alert-title">Alerta!</span>
-          <span class="alert-text">Ocurrió un error inesperado.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    const messageContent = `
-      <div class="alert-content">
-        <span class="alert-title">Información!</span>
-        <span class="alert-text">Se canceló la acción.</span>
-      </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-
-    // Limpiar inputs
-    $("#txtDireccionSucursal").val("");
-    $("#txtTelefono").val("");
-    $("#txtNumRed").val("");
-    $("#txtCorreo").val("");
-    $("#txtMarcacionCorta").val("");
-    $("#inpFechaApertura").val("");
-  }
-});
-
-
-getDirectorioSucursal();
-async function getDirectorioSucursal() {
-  let datos = await {
-    op: "getDirectorioSucursal",
-  };
-  let tableDirectorioSucursal = await $("#tableDirectorioSucursal").dataTable({
-    destroy: true,
-    language: {
-      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-      zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-      info: "PÁGINA _PAGE_ DE _PAGES_",
-      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-      infoFiltered: "",
-      search: "BUSCAR",
-      paginate: {
-        previous: "ANTERIOR",
-        next: "SIGUIENTE"
-      }
-    },
-    ajax: {
-      type: "POST",
-      url: "Backend/Directorios/App.php",
-      data: datos,
-      success: function (response) {
-        tableDirectorioSucursal.fnClearTable();
-
-        let ArrEmpleados = [];
-        response.forEach((registrosEmp) => {
-          let Datos = {
-            idDirectorioSucursales: registrosEmp.idDirectorioSucursales,
-            Nombre: registrosEmp.Nombre,
-            Puesto: registrosEmp.Puesto,
-          };
-          ArrEmpleados.push(Datos);
-        });
-        const Unicos = removeDuplicates(response, "idDirectorioSucursales");
-
-        Unicos.forEach((UnicosV) => {
-          let ContenidoEmpleados = "";
-          let ContenidoPuestos = "";
-          ContenidoEmpleados += `
-                    <div class="row">
-                `;
-          ContenidoPuestos += `
-                    <div class="row">
-                `;
-          ArrEmpleados.map((empleados) => {
-            if (
-              UnicosV.idDirectorioSucursales == empleados.idDirectorioSucursales
-            ) {
-              ContenidoEmpleados += `
-                            <div class="col-12 col-lg-12">
-                                <h6>${empleados.Nombre}</h6>
-                            </div>
-                        `;
-              ContenidoPuestos += `
-                            <div class="col-12 col-lg-12">
-                                <h6>${empleados.Puesto}</h6>
-                            </div>
-                        `;
-            }
-          });
-          ContenidoEmpleados += `
-                    </div>
-                `;
-          ContenidoPuestos += `
-                    </div>
-                `;
-
-          tableDirectorioSucursal.fnAddData([
-            UnicosV.Sucursal,
-            `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="text" id="DirSucur${UnicosV.idDirectorioSucursales}" value="${UnicosV.Direccion}" style="width:25vh; text-align:center;"></input>`,
-            `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="text" id="TelSucur${UnicosV.idDirectorioSucursales}" value="${UnicosV.Telefono}" style="width:15vh"; text-align:center; onkeypress="return onlynumber(event)"></input>`,
-            `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="text" id="NumRedSucur${UnicosV.idDirectorioSucursales}" value="${UnicosV.NumRed}" style="width:12vh"; text-align:center; onkeypress="return onlynumber(event)"></input>`,
-            ContenidoEmpleados,
-            ContenidoPuestos,
-            `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="email" id="CorreoSucur${UnicosV.idDirectorioSucursales}" value="${UnicosV.Correo}" style="width:20vh; text-align:center;"></input>`,
-            UnicosV.FechaApertura,
-            UnicosV.años_transcurridos,
-            `<input class="form-control form-control-solid-bordered text-center d-block mx-auto" type="text" id="MCorta${UnicosV.idDirectorioSucursales}" value="${UnicosV.MarcacionCorta}" onkeypress="return onlynumber(event)" maxlength="4" style="width:12vh; text-align:center;"></input>`,
-            `<button class="btn btn-warning" role="button" onclick="updateRegistroDirectorioSucursal(${UnicosV.idDirectorioSucursales})" ><span class="material-symbols-outlined">edit</span></button>`,
-          ]);
-        });
-      },
-      complete: function () {
-        // $.unblockUI();
-      },
-    },
-  });
-}
-
-// async function updateRegistroDirectorioSucursal(val) {
-//   alertify.confirm(
-//     "Confirmación de acción.",
-//     "¿Desea confirmar los datos ingresados?",
-//     async function () {
-//       let Direccion = await $("#DirSucur" + val).val();
-//       let Telefono = await $("#TelSucur" + val).val();
-//       let NumRed = await $("#NumRedSucur" + val).val();
-//       let Correo = await $("#CorreoSucur" + val).val();
-//       let MarcacionCorta = await $("#MCortaDir" + val).val();
-//       let datos = await {
-//         op: "updateRegistroDirectorioSucursal",
-//         Direccion: Direccion,
-//         Telefono: Telefono,
-//         NumRed: NumRed,
-//         Correo: Correo,
-//         MarcacionCorta: MarcacionCorta,
-//         idDirectorioSucursales: val,
-//       };
-//       try {
-//         respuesta = await $.ajax({
-//           type: "post",
-//           url: "Backend/Directorios/App.php",
-//           data: datos,
-//         });
-//         b;
-//       } catch (error) {
-//         console.log(error);
-//       } finally {
-//         if (respuesta == 1) {
-//           toastr.success("Registro Actualizado");
-//           getDirectorioSucursal();
-//         } else {
-//           toastr.info(respuesta);
-//         }
-//       }
-//     },
-//     async function () {
-//       alertify.error("Cancelado");
-//     }
-//   );
-// }
 async function updateRegistroDirectorioSucursal(val) {
-  const result = await Swal.fire({
-    title: "Confirmación",
-    text: "¿Desea confirmar los datos ingresados?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, actualizar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      // Obtener valores de los inputs
-      let Direccion = $("#DirSucur" + val).val();
-      let Telefono = $("#TelSucur" + val).val();
-      let NumRed = $("#NumRedSucur" + val).val();
-      let Correo = $("#CorreoSucur" + val).val();
-
-      if (Correo !== "" && !validateEmail(Correo)) {
-        const messageContent = `
-          <div class="alert-content">
-            <span class="alert-title">Formato incorrecto!</span>
-            <span class="alert-text">Por favor ingrese un correo electrónico válido.</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-        return;
-      }
-
-      let MarcacionCorta = $("#MCortaDir" + val).val();
-
-      let datos = {
-        op: "updateRegistroDirectorioSucursal",
-        Direccion: Direccion,
-        Telefono: Telefono,
-        NumRed: NumRed,
-        Correo: Correo,
-        MarcacionCorta: MarcacionCorta,
-        idDirectorioSucursales: val,
-      };
-
-      let respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Directorios/App.php",
-        data: datos,
-      });
-
-      if (respuesta == 1) {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-             <span class="alert-text">Registro actualizado correctamente.</span>
-          </div>`;
-        showBootstrapAlertSuc(messageContent, "top-right", 5000);
-        getDirectorioSucursal();
-      } else {
-        const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-             <span class="alert-text">${respuesta}</span>
-          </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-    } catch (error) {
-      console.log(error);
-      const messageContent = `
-        <div class="alert-content">
-           <span class="alert-title">Alerta!</span>
-           <span class="alert-text">Ocurrió un error inesperado.</span>
-        </div>`;
-      showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-  } else {
-    const messageContent = `
-      <div class="alert-content">
-         <span class="alert-title">Información!</span>
-         <span class="alert-text">Se canceló la acción.</span>
-      </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-  }
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
+  if (!result.isConfirmed) return;
+  const Correo = $("#CorreoSucur"+val).val();
+  if (Correo && !validateEmail(Correo)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }
+  try {
+    const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{
+      op:"updateRegistroDirectorioSucursal",
+      Direccion:$("#DirSucur"+val).val(), Telefono:$("#TelSucur"+val).val(),
+      NumRed:$("#NumRedSucur"+val).val(), Correo, MarcacionCorta:$("#MCorta"+val).val(),
+      idDirectorioSucursales:val
+    }});
+    if (resp == 1) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Registro actualizado.</span></div>`, "top-right", 5000); getDirectorioSucursal(); }
+    else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000); }
+  } catch(e) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error inesperado.</span></div>`, "top-right", 5000); }
 }
 
-function removeDuplicates(originalArray, prop) {
-  var newArray = [];
-  var lookupObject = {};
-
-  for (var i in originalArray) {
-    lookupObject[originalArray[i][prop]] = originalArray[i];
-  }
-
-  for (i in lookupObject) {
-    newArray.push(lookupObject[i]);
-  }
-  return newArray;
-}
-
+// ─── Utils ────────────────────────────────────────────────────────────────────
 function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(String(email).toLowerCase());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
 }

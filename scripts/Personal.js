@@ -899,6 +899,7 @@ function getPuestos() {
     data: "op=getPuestos",
     success: function (response) {
       response = JSON.parse(response.trim());
+      $("#slctPuestos").html('<option value="">Listado de Puestos</option>');
       for (var i = 0; i < response.length; i++) {
         $("#slctPuestos").append(`
           <option value='${response[i]["IdPuesto"]}'>${response[i]["Puesto"]}</option>
@@ -917,6 +918,7 @@ function getDivisiones() {
     data: "op=getDivisiones",
     success: function (response) {
       response = JSON.parse(response.trim());
+      $("#slctDivision").html('<option value="">Listado de Divisiones</option>');
       for (var i = 0; i < response.length; i++) {
         $("#slctDivision").append(`
           <option value="${response[i]["IdDivision"]}">${response[i]["Division"]}</option>
@@ -935,6 +937,7 @@ function getSucursales() {
     data: "op=getSucursales",
     success: function (response) {
       response = JSON.parse(response.trim());
+      $("#slctSucursal").html('<option value="">Listado de Sucursales</option>');
       for (var i = 0; i < response.length; i++) {
         $("#slctSucursal").append(`
           <option value="${response[i]["IdSucursal"]}">${response[i]["Sucursal"]}</option>

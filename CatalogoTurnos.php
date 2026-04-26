@@ -46,12 +46,12 @@
 
 <body>
   <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php include("menus.php"); ?>
     </div>
@@ -130,7 +130,9 @@
                         </button>
                       </div>
                     </div>
-                    <div id="TableTurnos"></div>
+                    <div class="table-responsive">
+                      <div id="TableTurnos"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -190,7 +192,6 @@
   </div>
 
   <?php include("neptune_js.php"); ?>
-  <?php include("scripts.php"); ?>
 
   <script src="scripts/Turnos.js?v=<?= time() ?>" charset="utf-8"></script>
   <script>

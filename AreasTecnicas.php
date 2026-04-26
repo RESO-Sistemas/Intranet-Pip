@@ -19,12 +19,12 @@
 <body>
     <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
         <!-- Preloader -->
-        <div class="preloader">
+        <!-- <div class="preloader">
             <div class="loader">
                 <div class="loader__figure"></div>
                 <p class="loader__label">PIP</p>
             </div>
-        </div>
+        </div> -->
         
         <!-- Menu -->
         <div id="Menu">
@@ -171,7 +171,6 @@
     
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
-    <?php include("scripts.php"); ?>
     
     <!-- Scripts específicos de esta página -->
     <script src="scripts/AreasTecnicas.js?v=<?php echo time(); ?>"></script>

@@ -89,9 +89,9 @@
 
 
         function getTiposDirectorioExtensiones ($Tipo,$TiposExtSelected) {
-            if (sizeof($TiposExtSelected) > 0) {
+            if (is_array($TiposExtSelected) && sizeof($TiposExtSelected) > 0) {
                 $ComplementoWhereOR = "";
-                for ($i=0; $i < sizeof($TiposExtSelected) ; $i++) { 
+                for ($i=0; $i < sizeof($TiposExtSelected); $i++) { 
                     $ComplementoWhereOR = $ComplementoWhereOR."idDirectorioExtensiones = $TiposExtSelected[$i] OR ";
                 }
                 $ComplementoWhereOR = substr($ComplementoWhereOR, 0, -3);
@@ -111,9 +111,9 @@
         }
 
         function getDetalleDirectorioExtensiones ($Tipo,$TiposExtSelected) {
-            if (sizeof($TiposExtSelected) > 0) {
+            if (is_array($TiposExtSelected) && sizeof($TiposExtSelected) > 0) {
                 $ComplementoWhereOR = "";
-                for ($i=0; $i < sizeof($TiposExtSelected) ; $i++) { 
+                for ($i=0; $i < sizeof($TiposExtSelected); $i++) { 
                     $ComplementoWhereOR = $ComplementoWhereOR."DD.idDirectorioExtensiones = $TiposExtSelected[$i] OR ";
                 }
                 $ComplementoWhereOR = substr($ComplementoWhereOR, 0, -3);

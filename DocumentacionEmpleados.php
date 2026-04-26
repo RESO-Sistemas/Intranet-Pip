@@ -29,12 +29,12 @@ if ($noEmpleado > 0) {
 <body>
     <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
         <!-- Preloader -->
-        <div class="preloader">
+        <!-- <div class="preloader">
             <div class="loader">
                 <div class="loader__figure"></div>
                 <p class="loader__label">PIP</p>
             </div>
-        </div>
+        </div> -->
         
         <!-- Menu -->
         <div id="Menu">
@@ -196,7 +196,6 @@ if ($noEmpleado > 0) {
     
     <!-- Neptune JS -->
     <?php include("neptune_js.php"); ?>
-    <?php include("scripts.php"); ?>
     
     <script>
         const NO_EMPLEADO_DOC = <?php echo $noEmpleado; ?>;

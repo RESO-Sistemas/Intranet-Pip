@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -66,12 +66,12 @@
 
 <body>
   <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php include("menus.php"); ?>
     </div>
@@ -167,21 +167,7 @@
                       </div>
                     </div>
                     <div class="table-responsive">
-                      <table class="table display text-center" id="TableKpis">
-                        <thead>
-                          <tr>
-                            <th>NOMBRE</th>
-                            <th>VALOR ALTA</th>
-                            <th>VALOR MEDIA</th>
-                            <th>VALOR BAJA</th>
-                            <th>ASIGNADO A</th>
-                            <th>ESTADO</th>
-                            <th>ACCIONES</th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
+                      <div id="TableKpis"></div>
                     </div>
                   </div>
                 </div>
@@ -259,9 +245,8 @@
   </div>
 
   <?php include("neptune_js.php"); ?>
-  <?php include("scripts.php"); ?>
-
-  <script src="scripts/Kpis.js?v=<?= time() ?>" charset="utf-8"></script>
+  <!-- Scripts de Plugins -->
+    <script src="scripts/Kpis.js?v=<?= time() ?>" charset="utf-8"></script>
   <script>
     function limpiarFormulario() {
       $('#txtIdKpi').val('');

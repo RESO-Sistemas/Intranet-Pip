@@ -1,4 +1,12 @@
+import re
 
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/SolicitudVacaciones.js', 'r') as f:
+    original_code = f.read()
+
+# We will construct a completely new JS file using the original logic but with Syncfusion.
+# We'll save the unchanged functions like updateStatusSolicitud, getDetalleSolicitud, regresarEstadoSolicitudJefe.
+
+new_code = """
 // Ocultar preloader cuando la página termine de cargar
 $(window).on('load', function() {
   $(".preloader").fadeOut();
@@ -300,197 +308,44 @@ async function getSolicitudesCanceladasJefe() {
     gridSolicitudesCanceladas.dataSource = mappedData;
   }
 }
+"""
 
-async function updateStatusSolicitud(Val, Solicitud) {
-  let mensaje = "";
-  if (Val == "1") {
-    mensaje = "aceptar";
-  } else if (Val == "2") {
-    mensaje = "denegar";
-  }
-  Swal.fire({
-    title: `¿Desea ${mensaje} la solicitud?`,
-    text: "",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    cancelButtonText: "Cancelar",
-    confirmButtonText: "Aceptar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      getDetalleSolicitud(Val, Solicitud);
-    } else {
-    }
-  }
+# Extract the rest of the file which contains the standard functions
+# Specifically, updateStatusSolicitud, getDetalleSolicitud, regresarEstadoSolicitudJefe.
+# These don't depend on DataTable and can be appended as-is.
 
-async function getDetalleSolicitud(estado, solicitud) {
-  let datos = {
-    op: "getDetalleSolicitud",
-    idSolicitudesVacaciones: solicitud,
-  };
+rest_code = ""
 
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Empleados/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.error(e);
-    return;
-  }
+match = re.search(r'(async function updateStatusSolicitud[\s\S]*)', original_code)
+if match:
+    full_rest = match.group(1)
+    # We need to filter out the definitions of ContenidoSolicitudesNomina and tableSolicitudesCanceladas and their getters since we rewrote them
+    lines = full_rest.split('\n')
+    skip = False
+    for line in lines:
+        if line.startswith('let ContenidoSolicitudesNomina = $("#ContenidoSolicitudesNomina").dataTable'):
+            skip = True
+        elif line.startswith('async function getMisSolicitudesVacacionesEstadoNomina'):
+            skip = True
+        elif line.startswith('let tableSolicitudesCanceladas = $("#tableSolicitudesCanceladas").dataTable'):
+            skip = True
+        elif line.startswith('async function getSolicitudesCanceladasJefe'):
+            skip = True
+            
+        if line.startswith('// async function regresarEstadoSolicitudJefe'):
+            skip = False # Let it keep commented code if it was there
+            
+        # We know exactly the functions to keep: updateStatusSolicitud, getDetalleSolicitud, regresarEstadoSolicitudJefe
+        # Actually it's easier to just regex extract them.
+        
+match_update = re.search(r'(async function updateStatusSolicitud.*?\}\s*\})', original_code, re.DOTALL)
+match_getDetalle = re.search(r'(async function getDetalleSolicitud.*?\}\s*\})', original_code, re.DOTALL)
+match_regresar = re.search(r'(async function regresarEstadoSolicitudJefe.*?\}\s*\})', original_code, re.DOTALL)
 
-  let estadoText = estado == "1" ? "autorizar" : "cancelar";
-  let mensaje2 = estado == "1" ? "aceptada" : "denegada";
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/SolicitudVacaciones.js', 'w') as f:
+    f.write(new_code)
+    if match_update: f.write('\n' + match_update.group(1) + '\n')
+    if match_getDetalle: f.write('\n' + match_getDetalle.group(1) + '\n')
+    if match_regresar: f.write('\n' + match_regresar.group(1) + '\n')
 
-  let contHTML = `
-    <div style="text-align:left">
-      <h5 style="text-align:center">Datos del solicitante</h5>
-      <p><b>No Empleado:</b> ${respuesta[0]["NoEmpleado"]}</p>
-      <p><b>Empleado Solicitante:</b> ${respuesta[0]["NombreSolicitante"]}</p>
-      <p><b>Puesto:</b> ${respuesta[0]["PuestoSolicitante"]}</p>
-      <p><b>Sucursal / Departamento:</b> ${respuesta[0]["Sucursal"]}</p>
-      <hr>
-      <h5 style="text-align:center">Datos de la Solicitud</h5>
-      <p><b>Fecha de la Solicitud:</b> ${respuesta[0]["FechaRegistroSoli"]}</p>
-      <p><b>Fecha Inicio:</b> ${respuesta[0]["FechaInicio"]}</p>
-      <p><b>Fecha Fin:</b> ${respuesta[0]["FechaFin"]}</p>
-      <p><b>Cantidad de Días de Vacaciones:</b> ${respuesta[0]["TotalDias"]}</p>
-    </div>
-  `;
-
-  const result = await Swal.fire({
-    title: `¿Desea ${estadoText} la solicitud con los siguientes datos?`,
-    html: contHTML,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Aceptar",
-    cancelButtonText: "Cancelar",
-    customClass: {
-      popup: "swal-wide",
-    },
-  });
-
-  if (result.isConfirmed) {
-    $.ajax({
-      type: "post",
-      url: "Backend/Empleados/App.php",
-      data: {
-        op: "updateStatusSolicitud",
-        Status: estado,
-        idSolicitudesVacaciones: solicitud,
-      },
-      success: function (response) {
-        if (response == "1") {
-          Swal.fire("¡Éxito!", `Solicitud ${mensaje2}`, "success");
-          getMisSolicitudes();
-          getMisSolicitudesPorRevisar();
-          getMisSolicitudesVacacionesEstadoNomina();
-          getSolicitudesCanceladasJefe();
-        } else {
-          Swal.fire("Atención", response, "info");
-        }
-      }
-
-async function regresarEstadoSolicitudJefe(val) {
-//   alertify
-//     .confirm(
-//       "Confirmación de acción.",
-//       `<div class="row">
-//     <div class="col s12 l12" style="text-align:center">
-//       ¿Desea regresar el estado de la solicitud a" Solicitud pendiente de revisar"?
-//     </div>
-//   </div>`,
-//       async function () {
-//         let datos = await {
-//           op: "regresarEstadoSolicitudJefe",
-//           idSolicitudesVacaciones: val,
-//         };
-//         let respuesta = "";
-//         try {
-//           respuesta = await $.ajax({
-//             type: "post",
-//             url: "Backend/Empleados/App.php",
-//             data: datos,
-//           });
-//         } catch (e) {
-//           console.log(e);
-//         } finally {
-//           if (respuesta == "1") {
-//             alertify.success(
-//               'Estado de solicitud regresado a" Solicitud pendiente de revisar".'
-//             );
-//             await getMisSolicitudesPorRevisar();
-//             await getMisSolicitudesVacacionesEstadoNomina();
-//             await getSolicitudesCanceladasJefe();
-//           } else {
-//             alertify.warning("ERROR!");
-//           }
-//         }
-//       },
-//       async function () {
-//         alertify.error("Cancelado");
-//       }
-//     )
-//     .set({ labels: { ok: "Aceptar", cancel: "Cancelar" }, padding: false });
-// }
-async function regresarEstadoSolicitudJefe(val) {
-  const resultado = await Swal.fire({
-    title: "Confirmación de acción",
-    html: `
-      <div class="row">
-        <div class="col s12 l12" style="text-align:center">
-          ¿Desea regresar el estado de la solicitud a "Solicitud pendiente de revisar"?
-        </div>
-      </div>
-    `,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#ffc407",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Aceptar",
-    cancelButtonText: "Cancelar",
-  });
-
-  if (resultado.isConfirmed) {
-    let datos = {
-      op: "regresarEstadoSolicitudJefe",
-      idSolicitudesVacaciones: val,
-    };
-
-    let respuesta = "";
-    try {
-      respuesta = await $.ajax({
-        type: "post",
-        url: "Backend/Empleados/App.php",
-        data: datos,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-
-    if (respuesta == "1") {
-      Swal.fire({
-        icon: "success",
-        title: "Éxito",
-        text: 'Estado de solicitud regresado a "Solicitud pendiente de revisar".',
-        showConfirmButton: true,
-        confirmButtonColor: "#ffc407",
-      });
-      await getMisSolicitudesPorRevisar();
-      await getMisSolicitudesVacacionesEstadoNomina();
-      await getSolicitudesCanceladasJefe();
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        timer: 2500,
-        text: "No se pudo cambiar el estado.",
-      });
-    }
-  }
+print("SolicitudVacaciones.js updated!")

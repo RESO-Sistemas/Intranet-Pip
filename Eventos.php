@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 
@@ -23,12 +23,12 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
@@ -56,39 +56,20 @@
             </div>
             <div class="row">
               <div class="col">
-                <div class="page-description page-description-tabbed">
-                  <h1>Eventos</h1>
+                <div class="page-description d-flex align-items-center">
+                  <div class="page-description-content flex-grow-1">
+                    <h1>Eventos</h1>
+                    <span>Gestión de eventos del sistema</span>
+                  </div>
+                  <div class="page-description-actions">
+                    <a class="btn btn-primary" onclick="TipoAccion(0)"><i class="material-icons">add</i>Nuevo Evento</a>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row text-end mb-4">
-                      <div class="col">
-                        <a class="btn btn-primary" onclick="TipoAccion(0)">Nuevo Evento</a>
-                      </div>
-                    </div>
-                    <div class="table-responsive">
-                      <table class="table striped m-b-10 display centered" id="TableEventos">
-                        <thead>
-                          <tr>
-                            <th>TITULO</th>
-                            <th>DESCRIPCIÓN</th>
-                            <th>FECHA INICIO</th>
-                            <th>FECHA FIN</th>
-                            <th>STATUS</th>
-                            <th>EDITAR</th>
-                            <th>EDITAR STATUS</th>
-                          </tr>
-                        </thead>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="table-responsive">
+              <div id="TableEventos"></div>
             </div>
 
             <!-- Modal Bootstrap -->
@@ -159,14 +140,13 @@
   <?php include("neptune_js.php");  ?>
   <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <script src="scripts/Eventos.js" charset="utf-8"></script>
+  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
+    <script src="scripts/Eventos.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 

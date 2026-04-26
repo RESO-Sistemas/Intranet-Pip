@@ -28,12 +28,12 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
@@ -78,20 +78,7 @@
                       <label class="form-label">Listado de evaluaciones registradas en el sistema.</label>
                     </div>
                     <div class="table-responsive">
-                      <table class="table display text-center" id="table_Ev" style="width: 100%;">
-                        <thead>
-                          <tr>
-                            <th>EVALUACIÓN</th>
-                            <th>TIPO</th>
-                            <th>PERIODICIDAD</th>
-                            <th>FECHA INICIO</th>
-                            <th>FECHA FIN</th>
-                            <th>STATUS</th>
-                            <th>ACCIONES</th>
-                          </tr>
-                        </thead>
-                        <tbody></tbody>
-                      </table>
+                      <div id="table_Ev"></div>
                     </div>
                   </div>
                 </div>
@@ -112,7 +99,6 @@
   <?php include("neptune_js.php");  ?>
   <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -121,9 +107,8 @@
   <script src="https://unpkg.com/read-excel-file@5.x/bundle/read-excel-file.min.js"></script>
   
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <script src="scripts/ListadoEvaluaciones/General.js" charset="utf-8"></script>
-  <script src="scripts/ListadoEvaluaciones/ex.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
+    <script src="scripts/ListadoEvaluaciones.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 

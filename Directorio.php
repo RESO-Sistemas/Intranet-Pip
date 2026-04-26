@@ -11,7 +11,7 @@
     <title>PIP by Lugo</title>
     <!-- Styles neptune -->
 
-    <?php include("neptune_styles.php");  ?>
+    <?php include("neptune_styles.php"); ?>
     <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet">
 
     <!-- Styles neptune -->
@@ -74,12 +74,12 @@
         <!-- ============================================================== -->
         <!-- Preloader - style you can find in spinners.css -->
         <!-- ============================================================== -->
-        <div class="preloader">
+        <!-- <div class="preloader">
             <div class="loader">
                 <div class="loader__figure"></div>
                 <p class="loader__label">PIP</p>
             </div>
-        </div>
+        </div> -->
         <div id="Menu">
             <?php
             include("menus.php");
@@ -111,13 +111,19 @@
                                     <h1>Directorio Telefónico</h1>
                                     <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">Correos-Telefonos</button>
+                                            <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab"
+                                                data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1"
+                                                aria-selected="true">Correos-Telefonos</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">Directorio de Extensiones</button>
+                                            <button class="nav-link" id="tab2-tab" data-bs-toggle="tab"
+                                                data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2"
+                                                aria-selected="false">Directorio de Extensiones</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">Directorio de Sucursales.</button>
+                                            <button class="nav-link" id="tab3-tab" data-bs-toggle="tab"
+                                                data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3"
+                                                aria-selected="false">Directorio de Sucursales.</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -127,7 +133,8 @@
                         <div class="row">
                             <div class="col">
                                 <div class="tab-content" id="myTabContent">
-                                    <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                                    <div class="tab-pane fade show active" id="tab1" role="tabpanel"
+                                        aria-labelledby="tab1-tab">
                                         <div class="card">
                                             <div id="correosTelefonos" class="col">
                                                 <div class="card-body">
@@ -142,12 +149,18 @@
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <label class="form-label">Listado de Tipos de Extensiones:</label>
-                                                            <select class="form-select pb-2" aria-label="Default select example" name="tiposExtension[]" id="tiposExtension" multiple="multiple" style="width:100%" onchange="loadDirectorioExtensiones()">
+                                                            <label class="form-label">Listado de Tipos de
+                                                                Extensiones:</label>
+                                                            <select class="form-select pb-2"
+                                                                aria-label="Default select example"
+                                                                name="tiposExtension[]" id="tiposExtension"
+                                                                multiple="multiple" style="width:100%"
+                                                                onchange="loadDirectorioExtensiones()">
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div id="contenidoDirectorioExtensiones" style="margin-top:2vh"></div>
+                                                    <div id="contenidoDirectorioExtensiones" style="margin-top:2vh">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -158,22 +171,7 @@
                                             <div id="extensiones" class="col">
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table id="tableDirectorioSucursal" class="table striped m-b-10 display text-center" style="width:100%">
-                                                            <thead >
-                                                                <tr>
-                                                                    <th>Sucursal</th>
-                                                                    <th>Dirección</th>
-                                                                    <th>Teléfono</th>
-                                                                    <th>Num. Red</th>
-                                                                    <th>Nombre Empleado</th>
-                                                                    <th>Puesto</th>
-                                                                    <th>Correo</th>
-                                                                    <th>Fecha de Apertura</th>
-                                                                    <th>Antigüedad</th>
-                                                                    <th>Marcación Corta</th>
-                                                                </tr>
-                                                            </thead>
-                                                        </table>
+                                                      <div id="tableDirectorioSucursal"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -192,23 +190,26 @@
 
 
 
-<!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
-  <!-- neptune Javascripts -->
+    <!-- neptune Javascripts -->
+    <?php include("neptune_js.php"); ?>
+    <!-- neptune Javascripts -->
 
-  <?php include("scripts.php"); ?>
 
-  <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
-  <script src="./neptune/js/pages/select2.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-  
-  <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <!-- index.js removido - solo es para index.php -->
-    <script src="scripts/Directorio.js"></script>
-    <script src="scripts/detallesEmpleadoLogeado.js"></script>
+    <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
+    <script src="./neptune/js/pages/select2.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+        integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+    <!-- Scripts específicos de esta página -->
+    <script src="scripts/global.js" charset="utf-8"></script>
+        <!-- index.js removido - solo es para index.php -->
+    <script src="scripts/Directorio.js?v=<?= time() ?>"></script>
+    <script src="scripts/detallesEmpleadoLogeado.js?v=<?= time() ?>"></script>
 
 </body>
 

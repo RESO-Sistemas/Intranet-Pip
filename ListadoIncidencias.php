@@ -91,12 +91,12 @@
 
 <body>
   <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php include("menus.php"); ?>
     </div>
@@ -231,7 +231,6 @@
   </div>
 
   <?php include("neptune_js.php"); ?>
-  <?php include("scripts.php"); ?>
   <script src="scripts/ListadoIncidencias.js?v=<?= time() ?>" charset="utf-8"></script>
 </body>
 

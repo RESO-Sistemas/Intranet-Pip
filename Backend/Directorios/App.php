@@ -22,7 +22,7 @@
     }
 
     if ($op == "getDirectorioExtensiones") {
-        $TiposExtSelected = $_POST["TiposExtSelected"];
+        $TiposExtSelected = isset($_POST["TiposExtSelected"]) ? $_POST["TiposExtSelected"] : array();
         echo trim($Directorios->getDirectorioExtensiones($TiposExtSelected));
     }
 

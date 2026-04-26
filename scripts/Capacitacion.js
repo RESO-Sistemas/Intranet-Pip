@@ -17,6 +17,7 @@ let modal = false;
 let ind;
 let globalTipoCap = "";
 
+let gridCapacitacion = null;
 getCapacitaciones();
 m = $("#modalNuevaCapacitacion");
 cierre = $("#cerrarModal");
@@ -260,74 +261,118 @@ function getArchivos() {
   });
 }
 
+
 function getCapacitaciones() {
   const datos = {
     op: "getCapacitacionDisponibles",
   };
   
-  // Mostrar preloader si no está visible
   $(".preloader").show();
 
-  $("#tableCapacitacion").dataTable({
-    destroy: true,
-    language: {
-      lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-      zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-      info: "PÁGINA _PAGE_ DE _PAGES_",
-      infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-      infoFiltered: "",
-      search: "BUSCAR",
-      paginate: {
-        previous: "ANTERIOR",
-        next: "SIGUIENTE"
-      }
-    },
-    ajax: {
+  if (gridCapacitacion) {
+    gridCapacitacion.destroy();
+  }
+
+  $.ajax({
       type: "POST",
       url: "Backend/Capacitacion/App.php",
       data: datos,
-      dataSrc: "", // El backend devuelve un array directo
-    },
-    columns: [
-      { data: "Descripcion" },
-      { data: "Dias" },
-      { data: "FechaInicio" },
-      { data: "FechaFin" },
-      { data: "HoraInicio" },
-      { data: "HoraFin" },
-      { data: "Status" },
-      { 
-        data: "idCapacitacion",
-        orderable: false,
-        render: function(data, type, row) {
-          const b64 = btoa(data);
+      dataType: "json",
+      success: function (response) {
+        if (typeof response === "string") {
+          try {
+            response = JSON.parse(response.trim());
+          } catch(e) {
+            response = [];
+          }
+        }
+        if (!Array.isArray(response)) response = [];
+        
+        let mappedData = response.map(row => {
+          const b64 = btoa(row.idCapacitacion);
           const statusIcon = row.Status === "Activa" ? "toggle_on" : "toggle_off";
           const statusColor = row.Status === "Activa" ? "btn-success" : "btn-danger";
           const statusTitle = row.Status === "Activa" ? "Desactivar" : "Activar";
-
-          return `
+          let btnHtml = `
             <div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
               <button onclick="editarCapacitacion('${b64}')" class="btn btn-primary btn-accion" title="Editar">
                 <span class="material-symbols-outlined">edit</span>
               </button>
-              <button onclick="cancelarCapacitacion(${data}, '${row.Status}')" class="btn ${statusColor} btn-accion" title="${statusTitle}">
+              <button onclick="cancelarCapacitacion(${row.idCapacitacion}, '${row.Status}')" class="btn ${statusColor} btn-accion" title="${statusTitle}">
                 <span class="material-symbols-outlined">${statusIcon}</span>
               </button>
-              <button onclick="eliminarCapacitacion(${data},'${row.Descripcion}')" class="btn btn-danger btn-accion" title="Eliminar">
+              <button onclick="eliminarCapacitacion(${row.idCapacitacion},'${row.Descripcion}')" class="btn btn-danger btn-accion" title="Eliminar">
                 <span class="material-symbols-outlined">delete</span>
               </button>
-            </div>
-          `;
-        }
+            </div>`;
+            return {
+              ...row,
+              AccionesHTML: btnHtml
+            };
+        });
+
+        gridCapacitacion = new ej.grids.Grid({
+            dataSource: mappedData,
+            toolbar: ["Search"],
+            allowPaging: true,
+            pageSettings: { pageSize: 10 },
+            emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height: 320px; background-color: #fafbfc; border-radius: 12px; border: 1px dashed #dee2e6;">
+                <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f1f3f5; border-radius: 50%;">
+                    <span class="material-symbols-outlined" style="font-size: 40px; color: #adb5bd;">school</span>
+                </div>
+                <h5 class="text-dark mb-2" style="font-weight: 600;">No hay capacitaciones registradas</h5>
+                <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">Aún no se ha encontrado ninguna capacitación en la base de datos.</p>
+              </div>`,
+            columns: [
+              { field: "Descripcion", headerText: "Descripción", width: 200 },
+              { field: "Dias", headerText: "Días", width: 150 },
+              { field: "FechaInicio", headerText: "Fecha Inicio", width: 130 },
+              { field: "FechaFin", headerText: "Fecha Fin", width: 130 },
+              { field: "HoraInicio", headerText: "Hora Inicio", width: 130 },
+              { field: "HoraFin", headerText: "Hora Fin", width: 130 },
+              { field: "Status", headerText: "Estatus", width: 120 },
+              { field: "AccionesHTML", headerText: "Acciones", width: 180, textAlign: "Center", disableHtmlEncode: false }
+            ],
+            dataBound: function () {
+              const gridElement = this.element;
+              const toolbar = gridElement.querySelector(".e-toolbar");
+              const header = gridElement.querySelector(".e-gridheader");
+              const pager = gridElement.querySelector(".e-gridpager");
+              const gridContent = gridElement.querySelector(".e-gridcontent");
+              if (this.currentViewData.length === 0) {
+                if (toolbar) toolbar.style.display = "none";
+                if (header) header.style.display = "none";
+                if (pager) pager.style.display = "none";
+                gridElement.style.border = "none";
+                if (gridContent) gridContent.style.border = "none";
+              } else {
+                if (toolbar) toolbar.style.display = "";
+                if (header) header.style.display = "";
+                if (pager) pager.style.display = "";
+                gridElement.style.border = "";
+                if (gridContent) gridContent.style.border = "";
+              }
+            },
+            created: function () {
+              const searchInput = document.getElementById(this.element.id + "_searchbar");
+              if (searchInput && !searchInput.hasListener) {
+                searchInput.hasListener = true;
+                const grid = this;
+                searchInput.addEventListener("keyup", function (event) {
+                  grid.search(event.target.value);
+                });
+              }
+            }
+        });
+        gridCapacitacion.appendTo("#tableCapacitacion");
+      },
+      complete: function() {
+        $(".preloader").fadeOut();
+      },
+      error: function(xhr, error, thrown) {
+        console.error("Error en getCapacitaciones:", error);
+        $(".preloader").fadeOut();
       }
-    ],
-    initComplete: function () {
-      $(".preloader").fadeOut();
-    },
-    error: function(xhr, error, thrown) {
-      console.error("Error en getCapacitaciones:", error);
-      $(".preloader").fadeOut();
-    }
   });
 }
 

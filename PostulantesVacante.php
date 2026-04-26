@@ -223,12 +223,12 @@
 
 <body>
     <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-        <div class="preloader">
+        <!-- <div class="preloader">
             <div class="loader">
                 <div class="loader__figure"></div>
                 <p class="loader__label">PIP</p>
             </div>
-        </div>
+        </div> -->
 
         <div id="Menu">
             <?php include("menus.php"); ?>
@@ -933,7 +933,6 @@
 
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
-    <?php include("scripts.php"); ?>
 
     <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
     <!-- Select2 JS -->

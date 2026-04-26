@@ -17,6 +17,7 @@
 
   function streamUpdatesSse() {
     if (!SessionManager::isLoggedIn()) {
+      session_write_close();
       if (ob_get_level() > 0) {
         while (ob_get_level() > 0) {
           @ob_end_clean();
@@ -30,6 +31,10 @@
       flushSse();
       exit;
     }
+
+    // Liberar el lock de sesión antes del loop de larga duración.
+    // Sin esto, cualquier otra petición del mismo usuario bloquea esperando el lock.
+    session_write_close();
 
     if (ob_get_level() > 0) {
       while (ob_get_level() > 0) {

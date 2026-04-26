@@ -57,7 +57,7 @@
 
     <!-- ============================================================== -->
 
-    <div class="preloader">
+    <!-- <div class="preloader">
 
       <div class="loader">
 
@@ -67,7 +67,7 @@
 
       </div>
 
-    </div>
+    </div> -->
 
     <div id="Menu">
 
@@ -309,7 +309,6 @@
 
             </script>
 
-  <?php include("scripts.php"); ?>
 
   <!-- neptune Javascripts -->
 

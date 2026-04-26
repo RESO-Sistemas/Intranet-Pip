@@ -1,4 +1,9 @@
-$(document).ready(function () {
+import re
+
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/Directorio.js', 'r') as f:
+    original_code = f.read()
+
+new_code = """$(document).ready(function () {
   $(".js-example-basic-multiple").select2();
 });
 
@@ -241,3 +246,9 @@ function removeDuplicates(originalArray, prop) {
   }
   return newArray;
 }
+"""
+
+with open('/Users/gerardoplata/Documents/Proyectos RESO Sistemas/Intranet-Pip/scripts/Directorio.js', 'w') as f:
+    f.write(new_code)
+
+print("Directorio.js updated!")
