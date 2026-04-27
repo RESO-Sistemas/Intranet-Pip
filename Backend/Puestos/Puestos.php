@@ -18,7 +18,7 @@ else {
 }
 class Puestos extends Conexiones{
   function getPuestos(){
-    $q = "SELECT * FROM Puestos;";
+    $q = "SELECT IdPuesto, Puesto FROM Puestos GROUP BY Puesto ORDER BY Puesto ASC;";
     return json_encode($this->Select($q));
   }
 

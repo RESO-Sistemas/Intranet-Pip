@@ -10,18 +10,10 @@
   <title>PIP by Lugo</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
-  <!-- Styles neptune -->
-  <!-- <link href="dist/css/style.css" rel="stylesheet"> -->
-  <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
-  <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
-  <!-- <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet"> -->
-  <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <link href="dist/css/pages/data-table.css" rel="stylesheet">
   <script src="https://unpkg.com/read-excel-file@5.x/bundle/read-excel-file.min.js"></script>
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
 
 </head>
 
@@ -30,19 +22,18 @@
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
-    <div class="preloader">
+    <!-- <div class="preloader">
       <div class="loader">
         <div class="loader__figure"></div>
         <p class="loader__label">PIP</p>
       </div>
-    </div>
+    </div> -->
     <div id="Menu">
       <?php
       include("menus.php");
       ?>
     </div>
     <div class="app-container">
-      <?php include("includes/_Header.php"); ?>
       <div class="app-content">
         <div class="content-wrapper">
           <div class="container">
@@ -89,14 +80,14 @@
 
                           <!-- Input de texto -->
                           <div class="col flex-grow-1">
-                            <input type="text" class="form-control form-control-solid-bordered" placeholder="Selecciona un archivo" readonly>
+                            <input type="text" class="form-control form-control-solid-bordered"
+                              placeholder="Selecciona un archivo" readonly>
                           </div>
 
                           <!-- Botón Descargar Plantilla -->
                           <div class="col-auto">
                             <a href="https://klynet.mx/Archivos/Plantillas/PlantillaNuevoEmpleadoKlyns.xlsx"
-                              download="PlantillaNuevoEmpleadoKlyns.xlsx"
-                              class="btn btn-success">
+                              download="PlantillaNuevoEmpleadoKlyns.xlsx" class="btn btn-success">
                               <span class="material-symbols-outlined">download</span>
                             </a>
                           </div>
@@ -117,14 +108,14 @@
 
                           <!-- Input de texto -->
                           <div class="col flex-grow-1">
-                            <input type="text" class="form-control form-control-solid-bordered" placeholder="Selecciona un archivo" readonly>
+                            <input type="text" class="form-control form-control-solid-bordered"
+                              placeholder="Selecciona un archivo" readonly>
                           </div>
 
                           <!-- Botón Descargar Plantilla -->
                           <div class="col-auto">
                             <a href="https://klynet.mx/Archivos/Plantillas/PlantillaAsignaVacacionesKlyns.xlsx"
-                              download="PlantillaAsignaVacacionesKlyns.xlsx"
-                              class="btn btn-success w-100">
+                              download="PlantillaAsignaVacacionesKlyns.xlsx" class="btn btn-success w-100">
                               <span class="material-symbols-outlined">download</span>
                             </a>
                           </div>
@@ -183,24 +174,25 @@
                         </select>
                       </div>
                     </div>
-                    <div class="row mt-4">
-                      <div class="col-12">
-                        <div class="row mb-3">
-                          <div class="col-12 col-lg-3 offset-lg-9 text-lg-end text-center">
-                            <button type="button" id="downloadEsquemaSalud" class="btn btn-success w-100 w-lg-auto d-flex align-items-center justify-content-center">
-                              <span class="material-symbols-outlined me-2">
-                                ecg_heart
-                              </span>
-                              <span>Descargar esquema de Salud</span>
-                            </button>
-                          </div>
-                        </div>
-                        <div id="TablePersonal" class="table-responsive">
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
+
+                <!-- Tabla fuera del card -->
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <div class="row mb-3">
+                      <div class="col-12 col-lg-3 offset-lg-9 text-lg-end text-center">
+                        <button type="button" id="downloadEsquemaSalud"
+                          class="btn btn-success w-100 w-lg-auto d-flex align-items-center justify-content-center">
+                          <span class="material-symbols-outlined me-2">ecg_heart</span>
+                          <span>Descargar esquema de Salud</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div id="TablePersonal"></div>
+                  </div>
+                </div>
+
                 <div class="table-responsive" style="display:none">
                   <table id="TableEsquemaSalud">
                     <thead style="color:white; background-color:black">
@@ -229,7 +221,8 @@
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="DetallesPrincipalEmpleado" tabindex="-1" aria-labelledby="DetallesPrincipalEmpleadoLabel" aria-hidden="true">
+        <div class="modal fade" id="DetallesPrincipalEmpleado" tabindex="-1"
+          aria-labelledby="DetallesPrincipalEmpleadoLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
@@ -242,38 +235,47 @@
                   <div class="row g-3 justify-content-center">
                     <div class="col-12 col-md-6 text-center">
                       <h6>Nombre <span class="text-danger">*</span></h6>
-                      <input type="text" id="inpNombreDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="text" id="inpNombreDet" class="form-control form-control-solid-bordered text-center"
+                        required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
                       <h6>E-mail <span class="text-danger">*</span></h6>
-                      <input type="email" id="inpEmailDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="email" id="inpEmailDet" class="form-control form-control-solid-bordered text-center"
+                        required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
                       <h6>Password <span class="text-danger">*</span></h6>
-                      <input type="password" id="inpPasswordDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="password" id="inpPasswordDet"
+                        class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
                       <h6>Celular <span class="text-danger">*</span></h6>
-                      <input type="text" id="inpMovilDet" class="form-control form-control-solid-bordered text-center" onkeypress="return onlynumber(event)" required>
+                      <input type="text" id="inpMovilDet" class="form-control form-control-solid-bordered text-center"
+                        onkeypress="return onlynumber(event)" required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
                       <h6>RFC <span class="text-danger">*</span></h6>
-                      <input type="text" id="inpRFCDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="text" id="inpRFCDet" class="form-control form-control-solid-bordered text-center"
+                        required>
                     </div>
                     <div class="col-12 col-md-6 text-center">
                       <h6>CURP <span class="text-danger">*</span></h6>
-                      <input type="text" id="inpCURPDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="text" id="inpCURPDet" class="form-control form-control-solid-bordered text-center"
+                        required>
                     </div>
                     <div class="col-12 text-center">
                       <h6>No Seguro <span class="text-danger">*</span></h6>
-                      <input type="text" id="inpNoSeguroDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="text" id="inpNoSeguroDet"
+                        class="form-control form-control-solid-bordered text-center" required>
                     </div>
                     <div class="col-12 text-center">
                       <h6>Nivel <span class="text-danger">*</span></h6>
-                      <input type="number" id="inpNivelDet" class="form-control form-control-solid-bordered text-center" required>
+                      <input type="number" id="inpNivelDet" class="form-control form-control-solid-bordered text-center"
+                        required>
                     </div>
                     <div class="col-12 text-center">
-                      <button type="button" id="btnUpdatePrincipal" class="btn btn-success mt-3" onclick="updateDatosPrincipalEmpleado()">Actualizar</button>
+                      <button type="button" id="btnUpdatePrincipal" class="btn btn-success mt-3"
+                        onclick="updateDatosPrincipalEmpleado()">Actualizar</button>
                     </div>
                   </div>
                 </div>
@@ -282,7 +284,8 @@
           </div>
         </div>
         <!-- Modal Más Detalles Empleado  -->
-        <div class="modal fade" id="DetallesMasDetallesEmpleado" tabindex="-1" aria-labelledby="DetallesMasDetallesEmpleadoLabel" aria-hidden="true">
+        <div class="modal fade" id="DetallesMasDetallesEmpleado" tabindex="-1"
+          aria-labelledby="DetallesMasDetallesEmpleadoLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
               <div class="modal-header">
@@ -295,12 +298,37 @@
                   <input type="hidden" name="op" value="updateMasDetallesPersonal">
 
                   <div class="row g-3">
-                    <div class="col-12 col-md-5 text-center">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Email</label>
+                      <input type="email" id="inpEmailMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Celular</label>
+                      <input type="text" id="inpMovilMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">RFC</label>
+                      <input type="text" id="inpRFCMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">CURP</label>
+                      <input type="text" id="inpCURPMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">No. Seguro</label>
+                      <input type="text" id="inpNoSeguroMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label">Nivel</label>
+                      <input type="number" id="inpNivelMasDetalles" class="form-control form-control-solid-bordered" readonly>
+                    </div>
+                    <div class="col-12 col-md-5 text-center mt-3">
                       <label class="form-label">División actual</label>
-                      <select id="slctDivisionActual" name="slctDivisionActual" class="form-select" onchange="onchangeDivision()" required></select>
+                      <select id="slctDivisionActual" name="slctDivisionActual" class="form-select"
+                        onchange="onchangeDivision()" required></select>
                     </div>
 
-                    <div class="col-12 col-md-7 text-center">
+                    <div class="col-12 col-md-7 text-center mt-3">
                       <label class="form-label">Puesto actual</label>
                       <select id="slctPuestoActual" name="slctPuestoActual" class="form-select" required></select>
                     </div>
@@ -314,9 +342,9 @@
 
                 <!-- Sección de Documentos -->
                 <hr class="my-3">
-                <h6 class="fw-bold mb-3">
+                <h6 class="fw-bold mb-3" id="tituloSeccionDocumentos">
                   <span class="material-symbols-outlined align-middle me-1">description</span>
-                  Documentos
+                  Documentación del Empleado
                 </h6>
                 <div id="listaDocumentosModal" class="list-group">
                   <div class="text-center text-muted small py-2">Cargando documentos...</div>
@@ -324,12 +352,14 @@
               </div>
 
               <div class="modal-footer justify-content-center">
-                <button type="button" name="button" id="btnUpdateMasDetalles" class="btn btn-success">Actualizar</button>
+                <button type="button" name="button" id="btnUpdateMasDetalles"
+                  class="btn btn-success">Actualizar</button>
               </div>
             </div>
           </div>
         </div>
-        <div class="modal fade" id="ModalAsignarHijo" tabindex="-1" aria-labelledby="ModalAsignarHijoLabel" aria-hidden="true">
+        <div class="modal fade" id="ModalAsignarHijo" tabindex="-1" aria-labelledby="ModalAsignarHijoLabel"
+          aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
@@ -340,8 +370,10 @@
                 <div class="container-fluid">
                   <div class="row g-3 justify-content-center">
                     <div class="col-12">
-                      <label class="form-label fw-bold mb-3" style="font-size: 16px;">Selecciona el jefe asignado:</label>
-                      <select class="form-select form-select-solid-bordered" id="listadoJefesPosibles" onchange="asignarJefeEmpleado(this.value)">
+                      <label class="form-label fw-bold mb-3" style="font-size: 16px;">Selecciona el jefe
+                        asignado:</label>
+                      <select class="form-select form-select-solid-bordered" id="listadoJefesPosibles"
+                        onchange="asignarJefeEmpleado(this.value)">
                         <!-- Opciones del select se llenarán dinámicamente -->
                       </select>
                     </div>
@@ -357,6 +389,9 @@
       </div>
     </div>
   </div>
+  <script type="text/x-jsrender" id="allActionsTemplate">
+    ${allActionsSF(data)}
+    </script>
   <script type="text/x-jsrender" id="updateDataTemplate">
     ${updateDataSF(data)}
     </script>
@@ -373,14 +408,10 @@
     ${documentacionSF(data)}
     </script>
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
-  <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js" integrity="sha512-Dz4zO7p6MrF+VcOD6PUbA08hK1rv0hDv/wGuxSUjImaUYxRyK2gLC6eQWVqyDN9IM1X/kUA8zkykJS/gEVOd3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment-with-locales.min.js" integrity="sha512-lQR9pLx+zmyQV/T99+vuBITpGAYXR+nMAZXVjtdEgnC3jodfmtjhRTuAnQ7jHjlWgUL0KE+SORFWdWEp1BYLFw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="scripts/Personal.js" charset="utf-8"></script>
+  <script src="scripts/Personal.js?<?= time() ?>" charset="utf-8"></script>
   <script type="text/javascript">
     function onlynumber(e) {
       tecla = (document.all) ? e.keyCode : e.which;

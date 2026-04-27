@@ -1,4 +1,5 @@
-ej.base.L10n.load({
+function initSyncfusion() {
+  ej.base.L10n.load({
   'es': {
     'grid': {
       'EmptyRecord': 'No hay registros para mostrar',
@@ -49,5 +50,19 @@ ej.base.L10n.load({
   }
 });
 
-// Opcional: Establecer la cultura global por defecto
-ej.base.setCulture('es');
+  // Opcional: Establecer la cultura global por defecto
+  ej.base.setCulture('es');
+}
+
+// Ejecutar cuando ej esté disponible
+if (typeof ej !== 'undefined' && ej.base) {
+  initSyncfusion();
+} else {
+  // Esperar a que ej cargue
+  const checkEj = setInterval(() => {
+    if (typeof ej !== 'undefined' && ej.base) {
+      clearInterval(checkEj);
+      initSyncfusion();
+    }
+  }, 100);
+}

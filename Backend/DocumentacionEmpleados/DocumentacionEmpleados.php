@@ -199,8 +199,21 @@ class DocumentacionEmpleados extends Conexiones
     {
         try {
             $NoEmpleado = intval(base64_decode($NoEmpleado));
-            $q = "CALL spGetDocumentacionCompletaEmpleado($NoEmpleado)";
-            $resultado = $this->Procedure($q);
+            $q = "SELECT
+                    td.IdTipoDocumento,
+                    td.NombreDocumento,
+                    td.Obligatorio,
+                    COALESCE(de.Estatus, 'Pendiente') AS Estatus,
+                    de.FechaCarga,
+                    de.Observaciones,
+                    de.IdDocumentacionEmpleado
+                  FROM TipoDocumentacion td
+                  LEFT JOIN DocumentacionEmpleados de
+                    ON de.IdTipoDocumento = td.IdTipoDocumento
+                    AND de.NoEmpleado = '$NoEmpleado'
+                  WHERE td.Estatus = 1
+                  ORDER BY td.NombreDocumento ASC";
+            $resultado = $this->Select($q);
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,

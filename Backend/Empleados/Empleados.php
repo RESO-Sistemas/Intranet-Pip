@@ -247,54 +247,15 @@ class Empleados extends Conexiones
 
     function getPersonal($IdPuesto, $IdSucursal, $IdDivision)
         {
-            if ($IdPuesto == "" && $IdSucursal == "" && $IdDivision == "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal";
-            } elseif ($IdPuesto != "" && $IdSucursal == "" && $IdDivision == "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto'";
-            } elseif ($IdPuesto == "" && $IdSucursal != "" && $IdDivision == "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal'";
-            } elseif ($IdPuesto == "" && $IdSucursal == "" && $IdDivision != "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE D.IdDivision = '$IdDivision'";
-            } elseif ($IdPuesto != "" && $IdSucursal != "" && $IdDivision == "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto' AND SD.IdSucursal = '$IdSucursal'";
-            } elseif ($IdPuesto != "" && $IdSucursal == "" && $IdDivision != "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE P.IdPuesto = '$IdPuesto' AND D.IdDivision = '$IdDivision'";
-            } elseif ($IdPuesto == "" && $IdSucursal != "" && $IdDivision != "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision'";
-            } elseif ($IdPuesto != "" && $IdSucursal != "" && $IdDivision != "") {
-                $q = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
-                  INNER JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
-                  INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-                  INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-                  WHERE SD.IdSucursal = '$IdSucursal' AND D.IdDivision = '$IdDivision' AND P.IdPuesto = '$IdPuesto'";
-            }
+            $base = "SELECT E.Status, E.NoEmpleado,E.Nombre,E.Email,P.Puesto,D.Division,SD.Sucursal,SD.IdSucursal,D.IdDivision,E.Nivel,E.Movil,E.CURP,E.RFC,E.NoSeguro,E.Password FROM Empleados AS E
+                  LEFT JOIN Divisiones AS D ON D.IdDivision = E.IdDivision
+                  LEFT JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
+                  LEFT JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal";
+            $where = [];
+            if ($IdPuesto != "") $where[] = "P.IdPuesto = '$IdPuesto'";
+            if ($IdSucursal != "") $where[] = "SD.IdSucursal = '$IdSucursal'";
+            if ($IdDivision != "") $where[] = "D.IdDivision = '$IdDivision'";
+            $q = $base . (count($where) > 0 ? " WHERE " . implode(" AND ", $where) : "");
             return json_encode($this->Select($q));
         }
 
@@ -2097,7 +2058,7 @@ class Empleados extends Conexiones
     }
 
     function otrosDetallesEmpleadoPersonal ($NoEmpleado) {
-      $q = "SELECT IdDivision,IdSucursal,IdPuesto FROM Empleados
+      $q = "SELECT IdDivision, IdSucursal, IdPuesto, Email, Movil, RFC, CURP, NoSeguro AS NoSeguroS, Nivel FROM Empleados
               WHERE NoEmpleado = '$NoEmpleado';";
       return json_encode($this->Select($q,array()));
     }

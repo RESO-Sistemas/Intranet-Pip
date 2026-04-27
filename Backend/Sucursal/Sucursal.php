@@ -38,7 +38,7 @@ class Sucursal extends Conexiones{
   }
 
   function getSucursales(){
-    $q = "SELECT * FROM SucursalDepto;";
+    $q = "SELECT MIN(IdSucursal) AS IdSucursal, Sucursal FROM SucursalDepto GROUP BY Sucursal ORDER BY Sucursal ASC;";
     return json_encode($this->Select($q));
   }
 

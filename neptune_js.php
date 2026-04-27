@@ -43,6 +43,9 @@ if ($current_page !== 'login'):
 <!-- SweetAlert -->
 <script src="./assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
+<!-- Sycnfusion -->
+<script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
+
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/2e7c1ffc8a.js" crossorigin="anonymous"></script>
 
@@ -56,5 +59,5 @@ if ($current_page !== 'login'):
 <script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/pdfmake.min.js"></script>
 <script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/vfs_fonts.js"></script>
 <?php endif; ?>
-
-<!-- Neptune Javascripts -->
+<!-- Syncfusion Config -->
+ <script src="./scripts/syncfusion-config.js"></script>

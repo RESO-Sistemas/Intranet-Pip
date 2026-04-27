@@ -34,14 +34,6 @@ async function loadUserDataHeader() {
   }
 }
 
-ej.base.registerLicense(
-  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
-);
-
-// $('#TablePersonal').editableTableWidget().numericInputExample().find('td:first').focus();
-// $(function() {
-//     $('#TablePersonal').DataTable();
-// });
 let empleadoSelected = "",
   divisionSelected = "",
   sucursalSelected = "",
@@ -185,12 +177,10 @@ class ExcelPrint {
     insertaEmpleadosExcel();
   }
 }
-loadAllFunctions();
+document.addEventListener('DOMContentLoaded', loadAllFunctions);
 async function loadAllFunctions() {
-  getPuestos();
-  getDivisiones();
-  getSucursales();
-  getListadoPersonal();
+  await Promise.all([getPuestos(), getDivisiones(), getSucursales()]);
+  await getListadoPersonal();
 }
 async function insertaEmpleadosExcel() {
   let datos = await {
@@ -215,7 +205,6 @@ async function insertaEmpleadosExcel() {
         url: "Backend/Empleados/App.php",
         data: datos,
         success: function (response) {
-          $.unblockUI();
           $("#tbody").html("");
           $("#InpExcel").val();
           response = JSON.parse(response.trim());
@@ -249,7 +238,6 @@ async function insertaEmpleadosExcel() {
 
             `;
             });
-            $.unblockUI();
             Swal.fire({
               title: "Empleados repetidos dentro del archivo",
               html: textoSweetAlert,
@@ -281,7 +269,6 @@ async function insertaEmpleadosExcel() {
           }
         },
         error: function (e) {
-          $.unblockUI();
           alert(e.responseText);
         },
       });
@@ -336,123 +323,78 @@ async function getListadoPersonal() {
     if (tablePersonal) {
       tablePersonal.destroy();
     }
+    ej.grids.Grid.Inject(ej.grids.Toolbar, ej.grids.Page, ej.grids.Filter, ej.grids.ExcelExport, ej.grids.PdfExport);
     tablePersonal = new ej.grids.Grid({
       dataSource: response,
-      allowFiltering: true,
       filterSettings: { type: "Menu" },
       allowPaging: true,
-      allowTextWrap: true,
+      allowSelection: false,
       allowExcelExport: true,
       allowPdfExport: true,
       toolbar: ["ExcelExport", "Search", "PdfExport"],
-      // pdfExportComplete: pdfExportComplete,
       columns: [
         {
           field: "NoEmpleado",
           headerText: "NO. EMPLEADO",
-          width: 100,
+          width: 120,
           textAlign: "Center",
-          visible: false,
         },
         {
           field: "Nombre",
           headerText: "NOMBRE",
-          width: 80,
-          textAlign: "Center",
-        },
-        {
-          field: "Email",
-          headerText: "E-MAIL",
-          width: 80,
-          textAlign: "Center",
-        },
-        {
-          field: "Movil",
-          headerText: "CELULAR",
-          width: 80,
-          textAlign: "Center",
+          textAlign: "Left",
         },
         {
           field: "Division",
-          headerText: "DIVISION",
-          width: 80,
+          headerText: "DIVISIÓN",
+          width: 150,
           textAlign: "Center",
         },
         {
           field: "Puesto",
           headerText: "PUESTO",
-          width: 80,
+          width: 170,
           textAlign: "Center",
         },
         {
           field: "Sucursal",
           headerText: "SUCURSAL",
-          width: 80,
+          width: 150,
           textAlign: "Center",
         },
         {
           field: "",
-          headerText: "ACTUALIZAR DATOS",
-          width: 80,
+          headerText: "ACCIONES",
+          width: 320,
           textAlign: "Center",
           allowFiltering: false,
-          template: "#updateDataTemplate",
-        },
-        {
-          field: "",
-          headerText: "JEFE",
-          width: 80,
-          textAlign: "Center",
-          allowFiltering: false,
-          template: "#updateBossTemplate",
-        },
-        {
-          field: "",
-          headerText: "MÁS DETALLES",
-          width: 80,
-          textAlign: "Center",
-          allowFiltering: false,
-          template: "#moreDetailsTemplate",
-        },
-        {
-          field: "",
-          headerText: "Deshabilitar",
-          width: 80,
-          textAlign: "Center",
-          allowFiltering: false,
-          template: "#disabledTemplate",
-        },
-        {
-          field: "",
-          headerText: "DOCUMENTACIÓN",
-          width: 80,
-          textAlign: "Center",
-          allowFiltering: false,
-          template: "#documentacionTemplate",
+          allowSorting: false,
+          allowResizing: false,
+          template: "#allActionsTemplate",
         },
       ],
+      toolbarClick: function (args) {
+        const exportCols = [5];
+        if (args["item"].id === "TablePersonal_excelexport") {
+          tablePersonal.columns[0].visible = true;
+          exportCols.forEach(i => tablePersonal.columns[i].visible = false);
+          tablePersonal.excelExport();
+        }
+        if (args["item"].id === "TablePersonal_pdfexport") {
+          tablePersonal.columns[0].visible = true;
+          exportCols.forEach(i => tablePersonal.columns[i].visible = false);
+          tablePersonal.pdfExport();
+        }
+      },
+      excelExportComplete: function () {
+        tablePersonal.columns[0].visible = false;
+        [5].forEach(i => tablePersonal.columns[i].visible = true);
+      },
+      pdfExportComplete: function () {
+        tablePersonal.columns[0].visible = false;
+        [5].forEach(i => tablePersonal.columns[i].visible = true);
+      },
     });
-
-    tablePersonal.toolbarClick = function (args) {
-      if (args["item"].id === "TablePersonal_excelexport") {
-        tablePersonal.columns[0].visible = true;
-        tablePersonal.columns[7].visible = false;
-        tablePersonal.columns[8].visible = false;
-        tablePersonal.columns[9].visible = false;
-        tablePersonal.columns[10].visible = false;
-        tablePersonal.columns[11].visible = false;
-        tablePersonal.excelExport();
-      }
-      if (args["item"].id === "TablePersonal_pdfexport") {
-        tablePersonal.columns[0].visible = true;
-        tablePersonal.columns[7].visible = false;
-        tablePersonal.columns[8].visible = false;
-        tablePersonal.columns[9].visible = false;
-        tablePersonal.columns[10].visible = false;
-        tablePersonal.columns[11].visible = false;
-        tablePersonal.pdfExport();
-      }
-    };
 
     tablePersonal.appendTo("#TablePersonal");
   } catch (e) {
@@ -463,6 +405,36 @@ async function getListadoPersonal() {
 // function pdfExportComplete() {
 //     tablePersonal.columns[0].visible = true;
 // }
+
+window.allActionsSF = function (e) {
+  let div = document.createElement("div");
+  let statusBtn = e.Status == 1
+    ? `<button class="btn btn-success btn-accion btn-sm" title="Desactivar" onclick="toggleStatusEmpleado(${e.NoEmpleado}, false, this)" style="padding: 0.35rem 0.6rem;">
+        <span class="material-symbols-outlined" style="font-size: 1.2rem;">check_circle</span>
+       </button>`
+    : `<button class="btn btn-danger btn-accion btn-sm" title="Activar" onclick="toggleStatusEmpleado(${e.NoEmpleado}, true, this)" style="padding: 0.35rem 0.6rem;">
+        <span class="material-symbols-outlined" style="font-size: 1.2rem;">cancel</span>
+       </button>`;
+
+  let html = `<div style="display: flex; gap: 4px; justify-content: center; align-items: center; flex-wrap: wrap; padding: 2px 0;">
+    <button class="btn btn-primary btn-accion btn-sm" title="Editar Datos" onclick="verDetalleEmpleadoPrincipal(${e.NoEmpleado})" style="padding: 0.35rem 0.6rem;">
+      <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
+    </button>
+    <a class="btn btn-success btn-accion btn-sm" title="Asignar Jefe" onclick="getJefesPosibles(${e.NoEmpleado},${e.IdSucursal})" style="padding: 0.35rem 0.6rem;">
+      <span class="material-symbols-outlined" style="font-size: 1.2rem;">person_check</span>
+    </a>
+    <button class="btn btn-warning btn-accion btn-sm" title="Más Detalles" onclick="abrirDetallesEmpleado('${e.Nombre}',${e.NoEmpleado})" style="padding: 0.35rem 0.6rem;">
+      <span class="material-symbols-outlined" style="font-size: 1.2rem;">info</span>
+    </button>
+    ${statusBtn}
+    <a class="btn btn-info btn-accion btn-sm" href="DocumentacionEmpleados.php?NoEmpleado=${e.NoEmpleado}" title="Ver Documentación" style="padding: 0.35rem 0.6rem;">
+      <span class="material-symbols-outlined" style="font-size: 1.2rem;">folder_shared</span>
+    </a>
+  </div>`;
+
+  $(div).append(html);
+  return div.outerHTML;
+};
 
 window.updateBossSF = function (e) {
   let div = document.createElement("div");
@@ -514,7 +486,6 @@ function toggleStatusEmpleado(NoEmpleado, isChecked, element) {
     confirmButtonText: `Sí, ${actionText}`,
   }).then((result) => {
     if (result.isConfirmed) {
-      $.blockUI({ message: "procesando..." });
       $.ajax({
         type: "post",
         url: "Backend/Empleados/App.php",
@@ -523,7 +494,6 @@ function toggleStatusEmpleado(NoEmpleado, isChecked, element) {
           NoEmpleado: NoEmpleado,
         },
         success: function (response) {
-          $.unblockUI();
           if (response.trim() === "1") {
             const messageContent = `
             <div class="alert-content">
@@ -546,7 +516,6 @@ function toggleStatusEmpleado(NoEmpleado, isChecked, element) {
           }
         },
         error: function() {
-          $.unblockUI();
           element.checked = !isChecked;
           const messageContent = `
           <div class="alert-content">
@@ -893,60 +862,72 @@ async function updateDatosPrincipalEmpleado() {
 }
 
 function getPuestos() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Puestos/App.php",
-    data: "op=getPuestos",
-    success: function (response) {
-      response = JSON.parse(response.trim());
-      $("#slctPuestos").html('<option value="">Listado de Puestos</option>');
-      for (var i = 0; i < response.length; i++) {
-        $("#slctPuestos").append(`
-          <option value='${response[i]["IdPuesto"]}'>${response[i]["Puesto"]}</option>
-          `);
-      }
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({
+      type: "post",
+      url: "Backend/Puestos/App.php",
+      data: "op=getPuestos",
+      success: function (response) {
+        response = JSON.parse(response.trim());
+        $("#slctPuestos").html('<option value="">Listado de Puestos</option>');
+        for (var i = 0; i < response.length; i++) {
+          $("#slctPuestos").append(`
+            <option value='${response[i]["IdPuesto"]}'>${response[i]["Puesto"]}</option>
+            `);
+        }
+        resolve();
+      },
+      error: function (e) {
+        console.error(e);
+        resolve();
+      },
+    });
   });
 }
 function getDivisiones() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Divisiones/App.php",
-    data: "op=getDivisiones",
-    success: function (response) {
-      response = JSON.parse(response.trim());
-      $("#slctDivision").html('<option value="">Listado de Divisiones</option>');
-      for (var i = 0; i < response.length; i++) {
-        $("#slctDivision").append(`
-          <option value="${response[i]["IdDivision"]}">${response[i]["Division"]}</option>
-          `);
-      }
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({
+      type: "post",
+      url: "Backend/Divisiones/App.php",
+      data: "op=getDivisiones",
+      success: function (response) {
+        response = JSON.parse(response.trim());
+        $("#slctDivision").html('<option value="">Listado de Divisiones</option>');
+        for (var i = 0; i < response.length; i++) {
+          $("#slctDivision").append(`
+            <option value="${response[i]["IdDivision"]}">${response[i]["Division"]}</option>
+            `);
+        }
+        resolve();
+      },
+      error: function (e) {
+        console.error(e);
+        resolve();
+      },
+    });
   });
 }
 function getSucursales() {
-  $.ajax({
-    type: "post",
-    url: "Backend/Sucursal/App.php",
-    data: "op=getSucursales",
-    success: function (response) {
-      response = JSON.parse(response.trim());
-      $("#slctSucursal").html('<option value="">Listado de Sucursales</option>');
-      for (var i = 0; i < response.length; i++) {
-        $("#slctSucursal").append(`
-          <option value="${response[i]["IdSucursal"]}">${response[i]["Sucursal"]}</option>
-          `);
-      }
-    },
-    error: function (e) {
-      alert(e.responseText);
-    },
+  return new Promise((resolve) => {
+    $.ajax({
+      type: "post",
+      url: "Backend/Sucursal/App.php",
+      data: "op=getSucursales",
+      success: function (response) {
+        response = JSON.parse(response.trim());
+        $("#slctSucursal").html('<option value="">Listado de Sucursales</option>');
+        for (var i = 0; i < response.length; i++) {
+          $("#slctSucursal").append(`
+            <option value="${response[i]["IdSucursal"]}">${response[i]["Sucursal"]}</option>
+            `);
+        }
+        resolve();
+      },
+      error: function (e) {
+        console.error(e);
+        resolve();
+      },
+    });
   });
 }
 
@@ -1461,8 +1442,6 @@ async function insertaDiasVacaciones() {
         url: "Backend/Empleados/App.php",
         data: datos,
         success: function (response) {
-          $.unblockUI(); // Desbloquear siempre al inicio del success
-
           // let textoSweetAlert = `<span>Vacaciones Asignadas</span>`;
           if (response == 1) {
             Swal.fire({
@@ -1503,7 +1482,6 @@ async function insertaDiasVacaciones() {
           }
         },
         error: function (e) {
-          $.unblockUI();
           alert(e.responseText);
         },
       });
@@ -1608,37 +1586,41 @@ async function abrirDetallesEmpleado(name, NoEmpleado) {
 
   await getDivisionesMasDetalles();
   let respuestaMasDetallesPersonal = await getMasDetallesPersonal(NoEmpleado);
-  $("#slctDivisionActual").val(respuestaMasDetallesPersonal[0]["IdDivision"]);
+  let empleado = respuestaMasDetallesPersonal[0];
+
+  const nd = "No disponible";
+  $("#inpEmailMasDetalles").val(empleado["Email"] || nd);
+  $("#inpMovilMasDetalles").val(empleado["Movil"] || nd);
+  $("#inpRFCMasDetalles").val(empleado["RFC"] || nd);
+  $("#inpCURPMasDetalles").val(empleado["CURP"] || nd);
+  $("#inpNoSeguroMasDetalles").val(empleado["NoSeguroS"] || nd);
+  $("#inpNivelMasDetalles").val(empleado["Nivel"] || nd);
+
+  $("#slctDivisionActual").val(empleado["IdDivision"]);
   await getSucursalMasDetalles();
   await getPuestosMasDetalles();
-  $("#slctPuestoActual").val(respuestaMasDetallesPersonal[0]["IdPuesto"]);
-  $("#slctSucursalActual").val(respuestaMasDetallesPersonal[0]["IdSucursal"]);
+  $("#slctPuestoActual").val(empleado["IdPuesto"]);
+  $("#slctSucursalActual").val(empleado["IdSucursal"]);
 
   $("#tituloOtrosDetalles").html(`Otros detalles del empleado: ${name}`);
+  $("#tituloSeccionDocumentos").html(`<span class="material-symbols-outlined align-middle me-1">description</span> Documentación de ${name}`);
 
-  // Cargar documentos del empleado
   loadDocumentosEnModal(NoEmpleado);
 
-  // Abrir modal Bootstrap
   let modalMasDetalles = new bootstrap.Modal(
     document.getElementById("DetallesMasDetallesEmpleado")
   );
   modalMasDetalles.show();
 
-  // Inicializar Select2 en los selects del modal después de que se muestra
   setTimeout(function() {
-    $('#slctDivisionActual').select2({
-      dropdownParent: $('#DetallesMasDetallesEmpleado'),
-      width: '100%'
-    });
-    $('#slctPuestoActual').select2({
-      dropdownParent: $('#DetallesMasDetallesEmpleado'),
-      width: '100%'
-    });
-    $('#slctSucursalActual').select2({
-      dropdownParent: $('#DetallesMasDetallesEmpleado'),
-      width: '100%'
-    });
+    $('#slctDivisionActual').select2({ dropdownParent: $('#DetallesMasDetallesEmpleado'), width: '100%' });
+    $('#slctDivisionActual').val(empleado["IdDivision"]).trigger('change');
+
+    $('#slctPuestoActual').select2({ dropdownParent: $('#DetallesMasDetallesEmpleado'), width: '100%' });
+    $('#slctPuestoActual').val(empleado["IdPuesto"]).trigger('change');
+
+    $('#slctSucursalActual').select2({ dropdownParent: $('#DetallesMasDetallesEmpleado'), width: '100%' });
+    $('#slctSucursalActual').val(empleado["IdSucursal"]).trigger('change');
   }, 100);
 }
 
