@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-04-27 00:00:00] ♻️ refactor: limpiar código y optimizar consultas
+
+- ♻️ **Empleados.php:** Mejora en consulta SQL para obtener tokenOS del padre mediante JOIN, elimina utf8_decode redundante y agrega validaciones nulas en línea ética.
+- ♻️ **LineaEtica.php:** Agrega validaciones para valores vacíos en puestos configurados y mueve curl_close fuera del loop de notificaciones.
+- ♻️ **PHP Pages:** Elimina includes duplicados de _Header.php en LineaEticaUs.php, SolicitudVacaciones.php y SolicitudesVacacionesFinales.php. Elimina script global.js innecesario en páginas.
+- ♻️ **divisions-configuration.php:** Limpia y reorganiza estructura HTML, mejora indentación y organización de elementos.
+- ♻️ **Scripts JS:** Elimina código comentado, organiza funciones, mejora manejo de grids Syncfusion con validaciones de DOM, mejor inicialización y cleanup de instancias.
+
 ## [2026-04-26 19:37:00] ♻️ refactor: migrar Syncfusion a paquete local y optimizar UI Personal
 
 - ♻️ **Syncfusion:** Migración de CDN externo al paquete local en assets/syncfusion. Consolidación de scripts en neptune_js.php.
