@@ -46,9 +46,12 @@
     box-shadow: none !important;
     outline: none !important;   
 }
+.e-rowcell.e-focused {
+    background-color: transparent !important;
+}
 .e-grid .e-headercelldiv {
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     }
 
 .e-pagenomsg {
@@ -57,6 +60,13 @@
 .e-pagecountmsg
 {
   display: none !important;
+}
+
+/* Elimina cambio de color en hover del grid */
+.e-grid .e-row:hover,
+.e-grid .e-rowcell:hover,
+.e-grid tr:hover {
+    background-color: transparent !important;
 }
 </style>
 
