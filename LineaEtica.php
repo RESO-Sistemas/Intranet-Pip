@@ -41,8 +41,24 @@
         <div class="app-container">
             <?php include("includes/_Header.php"); ?>
             <div class="app-content">
+                <!-- Toggle Mobile Button -->
+                <a href="#" class="content-menu-toggle btn btn-primary"><i class="material-icons">menu</i> Mensajes</a>
+                
+                <!-- Sidebar Derecho (Bandeja de entrada) -->
+                <div class="content-menu content-menu-right">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <h5 class="mb-0 fw-bold">Mensajes</h5>
+                        <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#CatalogoLineaEica" title="Ver Catálogo">
+                            <span class="material-symbols-outlined fs-5">category</span>
+                        </button>
+                    </div>
+                    <ul class="list-unstyled" id="listaMensajesEtica">
+                        <!-- Items generados dinámicamente -->
+                    </ul>
+                </div>
+
                 <div class="content-wrapper">
-                    <div class="container">
+                    <div class="container-fluid">
                         <div class="row">
                             <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
                                 <div class="row">
@@ -61,35 +77,26 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-description page-description-tabbed">
-                                    <h1 class="text-center text-md-start">Linea de Ética</h1>
+                                    <h1 class="text-center text-md-start">Línea de Ética</h1>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="row text-end mb-4">
-                                            <div class="col">
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CatalogoLineaEica">
-                                                    Ver Catálogo Línea Ética
-                                                </button>
+                                <!-- Contenedor de Detalle de Mensaje -->
+                                <div class="card shadow-sm border-0 mb-4" id="detalleMensajeContainer" style="display: none;">
+                                    <div class="card-body p-4" id="detalleMensajeContent">
+                                        <!-- El detalle se inyectará aquí -->
+                                    </div>
+                                </div>
 
-                                            </div>
-                                        </div>
-                                        <div class="row text-center">
-                                            <div class="col">
-                                                <h6 class="fw-bold">Mensajes de la Línea de Ética</h6>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col" style="overflow-y:scroll;max-height:65vh">
-
-                                                <div id="ContenidoLineaEtica"></div>
-
-                                            </div>
-                                        </div>
+                                <!-- Estado Vacío -->
+                                <div class="card shadow-sm border-0 mb-4" id="emptyStateContainer">
+                                    <div class="card-body text-center py-5">
+                                        <span class="material-symbols-outlined text-muted" style="font-size: 5rem;">inbox</span>
+                                        <h4 class="text-muted mt-3">Selecciona un mensaje</h4>
+                                        <p class="text-muted">Haz clic en un reporte de la lista lateral para ver los detalles completos.</p>
                                     </div>
                                 </div>
                             </div>

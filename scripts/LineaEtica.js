@@ -1,75 +1,15 @@
-const d_cont_LineaEtica = document.getElementById("ContenidoLineaEtica");
+let mensajesGlobalData = [];
+let idMensajeActivo = null;
+
+const d_lista_LineaEtica = document.getElementById("listaMensajesEtica");
+const d_emptyState = document.getElementById("emptyStateContainer");
+const d_detalleContainer = document.getElementById("detalleMensajeContainer");
+const d_detalleContent = document.getElementById("detalleMensajeContent");
+
 cargarDatos();
 async function cargarDatos() {
   await getMensajesLineaEtica();
 }
-
-// async function getMensajesLineaEtica(){
-//   let datos = {
-//     op: "getMensajesLineaEtica"
-//   };
-//   const ajaxResponse = await pAjaxAsync(url_m_LineaE,datos,0);
-//   if (ajaxResponse !== undefined) {
-//     const dataResponse = ajaxResponse.Datos;
-//     let contHTML = "";
-//     let contBtn = "";
-//     dataResponse.forEach( d => {
-//       if (d.Revisado == 0) {
-//         contBtn = `<button onclick="checkMensajeEtica(${d.idLineaEticaMensajes})" class="btn btn-success"><i class="fas fa-check-circle"></i></button>`;
-//       } else {
-//         contBtn = `<h2 class="textRevisado">REVISADO</h2>`;
-//       }
-//       contHTML += `
-//       <div class="card-panel z-depth-2" style="margin-bottom: 2.5em; border-radius: 10px; padding: 2em;">
-//         <div class="row valign-wrapper" style="margin-bottom: 1.5em;">
-//           <div class="col s12 m6">
-//             <p style="margin: 0;">
-//               <i class="fa-sharp fa-solid fa-mask grey-text text-darken-1" style="margin-right: 0.5em;"></i>
-//               <span class="grey-text text-darken-2">Usuario Anónimo</span>
-//             </p>
-//           </div>
-//           <div class="col s12 m6 right-align">
-//             ${
-//               d.Revisado == 0
-//                 ? `<button onclick="checkMensajeEtica(${d.idLineaEticaMensajes})"
-//                           class="btn green darken-2 waves-effect waves-light"
-//                           style="border-radius: 20px;">
-//                       <i class="fas fa-check left"></i>Marcar como revisado
-//                    </button>`
-//                 : `<span class="new badge blue lighten-1 white-text"
-//                       data-badge-caption="Revisado"
-//                       style="padding: 0 1em; border-radius: 12px; font-size: 20px;">
-//                   </span>`
-//             }
-//           </div>
-//         </div>
-
-//         <div class="row">
-//           <div class="col s12">
-//             ${d.Sucursal ? `
-//               <p><span style="font-weight: bold;">Sucursal:</span> <span>${d.Sucursal}</span></p>` : ''}
-//             <p><span style="font-weight: bold;">División afectada:</span> <span>${d.Division}</span></p>
-//             <p><span style="font-weight: bold;">Fecha de publicación:</span> <span>${d.Registro}</span></p>
-//             <p><span style="font-weight: bold;">Motivo:</span> <span>${d.Descripcion}</span></p>
-
-//             <div class="grey lighten-4" style="padding: 1em; border-radius: 8px; margin-top: 1em;">
-//               <p style="margin: 0;"><i class="material-icons tiny" style="vertical-align: bottom;">message</i> ${d.Mensaje}</p>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     `;
-
-//     });
-//     d_cont_LineaEtica.innerHTML = contHTML;
-//   } else {
-//     d_cont_LineaEtica.innerHTML = `<div class="row">
-//       <div class="col s12" style="text-align:center">
-//         <h4>Sin Registros</h4>
-//       </div>
-//     </div>`;
-//   }
-// }
 
 async function getMensajesLineaEtica() {
   let datos = {
@@ -77,68 +17,142 @@ async function getMensajesLineaEtica() {
   };
   const ajaxResponse = await pAjaxAsync(url_m_LineaE, datos, 0);
 
-  if (ajaxResponse !== undefined) {
-    const dataResponse = ajaxResponse.Datos;
+  if (ajaxResponse !== undefined && ajaxResponse.Datos) {
+    mensajesGlobalData = ajaxResponse.Datos;
     let contHTML = "";
 
-    dataResponse.forEach((d) => {
+    mensajesGlobalData.forEach((d) => {
+      const isActive = d.idLineaEticaMensajes == idMensajeActivo ? "active" : "";
+      const isRevisado = d.Revisado == 1;
+      const badgeStatus = isRevisado ? 
+        '<span class="badge bg-success" style="font-size: 0.65rem;">Revisado</span>' : 
+        '<span class="badge bg-warning text-dark" style="font-size: 0.65rem;">Pendiente</span>';
+
       contHTML += `
-        <div class="card shadow-sm mb-4 rounded-3 border-0">
-          <div class="card-body">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <p class="mb-0 text-muted">
-                  <i class="fas fa-user-secret me-2"></i>Usuario Anónimo
-                </p>
-              </div>
-              <div>
-                ${
-                  d.Revisado == 0
-                    ? `<button onclick="checkMensajeEtica(${d.idLineaEticaMensajes})"
-                          class="btn btn-warning d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined">check</span>
-                            <span>Marcar como revisado</span>
-                      </button>`
-                    : `<span class="badge bg-success fs-6 px-3 py-2">
-                          Revisado
-                       </span>`
-                }
-              </div>
-            </div>
-
-            <div class="mb-2">
-              ${
-                d.Sucursal
-                  ? `<p><strong>Sucursal:</strong> ${d.Sucursal}</p>`
-                  : ""
-              }
-              <p><strong>División afectada:</strong> ${d.Division}</p>
-              <p><strong>Fecha de publicación:</strong> ${d.Registro}</p>
-              <p><strong>Motivo:</strong> ${d.Descripcion}</p>
-            </div>
-
-            <div class="bg-light p-3 rounded">
-              <p class="mb-0">
-                <i class="fas fa-comment-dots me-2 text-secondary"></i>
-                ${d.Mensaje}
-              </p>
-            </div>
-          </div>
-        </div>
+        <li>
+            <a href="#" class="${isActive}" onclick="verDetalleMensaje(${d.idLineaEticaMensajes}, event)" style="padding: 15px; border-bottom: 1px solid #eee; display: block; text-decoration: none; color: inherit;">
+                <div class="d-flex justify-content-end align-items-start mb-2">
+                    ${badgeStatus}
+                </div>
+                <div class="text-muted" style="font-size: 0.8rem; margin-bottom: 5px;">
+                    <i class="far fa-calendar-alt me-1"></i> ${d.Registro.split(' ')[0]}
+                </div>
+                <div class="fw-bold" style="font-size: 0.85rem; margin-bottom: 5px; color: #444;">
+                    ${d.Descripcion}
+                </div>
+                <div class="text-muted text-truncate" style="font-size: 0.8rem; max-width: 100%;">
+                    ${d.Mensaje}
+                </div>
+            </a>
+        </li>
       `;
     });
 
-    d_cont_LineaEtica.innerHTML = contHTML;
+    d_lista_LineaEtica.innerHTML = contHTML;
+    
+    // Si había un mensaje seleccionado, refrescamos su vista
+    if (idMensajeActivo) {
+        verDetalleMensaje(idMensajeActivo);
+    }
   } else {
-    d_cont_LineaEtica.innerHTML = `
-      <div class="row">
-        <div class="col-12 text-center">
-          <h4 class="text-muted">Sin Registros</h4>
-        </div>
-      </div>
-    `;
+    mensajesGlobalData = [];
+    if(d_lista_LineaEtica) {
+        d_lista_LineaEtica.innerHTML = `
+          <li class="p-4 text-center text-muted">
+            <span class="material-symbols-outlined fs-2 d-block mb-2">inbox</span>
+            Sin Registros
+          </li>
+        `;
+    }
+    mostrarEmptyState();
   }
+}
+
+function verDetalleMensaje(id, event) {
+    if (event) event.preventDefault();
+    
+    idMensajeActivo = id;
+    const msg = mensajesGlobalData.find(m => m.idLineaEticaMensajes == id);
+    
+    if (!msg) return;
+
+    // Actualizar clases activas en la lista
+    if (d_lista_LineaEtica) {
+        const links = d_lista_LineaEtica.querySelectorAll('a');
+        links.forEach(link => link.classList.remove('active'));
+        
+        if(event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else {
+            // Find it via DOM if not clicked
+            const targetLink = d_lista_LineaEtica.querySelector(`a[onclick*="verDetalleMensaje(${id}"]`);
+            if(targetLink) targetLink.classList.add('active');
+        }
+    }
+
+    // Ocultar empty state y mostrar contenedor de detalle
+    d_emptyState.style.display = 'none';
+    d_detalleContainer.style.display = 'block';
+
+    const btnAccion = msg.Revisado == 0
+        ? `<button onclick="checkMensajeEtica(${msg.idLineaEticaMensajes})" class="btn btn-warning d-flex align-items-center gap-2 px-4 fw-bold">
+               <span class="material-symbols-outlined">check_circle</span>
+               <span>Marcar como revisado</span>
+           </button>`
+        : `<span class="badge bg-success fs-6 px-4 py-2 d-flex align-items-center gap-2">
+               <span class="material-symbols-outlined fs-5">done_all</span>
+               Revisado
+           </span>`;
+
+    const htmlDetalle = `
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-3">
+            <div class="text-muted small">
+                <i class="far fa-calendar-alt me-1"></i> Publicado el ${msg.Registro}
+            </div>
+            <div>
+                ${btnAccion}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">Motivo / Categoría</span>
+                    <strong class="text-primary fs-6">${msg.Descripcion}</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">División Afectada</span>
+                    <strong class="fs-6">${msg.Division}</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">Sucursal</span>
+                    <strong class="fs-6">${msg.Sucursal || 'N/A'}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary">description</span>
+                Mensaje del Reporte
+            </h6>
+            <div class="p-4 bg-light rounded-3 border shadow-sm" style="min-height: 150px;">
+                <p class="mb-0 text-dark" style="font-size: 1.05rem; line-height: 1.6; white-space: pre-wrap;">${msg.Mensaje}</p>
+            </div>
+        </div>
+    `;
+
+    d_detalleContent.innerHTML = htmlDetalle;
+}
+
+function mostrarEmptyState() {
+    if(d_emptyState) d_emptyState.style.display = 'block';
+    if(d_detalleContainer) d_detalleContainer.style.display = 'none';
+    idMensajeActivo = null;
 }
 
 // function getMensajesLineaEtica () {
