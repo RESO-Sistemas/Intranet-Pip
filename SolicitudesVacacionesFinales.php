@@ -1,6 +1,6 @@
 <?php
 $hoy = date('Y-m-d');
-$FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
+$FechaMenosMes = date("Y-m-d", strtotime($hoy . "- 2 month"));
 ?>
 <!DOCTYPE html>
 <html>
@@ -45,7 +45,6 @@ $FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
       ?>
     </div>
     <div class="app-container">
-      <?php include("includes/_Header.php"); ?>
       <div class="app-content">
         <div class="content-wrapper">
           <div class="container">
@@ -141,7 +140,6 @@ $FechaMenosMes = date("Y-m-d", strtotime($fecha_actual . "- 2 month"));
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
     <script src="scripts/SolicitudesVacacionesFinales.js?v=<?= time() ?>" charset="utf-8"></script>
 </body>
 

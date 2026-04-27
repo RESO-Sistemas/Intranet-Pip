@@ -322,7 +322,8 @@ async function updateStatusSolicitud(Val, Solicitud) {
       getDetalleSolicitud(Val, Solicitud);
     } else {
     }
-  }
+  });
+}
 
 async function getDetalleSolicitud(estado, solicitud) {
   let datos = {
@@ -397,48 +398,9 @@ async function getDetalleSolicitud(estado, solicitud) {
         }
       }
 
-async function regresarEstadoSolicitudJefe(val) {
-//   alertify
-//     .confirm(
-//       "Confirmación de acción.",
-//       `<div class="row">
-//     <div class="col s12 l12" style="text-align:center">
-//       ¿Desea regresar el estado de la solicitud a" Solicitud pendiente de revisar"?
-//     </div>
-//   </div>`,
-//       async function () {
-//         let datos = await {
-//           op: "regresarEstadoSolicitudJefe",
-//           idSolicitudesVacaciones: val,
-//         };
-//         let respuesta = "";
-//         try {
-//           respuesta = await $.ajax({
-//             type: "post",
-//             url: "Backend/Empleados/App.php",
-//             data: datos,
-//           });
-//         } catch (e) {
-//           console.log(e);
-//         } finally {
-//           if (respuesta == "1") {
-//             alertify.success(
-//               'Estado de solicitud regresado a" Solicitud pendiente de revisar".'
-//             );
-//             await getMisSolicitudesPorRevisar();
-//             await getMisSolicitudesVacacionesEstadoNomina();
-//             await getSolicitudesCanceladasJefe();
-//           } else {
-//             alertify.warning("ERROR!");
-//           }
-//         }
-//       },
-//       async function () {
-//         alertify.error("Cancelado");
-//       }
-//     )
-//     .set({ labels: { ok: "Aceptar", cancel: "Cancelar" }, padding: false });
-// }
+    });
+  }
+}
 async function regresarEstadoSolicitudJefe(val) {
   const resultado = await Swal.fire({
     title: "Confirmación de acción",
@@ -494,3 +456,4 @@ async function regresarEstadoSolicitudJefe(val) {
       });
     }
   }
+}

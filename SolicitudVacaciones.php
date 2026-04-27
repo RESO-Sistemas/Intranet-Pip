@@ -47,7 +47,6 @@
       ?>
     </div>
     <div class="app-container">
-      <?php include("includes/_Header.php"); ?>
       <div class="app-content">
         <div class="content-wrapper">
           <div class="container">
@@ -153,7 +152,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
     <script src="scripts/SolicitudVacaciones.js?v=<?= time() ?>" charset="utf-8"></script>
   <script src="scripts/detallesEmpleadoLogeado.js?v=<?= time() ?>"></script>
   <script type="text/javascript">

@@ -1,6 +1,8 @@
 const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const SV = urlParams.get("SV");
+let gridSolicitudesRevision = null;
+let gridHistoricoNomina = null;
 
 function onlynumber(e) {
   tecla = document.all ? e.keyCode : e.which;
@@ -12,15 +14,28 @@ function onlynumber(e) {
   return patron.test(tecla_final);
 }
 
-getMisSolicitudesFinales();
-getHistoricoSolicitudesNomina();
+function initSolicitudesVacacionesFinales() {
+  getMisSolicitudesFinales();
+  getHistoricoSolicitudesNomina();
+}
 
-let gridSolicitudesRevision = null;
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSolicitudesVacacionesFinales);
+} else {
+  initSolicitudesVacacionesFinales();
+}
 
 function getMisSolicitudesFinales() {
+  const tableSolicitudes = document.getElementById("TableSolicitudes");
+  if (!tableSolicitudes) {
+    console.error("No se encontró el contenedor #TableSolicitudes");
+    return;
+  }
+
   let datos = { op: "getMisSolicitudesFinales" };
-  if (gridSolicitudesRevision) {
+  if (gridSolicitudesRevision && typeof gridSolicitudesRevision.destroy === "function") {
     gridSolicitudesRevision.destroy();
+    gridSolicitudesRevision = null;
   }
   
   $.ajax({
@@ -29,7 +44,8 @@ function getMisSolicitudesFinales() {
       data: datos,
       dataType: "json",
       success: function (response) {
-        let mappedData = response.map(item => {
+        const normalizedResponse = Array.isArray(response) ? response : [];
+        let mappedData = normalizedResponse.map(item => {
           let btnAcciones = `
             <div class="d-flex justify-content-center gap-2">
                 <button class="btn btn-success btn-accion btn-aceptar-sol" title="Aceptar Solicitud">
@@ -55,6 +71,8 @@ function getMisSolicitudesFinales() {
 
         gridSolicitudesRevision = new ej.grids.Grid({
             dataSource: mappedData,
+            width: "100%",
+            allowResizing: true,
             toolbar: ["Search"],
             allowPaging: true,
             pageSettings: { pageSize: 10 },
@@ -109,6 +127,8 @@ function getMisSolicitudesFinales() {
             created: function () {
               const searchInput = document.getElementById(this.element.id + "_searchbar");
               if (searchInput && !searchInput.hasListener) {
+                searchInput.placeholder = "Buscar en solicitudes en revisión...";
+                searchInput.setAttribute("aria-label", "Buscar en solicitudes en revisión");
                 searchInput.hasListener = true;
                 const grid = this;
                 searchInput.addEventListener("keyup", function (event) {
@@ -117,7 +137,10 @@ function getMisSolicitudesFinales() {
               }
             }
         });
-        gridSolicitudesRevision.appendTo("#TableSolicitudes");
+        gridSolicitudesRevision.appendTo(tableSolicitudes);
+      },
+      error: function (xhr) {
+        console.error("Error al cargar solicitudes en revisión:", xhr?.responseText || xhr);
       }
   });
 }
@@ -217,11 +240,18 @@ function realizarAccionSolicitud(solicitud, accion) {
           }
 
         }
-
-
-let gridHistoricoNomina = null;
+      });
+    }
+  });
+}
 
 async function getHistoricoSolicitudesNomina() {
+  const tableHistorico = document.getElementById("tableHistorico");
+  if (!tableHistorico) {
+    console.error("No se encontró el contenedor #tableHistorico");
+    return;
+  }
+
   let FechaIni = $("#FechaIni").val();
   let FechaFin = $("#FechaFin").val();
   let datos = {
@@ -230,8 +260,9 @@ async function getHistoricoSolicitudesNomina() {
     FechaFin: FechaFin,
   };
   
-  if (gridHistoricoNomina) {
+  if (gridHistoricoNomina && typeof gridHistoricoNomina.destroy === "function") {
     gridHistoricoNomina.destroy();
+    gridHistoricoNomina = null;
   }
   
   let respuesta = [];
@@ -271,6 +302,8 @@ async function getHistoricoSolicitudesNomina() {
 
     gridHistoricoNomina = new ej.grids.Grid({
         dataSource: mappedData,
+        width: "100%",
+        allowResizing: true,
         toolbar: ["Search"],
         allowPaging: true,
         pageSettings: { pageSize: 10 },
@@ -319,6 +352,8 @@ async function getHistoricoSolicitudesNomina() {
         created: function () {
           const searchInput = document.getElementById(this.element.id + "_searchbar");
           if (searchInput && !searchInput.hasListener) {
+            searchInput.placeholder = "Buscar en historial de nómina...";
+            searchInput.setAttribute("aria-label", "Buscar en historial de nómina");
             searchInput.hasListener = true;
             const grid = this;
             searchInput.addEventListener("keyup", function (event) {
@@ -327,92 +362,10 @@ async function getHistoricoSolicitudesNomina() {
           }
         }
     });
-    gridHistoricoNomina.appendTo("#tableHistorico");
+    gridHistoricoNomina.appendTo(tableHistorico);
   }
 }
 
-
-async function regresarEstadoSolicitudNomina(val) {
-
-//   alertify
-
-//     .confirm(
-
-//       "Confirmación de acción.",
-
-//       `<div class="row">
-
-//     <div class="col s12 l12" style="text-align:center">
-
-//       ¿Desea regresar el estado de la solicitud a" Solicitud pendiente de revisar"?
-
-//     </div>
-
-//   </div>`,
-
-//       async function () {
-
-//         let datos = await {
-
-//           op: "regresarEstadoSolicitudNomina",
-
-//           idSolicitudesVacaciones: val,
-
-//         };
-
-//         let respuesta = "";
-
-//         try {
-
-//           respuesta = await $.ajax({
-
-//             type: "post",
-
-//             url: "Backend/Empleados/App.php",
-
-//             data: datos,
-
-//           });
-
-//         } catch (e) {
-
-//           console.log(e);
-
-//         } finally {
-
-//           if (respuesta == "1") {
-
-//             alertify.success(
-
-//               'Estado de solicitud regresado a" Solicitud pendiente de revisar".'
-
-//             );
-
-//             getMisSolicitudesFinales();
-
-//             getHistoricoSolicitudesNomina();
-
-//           } else {
-
-//             alertify.warning("ERROR!");
-
-//           }
-
-//         }
-
-//       },
-
-//       async function () {
-
-//         alertify.error("Cancelado");
-
-//       }
-
-//     )
-
-//     .set({ labels: { ok: "Aceptar", cancel: "Cancelar" }, padding: false });
-
-// }
 
 async function regresarEstadoSolicitudNomina(val) {
 
@@ -543,3 +496,6 @@ async function regresarEstadoSolicitudNomina(val) {
       }
 
     }
+
+  }
+}

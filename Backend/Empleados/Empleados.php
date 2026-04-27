@@ -323,7 +323,7 @@ class Empleados extends Conexiones
             "token" => $cons4[0]["tokenOS"]
           ]);
         }
-        $q = "SELECT EmpleadoPadre FROM RelacionEmpleados WHERE EmpleadoHijo = '$EmpleadoHijo';";
+        $q = "SELECT re.EmpleadoPadre, e.tokenOS FROM RelacionEmpleados re JOIN Empleados e ON re.EmpleadoPadre = e.NoEmpleado WHERE re.EmpleadoHijo = '$EmpleadoHijo';";
         $cons = $this->Select($q, array());
         if (sizeof($cons) > 0) {
           if ($cons[0]["tokenOS"] !== null && $cons[0]["tokenOS"] != "") {
@@ -374,7 +374,6 @@ class Empleados extends Conexiones
                         $mail->setFrom('interno@klynet.mx','Klyns');
                         $mail->addAddress($EmailEmpleadoP, "VKlyns");
                         $mensajeSubject = "Solicitud de Vacaciones";
-                        $mensajeSubject = utf8_decode($mensajeSubject);
                         $mail->Subject = $mensajeSubject;
 
 
@@ -417,7 +416,6 @@ class Empleados extends Conexiones
                                   </body>
                                   </html>
                                 ";
-                 $mensajeBody = utf8_decode($mensajeBody);
                  $mail->Body = $mensajeBody;
                  $mail->send();
 
@@ -556,7 +554,6 @@ class Empleados extends Conexiones
                         $mail->addBCC($EmailNomina, "VKlyns");
                       }
                       $mensajeSubject = "Solicitud de Vacaciones";
-                      $mensajeSubject = utf8_decode($mensajeSubject);
                       $mail->Subject = $mensajeSubject;
 
                       $mensajeBody = "
@@ -700,8 +697,7 @@ class Empleados extends Conexiones
                                   </body>
                                   </html>
                       ";
-                      $mensajeBody = utf8_decode($mensajeBody);
-                      $mail->Body = $mensajeBody;
+                           $mail->Body = $mensajeBody;
                       $mail->send();
                       if (sizeof($ArrMsgPush) > 0) {
                           $NewInstEmpleados = new Empleados();
@@ -1045,7 +1041,6 @@ class Empleados extends Conexiones
                         $mail->setFrom('interno@klynet.mx','Klyns');
                         $mail->addAddress($EmailEmpleado, "VKlyns");
                         $mensajeSubject = "Solicitud de Vacaciones";
-                        $mensajeSubject = utf8_decode($mensajeSubject);
                         $mail->Subject = $mensajeSubject;
 
 
@@ -1114,8 +1109,7 @@ class Empleados extends Conexiones
                         </body>
                         </html>
                       ";
-                        $mensajeBody = utf8_decode($mensajeBody);
-                        $mail->Body = $mensajeBody;
+                               $mail->Body = $mensajeBody;
                         $exito = $mail->Send();
                         if (!$exito) {
                             error_log("Error enviando correo de vacaciones: " . $mail->ErrorInfo);
@@ -1852,8 +1846,8 @@ class Empleados extends Conexiones
         $Conexiones6 = new Conexiones();
         $q6 = "SELECT PuestoRecibeLineaEtica FROM ConfiguracionPersonalizacion";
         $result6 = $Conexiones6->Select($q6,array());
-        $valPuestos = $result6[0]["PuestoRecibeLineaEtica"];
-        $ExpPuestos = explode(',',$valPuestos);
+        $valPuestos = !empty($result6) ? $result6[0]["PuestoRecibeLineaEtica"] : null;
+        $ExpPuestos = $valPuestos ? explode(',',$valPuestos) : [];
         if (in_array($idSPuesto,$ExpPuestos)) {
           $Conexiones7 = new Conexiones();
           $q7 = "SELECT COUNT(*) as Cantidad
@@ -1910,7 +1904,6 @@ class Empleados extends Conexiones
               $mail->addAddress($Email, "Klyns");
 
               $mensajeSubject = "Klyns, Solicitud para recuperar contrase?a.";
-              $mensajeSubject = utf8_decode($mensajeSubject);
               $mail->Subject = $mensajeSubject;
               $mensajeBody = "
                                <!DOCTYPE html>
@@ -2006,7 +1999,6 @@ class Empleados extends Conexiones
                                </body>
                                </html>
                              ";
-         $mensajeBody = utf8_decode($mensajeBody);
          $mail->Body = $mensajeBody;
          $mail->send();
 

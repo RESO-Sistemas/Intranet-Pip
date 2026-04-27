@@ -58,18 +58,21 @@ class LineaEtica extends Conexiones
 
         $q = "SELECT PuestoRecibeLineaEtica FROM ConfiguracionPersonalizacion";
         $result = $this->Select($q,array());
-        $valPuestos = $result[0]["PuestoRecibeLineaEtica"];
-        $ExpPuestos = explode(',',$valPuestos);
+        $valPuestos = !empty($result) ? $result[0]["PuestoRecibeLineaEtica"] : null;
+        $ExpPuestos = $valPuestos ? explode(',',$valPuestos) : [];
         $arrEmpleadosSelectos = [];
-        $valWhere = "";
-        foreach ($ExpPuestos as $i) {
-          $Puesto = $i;
-          $valWhere = $valWhere." IdPuesto = '$Puesto' OR";
+        $arrEmpleados = [];
+        if (!empty($ExpPuestos)) {
+          $valWhere = "";
+          foreach ($ExpPuestos as $i) {
+            $Puesto = $i;
+            $valWhere = $valWhere." IdPuesto = '$Puesto' OR";
+          }
+          $FormatWhere = substr($valWhere,0,strlen($valWhere) - 2);
+          $Con2 = new Conexiones();
+          $q2 = "SELECT tokenOS FROM Empleados WHERE Status = 1 AND (tokenOS IS NOT NULL AND tokenOS <> '') AND ($FormatWhere)";
+          $arrEmpleados = $Con2->Select($q2,array());
         }
-        $FormatWhere = substr($valWhere,0,strlen($valWhere) - 2);
-        $Con2 = new Conexiones();
-        $q2 = "SELECT tokenOS FROM Empleados WHERE Status = 1 AND (tokenOS IS NOT NULL AND tokenOS <> '')AND ($FormatWhere)";
-        $arrEmpleados = $Con2->Select($q2,array());
         foreach ($arrEmpleados as $e) {
           $valToken = $e["tokenOS"];
           $msg = "Un empleado ha enviado un nuevo mensaje de línea de ética.";
@@ -93,7 +96,6 @@ class LineaEtica extends Conexiones
           curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
           curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
           $response = curl_exec($ch);
-          curl_close($ch);
         }
       } catch (\Exception $e) {
         return $e;
