@@ -2,7 +2,11 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
-## [2026-04-27 00:00:00] ♻️ refactor: limpiar código y optimizar consultas
+## [2026-04-27 00:15:20] ♻️ refactor: migrar Línea Ética a UI con sidebar y vista de detalle
+
+- ♻️ **LineaEtica.php:** Implementación de sidebar lateral (bandeja de entrada) con lista de mensajes, panel de detalle dinámico, empty state cuando no hay selección, y toggle para móvil.
+- ♻️ **LineaEtica.js:** Migración de renderizado único a arquitectura con变量 global (mensajesGlobalData) y función verDetalleMensaje() para vista dinámica. Mejora en manejo de estado activo.
+- 🎨 **UI:** Corrección tipográfica "Linea de Ética" → "Línea de Ética", container-fluid en vez de container, y estilos mejorados para visualización en móviles.
 
 - ♻️ **Empleados.php:** Mejora en consulta SQL para obtener tokenOS del padre mediante JOIN, elimina utf8_decode redundante y agrega validaciones nulas en línea ética.
 - ♻️ **LineaEtica.php:** Agrega validaciones para valores vacíos en puestos configurados y mueve curl_close fuera del loop de notificaciones.
