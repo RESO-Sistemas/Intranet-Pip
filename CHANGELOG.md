@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-04-26 19:37:00] ♻️ refactor: migrar Syncfusion a paquete local y optimizar UI Personal
+
+- ♻️ **Syncfusion:** Migración de CDN externo al paquete local en assets/syncfusion. Consolidación de scripts en neptune_js.php.
+- ♻️ **Grid Personal:** Consolidación de columnas de acciones en template unificado allActionsSF. Reorganización de tabla fuera del card.
+- ♻️ **Consultas Backend:** Optimización de getPersonal en Empleados.php con WHERE dinámico y LEFT JOINs. Mejora de getDocumentacionCompletaEmpleado con LEFT JOIN.
+- ♻️ **Documentación:** Se agregaron campos Email, Movil, RFC, CURP, NoSeguroS y Nivel a otrosDetallesEmpleado.
+- ♻️ **Syncfusion Config:** Consolidación de script de configuración con inicialización diferida esperando objeto ej.
+- ✨ **Selects:** Actualización de getPuestos y getSucursales con GROUP BY para eliminar duplicados.
+- 🧹 **UI Personal:** Limpieza de estilos no utilizados, reorganización de modales, actualización de templates de acciones.
+
 ## [2026-04-26 15:17:59] ♻️ refactor: optimizar Directorio y SolicitudVacaciones
 
 - ♻️ **Directorio:** Refactorización completa de Directorio.php, DirectorioAdm.php y scripts relacionados (Directorio.js, DirectorioAdm.js) con mejoras en estructura y rendimiento.
