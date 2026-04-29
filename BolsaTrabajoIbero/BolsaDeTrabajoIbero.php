@@ -284,7 +284,7 @@ if ($iberoLoggedIn) {
     </main>
 
     <!-- MODAL DE POSTULACIÓN -->
-    <div id="modal-postulacion" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center p-4 relative">
+    <div id="modal-postulacion" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center p-4">
         <div class="modal-content w-full max-w-2xl bg-[#111] border border-white/10 rounded-2xl max-h-[90vh] overflow-y-auto
                     transition-all duration-200 scale-95 opacity-0">
 

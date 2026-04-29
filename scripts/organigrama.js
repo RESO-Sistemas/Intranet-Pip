@@ -1,13 +1,9 @@
 // Ocultar preloader cuando la página termine de cargar
-$(window).on('load', function() {
-  $(".preloader").fadeOut();
-});
+// $(window).on('load', function() {
+//   $(".preloader").fadeOut();
+// });
 
-ej.base.registerLicense(
 
-  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
-
-);
 
 
 

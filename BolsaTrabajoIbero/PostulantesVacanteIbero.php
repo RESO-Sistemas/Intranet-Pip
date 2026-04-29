@@ -184,10 +184,11 @@ $(function() {
         if (Array.isArray(r)) r.forEach(p => $('#cmbProceso').append(`<option value="${p.IdProceso}">${p.NombreProceso}</option>`));
     }, 'json');
 
-    // Si no hay ID de vacante, cargar selector de vacantes
-    if (!ID_VACANTE) {
-        cargarVacantes();
-    } else {
+    // Cargar vacantes siempre para selector
+    cargarVacantes();
+
+    // Cargar postulantes si hay ID
+    if (ID_VACANTE) {
         cargarPostulantes();
     }
     toastr.options = {positionClass:'toast-top-right',timeOut:4000,progressBar:true};
