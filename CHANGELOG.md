@@ -2,6 +2,21 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-04-29 00:00:00] ✨ feat: módulo Bolsa de Trabajo Ibero
+
+- ✨ **Bolsa de Trabajo:** Implementación completa del módulo de Bolsa de Trabajo con vistas para vacantes, postulaciones, evaluaciones y resultados
+- ✨ **Backend API:** Nuevos endpoints para gestión de postulantes, vacantes, procesos y evaluaciones en Backend/Postulantes/App.php, Backend/Vacantes/App.php, etc.
+- ✨ **Autenticación:** Sistema de login para candidatos con CURP y teléfono
+- ✨ **Panel Candidato:** Panel de seguimiento de postulaciones con timeline de procesos
+- ✨ **Evaluaciones:** Sistema de evaluaciones postulantes con preguntas y respuestas
+- ✨ **Vista Vacantes:** Nueva interface para browse y postulación a vacantes
+- ✨ **Scripts JS:** Archivos JavaScript para cada módulo funcional (EvaluacionesIbero.js, VacantesIbero.js, etc.)
+- ✨ **Database:** Esquema y datos mock para el módulo (ibero_schema.sql, ibero_mock_data.sql)
+- ✨ **Assets:** Logo placeholder para Ibero
+- 🐛 **Fix UI:** Correcciones en modal-postulacion y mejoras en estilos
+- 🐛 **Organigrama:** Deshabilitación de preloader que causaba delays
+- ♻️ **Refactor:** Mejoras en EstatusPostulanteIbero con arquitectura sidebar+detalle y timeline mejorado
+
 ## [2026-04-27 00:15:20] ♻️ refactor: migrar Línea Ética a UI con sidebar y vista de detalle
 
 - ♻️ **LineaEtica.php:** Implementación de sidebar lateral (bandeja de entrada) con lista de mensajes, panel de detalle dinámico, empty state cuando no hay selección, y toggle para móvil.
