@@ -263,7 +263,7 @@ function renderJobs(vacantes) {
                     </div>
                     <div class="flex items-center text-gray-400 text-sm gap-3">
                         <i data-lucide="map-pin" class="w-4 h-4 text-white/30"></i>
-                        <span>${v.Sucursal||'Por definir'}</span>
+                        <span>${v.Empresa||'Por definir'}</span>
                     </div>
                     <div class="flex items-center text-gray-400 text-sm gap-3">
                         <i data-lucide="briefcase" class="w-4 h-4 text-white/30"></i>
@@ -305,7 +305,7 @@ function abrirModalPostulacion(idVacante) {
 
     document.getElementById('modal-title').textContent = vacanteSeleccionada.NombreVacante;
     document.getElementById('modal-subtitle').textContent =
-        `${vacanteSeleccionada.NombreArea||''} • ${vacanteSeleccionada.Sucursal||''}`;
+        `${vacanteSeleccionada.NombreArea||''} • ${vacanteSeleccionada.Empresa||''}`;
     document.getElementById('campos-archivo').innerHTML = generarCamposArchivo(vacanteSeleccionada);
     const form = document.getElementById('form-postulacion');
     form.dataset.vacanteId = idVacante;

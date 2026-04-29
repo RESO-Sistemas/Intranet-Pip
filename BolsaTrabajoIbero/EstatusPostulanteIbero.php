@@ -329,7 +329,7 @@ $candidatoCurp   = $_SESSION['ibero_curp_candidato'] ?? '';
                     <span class="text-xs text-gray-500">${fecha}</span>
                 </div>
                 <h4 class="font-bold text-white text-sm leading-tight mb-1">${p.NombreVacante}</h4>
-                <p class="text-xs text-gray-500">${p.NombreArea||''}${p.Sucursal?' · '+p.Sucursal:''}</p>
+                <p class="text-xs text-gray-500">${p.NombreArea||''}${p.Empresa?' · '+p.Empresa:''}</p>
             </div>`;
         }).join('');
         lucide.createIcons();

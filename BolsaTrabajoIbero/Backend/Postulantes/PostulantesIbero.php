@@ -87,14 +87,14 @@ class PostulantesIbero extends Conexiones
         $q = "SELECT pv.*, p.Nombre, p.ApellidoPaterno, p.ApellidoMaterno, p.CURP,
                      p.Telefono, p.CorreoElectronico, p.Direccion, p.Estado, p.Ciudad,
                      p.CodigoPostal, p.Colonia, v.NombreVacante,
-                     a.NombreArea AS NombreArea, s.Sucursal,
+                     a.NombreArea AS NombreArea, e.NombreEmpresa AS Empresa,
                      CASE pv.EstatusPostulacion WHEN 1 THEN 'En Proceso' WHEN 2 THEN 'Aceptado'
                           WHEN 3 THEN 'Descartado' WHEN 4 THEN 'Finalizado' END AS EstatusTexto
               FROM PostulantesVacantesIbero pv
               INNER JOIN PostulantesIbero p ON pv.IdPostulante=p.IdPostulante
               INNER JOIN VacantesIbero v ON pv.IdVacante=v.IdVacante
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               WHERE pv.IdPostulanteVacante=$id LIMIT 1";
         $r = $this->Select($q);
         if (!empty($r)) return json_encode(["Resultado"=>true,"Siguiente"=>true,"Data"=>$r[0]]);
@@ -258,12 +258,12 @@ class PostulantesIbero extends Conexiones
     function getPostulacionesByCurp($CURP) {
         $c = strtoupper($this->sanitize($CURP));
         $q = "SELECT pv.IdPostulanteVacante, pv.IdVacante, pv.EstatusPostulacion, pv.FechaPostulacion,
-                     v.NombreVacante, a.NombreArea, s.Sucursal
+                     v.NombreVacante, a.NombreArea, e.NombreEmpresa AS Empresa
               FROM PostulantesVacantesIbero pv
               INNER JOIN PostulantesIbero p ON pv.IdPostulante=p.IdPostulante
               INNER JOIN VacantesIbero v ON pv.IdVacante=v.IdVacante
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               WHERE UPPER(p.CURP)='$c'
               ORDER BY pv.FechaPostulacion DESC";
         return json_encode(["Resultado"=>true,"Siguiente"=>true,"Data"=>$this->Select($q)]);
@@ -317,13 +317,13 @@ class PostulantesIbero extends Conexiones
         // Todas las postulaciones de un candidato (para panel lateral en PostulantesGeneralIbero)
         $id = intval(base64_decode($IdPostulante));
         $q = "SELECT pv.IdPostulanteVacante, pv.EstatusPostulacion, pv.FechaPostulacion,
-                     v.NombreVacante, a.NombreArea, s.Sucursal,
+                     v.NombreVacante, a.NombreArea, e.NombreEmpresa AS Empresa,
                      CASE pv.EstatusPostulacion WHEN 1 THEN 'En Proceso' WHEN 2 THEN 'Aceptado'
                           WHEN 3 THEN 'Descartado' WHEN 4 THEN 'Finalizado' END AS EstatusTexto
               FROM PostulantesVacantesIbero pv
               INNER JOIN VacantesIbero v ON pv.IdVacante=v.IdVacante
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               WHERE pv.IdPostulante=$id ORDER BY pv.FechaPostulacion DESC";
         return json_encode(["Resultado"=>true,"Siguiente"=>true,"Data"=>$this->Select($q)]);
     }

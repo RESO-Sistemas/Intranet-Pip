@@ -28,6 +28,21 @@ INSERT INTO `AreasTecnicasIbero` (`NombreArea`, `Descripcion`) VALUES
 ('Marketing y Comunicación', 'Área de difusión y medios'),
 ('Administración Escolar', 'Área de servicios académicos');
 
+DROP TABLE IF EXISTS `EmpresasIbero`;
+CREATE TABLE `EmpresasIbero` (
+  `IdEmpresa` int(11) NOT NULL AUTO_INCREMENT,
+  `NombreEmpresa` varchar(200) NOT NULL,
+  `Descripcion` text,
+  `Estatus` tinyint(1) DEFAULT '1',
+  `FechaCreacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`IdEmpresa`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `EmpresasIbero` (`NombreEmpresa`) VALUES
+('Universidad Iberoamericana'),
+('Grupo Lala'),
+('Industrias Peñoles');
+
 DROP TABLE IF EXISTS `ProcesosVacantesIbero`;
 CREATE TABLE `ProcesosVacantesIbero` (
   `IdProceso` int(11) NOT NULL AUTO_INCREMENT,
@@ -155,7 +170,7 @@ CREATE TABLE `VacantesIbero` (
   `IdAreaTecnica` int(11) DEFAULT NULL,
   `IdPuesto` int(11) DEFAULT NULL COMMENT 'Referencia a Puestos del sistema principal',
   `TipoContratacion` varchar(50) DEFAULT NULL,
-  `IdSucursal` int(11) DEFAULT NULL COMMENT 'Referencia a SucursalDepto del sistema principal',
+  `IdEmpresa` int(11) DEFAULT NULL COMMENT 'Referencia a EmpresasIbero',
   `DescripcionPuesto` text,
   `SalarioMinimo` decimal(10,2) DEFAULT NULL,
   `SalarioMaximo` decimal(10,2) DEFAULT NULL,

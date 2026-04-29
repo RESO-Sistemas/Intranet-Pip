@@ -98,9 +98,9 @@ function loadCombos() {
         const opts = r.map(p=>`<option value="${p.IdPuesto}">${p.Puesto}</option>`).join('');
         ['#cmbPuesto','#editPuesto'].forEach(sel => $(sel).append(opts));
     }, 'json');
-    $.post(API_VACANTES, {op:'getSucursalesActivas'}, function(r) {
-        const opts = r.map(s=>`<option value="${s.IdSucursal}">${s.Sucursal}</option>`).join('');
-        ['#cmbSucursal','#editSucursal'].forEach(sel => $(sel).append(opts));
+    $.post(API_VACANTES, {op:'getEmpresasActivas'}, function(r) {
+        const opts = r.map(e=>`<option value="${e.IdEmpresa}">${e.Empresa}</option>`).join('');
+        ['#cmbEmpresa','#editEmpresa'].forEach(sel => $(sel).append(opts));
     }, 'json');
 }
 
@@ -109,7 +109,7 @@ function loadCombos() {
 // ==========================================
 function prepareAddModal() {
     $('#txtNombreVacante,#txtSalarioMinimo,#txtSalarioMaximo,#txtFechaApertura,#txtFechaCierre,#txtDescripcionPuesto').val('');
-    $('#cmbTipoContratacion,#cmbAreaTecnica,#cmbPuesto,#cmbSucursal').val('');
+    $('#cmbTipoContratacion,#cmbAreaTecnica,#cmbPuesto,#cmbEmpresa').val('');
     $('#chkBanderaCV,#chkBanderaSE').prop('checked',false);
 }
 
@@ -121,7 +121,7 @@ $('#btnAddVacante').click(function() {
     $(this).prop('disabled',true).text('Guardando...');
     $.post(API_VACANTES, {
         op:'addVacante', NombreVacante:n, IdAreaTecnica:$('#cmbAreaTecnica').val()||'',
-        IdPuesto:$('#cmbPuesto').val()||'', TipoContratacion:tc, IdSucursal:$('#cmbSucursal').val()||'',
+        IdPuesto:$('#cmbPuesto').val()||'', TipoContratacion:tc, IdEmpresa:$('#cmbEmpresa').val()||'',
         DescripcionPuesto:$('#txtDescripcionPuesto').val(), SalarioMinimo:$('#txtSalarioMinimo').val()||'',
         SalarioMaximo:$('#txtSalarioMaximo').val()||'', FechaApertura:fa,
         FechaCierre:$('#txtFechaCierre').val()||'',
@@ -148,7 +148,7 @@ function editarVacante(idEnc) {
         $('#editTipoContratacion').val(v.TipoContratacion);
         $('#editAreaTecnica').val(v.IdAreaTecnica);
         $('#editPuesto').val(v.IdPuesto);
-        $('#editSucursal').val(v.IdSucursal);
+        $('#editEmpresa').val(v.IdEmpresa);
         $('#editSalarioMinimo').val(v.SalarioMinimo);
         $('#editSalarioMaximo').val(v.SalarioMaximo);
         $('#editFechaApertura').val(v.FechaApertura);
@@ -169,7 +169,7 @@ $('#btnSaveEdit').click(function() {
     $.post(API_VACANTES, {
         op:'updateVacante', IdVacante:idEnc, NombreVacante:n,
         IdAreaTecnica:$('#editAreaTecnica').val()||'', IdPuesto:$('#editPuesto').val()||'',
-        TipoContratacion:$('#editTipoContratacion').val(), IdSucursal:$('#editSucursal').val()||'',
+        TipoContratacion:$('#editTipoContratacion').val(), IdEmpresa:$('#editEmpresa').val()||'',
         DescripcionPuesto:$('#editDescripcionPuesto').val(),
         SalarioMinimo:$('#editSalarioMinimo').val()||'', SalarioMaximo:$('#editSalarioMaximo').val()||'',
         FechaApertura:fa, FechaCierre:$('#editFechaCierre').val()||'',

@@ -323,6 +323,31 @@ class Organigramas extends Conexiones
         return "1";
     }
 
+    function updateOrganigramaTitulo($idOrganigramas, $Titulo)
+    {
+        $idOrganigramas = base64_decode($idOrganigramas);
+        $Titulo = trim($Titulo);
+        if ($Titulo === "") {
+            return "Titulo requerido";
+        }
+        $Conexiones2 = new Conexiones();
+        $q2 = "UPDATE Organigramas SET Titulo = '$Titulo' WHERE idOrganigramas = '$idOrganigramas';";
+        $Conexiones2->ExecuteQuery($q2, array());
+        return "1";
+    }
+
+    function deleteOrganigrama($idOrganigramas)
+    {
+        $idOrganigramas = base64_decode($idOrganigramas);
+        $Conexiones2 = new Conexiones();
+        $q2 = "DELETE FROM DetalleOrganigrama WHERE idOrganigramas = '$idOrganigramas';";
+        $Conexiones2->ExecuteQuery($q2, array());
+        $Conexiones3 = new Conexiones();
+        $q3 = "DELETE FROM Organigramas WHERE idOrganigramas = '$idOrganigramas';";
+        $Conexiones3->ExecuteQuery($q3, array());
+        return "1";
+    }
+
     function getDatosOrganigramas(){
         $ArrayRetorno = [];
         $Datos = [];

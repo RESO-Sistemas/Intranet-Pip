@@ -12,13 +12,13 @@ if ($op == "getVacantesPublicadas")     { echo trim($V->getVacantesPublicadas())
 if ($op == "getVacanteById")            { echo trim($V->getVacanteById($_POST["IdVacante"])); }
 if ($op == "addVacante")                {
     echo trim($V->addVacante($_POST["NombreVacante"], $_POST["IdAreaTecnica"]??null, $_POST["IdPuesto"]??null,
-        $_POST["TipoContratacion"], $_POST["IdSucursal"]??null, $_POST["DescripcionPuesto"]??"",
+        $_POST["TipoContratacion"], $_POST["IdEmpresa"]??null, $_POST["DescripcionPuesto"]??"",
         $_POST["SalarioMinimo"]??null, $_POST["SalarioMaximo"]??null, $_POST["FechaApertura"],
         $_POST["FechaCierre"]??null, $_POST["BanderaCV"]??0, $_POST["BanderaSE"]??0));
 }
 if ($op == "updateVacante")             {
     echo trim($V->updateVacante($_POST["IdVacante"], $_POST["NombreVacante"], $_POST["IdAreaTecnica"]??null,
-        $_POST["IdPuesto"]??null, $_POST["TipoContratacion"], $_POST["IdSucursal"]??null,
+        $_POST["IdPuesto"]??null, $_POST["TipoContratacion"], $_POST["IdEmpresa"]??null,
         $_POST["DescripcionPuesto"]??"", $_POST["SalarioMinimo"]??null, $_POST["SalarioMaximo"]??null,
         $_POST["FechaApertura"], $_POST["FechaCierre"]??null, $_POST["BanderaCV"]??0, $_POST["BanderaSE"]??0));
 }
@@ -45,7 +45,7 @@ if ($op == "deleteInduccionVacante")    { echo trim($V->deleteInduccionVacante($
 if ($op == "getAreasTecnicasActivas")   { echo trim($V->getAreasTecnicasActivas()); }
 if ($op == "addAreaTecnica")            { echo trim($V->addAreaTecnica($_POST["NombreArea"], $_POST["Descripcion"]??"")); }
 if ($op == "getPuestosActivos")         { echo trim($V->getPuestosActivos()); }
-if ($op == "getSucursalesActivas")      { echo trim($V->getSucursalesActivas()); }
+if ($op == "getEmpresasActivas")        { echo trim($V->getEmpresasActivas()); }
 if ($op == "getProcesosVacantesActivos"){ echo trim($V->getProcesosVacantesActivos()); }
 if ($op == "getEvaluacionesActivas")    { echo trim($V->getEvaluacionesActivas()); }
 if ($op == "getInduccionesActivas")     { echo trim($V->getInduccionesActivas()); }

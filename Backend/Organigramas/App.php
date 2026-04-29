@@ -70,6 +70,17 @@
     echo trim($Organigramas->getOrganigramasControl());
   }
 
+  if ($op == "updateOrganigramaTitulo") {
+    $idOrganigramas = $_POST["idOrganigramas"];
+    $Titulo = $_POST["Titulo"];
+    echo trim($Organigramas->updateOrganigramaTitulo($idOrganigramas, $Titulo));
+  }
+
+  if ($op == "deleteOrganigrama") {
+    $idOrganigramas = $_POST["idOrganigramas"];
+    echo trim($Organigramas->deleteOrganigrama($idOrganigramas));
+  }
+
   if ($op == "updateStatusOrganigrama") {
     $idOrganigramas = $_POST["idOrganigramas"];
     echo trim($Organigramas->updateStatusOrganigrama($idOrganigramas));

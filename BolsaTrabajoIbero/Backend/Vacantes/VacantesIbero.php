@@ -15,23 +15,23 @@ class VacantesIbero extends Conexiones
 
     function getVacantes() {
         $this->autoCerrar();
-        $q = "SELECT v.*, a.NombreArea, p.Puesto, s.Sucursal,
+        $q = "SELECT v.*, a.NombreArea, p.Puesto, e.NombreEmpresa AS Empresa,
                      CASE v.Estatus WHEN 1 THEN 'Borrador' WHEN 2 THEN 'Activa' WHEN 3 THEN 'Cerrada' END AS EstatusTexto
               FROM VacantesIbero v
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
               LEFT JOIN Puestos p ON v.IdPuesto=p.IdPuesto
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               ORDER BY v.IdVacante DESC";
         return json_encode($this->Select($q));
     }
 
     function getVacantesPublicadas() {
         $this->autoCerrar();
-        $q = "SELECT v.*, a.NombreArea, p.Puesto, s.Sucursal
+        $q = "SELECT v.*, a.NombreArea, p.Puesto, e.NombreEmpresa AS Empresa
               FROM VacantesIbero v
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
               LEFT JOIN Puestos p ON v.IdPuesto=p.IdPuesto
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               WHERE v.Estatus=2 AND v.Publicada=1 AND v.FechaApertura<=CURDATE()
                 AND (v.FechaCierre IS NULL OR v.FechaCierre>=CURDATE())
               ORDER BY v.FechaApertura DESC";
@@ -40,7 +40,7 @@ class VacantesIbero extends Conexiones
 
     function getRequisitosDocumentacionVacantes() {
         $this->autoCerrar();
-        $q = "SELECT v.*, a.NombreArea, p.Puesto, s.Sucursal,
+        $q = "SELECT v.*, a.NombreArea, p.Puesto, e.NombreEmpresa AS Empresa,
                      CASE WHEN v.BanderaCV=1 AND v.BanderaSE=1 THEN 'Ambas'
                           WHEN v.BanderaCV=1 THEN 'Curriculum Vitae (CV)'
                           WHEN v.BanderaSE=1 THEN 'Solicitud de Empleo'
@@ -48,7 +48,7 @@ class VacantesIbero extends Conexiones
               FROM VacantesIbero v
               LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
               LEFT JOIN Puestos p ON v.IdPuesto=p.IdPuesto
-              LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+              LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
               WHERE v.Estatus=2 AND v.Publicada=1 AND v.FechaApertura<=CURDATE()
                 AND (v.FechaCierre IS NULL OR v.FechaCierre>=CURDATE())
               ORDER BY v.NombreVacante ASC";
@@ -58,11 +58,11 @@ class VacantesIbero extends Conexiones
     function getVacanteById($IdVacante) {
         try {
             $id = intval(base64_decode($IdVacante));
-            $r = $this->Select("SELECT v.*, a.NombreArea, p.Puesto, s.Sucursal
+            $r = $this->Select("SELECT v.*, a.NombreArea, p.Puesto, e.NombreEmpresa AS Empresa
                                 FROM VacantesIbero v
                                 LEFT JOIN AreasTecnicasIbero a ON v.IdAreaTecnica=a.IdAreaTecnica
                                 LEFT JOIN Puestos p ON v.IdPuesto=p.IdPuesto
-                                LEFT JOIN SucursalDepto s ON v.IdSucursal=s.IdSucursal
+                                LEFT JOIN EmpresasIbero e ON v.IdEmpresa=e.IdEmpresa
                                 WHERE v.IdVacante=$id LIMIT 1");
             if (!empty($r)) return json_encode(["Resultado"=>true,"Siguiente"=>true,"Datos"=>$r[0]]);
             return json_encode(["Resultado"=>true,"Siguiente"=>false,"Msg"=>"No encontrada."]);
@@ -72,7 +72,7 @@ class VacantesIbero extends Conexiones
     }
 
     function addVacante($NombreVacante,$IdAreaTecnica,$IdPuesto,$TipoContratacion,
-                        $IdSucursal,$DescripcionPuesto,$SalarioMinimo,$SalarioMaximo,
+                        $IdEmpresa,$DescripcionPuesto,$SalarioMinimo,$SalarioMaximo,
                         $FechaApertura,$FechaCierre,$BanderaCV,$BanderaSE) {
         try {
             $n  = $this->sanitize($NombreVacante);
@@ -81,16 +81,16 @@ class VacantesIbero extends Conexiones
             $fa = $this->sanitize($FechaApertura);
             $area = empty($IdAreaTecnica) ? "NULL" : intval($IdAreaTecnica);
             $pue  = empty($IdPuesto) ? "NULL" : intval($IdPuesto);
-            $suc  = empty($IdSucursal) ? "NULL" : intval($IdSucursal);
+            $emp  = empty($IdEmpresa) ? "NULL" : intval($IdEmpresa);
             $smin = empty($SalarioMinimo) ? "NULL" : floatval($SalarioMinimo);
             $smax = empty($SalarioMaximo) ? "NULL" : floatval($SalarioMaximo);
             $fc   = empty($FechaCierre) ? "NULL" : "'" . $this->sanitize($FechaCierre) . "'";
             $cv   = intval($BanderaCV);
             $se   = intval($BanderaSE);
             $id = $this->InsertAndGetId(
-                "INSERT INTO VacantesIbero (NombreVacante,IdAreaTecnica,IdPuesto,TipoContratacion,IdSucursal,
+                "INSERT INTO VacantesIbero (NombreVacante,IdAreaTecnica,IdPuesto,TipoContratacion,IdEmpresa,
                  DescripcionPuesto,SalarioMinimo,SalarioMaximo,FechaApertura,FechaCierre,BanderaCV,BanderaSE,Estatus,Publicada)
-                 VALUES ('$n',$area,$pue,'$tc',$suc,'$dp',$smin,$smax,'$fa',$fc,$cv,$se,1,0)");
+                 VALUES ('$n',$area,$pue,'$tc',$emp,'$dp',$smin,$smax,'$fa',$fc,$cv,$se,1,0)");
             if ($id) return json_encode(["Resultado"=>true,"Siguiente"=>true,"Msg"=>"¡Vacante registrada!","IdVacante"=>$id]);
             return json_encode(["Resultado"=>false,"Msg"=>"Error al registrar."]);
         } catch(\Exception $e) {
@@ -99,7 +99,7 @@ class VacantesIbero extends Conexiones
     }
 
     function updateVacante($IdVacante,$NombreVacante,$IdAreaTecnica,$IdPuesto,$TipoContratacion,
-                           $IdSucursal,$DescripcionPuesto,$SalarioMinimo,$SalarioMaximo,
+                           $IdEmpresa,$DescripcionPuesto,$SalarioMinimo,$SalarioMaximo,
                            $FechaApertura,$FechaCierre,$BanderaCV,$BanderaSE) {
         try {
             $id   = intval(base64_decode($IdVacante));
@@ -109,7 +109,7 @@ class VacantesIbero extends Conexiones
             $fa   = $this->sanitize($FechaApertura);
             $area = empty($IdAreaTecnica) ? "NULL" : intval($IdAreaTecnica);
             $pue  = empty($IdPuesto) ? "NULL" : intval($IdPuesto);
-            $suc  = empty($IdSucursal) ? "NULL" : intval($IdSucursal);
+            $emp  = empty($IdEmpresa) ? "NULL" : intval($IdEmpresa);
             $smin = empty($SalarioMinimo) ? "NULL" : floatval($SalarioMinimo);
             $smax = empty($SalarioMaximo) ? "NULL" : floatval($SalarioMaximo);
             $fc   = empty($FechaCierre) ? "NULL" : "'" . $this->sanitize($FechaCierre) . "'";
@@ -117,7 +117,7 @@ class VacantesIbero extends Conexiones
             $se   = intval($BanderaSE);
             $this->ProcedureExec(
                 "UPDATE VacantesIbero SET NombreVacante='$n',IdAreaTecnica=$area,IdPuesto=$pue,
-                 TipoContratacion='$tc',IdSucursal=$suc,DescripcionPuesto='$dp',SalarioMinimo=$smin,
+                 TipoContratacion='$tc',IdEmpresa=$emp,DescripcionPuesto='$dp',SalarioMinimo=$smin,
                  SalarioMaximo=$smax,FechaApertura='$fa',FechaCierre=$fc,BanderaCV=$cv,BanderaSE=$se
                  WHERE IdVacante=$id");
             return json_encode(["Resultado"=>true,"Siguiente"=>true,"Msg"=>"¡Vacante actualizada!"]);
@@ -226,7 +226,7 @@ class VacantesIbero extends Conexiones
         return $id ? json_encode(["estatus"=>true,"id"=>$id,"nombre"=>$n]) : json_encode(["estatus"=>false,"msg"=>"Error."]);
     }
     function getPuestosActivos() { return json_encode($this->Select("SELECT IdPuesto, Puesto FROM Puestos ORDER BY Puesto ASC")); }
-    function getSucursalesActivas() { return json_encode($this->Select("SELECT IdSucursal, Sucursal FROM SucursalDepto ORDER BY Sucursal ASC")); }
+    function getEmpresasActivas() { return json_encode($this->Select("SELECT IdEmpresa, NombreEmpresa AS Empresa FROM EmpresasIbero WHERE Estatus=1 ORDER BY NombreEmpresa ASC")); }
     function getProcesosVacantesActivos() { return json_encode($this->Select("SELECT IdProceso, NombreProceso FROM ProcesosVacantesIbero WHERE Estatus=1 ORDER BY IdProceso ASC")); }
     function getEvaluacionesActivas() { return json_encode($this->Select("SELECT idEvaluaciones, Titulo FROM EvaluacionesIbero WHERE Status=1 AND PreguntasAceptadas=1 ORDER BY Titulo ASC")); }
     function getInduccionesActivas() { return json_encode($this->Select("SELECT IdInduccion, NombreInduccion FROM InduccionesVacantesIbero WHERE Estatus=1 ORDER BY NombreInduccion ASC")); }

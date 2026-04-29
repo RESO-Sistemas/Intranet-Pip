@@ -124,8 +124,8 @@
                         <select id="cmbAreaTecnica" class="form-select"><option value="">Seleccione...</option></select></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Puesto</label>
                         <select id="cmbPuesto" class="form-select"><option value="">Seleccione...</option></select></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">Sucursal</label>
-                        <select id="cmbSucursal" class="form-select"><option value="">Seleccione...</option></select></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Empresa</label>
+                        <select id="cmbEmpresa" class="form-select"><option value="">Seleccione...</option></select></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Salario Mínimo</label>
                         <input id="txtSalarioMinimo" type="number" step="0.01" class="form-control" placeholder="0.00"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Salario Máximo</label>
@@ -174,8 +174,8 @@
                         <select id="editAreaTecnica" class="form-select"><option value="">Seleccione...</option></select></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Puesto</label>
                         <select id="editPuesto" class="form-select"><option value="">Seleccione...</option></select></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">Sucursal</label>
-                        <select id="editSucursal" class="form-select"><option value="">Seleccione...</option></select></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Empresa</label>
+                        <select id="editEmpresa" class="form-select"><option value="">Seleccione...</option></select></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Salario Mínimo</label>
                         <input id="editSalarioMinimo" type="number" step="0.01" class="form-control"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Salario Máximo</label>

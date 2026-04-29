@@ -7,7 +7,7 @@
 -- ==============================================================================
 
 -- 1. Insertar Vacantes de Prueba
-INSERT INTO VacantesIbero (IdVacante, NombreVacante, IdAreaTecnica, IdSucursal, DescripcionPuesto, Estatus, FechaApertura, Publicada)
+INSERT INTO VacantesIbero (IdVacante, NombreVacante, IdAreaTecnica, IdEmpresa, DescripcionPuesto, Estatus, FechaApertura, Publicada)
 VALUES 
 (1, 'Desarrollador Full Stack Jr.', 1, 1, 'Vacante para un desarrollador con experiencia en PHP y JS.', 2, CURRENT_DATE, 1),
 (2, 'Coordinador de Recursos Humanos', 2, 1, 'Coordinación de reclutamiento y selección en sede principal.', 2, CURRENT_DATE, 1);
