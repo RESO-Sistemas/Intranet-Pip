@@ -248,22 +248,22 @@ function renderJobs(vacantes) {
         <div class="magic-card group" data-id="${v.IdVacante}">
             <div class="border-beam opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div class="relative z-10 p-6 flex flex-col h-full">
-                <div class="flex justify-between items-start mb-4">
+                <div class="flex flex-wrap gap-2 mb-4">
                     <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
                         <i data-lucide="clock" class="w-3 h-3 text-ibero-light"></i>
                         ${v.TipoContratacion || 'Por definir'}
                     </span>
+                    <span class="px-3 py-1.5 rounded-full bg-ibero/10 border border-ibero/20 text-[10px] uppercase tracking-widest font-bold text-ibero-light flex items-center gap-2">
+                        <i data-lucide="building-2" class="w-3 h-3"></i>
+                        ${v.Empresa || 'Empresa'}
+                    </span>
                 </div>
                 <h3 class="text-xl font-bold mb-3 text-white group-hover:text-ibero-light transition-colors leading-tight">${v.NombreVacante}</h3>
-                <p class="text-sm text-gray-500 mb-5 line-clamp-2 flex-grow">${v.DescripcionPuesto||'Vacante disponible en la Universidad Iberoamericana.'}</p>
+                <p class="text-sm text-gray-500 mb-5 line-clamp-2 flex-grow">${v.DescripcionPuesto||'Vacante disponible.'}</p>
                 <div class="space-y-2.5 mb-5">
                     <div class="flex items-center text-gray-400 text-sm gap-3">
-                        <i data-lucide="building-2" class="w-4 h-4 text-white/30"></i>
+                        <i data-lucide="layers" class="w-4 h-4 text-white/30"></i>
                         <span>${v.NombreArea||'Sin área'}</span>
-                    </div>
-                    <div class="flex items-center text-gray-400 text-sm gap-3">
-                        <i data-lucide="map-pin" class="w-4 h-4 text-white/30"></i>
-                        <span>${v.Empresa||'Por definir'}</span>
                     </div>
                     <div class="flex items-center text-gray-400 text-sm gap-3">
                         <i data-lucide="briefcase" class="w-4 h-4 text-white/30"></i>

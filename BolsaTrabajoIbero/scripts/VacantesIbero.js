@@ -33,6 +33,7 @@ function initTable() {
         columns: [
             { data: 'IdVacante', width: '50px' },
             { data: 'NombreVacante' },
+            { data: 'Empresa', defaultContent: '—' },
             { data: 'NombreArea', defaultContent: '—' },
             { data: 'TipoContratacion' },
             { data: 'FechaApertura' },

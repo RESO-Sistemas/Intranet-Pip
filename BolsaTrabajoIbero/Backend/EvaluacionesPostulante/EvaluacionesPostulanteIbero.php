@@ -57,7 +57,7 @@ class EvaluacionesPostulanteIbero extends Conexiones
                 "SELECT pe.idPreguntasEvaluacion AS IdPregunta, pe.Titulo, pe.Descripcion,
                         pe.idTipoPregunta, tp.Descripcion AS TipoPregunta, tp.Bool, tp.Multiple1R, tp.Rango,
                         pe.Orden,
-                        (SELECT Competencia FROM Competencias WHERE idCompetencias = pe.idCompetencias LIMIT 1) AS Competencia
+                        (SELECT Competencia FROM CompetenciasIbero WHERE idCompetencias = pe.idCompetencias LIMIT 1) AS Competencia
                  FROM PreguntasEvaluacionIbero pe
                  INNER JOIN TipoPreguntaIbero tp ON tp.idTipoPregunta = pe.idTipoPregunta
                  WHERE pe.idEvaluaciones = $idEval ORDER BY pe.Orden ASC, pe.idPreguntasEvaluacion ASC"
@@ -241,7 +241,7 @@ class EvaluacionesPostulanteIbero extends Conexiones
         $id = intval(base64_decode($IdPostulanteEvaluacion));
         $q = "SELECT pr.IdRespuesta, pr.Respuesta, pr.FechaRespuesta,
                      pe.Titulo AS Pregunta, pe.TipoPregunta, pe.Orden,
-                     (SELECT Competencia FROM Competencias WHERE idCompetencias=pe.idCompetencias LIMIT 1) AS Competencia,
+                     (SELECT Competencia FROM CompetenciasIbero WHERE idCompetencias=pe.idCompetencias LIMIT 1) AS Competencia,
                      (SELECT BoolCorreta FROM PreguntasConfiguracionIbero WHERE idPreguntasEvaluacion=pe.idPreguntasEvaluacion LIMIT 1) AS RespCorrecta,
                      (SELECT DescripcionRespuesta FROM PreguntasPosiblesRespuestasIbero ppr
                       INNER JOIN PreguntasConfiguracionIbero pcc ON pcc.RespuestaCorrectaOM=ppr.idPreguntasPosiblesRespuestas
@@ -290,7 +290,7 @@ class EvaluacionesPostulanteIbero extends Conexiones
         $preguntas = $this->Select(
             "SELECT pe.idPreguntasEvaluacion, pe.idTipoPregunta, pe.idCompetencias, pe.Titulo, pe.Descripcion, pe.Orden,
                     tp.Descripcion AS TipoPregunta, tp.Bool, tp.Multiple1R, tp.Rango,
-                    (SELECT Competencia FROM Competencias WHERE idCompetencias=pe.idCompetencias LIMIT 1) AS Competencia
+                    (SELECT Competencia FROM CompetenciasIbero WHERE idCompetencias=pe.idCompetencias LIMIT 1) AS Competencia
              FROM PreguntasEvaluacionIbero pe
              INNER JOIN TipoPreguntaIbero tp ON tp.idTipoPregunta = pe.idTipoPregunta
              WHERE pe.idEvaluaciones=$id ORDER BY pe.Orden ASC, pe.idPreguntasEvaluacion ASC"
@@ -389,11 +389,11 @@ class EvaluacionesPostulanteIbero extends Conexiones
     }
 
     function getTiposPregunta() {
-        return json_encode($this->Select("SELECT idTipoPregunta, Descripcion, Bool, Multiple1R, Rango FROM TipoPregunta WHERE Status=1 ORDER BY idTipoPregunta ASC"));
+        return json_encode($this->Select("SELECT idTipoPregunta, Descripcion, Bool, Multiple1R, Rango FROM TipoPreguntaIbero WHERE Status=1 ORDER BY idTipoPregunta ASC"));
     }
 
     function getCompetencias() {
-        return json_encode($this->Select("SELECT idCompetencias, Competencia FROM Competencias WHERE Estatus=1 ORDER BY Competencia ASC"));
+        return json_encode($this->Select("SELECT idCompetencias, Competencia FROM CompetenciasIbero WHERE Estatus=1 ORDER BY Competencia ASC"));
     }
 }
 ?>

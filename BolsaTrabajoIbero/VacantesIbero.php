@@ -46,6 +46,7 @@
             </div>
         </div>
         <a href="VacantesIbero.php" class="active"><i data-lucide="briefcase"></i> Vacantes</a>
+        <a href="EmpresasIbero.php"><i data-lucide="building-2"></i> Empresas</a>
         <a href="PostulantesVacanteIbero.php"><i data-lucide="users"></i> Postulantes</a>
         <a href="PostulantesGeneralIbero.php"><i data-lucide="database"></i> Base Candidatos</a>
         <a href="ProcesosVacantesIbero.php"><i data-lucide="git-branch"></i> Procesos</a>
@@ -93,7 +94,7 @@
                 <div class="table-responsive">
                     <table id="tableVacantes" class="table table-hover align-middle" style="width:100%">
                         <thead class="table-light">
-                            <tr><th>#</th><th>Vacante</th><th>Área</th><th>Tipo</th><th>Apertura</th><th>Estatus</th><th>Publicada</th><th>Acciones</th></tr>
+                            <tr><th>#</th><th>Vacante</th><th>Empresa</th><th>Área</th><th>Tipo</th><th>Apertura</th><th>Estatus</th><th>Publicada</th><th>Acciones</th></tr>
                         </thead>
                         <tbody></tbody>
                     </table>

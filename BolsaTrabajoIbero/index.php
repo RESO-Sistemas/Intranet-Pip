@@ -82,7 +82,7 @@
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-bold" style="background:rgba(230,126,34,0.15);color:#e67e22;border:1px solid rgba(230,126,34,0.3);">Admin</span>
             </a>
-
+<!-- 
             <div class="card-link" style="cursor:default;opacity:0.5;">
                 <div class="icon" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
                     <i data-lucide="database" style="color:#888;width:28px;height:28px;"></i>
@@ -92,9 +92,9 @@
                     <div class="text-gray-500 text-sm mt-1">Ejecutar ibero_schema.sql</div>
                 </div>
                 <code class="text-xs text-gray-600">database/ibero_schema.sql</code>
-            </div>
+            </div> -->
         </div>
-
+<!-- 
         <div class="mt-10 p-5 rounded-2xl" style="background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);">
             <div class="flex items-start gap-3">
                 <i data-lucide="info" style="color:#e74c3c;width:20px;height:20px;flex-shrink:0;margin-top:2px;"></i>
@@ -106,7 +106,7 @@
                     </p>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
     <script>lucide.createIcons();</script>
 </body>

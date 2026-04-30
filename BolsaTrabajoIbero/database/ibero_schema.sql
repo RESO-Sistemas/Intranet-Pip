@@ -101,11 +101,19 @@ INSERT INTO `TipoPreguntaIbero` (`idTipoPregunta`,`Descripcion`,`Status`,`Bool`,
 (3, 'Rango',                  1, 0, 0, 0, 0, 1),
 (4, 'Texto Libre',            1, 0, 0, 0, 0, 0);
 
+DROP TABLE IF EXISTS `CompetenciasIbero`;
 CREATE TABLE `CompetenciasIbero` (
   `idCompetencias` int(11) NOT NULL AUTO_INCREMENT,
   `Competencia` varchar(100) NOT NULL,
-  `Significado` varchar(500) DEFAULT '',
+  `Significado` text,
   `Estatus` int(11) NOT NULL DEFAULT '1',
+  `TipoCompetencia` int(11) DEFAULT '1' COMMENT '1=Normal, 2=Liderazgo, 3=Técnica',
+  `DescripcionA` text COMMENT 'Nivel A - Excelente',
+  `DescripcionB` text COMMENT 'Nivel B - Muy Bueno',
+  `DescripcionC` text COMMENT 'Nivel C - Bueno',
+  `DescripcionD` text COMMENT 'Nivel D - Aceptable',
+  `DescripcionE` text COMMENT 'Nivel E - Insuficiente',
+  `FechaCreacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`idCompetencias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
