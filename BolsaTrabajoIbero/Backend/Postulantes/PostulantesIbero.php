@@ -426,6 +426,50 @@ class PostulantesIbero extends Conexiones
     }
 
     // ==========================================
+    // COMPARATIVA POR COMPETENCIAS
+    // ==========================================
+    function getComparativoPorCompetencias($IdVacante) {
+        $id = is_numeric($IdVacante) ? intval($IdVacante) : intval(base64_decode($IdVacante));
+        if (!$id) return json_encode(["Resultado"=>false,"Msg"=>"Vacante inválida."]);
+
+        $q = "SELECT
+                  pv.IdPostulanteVacante,
+                  CONCAT(p.Nombre,' ',p.ApellidoPaterno,' ',IFNULL(p.ApellidoMaterno,'')) AS NombreCompleto,
+                  IFNULL(c.Competencia,'Sin Competencia') AS Competencia,
+                  ROUND(AVG(
+                      CASE
+                          WHEN pc.BoolCorreta IS NOT NULL
+                               AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4)
+                               THEN 100
+                          WHEN pc.BoolCorreta IS NOT NULL THEN 0
+                          WHEN pc.RespuestaCorrectaOM IS NOT NULL
+                               AND (CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
+                                    OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4))
+                               THEN 100
+                          WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
+                          ELSE NULL
+                      END
+                  ), 2) AS ScoreCompetencia
+              FROM PostulantesEvaluacionesIbero pe
+              INNER JOIN PostulantesVacantesIbero pv ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
+              INNER JOIN PostulantesIbero p ON p.IdPostulante = pv.IdPostulante
+              INNER JOIN PostulantesRespuestasIbero pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
+              INNER JOIN PreguntasEvaluacionIbero preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+              LEFT JOIN CompetenciasIbero c ON c.idCompetencias = preg.idCompetencias
+              LEFT JOIN PreguntasConfiguracionIbero pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+              LEFT JOIN PreguntasPosiblesRespuestasIbero ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+              WHERE pv.IdVacante = $id
+                AND pe.EstatusEvaluacion = 3
+              GROUP BY pv.IdPostulanteVacante, NombreCompleto, Competencia
+              HAVING ScoreCompetencia IS NOT NULL
+              ORDER BY NombreCompleto, Competencia";
+
+        $rows = $this->Select($q);
+        if (empty($rows)) return json_encode(["Resultado"=>true,"Siguiente"=>true,"Data"=>[]]);
+        return json_encode(["Resultado"=>true,"Siguiente"=>true,"Data"=>$rows]);
+    }
+
+    // ==========================================
     // PRIVADOS
     // ==========================================
     protected function normalizarTelefono($t) {

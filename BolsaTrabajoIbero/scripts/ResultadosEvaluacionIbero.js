@@ -6,6 +6,22 @@ const API_P = 'Backend/Postulantes/App.php';
 const API_V = 'Backend/Vacantes/App.php';
 let comparativaData = [];
 let graficaInstance = null;
+let graficaBarrasInstance = null;
+let radarInstance = null;
+let competenciasData = [];
+
+const COLORES_CANDIDATOS = [
+    { bg: 'rgba(192,57,43,.55)',  border: 'rgba(192,57,43,1)'  },
+    { bg: 'rgba(41,128,185,.55)', border: 'rgba(41,128,185,1)'  },
+    { bg: 'rgba(39,174,96,.55)',  border: 'rgba(39,174,96,1)'   },
+    { bg: 'rgba(243,156,18,.55)', border: 'rgba(243,156,18,1)'  },
+    { bg: 'rgba(142,68,173,.55)', border: 'rgba(142,68,173,1)'  },
+    { bg: 'rgba(22,160,133,.55)', border: 'rgba(22,160,133,1)'  },
+    { bg: 'rgba(230,126,34,.55)', border: 'rgba(230,126,34,1)'  },
+    { bg: 'rgba(52,73,94,.55)',   border: 'rgba(52,73,94,1)'    },
+    { bg: 'rgba(26,188,156,.55)', border: 'rgba(26,188,156,1)'  },
+    { bg: 'rgba(241,196,15,.55)', border: 'rgba(241,196,15,1)'  },
+];
 
 // ==========================================
 // INIT: Cargar vacantes en el selector
@@ -36,18 +52,26 @@ async function cargarComparativa() {
 
     const btn = $('button[onclick="cargarComparativa()"]').prop('disabled',true).text('Cargando...');
     try {
-        const r = await $.ajax({type:'POST',url:API_P,data:{op:'getComparativoResultadosVacante',IdVacante:btoa(idV)},dataType:'json'});
+        const [r, rc] = await Promise.all([
+            $.ajax({type:'POST',url:API_P,data:{op:'getComparativoResultadosVacante',IdVacante:btoa(idV)},dataType:'json'}),
+            $.ajax({type:'POST',url:API_P,data:{op:'getComparativoPorCompetencias',IdVacante:btoa(idV)},dataType:'json'})
+        ]);
+
         btn.prop('disabled',false).html('<i data-lucide="bar-chart-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Ver Comparativa');
         lucide.createIcons();
 
         if (!r.Resultado || !r.Data || !r.Data.length) {
             toastr.info('No hay candidatos en esta vacante.'); return;
         }
+
         comparativaData = r.Data;
+        competenciasData = (rc.Resultado && Array.isArray(rc.Data)) ? rc.Data : [];
+
         renderMetricasGlobales(r.Data);
         renderRanking(r.Data);
         renderFortalezasAreas(r.Data);
         renderCalculoDetallado(r.Data);
+        renderSelectCandidatos(competenciasData);
         $('#panel-resultados').show();
         lucide.createIcons();
     } catch(e) {
@@ -89,7 +113,6 @@ function renderMetricasGlobales(data) {
 // RANKING GENERAL (scoreboard tipo PIP)
 // ==========================================
 function renderRanking(data) {
-    // Ordenar por PromedioGeneral desc
     const sorted = [...data].sort((a,b) => (parseFloat(b.PromedioGeneral)||0) - (parseFloat(a.PromedioGeneral)||0));
     const grid = document.getElementById('grid-ranking');
     grid.innerHTML = sorted.map((c, i) => {
@@ -124,13 +147,53 @@ function renderRanking(data) {
             <div>${evalPills || '<span class="text-muted small">Sin evaluaciones</span>'}</div>
         </div>`;
     }).join('');
+
+    renderBarrasRanking(sorted);
+}
+
+// ==========================================
+// GRÁFICA BARRAS HORIZONTALES — RANKING
+// ==========================================
+function renderBarrasRanking(sorted) {
+    const top = sorted.slice(0, 10).filter(c => c.PromedioGeneral !== null);
+    if (!top.length) { $('#card-barras-ranking').hide(); return; }
+
+    $('#card-barras-ranking').show();
+    if (graficaBarrasInstance) graficaBarrasInstance.destroy();
+
+    const ctx = document.getElementById('graficaBarrasRanking').getContext('2d');
+    const promedios = top.map(c => parseFloat(c.PromedioGeneral));
+    const colores = promedios.map(p => p >= 70 ? 'rgba(39,174,96,.75)' : p >= 50 ? 'rgba(243,156,18,.75)' : 'rgba(192,57,43,.75)');
+
+    graficaBarrasInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: top.map(c => c.NombreCompleto),
+            datasets: [{
+                label: 'Promedio General (%)',
+                data: promedios,
+                backgroundColor: colores,
+                borderColor: colores.map(c => c.replace('.75', '1')),
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { min: 0, max: 100, ticks: { callback: v => v + '%' } },
+                y: { ticks: { font: { size: 12 } } }
+            }
+        }
+    });
 }
 
 // ==========================================
 // FORTALEZAS Y ÁREAS A MEJORAR
 // ==========================================
 function renderFortalezasAreas(data) {
-    // Todas las evaluaciones completadas de todos los candidatos
     let todas = [];
     data.forEach(c => {
         (c.Evaluaciones||[]).filter(e=>e.EstatusEvaluacion==3&&e.Calificacion!==null).forEach(e => {
@@ -158,7 +221,6 @@ function renderFortalezasAreas(data) {
 // CÁLCULO DETALLADO (tabla comparativa tipo PIP)
 // ==========================================
 function renderCalculoDetallado(data) {
-    // Obtener todas las evaluaciones únicas
     const evalNombres = [...new Set(data.flatMap(c=>(c.Evaluaciones||[]).map(e=>e.NombreEvaluacion)))];
     const thead = `<thead class="table-dark"><tr>
         <th>Candidato</th><th>Estatus</th>
@@ -190,6 +252,115 @@ function renderCalculoDetallado(data) {
 }
 
 // ==========================================
+// SELECT DE CANDIDATOS + RADAR
+// ==========================================
+function renderSelectCandidatos(rows) {
+    const sel = $('#selectCandidatosRadar').empty();
+    if (!rows.length) {
+        sel.append('<option disabled>Sin datos de competencias para esta vacante</option>');
+        $('#card-radar-competencias').hide();
+        $('#msg-sin-competencias').show();
+        return;
+    }
+
+    $('#msg-sin-competencias').hide();
+
+    // Candidatos únicos preservando orden de aparición
+    const candidatos = [];
+    const seen = new Set();
+    rows.forEach(r => {
+        if (!seen.has(r.IdPostulanteVacante)) {
+            seen.add(r.IdPostulanteVacante);
+            candidatos.push({ id: r.IdPostulanteVacante, nombre: r.NombreCompleto });
+        }
+    });
+
+    candidatos.forEach((c, i) => {
+        const color = COLORES_CANDIDATOS[i % COLORES_CANDIDATOS.length].border;
+        const opt = $(`<option value="${c.id}">${c.nombre}</option>`).css('color', color);
+        opt.prop('selected', true);
+        sel.append(opt);
+    });
+
+    sel.off('change').on('change', () => actualizarRadar(rows));
+    actualizarRadar(rows);
+}
+
+function actualizarRadar(rows) {
+    const seleccionados = new Set(
+        $('#selectCandidatosRadar').val()?.map(Number) ?? []
+    );
+
+    if (!seleccionados.size) {
+        if (radarInstance) { radarInstance.destroy(); radarInstance = null; }
+        $('#card-radar-competencias').hide();
+        return;
+    }
+
+    // Pivotar: candidato → competencia → score
+    const mapa = {};
+    const nombresMap = {};
+    rows.forEach(r => {
+        const idPV = parseInt(r.IdPostulanteVacante);
+        if (!seleccionados.has(idPV)) return;
+        if (!mapa[idPV]) { mapa[idPV] = {}; nombresMap[idPV] = r.NombreCompleto; }
+        mapa[idPV][r.Competencia] = parseFloat(r.ScoreCompetencia);
+    });
+
+    // Competencias únicas de los candidatos seleccionados
+    const competencias = [...new Set(
+        rows.filter(r => seleccionados.has(parseInt(r.IdPostulanteVacante)))
+            .map(r => r.Competencia)
+    )].sort();
+
+    if (!competencias.length) {
+        if (radarInstance) { radarInstance.destroy(); radarInstance = null; }
+        $('#card-radar-competencias').hide();
+        return;
+    }
+
+    // Asignar colores consistentes por candidato (basado en índice en select)
+    const optsAll = $('#selectCandidatosRadar option').toArray();
+    const datasets = Object.keys(mapa).map(idPV => {
+        const idx = optsAll.findIndex(o => parseInt(o.value) === parseInt(idPV));
+        const color = COLORES_CANDIDATOS[idx >= 0 ? idx % COLORES_CANDIDATOS.length : 0];
+        return {
+            label: nombresMap[idPV],
+            data: competencias.map(c => mapa[idPV][c] ?? null),
+            backgroundColor: color.bg,
+            borderColor: color.border,
+            borderWidth: 2,
+            pointBackgroundColor: color.border,
+            pointRadius: 4,
+            spanGaps: false
+        };
+    });
+
+    $('#card-radar-competencias').show();
+    if (radarInstance) radarInstance.destroy();
+    const ctx = document.getElementById('graficaRadarCompetencias').getContext('2d');
+    radarInstance = new Chart(ctx, {
+        type: 'radar',
+        data: { labels: competencias, datasets },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 100,
+                    ticks: { stepSize: 20, callback: v => v + '%', font: { size: 11 } },
+                    pointLabels: { font: { size: 12 } }
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw !== null ? ctx.raw.toFixed(1)+'%' : 'N/D'}` } }
+            }
+        }
+    });
+}
+
+// ==========================================
 // MODAL DETALLE DE CANDIDATO
 // ==========================================
 async function abrirDetalleCandidato(idPVEncoded, nombre) {
@@ -203,7 +374,6 @@ async function abrirDetalleCandidato(idPVEncoded, nombre) {
         const r = await $.ajax({type:'POST',url:API_P,data:{op:'getPostulanteResultadosEvaluaciones',IdPostulanteVacante:idPVEncoded},dataType:'json'});
         if (!r.Resultado) { $('#detalle-candidato-header').html('<p class="text-danger text-center">Error al cargar.</p>'); return; }
 
-        // Header del candidato
         $('#detalle-candidato-header').html(`
             <div class="row g-3">
                 <div class="col-md-6">
@@ -218,7 +388,6 @@ async function abrirDetalleCandidato(idPVEncoded, nombre) {
                 </div>
             </div><hr>`);
 
-        // Evaluaciones detalladas
         if (!r.Data || !r.Data.length) {
             $('#detalle-evaluaciones').html('<p class="text-muted text-center py-4">Sin evaluaciones asignadas.</p>'); return;
         }
@@ -249,7 +418,6 @@ async function abrirDetalleCandidato(idPVEncoded, nombre) {
             </div>`;
         }).join(''));
 
-        // Gráfica de barras por evaluación
         const completadas = r.Data.filter(e=>e.EstatusEvaluacion==3&&e.Calificacion!==null);
         if (completadas.length > 1) {
             $('#detalle-grafica-container').show();

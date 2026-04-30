@@ -102,12 +102,19 @@
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabRanking">Ranking General</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabFortalezas">Fortalezas y Áreas</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabCalculo">Cálculo detallado</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabCompetencias"><i data-lucide="radar" style="width:13px;height:13px;vertical-align:middle;margin-right:3px;"></i> Radar Competencias</a></li>
             </ul>
 
             <div class="tab-content">
                 <!-- TAB 1: Ranking -->
                 <div class="tab-pane fade show active" id="tabRanking">
                     <div id="grid-ranking"></div>
+                    <div class="card shadow-sm mt-4" id="card-barras-ranking" style="display:none;">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">Comparativa de Promedios</h6>
+                            <canvas id="graficaBarrasRanking" style="max-height:350px;"></canvas>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB 2: Fortalezas y Áreas a Mejorar -->
@@ -145,6 +152,29 @@
                 <!-- TAB 3: Cálculo detallado -->
                 <div class="tab-pane fade" id="tabCalculo">
                     <div id="tabla-calculo"></div>
+                </div>
+
+                <!-- TAB 4: Radar por Competencias -->
+                <div class="tab-pane fade" id="tabCompetencias">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-bold mb-2">Candidatos a comparar</label>
+                            <select id="selectCandidatosRadar" class="form-select" multiple size="6">
+                                <option disabled>Carga una vacante primero...</option>
+                            </select>
+                            <small class="text-muted">Ctrl+Click (o Cmd+Click en Mac) para seleccionar múltiples</small>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm" id="card-radar-competencias" style="display:none;">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">Radar de Competencias por Candidato</h6>
+                            <canvas id="graficaRadarCompetencias" style="max-height:520px;"></canvas>
+                        </div>
+                    </div>
+                    <div id="msg-sin-competencias" class="text-center text-muted py-5" style="display:none;">
+                        <i data-lucide="info" style="width:32px;height:32px;"></i>
+                        <p class="mt-2">Sin datos de competencias para esta vacante.<br><small>Verifica que las preguntas tengan competencias asignadas y que los candidatos hayan completado evaluaciones.</small></p>
+                    </div>
                 </div>
             </div>
         </div>

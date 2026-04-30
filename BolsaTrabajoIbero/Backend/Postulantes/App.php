@@ -27,6 +27,7 @@ if ($op == "getAllPostulantesGeneral")  { echo trim($P->getAllPostulantesGeneral
 if ($op == "getPostulanteHistorialCompleto")   { echo trim($P->getPostulanteHistorialCompleto($_POST["IdPostulante"])); exit; }
 if ($op == "getPostulanteResultadosEvaluaciones") { echo trim($P->getPostulanteResultadosEvaluaciones($_POST["IdPostulanteVacante"])); exit; }
 if ($op == "getComparativoResultadosVacante") { echo trim($P->getComparativoResultadosVacante($_POST["IdVacante"])); exit; }
+if ($op == "getComparativoPorCompetencias")  { echo trim($P->getComparativoPorCompetencias(base64_decode($_POST["IdVacante"] ?? ''))); exit; }
 if ($op == "searchPostulante")        { echo trim($P->searchPostulante($_POST["Termino"]??'')); exit; }
 if ($op == "actualizarPostulanteCompleto") {
     echo trim($P->actualizarPostulanteCompleto(
