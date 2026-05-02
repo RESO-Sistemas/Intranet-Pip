@@ -20,18 +20,15 @@ $MenuP = $Conf->getMenusPadre();
   <title>PIP by Lugo</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
-  <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.css">
   <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
   <link rel="stylesheet" href="plugins/tingle-master/dist/tingle.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined">
   <link rel="stylesheet" href="/plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.css">
 
-  
+
   <!-- Moment.js necesario para FullCalendar -->
   <script src="assets/syncfusion/Packages/ej2-circulargauge/circular-gauge.js"></script>
   <style>
@@ -44,11 +41,16 @@ $MenuP = $Conf->getMenusPadre();
       flex: 0 0 auto;
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
       padding: 8px 14px 6px;
       text-align: center;
     }
-    .kpi-gauge-card svg { display: block; margin: 0 auto; }
+
+    .kpi-gauge-card svg {
+      display: block;
+      margin: 0 auto;
+    }
+
     .kpi-gauge-card .kpi-name {
       font-size: .92rem;
       font-weight: 700;
@@ -58,6 +60,7 @@ $MenuP = $Conf->getMenusPadre();
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .kpi-gauge-card .kpi-fraction {
       font-size: .78rem;
       color: #888;
@@ -67,7 +70,7 @@ $MenuP = $Conf->getMenusPadre();
     /* ============================================================
        Evento item — SIN CAMBIOS
     ============================================================ */
-     .evento-item {
+    .evento-item {
 
       display: flex;
       align-items: flex-start;
@@ -78,11 +81,16 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 8px;
       transition: background-color .15s ease, transform .15s ease;
     }
+
     .evento-item:hover {
       background: #f8f9fb;
       transform: translateX(2px);
     }
-    .evento-item:last-child { border-bottom: none; }
+
+    .evento-item:last-child {
+      border-bottom: none;
+    }
+
     .evento-date-box {
       min-width: 42px;
       text-align: center;
@@ -93,10 +101,26 @@ $MenuP = $Conf->getMenusPadre();
       font-weight: 700;
       line-height: 1.1;
     }
-    .evento-date-box .ev-day { font-size: 1.1rem; }
-    .evento-date-box .ev-month { font-size: .65rem; text-transform: uppercase; }
-    .evento-info .ev-title { font-size: .85rem; font-weight: 600; color: #333; }
-    .evento-info .ev-time { font-size: .75rem; color: #888; }
+
+    .evento-date-box .ev-day {
+      font-size: 1.1rem;
+    }
+
+    .evento-date-box .ev-month {
+      font-size: .65rem;
+      text-transform: uppercase;
+    }
+
+    .evento-info .ev-title {
+      font-size: .85rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .evento-info .ev-time {
+      font-size: .75rem;
+      color: #888;
+    }
 
     .event-detail-modal .modal-content {
       border: none;
@@ -104,11 +128,13 @@ $MenuP = $Conf->getMenusPadre();
       box-shadow: 0 14px 34px rgba(0, 0, 0, .18);
       overflow: hidden;
     }
+
     .event-detail-modal .modal-header {
       background: linear-gradient(120deg, #ffc107, #ff9f1a);
       border-bottom: none;
       padding: 14px 16px;
     }
+
     .event-detail-modal .modal-title {
       color: #222;
       font-size: .98rem;
@@ -118,27 +144,35 @@ $MenuP = $Conf->getMenusPadre();
       gap: 8px;
       margin: 0;
     }
+
     .event-detail-modal .btn-close {
       background-size: .8rem;
       opacity: .7;
     }
-    .event-detail-modal .btn-close:hover { opacity: 1; }
+
+    .event-detail-modal .btn-close:hover {
+      opacity: 1;
+    }
+
     .event-detail-modal .modal-body {
       padding: 16px;
       background: #fff;
     }
+
     .event-detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 12px;
     }
+
     .event-detail-chip {
       background: #f6f8fb;
       border: 1px solid #eef1f4;
       border-radius: 10px;
       padding: 10px;
     }
+
     .event-detail-label {
       font-size: .68rem;
       font-weight: 700;
@@ -147,6 +181,7 @@ $MenuP = $Conf->getMenusPadre();
       letter-spacing: .04em;
       margin-bottom: 3px;
     }
+
     .event-detail-value {
       font-size: .88rem;
       color: #24292f;
@@ -154,19 +189,24 @@ $MenuP = $Conf->getMenusPadre();
       line-height: 1.35;
       word-break: break-word;
     }
+
     .event-detail-description {
       background: #fbfcfd;
       border: 1px solid #edf1f5;
       border-radius: 10px;
       padding: 12px;
     }
+
     .event-detail-description .event-detail-value {
       white-space: pre-wrap;
       font-weight: 500;
       color: #38404a;
     }
+
     @media (max-width: 576px) {
-      .event-detail-grid { grid-template-columns: 1fr; }
+      .event-detail-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ============================================================
@@ -183,26 +223,115 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 6px;
       transition: all .2s ease;
     }
-    .checklist-item:hover { background: #fff8dc; box-shadow: 0 1px 4px rgba(255,196,7,.2); }
-    .checklist-item .chk-name { font-size: .84rem; color: #333; font-weight: 500; }
-    .checklist-item .chk-badge { font-size: .65rem; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
-    .checklist-item.ya-contestado { opacity: .55; background: #f9f9f9; }
-    .checklist-item.ya-contestado .chk-name { text-decoration: line-through; color: #999 !important; }
-    .checklist-item.chk-respondido-si { background: #f0faf3; }
-    .checklist-item.chk-respondido-no { background: #fef5f5; }
-    .chk-btn-group { display: flex; gap: 5px; flex-shrink: 0; align-self: center; }
-    .chk-btn-group .btn { width: 22px; height: 22px; padding: 0; border-radius: 4px; transition: all .2s; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
-    .chk-btn-group .btn svg { width: 12px; height: 12px; display: block; }
-    .chk-btn-si { background: transparent; border: 1.5px solid #28a745; }
-    .chk-btn-si svg { stroke: #28a745; }
-    .chk-btn-si:hover { background: rgba(40,167,69,.1); }
-    .chk-btn-no { background: transparent; border: 1.5px solid #dc3545; }
-    .chk-btn-no svg { stroke: #dc3545; }
-    .chk-btn-no:hover { background: rgba(220,53,69,.1); }
-    .chk-btn-si.active { background: rgba(40,167,69,.15); pointer-events: none; }
-    .chk-btn-no.active { background: rgba(220,53,69,.15); pointer-events: none; }
-    .chk-btn-group .btn:disabled { opacity: .4; pointer-events: none; }
-    .checklist-item .badge.bg-info { font-size: .6rem; padding: 2px 6px; background-color: #17a2b8 !important; }
+
+    .checklist-item:hover {
+      background: #fff8dc;
+      box-shadow: 0 1px 4px rgba(255, 196, 7, .2);
+    }
+
+    .checklist-item .chk-name {
+      font-size: .84rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .checklist-item .chk-badge {
+      font-size: .65rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .checklist-item.ya-contestado {
+      opacity: .55;
+      background: #f9f9f9;
+    }
+
+    .checklist-item.ya-contestado .chk-name {
+      text-decoration: line-through;
+      color: #999 !important;
+    }
+
+    .checklist-item.chk-respondido-si {
+      background: #f0faf3;
+    }
+
+    .checklist-item.chk-respondido-no {
+      background: #fef5f5;
+    }
+
+    .chk-btn-group {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .chk-btn-group .btn {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border-radius: 4px;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .chk-btn-group .btn svg {
+      width: 12px;
+      height: 12px;
+      display: block;
+    }
+
+    .chk-btn-si {
+      background: transparent;
+      border: 1.5px solid #28a745;
+    }
+
+    .chk-btn-si svg {
+      stroke: #28a745;
+    }
+
+    .chk-btn-si:hover {
+      background: rgba(40, 167, 69, .1);
+    }
+
+    .chk-btn-no {
+      background: transparent;
+      border: 1.5px solid #dc3545;
+    }
+
+    .chk-btn-no svg {
+      stroke: #dc3545;
+    }
+
+    .chk-btn-no:hover {
+      background: rgba(220, 53, 69, .1);
+    }
+
+    .chk-btn-si.active {
+      background: rgba(40, 167, 69, .15);
+      pointer-events: none;
+    }
+
+    .chk-btn-no.active {
+      background: rgba(220, 53, 69, .15);
+      pointer-events: none;
+    }
+
+    .chk-btn-group .btn:disabled {
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    .checklist-item .badge.bg-info {
+      font-size: .6rem;
+      padding: 2px 6px;
+      background-color: #17a2b8 !important;
+    }
+
     .turno-header {
       font-size: 1rem;
       font-weight: 700;
@@ -214,15 +343,29 @@ $MenuP = $Conf->getMenusPadre();
       display: flex;
       align-items: center;
     }
-    .turno-header:first-child { margin-top: 0; }
+
+    .turno-header:first-child {
+      margin-top: 0;
+    }
 
     /* ============================================================
        Ajustes de espaciado globales — SIN CAMBIOS
     ============================================================ */
-    .app-content { padding-top: 0 !important; }
-    .content-wrapper { padding-top: 5px !important; }
-    .container { padding-top: 0 !important; }
-    #kpiCarouselWrapper { margin-top: -5px !important; }
+    .app-content {
+      padding-top: 0 !important;
+    }
+
+    .content-wrapper {
+      padding-top: 5px !important;
+    }
+
+    .container {
+      padding-top: 0 !important;
+    }
+
+    #kpiCarouselWrapper {
+      margin-top: -5px !important;
+    }
 
     /* Swiper para imágenes del feed */
     .galleryImgCl {
@@ -232,9 +375,11 @@ $MenuP = $Conf->getMenusPadre();
       overflow: hidden;
       background: #f7f8fa;
     }
+
     .feed-swiper-instance {
       width: 100%;
     }
+
     .feed-swiper-instance .swiper-slide {
       display: flex;
       align-items: center;
@@ -243,12 +388,14 @@ $MenuP = $Conf->getMenusPadre();
       min-height: 220px;
       cursor: zoom-in;
     }
+
     .feed-swiper-image {
       width: 100%;
       max-height: 420px;
       object-fit: contain;
       background: #fff;
     }
+
     .feed-swiper-instance .swiper-button-next,
     .feed-swiper-instance .swiper-button-prev {
       color: #ff6f00;
@@ -258,11 +405,13 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 50%;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
+
     .feed-swiper-instance .swiper-button-next:after,
     .feed-swiper-instance .swiper-button-prev:after {
       font-size: 14px;
       font-weight: 700;
     }
+
     .feed-swiper-instance .swiper-pagination-bullet-active {
       background: #ff4500;
     }
@@ -277,17 +426,20 @@ $MenuP = $Conf->getMenusPadre();
       z-index: 10000;
       padding: 4.5vh 4vw;
     }
+
     #fullscreen-swiper .feed-fullscreen-swiper,
     #fullscreen-swiper .swiper-wrapper,
     #fullscreen-swiper .swiper-slide {
       height: 100%;
     }
+
     #fullscreen-swiper .swiper-slide {
       display: flex;
       align-items: center;
       justify-content: center;
       background: transparent;
     }
+
     #fullscreen-swiper .swiper-slide img {
       max-width: 95%;
       max-height: 85vh;
@@ -295,6 +447,7 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 8px;
       background: #111;
     }
+
     #fullscreen-swiper-backdrop {
       display: none;
       position: fixed;
@@ -305,6 +458,7 @@ $MenuP = $Conf->getMenusPadre();
       z-index: 9999;
       background: rgba(0, 0, 0, 0.9);
     }
+
     #fullscreen-swiper-close {
       color: #fff;
       cursor: pointer;
@@ -323,6 +477,7 @@ $MenuP = $Conf->getMenusPadre();
       line-height: 1;
       background: rgba(0, 0, 0, 0.55);
     }
+
     .no-scroll {
       height: 100%;
       overflow: hidden;
@@ -348,6 +503,7 @@ $MenuP = $Conf->getMenusPadre();
       margin-bottom: 12px;
       box-shadow: 0 4px 12px rgba(255, 120, 40, .08);
     }
+
     .feed-empty-icon {
       width: 54px;
       height: 54px;
@@ -360,12 +516,14 @@ $MenuP = $Conf->getMenusPadre();
       justify-content: center;
       font-size: 1.55rem;
     }
+
     .feed-empty-title {
       font-size: 1.08rem;
       font-weight: 800;
       color: #2f2f2f;
       margin-bottom: 6px;
     }
+
     .feed-empty-text {
       font-size: .86rem;
       color: #666;
@@ -378,7 +536,11 @@ $MenuP = $Conf->getMenusPadre();
       gap: 10px;
       margin-bottom: 10px;
     }
-    .feed-skeleton-more { margin-top: 6px; }
+
+    .feed-skeleton-more {
+      margin-top: 6px;
+    }
+
     .feed-skeleton-card {
       display: flex;
       align-items: flex-start;
@@ -388,6 +550,7 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 8px;
       padding: 12px;
     }
+
     .feed-skeleton-avatar {
       width: 42px;
       height: 42px;
@@ -395,28 +558,46 @@ $MenuP = $Conf->getMenusPadre();
       flex-shrink: 0;
       background: #eceff1;
     }
+
     .feed-skeleton-body {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
+
     .feed-skeleton-line {
       height: 12px;
       border-radius: 999px;
       background: #eceff1;
     }
-    .feed-skeleton-line-sm { width: 35%; }
-    .feed-skeleton-line-md { width: 62%; }
-    .feed-skeleton-line-lg { width: 88%; }
+
+    .feed-skeleton-line-sm {
+      width: 35%;
+    }
+
+    .feed-skeleton-line-md {
+      width: 62%;
+    }
+
+    .feed-skeleton-line-lg {
+      width: 88%;
+    }
+
     .feed-skeleton-shimmer {
       background-image: linear-gradient(90deg, #eceff1 0%, #f7f8fa 45%, #eceff1 100%);
       background-size: 200% 100%;
       animation: feedSkeletonShimmer 1.15s linear infinite;
     }
+
     @keyframes feedSkeletonShimmer {
-      from { background-position: 200% 0; }
-      to { background-position: -200% 0; }
+      from {
+        background-position: 200% 0;
+      }
+
+      to {
+        background-position: -200% 0;
+      }
     }
 
 
@@ -430,7 +611,10 @@ $MenuP = $Conf->getMenusPadre();
       overflow: hidden;
       transition: border-color .1s ease;
     }
-    .reddit-post-card:hover { border-color: #898989; }
+
+    .reddit-post-card:hover {
+      border-color: #898989;
+    }
 
 
     /* KPI Pills — fila scrollable horizontal sobre el feed */
@@ -442,7 +626,11 @@ $MenuP = $Conf->getMenusPadre();
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-    .kpi-pills-row::-webkit-scrollbar { display: none; }
+
+    .kpi-pills-row::-webkit-scrollbar {
+      display: none;
+    }
+
     .kpi-pill {
       flex: 0 0 auto;
       display: flex;
@@ -452,16 +640,18 @@ $MenuP = $Conf->getMenusPadre();
       border: 1px solid #e0e0e0;
       border-radius: 18px;
       padding: 9px 16px 9px 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
       cursor: default;
       min-width: 285px;
     }
+
     .kpi-pill-gauge {
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     .kpi-pill-info {
       display: flex;
       flex-direction: column;
@@ -469,12 +659,14 @@ $MenuP = $Conf->getMenusPadre();
       min-width: 0;
       flex: 1;
     }
+
     .kpi-pill-percent {
       font-size: .8rem;
       font-weight: 700;
       color: #2f2f2f;
       margin-top: 1px;
     }
+
     .kpi-pill-name {
       font-size: .82rem;
       font-weight: 700;
@@ -483,19 +675,23 @@ $MenuP = $Conf->getMenusPadre();
       max-width: 135px;
       word-break: break-word;
     }
+
     .kpi-pill-fraction {
       font-size: .68rem;
       color: #888;
     }
+
     @media (max-width: 768px) {
       .kpi-pill {
         min-width: 255px;
         padding: 8px 12px 8px 8px;
       }
+
       .kpi-pill-gauge {
         transform: scale(.92);
         transform-origin: left center;
       }
+
       .kpi-pill-name {
         max-width: 120px;
       }
@@ -510,12 +706,17 @@ $MenuP = $Conf->getMenusPadre();
       margin-bottom: 12px;
       transition: box-shadow .15s ease;
     }
-    .post-compose-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+
+    .post-compose-box:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+    }
+
     .post-compose-top {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .post-compose-top img {
       width: 36px;
       height: 36px;
@@ -524,6 +725,7 @@ $MenuP = $Conf->getMenusPadre();
       flex-shrink: 0;
       border: 2px solid #edeff1;
     }
+
     .post-compose-trigger {
       flex: 1;
       background: #f6f7f8;
@@ -536,20 +738,24 @@ $MenuP = $Conf->getMenusPadre();
       text-align: left;
       transition: border-color .15s, background .15s;
     }
+
     .post-compose-trigger:hover {
       background: #fff;
       border-color: #0079d3;
       color: #555;
     }
+
     .post-compose-divider {
       border: none;
       border-top: 1px solid #edeff1;
       margin: 10px 0 8px;
     }
+
     .post-compose-actions {
       display: flex;
       gap: 4px;
     }
+
     .post-compose-action {
       display: inline-flex;
       align-items: center;
@@ -564,24 +770,41 @@ $MenuP = $Conf->getMenusPadre();
       cursor: pointer;
       transition: background .1s, color .1s;
     }
-    .post-compose-action:hover { background: #f0f0f0; color: #333; }
-    .post-compose-action i { font-size: .85rem; }
+
+    .post-compose-action:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .post-compose-action i {
+      font-size: .85rem;
+    }
 
     /* Formulario inline de nueva publicación */
     .post-compose-form {
       margin-top: 10px;
       animation: composeSlideIn .18s ease;
     }
+
     @keyframes composeSlideIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .post-compose-form .form-label {
       font-size: .8rem;
       font-weight: 600;
       color: #555;
       margin-bottom: 4px;
     }
+
     .post-compose-form .form-control {
       font-size: .85rem;
       border-color: #edeff1;
@@ -589,11 +812,13 @@ $MenuP = $Conf->getMenusPadre();
       background: #f6f7f8;
       transition: border-color .15s, background .15s;
     }
+
     .post-compose-form .form-control:focus {
       border-color: #0079d3;
       background: #fff;
-      box-shadow: 0 0 0 2px rgba(0,121,211,.12);
+      box-shadow: 0 0 0 2px rgba(0, 121, 211, .12);
     }
+
     .post-compose-form-footer {
       display: flex;
       justify-content: flex-end;
@@ -602,6 +827,7 @@ $MenuP = $Conf->getMenusPadre();
       padding-top: 10px;
       border-top: 1px solid #edeff1;
     }
+
     .btn-cancel-compose {
       background: none;
       border: 1px solid #ccc;
@@ -613,7 +839,11 @@ $MenuP = $Conf->getMenusPadre();
       cursor: pointer;
       transition: background .1s;
     }
-    .btn-cancel-compose:hover { background: #f0f0f0; }
+
+    .btn-cancel-compose:hover {
+      background: #f0f0f0;
+    }
+
     .btn-submit-compose {
       background: #FF4500;
       border: none;
@@ -625,26 +855,94 @@ $MenuP = $Conf->getMenusPadre();
       cursor: pointer;
       transition: background .1s;
     }
-    .btn-submit-compose:hover { background: #e03d00; }
-    .btn-submit-compose:disabled { background: #ccc; cursor: not-allowed; }
 
-    body.dark-mode .kpi-pill { background: #272729; border-color: #3c3c3d; }
-    body.dark-mode .kpi-pill-name { color: #d7dadc; }
-    body.dark-mode .kpi-pill-percent { color: #f0f0f0; }
-    body.dark-mode .kpi-pill-fraction { color: #818384; }
-    body.dark-mode .post-compose-box { background: #272729; border-color: #3c3c3d; }
-    body.dark-mode .post-compose-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,.3); }
-    body.dark-mode .post-compose-trigger { background: #1a1a1b; border-color: #4a4a4b; color: #818384; }
-    body.dark-mode .post-compose-trigger:hover { background: #343536; border-color: #0079d3; color: #d7dadc; }
-    body.dark-mode .post-compose-divider { border-top-color: #3c3c3d; }
-    body.dark-mode .post-compose-action { color: #818384; }
-    body.dark-mode .post-compose-action:hover { background: #343536; color: #d7dadc; }
-    body.dark-mode .post-compose-form .form-control { background: #1a1a1b; border-color: #3c3c3d; color: #d7dadc; }
-    body.dark-mode .post-compose-form .form-control:focus { background: #272729; border-color: #0079d3; }
-    body.dark-mode .post-compose-form .form-label { color: #9a9a9b; }
-    body.dark-mode .post-compose-form-footer { border-top-color: #3c3c3d; }
-    body.dark-mode .btn-cancel-compose { border-color: #4a4a4b; color: #9a9a9b; }
-    body.dark-mode .btn-cancel-compose:hover { background: #343536; }
+    .btn-submit-compose:hover {
+      background: #e03d00;
+    }
+
+    .btn-submit-compose:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    body.dark-mode .kpi-pill {
+      background: #272729;
+      border-color: #3c3c3d;
+    }
+
+    body.dark-mode .kpi-pill-name {
+      color: #d7dadc;
+    }
+
+    body.dark-mode .kpi-pill-percent {
+      color: #f0f0f0;
+    }
+
+    body.dark-mode .kpi-pill-fraction {
+      color: #818384;
+    }
+
+    body.dark-mode .post-compose-box {
+      background: #272729;
+      border-color: #3c3c3d;
+    }
+
+    body.dark-mode .post-compose-box:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+    }
+
+    body.dark-mode .post-compose-trigger {
+      background: #1a1a1b;
+      border-color: #4a4a4b;
+      color: #818384;
+    }
+
+    body.dark-mode .post-compose-trigger:hover {
+      background: #343536;
+      border-color: #0079d3;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .post-compose-divider {
+      border-top-color: #3c3c3d;
+    }
+
+    body.dark-mode .post-compose-action {
+      color: #818384;
+    }
+
+    body.dark-mode .post-compose-action:hover {
+      background: #343536;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .post-compose-form .form-control {
+      background: #1a1a1b;
+      border-color: #3c3c3d;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .post-compose-form .form-control:focus {
+      background: #272729;
+      border-color: #0079d3;
+    }
+
+    body.dark-mode .post-compose-form .form-label {
+      color: #9a9a9b;
+    }
+
+    body.dark-mode .post-compose-form-footer {
+      border-top-color: #3c3c3d;
+    }
+
+    body.dark-mode .btn-cancel-compose {
+      border-color: #4a4a4b;
+      color: #9a9a9b;
+    }
+
+    body.dark-mode .btn-cancel-compose:hover {
+      background: #343536;
+    }
 
     /* Cuerpo del post */
     .rpc-body {
@@ -652,6 +950,7 @@ $MenuP = $Conf->getMenusPadre();
       padding: 8px 10px 6px;
       min-width: 0;
     }
+
     .rpc-meta {
       font-size: .72rem;
       color: #878a8c;
@@ -661,18 +960,24 @@ $MenuP = $Conf->getMenusPadre();
       gap: 6px;
       flex-wrap: wrap;
     }
+
     .rpc-meta img {
       width: 24px;
       height: 24px;
       border-radius: 50%;
       object-fit: cover;
     }
+
     .rpc-meta .rpc-author {
       font-weight: 700;
       color: #222222;
       font-size: .78rem;
     }
-    .rpc-meta .rpc-time { color: #878a8c; }
+
+    .rpc-meta .rpc-time {
+      color: #878a8c;
+    }
+
     .rpc-type-badge {
       display: inline-block;
       font-size: .6rem;
@@ -684,9 +989,18 @@ $MenuP = $Conf->getMenusPadre();
       letter-spacing: .04em;
       vertical-align: middle;
     }
-    .rpc-type-badge.cmp { background: #e91e63; }
-    .rpc-type-badge.any { background: #9c27b0; }
-    .rpc-type-badge.nws { background: #0079d3; }
+
+    .rpc-type-badge.cmp {
+      background: #e91e63;
+    }
+
+    .rpc-type-badge.any {
+      background: #9c27b0;
+    }
+
+    .rpc-type-badge.nws {
+      background: #0079d3;
+    }
 
     /* Título del post */
     .rpc-title {
@@ -713,7 +1027,10 @@ $MenuP = $Conf->getMenusPadre();
       display: block;
       margin-bottom: 8px;
     }
-    .rpc-link:hover { text-decoration: underline; }
+
+    .rpc-link:hover {
+      text-decoration: underline;
+    }
 
     /* Galería de imágenes dentro del post */
     .rpc-gallery {
@@ -732,6 +1049,7 @@ $MenuP = $Conf->getMenusPadre();
       padding-top: 6px;
       margin-top: 4px;
     }
+
     .rpc-action-btn {
       display: inline-flex;
       align-items: center;
@@ -747,13 +1065,38 @@ $MenuP = $Conf->getMenusPadre();
       transition: background .1s, color .1s;
       text-decoration: none;
     }
+
     .rpc-action-btn:hover {
       background: #f0f0f0;
       color: #222;
       text-decoration: none;
     }
-    .rpc-action-btn.liked { color: #FFC107; }
-    .rpc-action-btn.congrat { color: #8E24AA; }
+
+    .rpc-action-btn.liked {
+      color: #FFC107;
+    }
+
+    .rpc-action-btn.congrat {
+      color: #8E24AA;
+    }
+
+    /* ──── Estilos para el corazón relleno vs vacío ──── */
+    .heart-icon.heart-filled {
+      font-weight: 900;
+      -webkit-text-fill-color: #FFC107;
+      color: #FFC107;
+    }
+
+    .heart-icon.heart-outline {
+      font-weight: 400;
+      -webkit-text-fill-color: currentColor;
+      color: inherit;
+    }
+
+    .rpc-action-btn.liked .heart-icon {
+      color: #FFC107;
+      font-weight: 900;
+    }
 
     /* ── Zona de comentarios ── */
     .rpc-comments-area {
@@ -763,9 +1106,17 @@ $MenuP = $Conf->getMenusPadre();
     }
 
     /* Lista de comentarios */
-    .feed-comments-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+    .feed-comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-    .feed-comment-item { display: flex; }
+    .feed-comment-item {
+      display: flex;
+    }
+
     .feed-comment-body {
       flex: 1;
       background: #f0f2f5;
@@ -773,6 +1124,7 @@ $MenuP = $Conf->getMenusPadre();
       padding: 8px 11px;
       min-width: 0;
     }
+
     .feed-comment-header {
       display: flex;
       align-items: baseline;
@@ -780,9 +1132,26 @@ $MenuP = $Conf->getMenusPadre();
       flex-wrap: wrap;
       margin-bottom: 3px;
     }
-    .feed-comment-author { font-size: 12px; font-weight: 700; color: #1c1e21; }
-    .feed-comment-time   { font-size: 10px; color: #90949c; }
-    .feed-comment-text   { font-size: 13px; color: #1c1e21; line-height: 1.45; margin: 0 0 5px; word-break: break-word; }
+
+    .feed-comment-author {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1c1e21;
+    }
+
+    .feed-comment-time {
+      font-size: 10px;
+      color: #90949c;
+    }
+
+    .feed-comment-text {
+      font-size: 13px;
+      color: #1c1e21;
+      line-height: 1.45;
+      margin: 0 0 5px;
+      word-break: break-word;
+    }
+
     .feed-comment-reaction {
       background: none;
       border: none;
@@ -796,9 +1165,22 @@ $MenuP = $Conf->getMenusPadre();
       gap: 3px;
       transition: background .15s;
     }
-    .feed-comment-reaction:hover { background: #e4e6ea; }
-    .feed-comment-reaction.reacted { color: #ffc407; }
-    .feed-comment-empty { font-size: 12px; color: #90949c; font-style: italic; margin: 0; }
+
+    .feed-comment-reaction:hover {
+      background: #e4e6ea;
+    }
+
+    .feed-comment-reaction.reacted {
+      color: #ffc407;
+    }
+
+    .feed-comment-empty {
+      font-size: 12px;
+      color: #90949c;
+      font-style: italic;
+      margin: 0;
+    }
+
     .feed-comment-load-more {
       background: none;
       border: none;
@@ -808,22 +1190,60 @@ $MenuP = $Conf->getMenusPadre();
       cursor: pointer;
       padding: 2px 8px;
     }
-    .feed-comment-load-more:hover { text-decoration: underline; }
+
+    .feed-comment-load-more:hover {
+      text-decoration: underline;
+    }
 
     /* Skeleton comentarios */
-    .feed-comments-skeleton { display: flex; flex-direction: column; gap: 10px; }
-    .fcs-item { display: flex; gap: 10px; align-items: flex-start; }
+    .feed-comments-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fcs-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
     .fcs-avatar {
-      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      flex-shrink: 0;
       background: #e4e6ea;
       animation: fcs-shimmer 1.2s infinite linear;
     }
-    .fcs-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
-    .fcs-line  { height: 10px; border-radius: 5px; background: #e4e6ea; animation: fcs-shimmer 1.2s infinite linear; }
+
+    .fcs-lines {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 4px;
+    }
+
+    .fcs-line {
+      height: 10px;
+      border-radius: 5px;
+      background: #e4e6ea;
+      animation: fcs-shimmer 1.2s infinite linear;
+    }
+
     @keyframes fcs-shimmer {
-      0%   { opacity: 1; }
-      50%  { opacity: .45; }
-      100% { opacity: 1; }
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .45;
+      }
+
+      100% {
+        opacity: 1;
+      }
     }
 
     /* Textarea de comentario */
@@ -835,6 +1255,7 @@ $MenuP = $Conf->getMenusPadre();
       padding-top: 8px;
       border-top: 1px solid #e4e6ea;
     }
+
     .rpc-comment-input-row textarea {
       flex: 1;
       border-radius: 20px;
@@ -846,7 +1267,13 @@ $MenuP = $Conf->getMenusPadre();
       background: #f0f2f5;
       transition: border-color .2s;
     }
-    .rpc-comment-input-row textarea:focus { outline: none; border-color: #ffc407; background: #fff; }
+
+    .rpc-comment-input-row textarea:focus {
+      outline: none;
+      border-color: #ffc407;
+      background: #fff;
+    }
+
     .rpc-comment-input-row .btn-comment {
       background: #ffc407;
       color: #1c1e21;
@@ -859,31 +1286,74 @@ $MenuP = $Conf->getMenusPadre();
       white-space: nowrap;
       transition: background .15s;
     }
-    .rpc-comment-input-row .btn-comment:hover { background: #e6ad00; }
-    .rpc-comment-input-row .btn-comment:disabled { opacity: .6; cursor: not-allowed; }
+
+    .rpc-comment-input-row .btn-comment:hover {
+      background: #e6ad00;
+    }
+
+    .rpc-comment-input-row .btn-comment:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
 
     /* Dark mode comentarios */
-    body.dark-mode .rpc-comments-area { background: transparent; }
-    body.dark-mode .feed-comment-body { background: #2a2d31; }
-    body.dark-mode .feed-comment-author { color: #e4e6eb; }
-    body.dark-mode .feed-comment-text { color: #d4d6da; }
-    body.dark-mode .feed-comment-time { color: #6a6d75; }
-    body.dark-mode .feed-comment-reaction:hover { background: #3a3d42; }
-    body.dark-mode .fcs-avatar, body.dark-mode .fcs-line { background: #3a3d42; }
-    body.dark-mode .rpc-comment-input-row { border-top-color: #3a3d42; }
-    body.dark-mode .rpc-comment-input-row textarea { background: #2a2d31; border-color: #3c3c3d; color: #d7dadc; }
-    body.dark-mode .rpc-comment-input-row textarea:focus { border-color: #ffc407; background: #232528; }
+    body.dark-mode .rpc-comments-area {
+      background: transparent;
+    }
+
+    body.dark-mode .feed-comment-body {
+      background: #2a2d31;
+    }
+
+    body.dark-mode .feed-comment-author {
+      color: #e4e6eb;
+    }
+
+    body.dark-mode .feed-comment-text {
+      color: #d4d6da;
+    }
+
+    body.dark-mode .feed-comment-time {
+      color: #6a6d75;
+    }
+
+    body.dark-mode .feed-comment-reaction:hover {
+      background: #3a3d42;
+    }
+
+    body.dark-mode .fcs-avatar,
+    body.dark-mode .fcs-line {
+      background: #3a3d42;
+    }
+
+    body.dark-mode .rpc-comment-input-row {
+      border-top-color: #3a3d42;
+    }
+
+    body.dark-mode .rpc-comment-input-row textarea {
+      background: #2a2d31;
+      border-color: #3c3c3d;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .rpc-comment-input-row textarea:focus {
+      border-color: #ffc407;
+      background: #232528;
+    }
 
     /* Sidebar sticky */
     .reddit-sidebar {
       position: sticky;
-      top: 72px; /* Ajustar según la altura del header */
+      top: 72px;
+      /* Ajustar según la altura del header */
       align-self: flex-start;
     }
+
     .reddit-sidebar .card {
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
     .reddit-sidebar .card-header {
       background: #f3f5f7;
       color: #2f2f2f;
@@ -893,88 +1363,228 @@ $MenuP = $Conf->getMenusPadre();
       border-radius: 5px 5px 0 0;
       border-bottom: 1px solid #e6eaef;
     }
-    .reddit-sidebar .card-header i { margin-right: 6px; }
-     .reddit-sidebar .card-body {
-       padding: 10px 12px;
-       background: #fff;
-       min-height: auto;
-       max-height: none;
-       overflow: visible;
-     }
 
-    body.dark-mode .reddit-feed-wrapper { background: #1a1a1b; }
+    .reddit-sidebar .card-header i {
+      margin-right: 6px;
+    }
+
+    .reddit-sidebar .card-body {
+      padding: 10px 12px;
+      background: #fff;
+      min-height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    body.dark-mode .reddit-feed-wrapper {
+      background: #1a1a1b;
+    }
+
     body.dark-mode .feed-empty-state {
       background: linear-gradient(145deg, #272729, #1f1f20);
       border-color: #3c3c3d;
       box-shadow: none;
     }
+
     body.dark-mode .feed-empty-icon {
       background: #333436;
       color: #ffc107;
     }
-    body.dark-mode .feed-empty-title { color: #f0f0f0; }
-    body.dark-mode .feed-empty-text { color: #b3b3b4; }
+
+    body.dark-mode .feed-empty-title {
+      color: #f0f0f0;
+    }
+
+    body.dark-mode .feed-empty-text {
+      color: #b3b3b4;
+    }
+
     body.dark-mode .feed-skeleton-card {
       background: #1f1f20;
       border-color: #343536;
     }
+
     body.dark-mode .feed-skeleton-avatar,
     body.dark-mode .feed-skeleton-line {
       background: #2c2d2f;
     }
+
     body.dark-mode .feed-skeleton-shimmer {
       background-image: linear-gradient(90deg, #2c2d2f 0%, #3a3b3d 45%, #2c2d2f 100%);
     }
-    body.dark-mode .reddit-post-card { background: #1a1a1b; border-color: #343536; }
-    body.dark-mode .reddit-post-card:hover { border-color: #818384; }
-    body.dark-mode .rpc-title { color: #d7dadc; }
-    body.dark-mode .rpc-desc { color: #9a9a9b; }
-    body.dark-mode .rpc-meta { color: #818384; }
-    body.dark-mode .rpc-meta .rpc-author { color: #ffc407; }
-    body.dark-mode .rpc-actions { border-top-color: #343536; }
-    body.dark-mode .rpc-action-btn { color: #818384; }
-    body.dark-mode .rpc-action-btn:hover { background: #333436; color: #d7dadc; }
-    body.dark-mode .rpc-comments-area { background: #121213; }
-    body.dark-mode .rpc-comment-input-row textarea { background: #272729; border-color: #3c3c3d; color: #d7dadc; }
-    body.dark-mode .reddit-sidebar .card { border-color: #343536; }
-    body.dark-mode .reddit-sidebar .card-body { background: #1a1a1b; }
-    body.dark-mode .kpi-gauge-card { background: #1e1e2d; }
-    body.dark-mode .kpi-gauge-card .kpi-name { color: #ccc; }
-    body.dark-mode .evento-date-box { background: #ffc407; color: #222222; }
-    body.dark-mode .evento-item:hover { background: #2a2d31; }
-    body.dark-mode .evento-info .ev-title { color: #ccc; }
-    body.dark-mode .event-detail-modal .modal-content { background: #1a1a1b; }
-    body.dark-mode .event-detail-modal .modal-body { background: #1a1a1b; }
+
+    body.dark-mode .reddit-post-card {
+      background: #1a1a1b;
+      border-color: #343536;
+    }
+
+    body.dark-mode .reddit-post-card:hover {
+      border-color: #818384;
+    }
+
+    body.dark-mode .rpc-title {
+      color: #d7dadc;
+    }
+
+    body.dark-mode .rpc-desc {
+      color: #9a9a9b;
+    }
+
+    body.dark-mode .rpc-meta {
+      color: #818384;
+    }
+
+    body.dark-mode .rpc-meta .rpc-author {
+      color: #ffc407;
+    }
+
+    body.dark-mode .rpc-actions {
+      border-top-color: #343536;
+    }
+
+    body.dark-mode .rpc-action-btn {
+      color: #818384;
+    }
+
+    body.dark-mode .rpc-action-btn:hover {
+      background: #333436;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .rpc-action-btn.liked {
+      color: #ffc407;
+    }
+
+    body.dark-mode .heart-icon.heart-filled {
+      color: #ffc407;
+    }
+
+    body.dark-mode .rpc-comments-area {
+      background: #121213;
+    }
+
+    body.dark-mode .rpc-comment-input-row textarea {
+      background: #272729;
+      border-color: #3c3c3d;
+      color: #d7dadc;
+    }
+
+    body.dark-mode .reddit-sidebar .card {
+      border-color: #343536;
+    }
+
+    body.dark-mode .reddit-sidebar .card-body {
+      background: #1a1a1b;
+    }
+
+    body.dark-mode .kpi-gauge-card {
+      background: #1e1e2d;
+    }
+
+    body.dark-mode .kpi-gauge-card .kpi-name {
+      color: #ccc;
+    }
+
+    body.dark-mode .evento-date-box {
+      background: #ffc407;
+      color: #222222;
+    }
+
+    body.dark-mode .evento-item:hover {
+      background: #2a2d31;
+    }
+
+    body.dark-mode .evento-info .ev-title {
+      color: #ccc;
+    }
+
+    body.dark-mode .event-detail-modal .modal-content {
+      background: #1a1a1b;
+    }
+
+    body.dark-mode .event-detail-modal .modal-body {
+      background: #1a1a1b;
+    }
+
     body.dark-mode .event-detail-chip,
     body.dark-mode .event-detail-description {
       background: #242526;
       border-color: #303236;
     }
-    body.dark-mode .event-detail-label { color: #98a0ab; }
-    body.dark-mode .event-detail-value { color: #e6e8eb; }
-    body.dark-mode .event-detail-description .event-detail-value { color: #ced4da; }
-    body.dark-mode .checklist-item { background: #1e1e2d; }
-    body.dark-mode .checklist-item:hover { background: #2a2a3d; box-shadow: 0 1px 4px rgba(255,196,7,.15); }
-    body.dark-mode .checklist-item .chk-name { color: #ddd; }
-    body.dark-mode .checklist-item.ya-contestado { background: #1a1a28; }
-    body.dark-mode .checklist-item.chk-respondido-si { background: #1a2e1f; }
-    body.dark-mode .checklist-item .badge.bg-info { background-color: #138496 !important; }
-    body.dark-mode .turno-header { color: #17a2b8; border-bottom-color: #17a2b8; }
-    body.dark-mode .checklist-item.chk-respondido-no { background: #2e1a1a; }
+
+    body.dark-mode .event-detail-label {
+      color: #98a0ab;
+    }
+
+    body.dark-mode .event-detail-value {
+      color: #e6e8eb;
+    }
+
+    body.dark-mode .event-detail-description .event-detail-value {
+      color: #ced4da;
+    }
+
+    body.dark-mode .checklist-item {
+      background: #1e1e2d;
+    }
+
+    body.dark-mode .checklist-item:hover {
+      background: #2a2a3d;
+      box-shadow: 0 1px 4px rgba(255, 196, 7, .15);
+    }
+
+    body.dark-mode .checklist-item .chk-name {
+      color: #ddd;
+    }
+
+    body.dark-mode .checklist-item.ya-contestado {
+      background: #1a1a28;
+    }
+
+    body.dark-mode .checklist-item.chk-respondido-si {
+      background: #1a2e1f;
+    }
+
+    body.dark-mode .checklist-item .badge.bg-info {
+      background-color: #138496 !important;
+    }
+
+    body.dark-mode .turno-header {
+      color: #17a2b8;
+      border-bottom-color: #17a2b8;
+    }
+
+    body.dark-mode .checklist-item.chk-respondido-no {
+      background: #2e1a1a;
+    }
+
     body.dark-mode .reddit-sidebar .card-header {
       background: #242526;
       color: #d7dadc;
       border-bottom-color: #343536;
     }
-    body.dark-mode .galleryImgCl { background: #1f1f20; }
-    body.dark-mode .feed-swiper-instance .swiper-slide { background: #1f1f20; }
-    body.dark-mode .feed-swiper-image { background: #121213; }
+
+    body.dark-mode .galleryImgCl {
+      background: #1f1f20;
+    }
+
+    body.dark-mode .feed-swiper-instance .swiper-slide {
+      background: #1f1f20;
+    }
+
+    body.dark-mode .feed-swiper-image {
+      background: #121213;
+    }
+
     body.dark-mode .feed-swiper-instance .swiper-button-next,
     body.dark-mode .feed-swiper-instance .swiper-button-prev {
       color: #ffc107;
       background: rgba(31, 31, 32, 0.88);
     }
-    body.dark-mode #fullscreen-swiper .swiper-slide img { background: #050506; }
+
+    body.dark-mode #fullscreen-swiper .swiper-slide img {
+      background: #050506;
+    }
   </style>
 
   <!-- Custom styles para KPI Carousel y flechas ahora en neptune/css/custom.css -->
@@ -1017,8 +1627,6 @@ $MenuP = $Conf->getMenusPadre();
                 </div>
               </div>
             </div>
-
-
             <div class="row">
               <div class="col-12">
                 <!-- KPI Pills — fila scrollable horizontal de ancho completo -->
@@ -1044,7 +1652,6 @@ $MenuP = $Conf->getMenusPadre();
 
                   <!-- Fila trigger (visible por defecto) -->
                   <div class="post-compose-top" id="postComposeTriggerRow">
-                    <img id="avatarCreatePost" src="assets/logoK.png" alt="tu avatar">
                     <button class="post-compose-trigger" id="postComposeTriggerBtn" onclick="openComposeForm()">
                       ¿Qué quieres compartir hoy?
                     </button>
@@ -1069,21 +1676,22 @@ $MenuP = $Conf->getMenusPadre();
                         <div class="mb-3">
                           <label for="mnf_title" class="form-label">* Título</label>
                           <textarea id="mnf_title" name="mnf_title" class="form-control" rows="2" required
-                                    placeholder="Escribe el título de tu publicación..."></textarea>
+                            placeholder="Escribe el título de tu publicación..."></textarea>
                           <p for="mnf_title" data-msg="El título es obligatorio." class="text-danger small mb-0"></p>
                         </div>
                         <div class="mb-3">
                           <label for="mnf_desc" class="form-label">* Descripción</label>
                           <textarea id="mnf_desc" name="mnf_desc" class="form-control" rows="3" required
-                                    placeholder="¿Qué quieres comunicar?"></textarea>
-                          <p for="mnf_desc" data-msg="La descripción es obligatoria." class="text-danger small mb-0"></p>
+                            placeholder="¿Qué quieres comunicar?"></textarea>
+                          <p for="mnf_desc" data-msg="La descripción es obligatoria." class="text-danger small mb-0">
+                          </p>
                         </div>
                         <div class="mb-3">
                           <label for="mnf_url" class="form-label">
                             Hipervínculo <span class="text-muted fw-normal" style="font-size:.75rem;">(opcional)</span>
                           </label>
                           <input type="url" id="mnf_url" name="mnf_url" class="form-control"
-                                 placeholder="https://..."/>
+                            placeholder="https://..." />
                         </div>
                         <div class="mb-2">
                           <label class="form-label">
@@ -1114,7 +1722,8 @@ $MenuP = $Conf->getMenusPadre();
                 <div class="reddit-feed-wrapper">
                   <div id="ContenidoFeed"></div>
                   <div id="btnLoadMoreContainer" class="text-center my-3" style="display: none;">
-                    <button id="btnLoadMoreFeeds" class="btn btn-outline-secondary btn-sm px-4" style="border-radius: 20px;">
+                    <button id="btnLoadMoreFeeds" class="btn btn-outline-secondary btn-sm px-4"
+                      style="border-radius: 20px;">
                       <i class="fas fa-chevron-down me-1"></i> Ver más publicaciones
                     </button>
                   </div>
@@ -1128,29 +1737,29 @@ $MenuP = $Conf->getMenusPadre();
               <div class="col-12 col-lg-4">
                 <div class="reddit-sidebar">
 
-                   <!-- Próximos Eventos -->
-                   <div class="card mb-3">
-                     <div class="card-header text-dark">
-                       <i class="fas fa-calendar-alt"></i> Próximos Eventos
-                     </div>
-                     <div class="card-body">
-                       <div id="listaEventos">
-                         <p class="text-muted small text-center mb-0">Cargando eventos...</p>
-                       </div>
-                     </div>
-                   </div>
+                  <!-- Próximos Eventos -->
+                  <div class="card mb-3">
+                    <div class="card-header text-dark">
+                      <i class="fas fa-calendar-alt"></i> Próximos Eventos
+                    </div>
+                    <div class="card-body">
+                      <div id="listaEventos">
+                        <p class="text-muted small text-center mb-0">Cargando eventos...</p>
+                      </div>
+                    </div>
+                  </div>
 
-                   <!-- Checklist del día -->
-                   <div class="card">
-                     <div class="card-header text-dark">
-                       <i class="fas fa-check-square"></i> Checklist del día
-                     </div>
-                     <div class="card-body">
-                       <div id="listaChecklist">
-                         <p class="text-muted small text-center mb-0">Cargando checklist...</p>
-                       </div>
-                     </div>
-                   </div>
+                  <!-- Checklist del día -->
+                  <div class="card">
+                    <div class="card-header text-dark">
+                      <i class="fas fa-check-square"></i> Checklist del día
+                    </div>
+                    <div class="card-body">
+                      <div id="listaChecklist">
+                        <p class="text-muted small text-center mb-0">Cargando checklist...</p>
+                      </div>
+                    </div>
+                  </div>
 
                 </div>
               </div><!-- /col sidebar -->
@@ -1158,7 +1767,8 @@ $MenuP = $Conf->getMenusPadre();
             </div>
             <!-- /NOVEDADES + ESPACIO DERECHA -->
 
-            <div class="modal fade event-detail-modal" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+            <div class="modal fade event-detail-modal" id="eventDetailModal" tabindex="-1"
+              aria-labelledby="eventDetailModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -1182,13 +1792,13 @@ $MenuP = $Conf->getMenusPadre();
   </div>
 
   <!-- neptune Javascripts (incluye jQuery, BlockUI y global.js) -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
   <script src="plugins/tingle-master/dist/tingle.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
   <script src="plugins/custom-drag-drop-file-upload/fileUpload/fileUpload.js" charset="utf-8"></script>
-  
+
   <!-- Scripts específicos de la página - SIEMPRE AL FINAL -->
   <script src="scripts/index.js?<?= time() ?>" charset="utf-8"></script>
   <script src="scripts/dashboard.js?<?= time() ?>" charset="utf-8"></script>
@@ -1200,38 +1810,38 @@ $MenuP = $Conf->getMenusPadre();
         type: 'POST',
         url: 'Backend/Eventos/App.php',
         data: { op: 'getProximosEventos' },
-        success: function(response) {
+        success: function (response) {
           var eventos;
-          try { eventos = JSON.parse(response); } catch(e) { eventos = []; }
+          try { eventos = JSON.parse(response); } catch (e) { eventos = []; }
           var el = document.getElementById('listaEventos');
           if (!el) return;
           if (!eventos || eventos.length === 0) {
             el.innerHTML = '<p class="text-muted small text-center py-2">No hay eventos próximos</p>';
             return;
           }
-          var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+          var meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
           var html = '';
-          eventos.forEach(function(ev) {
+          eventos.forEach(function (ev) {
             var fecha = new Date(ev.FechaInicio + 'T00:00:00');
             var dia = fecha.getDate();
             var mes = meses[fecha.getMonth()];
-            var horaIni = ev.HoraInicio ? ev.HoraInicio.substring(0,5) : '';
-            var horaFin = ev.HoraFin ? ev.HoraFin.substring(0,5) : '';
+            var horaIni = ev.HoraInicio ? ev.HoraInicio.substring(0, 5) : '';
+            var horaFin = ev.HoraFin ? ev.HoraFin.substring(0, 5) : '';
             var horario = horaIni && horaFin ? horaIni + ' - ' + horaFin : '';
             html += '<div class="evento-item">' +
               '<div class="evento-date-box">' +
-                '<div class="ev-day">' + dia + '</div>' +
-                '<div class="ev-month">' + mes + '</div>' +
+              '<div class="ev-day">' + dia + '</div>' +
+              '<div class="ev-month">' + mes + '</div>' +
               '</div>' +
               '<div class="evento-info">' +
-                '<div class="ev-title">' + $('<div>').text(ev.Titulo).html() + '</div>' +
-                (horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' + horario + '</div>' : '') +
+              '<div class="ev-title">' + $('<div>').text(ev.Titulo).html() + '</div>' +
+              (horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' + horario + '</div>' : '') +
               '</div>' +
-            '</div>';
+              '</div>';
           });
           el.innerHTML = html;
         },
-        error: function() {
+        error: function () {
           var el = document.getElementById('listaEventos');
           if (el) el.innerHTML = '<p class="text-muted small text-center py-2">Error al cargar eventos</p>';
         }
@@ -1242,17 +1852,17 @@ $MenuP = $Conf->getMenusPadre();
   <!-- Script: abrir/cerrar formulario inline de publicación -->
   <script>
     // Registering Syncfusion license key
-ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+    ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
     function openComposeForm() {
       // Ocultar trigger row / acciones
-      document.getElementById('postComposeTriggerRow').style.display  = 'none';
-      document.getElementById('postComposeDivider').style.display     = 'none';
-      document.getElementById('postComposeActionsRow').style.display  = 'none';
+      document.getElementById('postComposeTriggerRow').style.display = 'none';
+      document.getElementById('postComposeDivider').style.display = 'none';
+      document.getElementById('postComposeActionsRow').style.display = 'none';
       // Mostrar formulario con animación
       document.getElementById('postComposeFormContainer').style.display = 'block';
       // Foco en el primer campo
-      setTimeout(function() {
+      setTimeout(function () {
         var t = document.getElementById('mnf_title');
         if (t) t.focus();
       }, 50);
@@ -1262,9 +1872,9 @@ ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY
         setComposePublishingState(false);
       }
       // Mostrar trigger row / acciones
-      document.getElementById('postComposeTriggerRow').style.display  = 'flex';
-      document.getElementById('postComposeDivider').style.display     = 'block';
-      document.getElementById('postComposeActionsRow').style.display  = 'flex';
+      document.getElementById('postComposeTriggerRow').style.display = 'flex';
+      document.getElementById('postComposeDivider').style.display = 'block';
+      document.getElementById('postComposeActionsRow').style.display = 'flex';
       // Ocultar formulario
       document.getElementById('postComposeFormContainer').style.display = 'none';
       // Limpiar campos

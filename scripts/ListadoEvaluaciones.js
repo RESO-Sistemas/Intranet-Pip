@@ -1,3 +1,5 @@
+ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+
 const inpTitulo = document.querySelector("#inpTitulo");
 const inpFechaInicio = document.querySelector("#inpFechaInicio");
 const inpFechaFin = document.querySelector("#inpFechaFin");
@@ -31,7 +33,7 @@ function getEvaluaciones() {
       let mappedData = response.map(row => {
         let TextStatus = row.Status == 1 ? "Activo" : "Inactivo";
         let Evaluacion = btoa(row.idEvaluaciones);
-        
+
         let Acciones = `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
             <a type="button" class="btn btn-primary" href="Evaluados.php?EV=${Evaluacion}" title="Evaluados"><i class="far fa-user-circle"></i></a>
             <a type="button" class="btn btn-info" href="ResultadosEvaluacion.php?Ev=${Evaluacion}" title="Resultados"><i class="fal fa-chart-line"></i></a>

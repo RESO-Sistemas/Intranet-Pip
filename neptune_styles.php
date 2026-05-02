@@ -1,4 +1,3 @@
-
 <!-- Preconexión a fuentes externas -->
 <link rel="preconnect" href="https://fonts.gstatic.com">
 
@@ -39,39 +38,47 @@
 
 <style>
   /* Elimina el borde/sombra azul de la celda enfocada en Syncfusion */
-.e-grid .e-rowcell.e-focused,
-.e-grid .e-detailrowcollapse.e-focused,
-.e-grid .e-detailrowexpand.e-focused,
-.e-grid .e-focused {
+  .e-grid .e-rowcell.e-focused,
+  .e-grid .e-detailrowcollapse.e-focused,
+  .e-grid .e-detailrowexpand.e-focused,
+  .e-grid .e-focused {
     box-shadow: none !important;
-    outline: none !important;   
-}
-.e-rowcell.e-focused {
+    outline: none !important;
+  }
+
+  .e-rowcell.e-focused {
     background-color: transparent !important;
-}
-.e-grid .e-headercelldiv {
+  }
+
+  .e-grid .e-headercelldiv {
     font-size: 13px;
     font-weight: 600;
-    }
+  }
 
-.e-pagenomsg {
-  display: none !important;
-}
-.e-pagecountmsg
-{
-  display: none !important;
-}
+  .e-pagenomsg {
+    display: none !important;
+  }
 
-/* Elimina cambio de color en hover del grid */
-.e-grid .e-row:hover,
-.e-grid .e-rowcell:hover,
-.e-grid tr:hover {
+  .e-pagecountmsg {
+    display: none !important;
+  }
+
+  /* Elimina cambio de color en hover del grid */
+  .e-grid .e-row:hover,
+  .e-grid .e-rowcell:hover,
+  .e-grid tr:hover {
     background-color: transparent !important;
-}
+  }
 </style>
 
 <script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
 <script src="./scripts/syncfusion-config.js?v=<?= time() ?>"></script>
+
+<!-- Toastr -->
+<link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
+
+<!--.swiper -->
+<link rel="stylesheet" href="./assets/swiper/package/swiper-bundle.css">
 
 <?php
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
@@ -219,12 +226,8 @@ if ($current_page !== 'login'):
 </style>
 
 <link href="./neptune/css/custom.css" rel="stylesheet">
-
 <!-- Estilos Responsive Globales - Aplicados a todas las vistas -->
 <link href="assets/css/responsive-global.css" rel="stylesheet">
-
-
-
 <!-- Iconos del sistema -->
 <link rel="icon" type="image/png" sizes="32x32" href="./neptune/images/neptune.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="./neptune/images/neptune.png" />

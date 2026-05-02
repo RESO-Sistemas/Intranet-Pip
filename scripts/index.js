@@ -37,7 +37,7 @@ $(document).ready(function () {
         });
         if (response.Resultado) {
           toastr.success('Incidencia registrada correctamente.');
-          
+
           // Completar guardado del checklist si hay uno pendiente
           if (window.dashboardChecklist && typeof window.dashboardChecklist.finalize === 'function') {
             window.dashboardChecklist.finalize();
@@ -606,7 +606,7 @@ function getInitialsFromName(fullName) {
 }
 
 function buildAvatarDataUriFromName(fullName) {
-  const palette = ["#ff7a18", "#00a896", "#3a86ff", "#2a9d8f", "#e76f51", "#6a4c93"];
+  const palette = ["#e6b200"];
   const normalized = String(fullName || "Usuario");
   let hash = 0;
   for (let i = 0; i < normalized.length; i += 1) {
@@ -619,10 +619,22 @@ function buildAvatarDataUriFromName(fullName) {
 }
 
 function getProfileAvatarUrl(imageName, employeeNumber, fullName) {
-  if (imageName) {
-    return `Archivos/ImgEmpleados/${employeeNumber}/${imageName}`;
-  }
   return buildAvatarDataUriFromName(fullName);
+}
+
+// Función para generar un avatar con iniciales en tamaño pequeño (para comentarios)
+function buildCommentAvatarFromName(fullName) {
+    const palette = ["#e6b200"];
+    const normalized = String(fullName || "Usuario");
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i += 1) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const bg = palette[Math.abs(hash) % palette.length];
+  const initials = getInitialsFromName(normalized);
+  // SVG optimizado para comentarios con tamaño 42x42px
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='42' height='42' viewBox='0 0 42 42'><circle cx='21' cy='21' r='21' fill='${bg}'/><text x='50%' y='50%' text-anchor='middle' dominant-baseline='central' fill='#ffffff' font-family='Arial, sans-serif' font-size='16' font-weight='700'>${initials}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
 async function loadAll() {
@@ -1200,7 +1212,7 @@ async function loadFeeds(page = 1) {
 
   let response = [];
   let isArrayResponse = true;
-  
+
   // Iniciar estado de carga en el botón
   const $btnLoadMore = $("#btnLoadMoreFeeds");
   const originalBtnHtml = '<i class="fas fa-chevron-down me-1"></i> Ver más publicaciones';
@@ -1237,7 +1249,7 @@ async function loadFeeds(page = 1) {
       }
       return;
     }
-    
+
     let contentHtmlFinal = "";
     let urlImgProfile = "";
 
@@ -1331,11 +1343,11 @@ async function loadFeeds(page = 1) {
           break;
         default:
           descriptionFinal = feed.Descripcion || '';
-          
+
           if (feed.ArrayArchivos && feed.ArrayArchivos.length > 0) {
             for (let k = 0; k < feed.ArrayArchivos.length; k++) {
               const archivoObj = feed.ArrayArchivos[k];
-              
+
               if (parseInt(archivoObj.isDataUri) === 1) {
                 // ── Nuevo patrón: imagen guardada como Data URI base64 (igual que Incidencias)
                 // El campo Archivo contiene el string 'data:image/...;base64,...'
@@ -1362,7 +1374,7 @@ async function loadFeeds(page = 1) {
                   let fUrlID   = `Archivos/Feed/${feed.idFeed}/${fName.trim()}`;
                   let fUrlRoot = `Archivos/Feed/${fName.trim()}`;
                   contentHtmlImg += `
-                    <img alt="Image Feed" 
+                    <img alt="Image Feed"
                          loading="lazy"
                          src="${fUrlID}"
                          onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlRoot}'; } else { this.style.display='none'; }"
@@ -1380,9 +1392,9 @@ async function loadFeeds(page = 1) {
               if(!f) continue;
               let fUrlLegacyID   = `Archivos/Feed/${feed.idFeed}/${f}`;
               let fUrlLegacyRoot = `Archivos/Feed/${f}`;
-              
+
               contentHtmlImg += `
-                <img alt="Image Feed Legacy" 
+                <img alt="Image Feed Legacy"
                      loading="lazy"
                      src="${fUrlLegacyID}"
                      onerror="if(this.src.indexOf('/${feed.idFeed}/') !== -1) { this.src='${fUrlLegacyRoot}'; } else { this.style.display='none'; }"
@@ -1408,6 +1420,10 @@ async function loadFeeds(page = 1) {
       // --- Clase liked para el botón de Me Gusta ---
       const likedClass = feed.MeGusta == 1 ? 'liked' : '';
       const congratClass = feed.Felicitacion == 1 ? 'congrat' : '';
+      
+      // --- Icono de corazón: relleno si tiene like, outline si no ---
+      const heartIcon = feed.MeGusta == 1 ? 'fa-heart' : 'fa-heart';
+      const heartClass = feed.MeGusta == 1 ? 'heart-filled' : 'heart-outline';
 
       contentHtmlFinal += `
       <div class="reddit-post-card">
@@ -1460,8 +1476,10 @@ async function loadFeeds(page = 1) {
           <div class="rpc-actions">
             <a href="javascript:void(0)" id="btnEventoMG${feed.idFeed}"
                class="rpc-action-btn TooltipHoverMg ${likedClass}"
-               onclick="MeGusta(${feed.idFeed},1)">
-              <i class="fa-solid fa-heart"></i> ${feed.CantidadMeGusta || 0} Me gusta
+               onclick="MeGusta(${feed.idFeed},1)"
+               data-feed-id="${feed.idFeed}"
+               data-liked="${feed.MeGusta}">
+              <i class="fa-solid fa-heart heart-icon ${heartClass}"></i> <span class="me-gusta-count">${feed.CantidadMeGusta || 0}</span> Me gusta
             </a>
 
             <a href="javascript:void(0)" id="btnComment${feed.idFeed}"
@@ -1738,7 +1756,7 @@ async function getAgenda() {
         ]);
       });
     }
-    // Se removió el else con showBootstrapAlertWar("No hay eventos en tu agenda..") 
+    // Se removió el else con showBootstrapAlertWar("No hay eventos en tu agenda..")
     // porque el usuario indicó que ya no hay agenda y generaba falsos positivos.
   }
 }
@@ -1766,15 +1784,25 @@ async function MeGusta(valor, tipo) {
 
     if (response[0]["TipoReaccion"] == "1") {
       $("#ulEmpleadosReaccionanMG" + response[0]["IdFeed"]).html("");
-      $("#btnEventoMG" + response[0]["IdFeed"]).html(
-        `<i class="fa-solid fa-heart"></i> ${response[0]["CantidadMeGusta"]} Me gusta`
-      );
-      if (response[0]["MeGusta"] == "1") {
-        $("#btnEventoMG" + response[0]["IdFeed"]).addClass("liked").css({
+      
+      // Actualizar el contador de Me Gusta
+      const $btnMeGusta = $("#btnEventoMG" + response[0]["IdFeed"]);
+      $btnMeGusta.find(".me-gusta-count").text(response[0]["CantidadMeGusta"]);
+      
+      // Actualizar estado del corazón
+      const $heartIcon = $btnMeGusta.find(".heart-icon");
+      const isMeGusta = response[0]["MeGusta"] == "1";
+      
+      if (isMeGusta) {
+        // Corazón relleno: cambiar clase a filled
+        $heartIcon.removeClass("heart-outline").addClass("heart-filled");
+        $btnMeGusta.addClass("liked").css({
           color: "#FFC107",
         });
       } else {
-        $("#btnEventoMG" + response[0]["IdFeed"]).removeClass("liked").css({
+        // Corazón vacío: cambiar clase a outline
+        $heartIcon.removeClass("heart-filled").addClass("heart-outline");
+        $btnMeGusta.removeClass("liked").css({
           color: "",
         });
       }
@@ -2114,18 +2142,18 @@ const getCommentsFeedSelected = async (content, forceReload = false) => {
   if (ajaxR !== undefined) {
     let cant = ajaxR.Data.length;
     feedCommentsData[content] = ajaxR.Data;
-    
+
     if (!feedCommentsState[content] || !forceReload) {
         if (!feedCommentsState[content]) feedCommentsState[content] = 5;
     } else {
         feedCommentsState[content] = cant; // Expande para revelar el nuevo comentario
     }
-    
+
     let btnComm = document.getElementById(`btnComment${content}`);
     if (btnComm) {
       btnComm.innerHTML = `<i class="far fa-comments"></i> ${cant} Comentarios`;
     }
-    
+
     renderCommentsFeedInline(content);
   }
 };
@@ -2365,8 +2393,8 @@ const viewAllCommentsFeed = async (feed) => {
       <div class="d-inline-flex align-items-center px-2 py-1 mt-2 bg-white text-dark rounded-pill shadow-sm hover-actionCmmM"
            style="cursor: pointer;"
            data-comment="${dataFeed.commentsData[i].idComentariosFeed}">
-        <i id="iconM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}" 
-           class="fa fa-thumbs-up me-1" 
+        <i id="iconM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}"
+           class="fa fa-thumbs-up me-1"
            style="color: ${colorReaction}; font-size: 16px;"></i>
         <span id="spanM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}" class="small">
           ${cantReactions}
@@ -2376,10 +2404,10 @@ const viewAllCommentsFeed = async (feed) => {
 
     <!-- Ventana de reacciones -->
     <div class="mt-2">
-      <div id="WindowReactionCommM${dataFeed.commentsData[i].idComentariosFeed}" 
+      <div id="WindowReactionCommM${dataFeed.commentsData[i].idComentariosFeed}"
            class="p-2 bg-light rounded-3 border shadow-sm d-inline-block text-start">
         <h6 class="fw-semibold small mb-2">Personas que reaccionaron</h6>
-        <ul id="employeesReactionCommM-1-${dataFeed.commentsData[i].idComentariosFeed}" 
+        <ul id="employeesReactionCommM-1-${dataFeed.commentsData[i].idComentariosFeed}"
             class="list-unstyled small mb-0">
           ${employeesRLike}
         </ul>
@@ -2391,15 +2419,18 @@ const viewAllCommentsFeed = async (feed) => {
   </div>
 </li>
 `;
-      } else {
-        contentComments += `
+       } else {
+         // Generar avatar con iniciales para comentarios de otros usuarios
+         const avatarUrl = buildCommentAvatarFromName(dataFeed.commentsData[i].Nombre);
+         contentComments += `
 <li class="d-flex mb-3">
-  <!-- Avatar -->
+  <!-- Avatar con iniciales -->
   <div class="me-3">
-    <img src="Archivos/ImgEmpleados/${dataFeed.commentsData[i].ImagenEmpleado}" 
-         alt="user" 
-         class="rounded-circle shadow-sm" 
-         width="42" height="42">
+    <img src="${avatarUrl}"
+         alt="avatar de ${dataFeed.commentsData[i].Nombre}"
+         class="rounded-circle shadow-sm"
+         width="42" height="42"
+         style="border: 2px solid transparent; object-fit: cover;">
   </div>
 
   <!-- Contenido -->
@@ -2414,8 +2445,8 @@ const viewAllCommentsFeed = async (feed) => {
            style="cursor: pointer;"
            onclick="reactsToCommentM('1', '${dataFeed.commentsData[i].idComentariosFeed}')"
            data-comment="${dataFeed.commentsData[i].idComentariosFeed}">
-        <i id="iconM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}" 
-           class="fa fa-thumbs-up me-1" 
+        <i id="iconM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}"
+           class="fa fa-thumbs-up me-1"
            style="color: ${colorReaction}; font-size: 16px;"></i>
         <span id="spanM-1-CommentM-${dataFeed.commentsData[i].idComentariosFeed}" class="small">
           ${cantReactions}
@@ -2425,10 +2456,10 @@ const viewAllCommentsFeed = async (feed) => {
 
     <!-- Ventana de reacciones -->
     <div class="mt-2">
-      <div id="WindowReactionCommM${dataFeed.commentsData[i].idComentariosFeed}" 
+      <div id="WindowReactionCommM${dataFeed.commentsData[i].idComentariosFeed}"
            class="p-2 bg-light rounded-3 border shadow-sm d-inline-block">
         <h6 class="fw-semibold small mb-2">Personas que reaccionaron</h6>
-        <ul id="employeesReactionCommM-1-${dataFeed.commentsData[i].idComentariosFeed}" 
+        <ul id="employeesReactionCommM-1-${dataFeed.commentsData[i].idComentariosFeed}"
             class="list-unstyled small mb-0">
           ${employeesRLike}
         </ul>
@@ -2495,9 +2526,9 @@ const viewAllCommentsFeed = async (feed) => {
   <!-- Caja de comentarios -->
   <div class="col-12 mb-4">
     <div class="d-flex align-items-start gap-2">
-      <textarea class="form-control rounded-3 shadow-sm" 
-                placeholder="Escribe tu comentario aquí..." 
-                id="comment_m_feed" 
+      <textarea class="form-control rounded-3 shadow-sm"
+                placeholder="Escribe tu comentario aquí..."
+                id="comment_m_feed"
                 rows="2"></textarea>
       <button class="btn btn-primary rounded-3 shadow-sm px-3" id="btn_m_generateComment">
         Comentar
