@@ -138,7 +138,7 @@ function getMensajeVistoLineaEtica() {
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tu mensaje de Linea de etica "${response[i]["Mensaje"]}" <b>fue revisado</b>.</span>
         </div>`;
-        
+
         if (!yaVistoEnSesion) {
             showBootstrapAlert(messageContent, "top-right", 5000);
             sessionStorage.setItem(sessionKey, "true");
@@ -305,7 +305,7 @@ async function getMsgLineaEtica() {
              <span class="alert-title">Linea de ética!</span>
               <span class="alert-text">Tienes mensajes de línea de ética pendientes por revisar.</span>
         </div>`;
-    
+
     if (!yaVistoEnSesion) {
         showBootstrapAlert(messageContent, "top-right", 5000);
         sessionStorage.setItem(sessionKey, "true");
@@ -877,7 +877,7 @@ async function getMensajeCapacitacionGlobal() {
              <span class="alert-title">Capacitacion!</span>
               <span class="alert-text">${registros.Descripcion}<br>${registros.FechaInicio}</span>
         </div>`;
-        
+
         // Solo mostrar el aviso emergente la primera vez en la sesión actual
         if (!yaVistoEnSesion) {
             showBootstrapAlert(messageContent, "top-right", 5000);
@@ -984,7 +984,7 @@ async function cerrarMensajeCapacitacion(val) {
 async function pAjaxAsync(url, datos, pcarga) {
   let respuesta = "";
   if (pcarga == 1) {
-    Cargando();
+    // Cargando();
   }
   try {
     respuesta = await $.ajax({
@@ -999,7 +999,7 @@ async function pAjaxAsync(url, datos, pcarga) {
     console.error('pAjaxAsync - Response Text:', e.responseText);
   } finally {
     if (pcarga == 1) {
-      QuitarCargando();
+      // QuitarCargando();
     }
     if (respuesta.Resultado) {
       if (respuesta.Siguiente) {
@@ -1060,19 +1060,21 @@ async function pAjaxAsync(url, datos, pcarga) {
 //     },
 //   });
 // }
-function Cargando() {
-  if (document.getElementById('_pip_overlay')) return;
-  const el = document.createElement('div');
-  el.id = '_pip_overlay';
-  el.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:wait;';
-  el.innerHTML = '<img src="assets/images/logo-pip.png" alt="Logo" width="120">';
-  document.body.appendChild(el);
-}
 
-function QuitarCargando() {
-  const el = document.getElementById('_pip_overlay');
-  if (el) el.remove();
-}
+
+// function Cargando() {
+//   if (document.getElementById('_pip_overlay')) return;
+//   const el = document.createElement('div');
+//   el.id = '_pip_overlay';
+//   el.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:wait;';
+//   el.innerHTML = '<img src="assets/images/logo-pip.png" alt="Logo" width="120">';
+//   document.body.appendChild(el);
+// }
+
+// function QuitarCargando() {
+//   const el = document.getElementById('_pip_overlay');
+//   if (el) el.remove();
+// }
 
 async function dialogConfirmSAlert(title, text = "", icon = "warning") {
   return new Promise((resolve, reject) => {
@@ -1446,7 +1448,7 @@ function quitarEspaciosExtras(cadena) {
 async function pAjaxAsyncForm(url, formData, pcarga) {
   let respuesta = null;
   if (pcarga == 1) {
-    Cargando();
+    // Cargando();
   }
   try {
     respuesta = await $.ajax({
@@ -1462,7 +1464,7 @@ async function pAjaxAsyncForm(url, formData, pcarga) {
     respuesta = null;
   } finally {
     if (pcarga == 1) {
-      QuitarCargando();
+      // QuitarCargando();
     }
     // Verificar que respuesta existe antes de acceder a sus propiedades
     if (respuesta && respuesta.Resultado) {

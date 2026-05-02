@@ -52,7 +52,8 @@ function renderDetail(ev) {
   document.getElementById("detailContent").classList.remove("d-none");
 
   // Page title
-  document.getElementById("pageTitle").textContent = ev.Titulo;
+  const pageTitleEl = document.getElementById("pageTitle");
+  if (pageTitleEl) pageTitleEl.textContent = ev.Titulo;
 
   // General info
   document.getElementById("detTitulo").textContent = ev.Titulo || "-";

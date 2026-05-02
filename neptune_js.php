@@ -18,6 +18,9 @@
 <!-- Scripts globales personalizados -->
 <script src="./scripts/global.js?v=<?php echo time(); ?>"></script>
 
+<!-- sycnfusion -->
+<script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
+
 <?php
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
 if ($current_page !== 'login'):

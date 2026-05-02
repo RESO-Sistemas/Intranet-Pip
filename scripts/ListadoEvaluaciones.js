@@ -5,6 +5,67 @@ const inpFechaInicio = document.querySelector("#inpFechaInicio");
 const inpFechaFin = document.querySelector("#inpFechaFin");
 
 let gridEvaluaciones = null;
+let evDataMap = {};
+let _panelCurrentEv = null;
+
+// Lazy-load iframes solo cuando se activa la pestaña
+document.addEventListener("DOMContentLoaded", function () {
+  const tabMap = {
+    "ev-tab-questions-btn":  { frameId: "evPanelQuestionsFrame",  getUrl: ev => `questionsEv.php?Ev=${ev}&embed=1` },
+    "ev-tab-evaluados-btn":  { frameId: "evPanelEvaluadosFrame",  getUrl: ev => `Evaluados.php?EV=${ev}&embed=1` },
+    "ev-tab-resultados-btn": { frameId: "evPanelResultadosFrame", getUrl: ev => `ResultadosEvaluacion.php?Ev=${ev}&embed=1` },
+  };
+
+  Object.entries(tabMap).forEach(([btnId, cfg]) => {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener("shown.bs.tab", function () {
+      if (!_panelCurrentEv) return;
+      const frame = document.getElementById(cfg.frameId);
+      const target = cfg.getUrl(_panelCurrentEv);
+      if (frame.src !== location.origin + "/" + target && !frame.src.endsWith(target)) {
+        frame.src = target;
+      }
+    });
+  });
+
+  // Reset iframes al cerrar el panel
+  const panelEl = document.getElementById("evaluationPanel");
+  if (panelEl) {
+    panelEl.addEventListener("hide.bs.offcanvas", function () {
+      ["evPanelOverviewFrame", "evPanelQuestionsFrame", "evPanelEvaluadosFrame", "evPanelResultadosFrame"].forEach(id => {
+        const f = document.getElementById(id);
+        if (f) f.src = "about:blank";
+      });
+      _panelCurrentEv = null;
+      // Volver a pestaña Resumen
+      const overviewBtn = document.getElementById("ev-tab-overview-btn");
+      if (overviewBtn) new bootstrap.Tab(overviewBtn).show();
+    });
+  }
+});
+
+function openEvaluationPanel(id) {
+  const row = evDataMap[id];
+  if (!row) return;
+
+  const ev = btoa(row.idEvaluaciones);
+  _panelCurrentEv = ev;
+
+  document.getElementById("evPanelTitle").textContent = row.Titulo;
+  document.getElementById("evPanelMeta").textContent = `ID: ${row.idEvaluaciones}`;
+
+  document.getElementById("evPanelOverviewFrame").src = `DetalleEvaluacion.php?EV=${ev}&embed=1`;
+
+  // Mostrar pestaña Resumen al abrir
+  const overviewBtn = document.getElementById("ev-tab-overview-btn");
+  if (overviewBtn) new bootstrap.Tab(overviewBtn).show();
+
+  const panelEl = document.getElementById("evaluationPanel");
+  const offcanvas = bootstrap.Offcanvas.getInstance(panelEl) || new bootstrap.Offcanvas(panelEl, { backdrop: false, keyboard: true });
+  offcanvas.show();
+}
+
 getEvaluaciones();
 
 function getEvaluaciones() {
@@ -30,13 +91,13 @@ function getEvaluaciones() {
       }
       if (!Array.isArray(response)) response = [];
 
+      evDataMap = {};
       let mappedData = response.map(row => {
+        evDataMap[row.idEvaluaciones] = row;
         let TextStatus = row.Status == 1 ? "Activo" : "Inactivo";
-        let Evaluacion = btoa(row.idEvaluaciones);
 
         let Acciones = `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <a type="button" class="btn btn-primary" href="Evaluados.php?EV=${Evaluacion}" title="Evaluados"><i class="far fa-user-circle"></i></a>
-            <a type="button" class="btn btn-info" href="ResultadosEvaluacion.php?Ev=${Evaluacion}" title="Resultados"><i class="fal fa-chart-line"></i></a>
+            <button type="button" class="btn btn-primary btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><i class="fas fa-eye"></i></button>
             <button type="button" class="btn btn-secondary btn-update-status" data-status="${row.Status}" data-id="${row.idEvaluaciones}" title="Actualizar Status"><i class="fas fa-sync-alt"></i></button>
           </div>`;
 
@@ -89,6 +150,14 @@ function getEvaluaciones() {
         recordClick: function(args) {
             const clickedElement = args.target;
             if (!clickedElement || typeof clickedElement.closest !== "function") return;
+
+            const btnPanel = clickedElement.closest(".btn-open-panel");
+            if (btnPanel) {
+                const evId = btnPanel.getAttribute("data-id");
+                setTimeout(() => openEvaluationPanel(evId), 0);
+                return;
+            }
+
             const btnStatus = clickedElement.closest(".btn-update-status");
             if (btnStatus) {
                 const status = btnStatus.getAttribute("data-status");
