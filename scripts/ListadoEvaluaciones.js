@@ -124,6 +124,7 @@ function getEvaluaciones() {
           { field: "Titulo", headerText: "TÍTULO", width: 200 },
           { field: "FechaInicio", headerText: "FECHA INICIO", width: 120 },
           { field: "FechaFin", headerText: "FECHA FIN", width: 120 },
+          { field: "TxTipoEvaluacion", headerText: "TIPO", width: 100 },
           { field: "TextStatus", headerText: "STATUS", width: 100 },
           { field: "Acciones", headerText: "ACCIONES", width: 150, textAlign: "Center", disableHtmlEncode: false }
         ],
@@ -162,7 +163,8 @@ function getEvaluaciones() {
             if (btnStatus) {
                 const status = btnStatus.getAttribute("data-status");
                 const id = btnStatus.getAttribute("data-id");
-                updateStatusEvaluacion(status, id);
+                const idEncoded = btoa(id);
+                updateStatusEvaluacion(status, idEncoded);
             }
         },
         created: function () {

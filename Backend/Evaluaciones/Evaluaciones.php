@@ -151,6 +151,7 @@ class Evaluaciones extends Conexiones
   function getEvaluaciones()
   {
     $q = "SELECT EV.*,
+                CASE WHEN EV.TipoEvaluacion = 1 THEN '360°' ELSE 'Normal' END AS TxTipoEvaluacion,
                 (SELECT COUNT(*) FROM EvaluacionDetalle WHERE idEvaluaciones = EV.idEvaluaciones AND Status = 1) AS CantEvaluadores,
                 (SELECT COUNT(*) FROM EvaluacionDetalle WHERE idEvaluaciones = EV.idEvaluaciones AND Status = 1 AND StatusEvaluado = 1) AS CantRespondidas
               FROM Evaluaciones AS EV";
