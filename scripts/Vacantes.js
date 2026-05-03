@@ -124,23 +124,23 @@ function initSelect2() {
         allowClear: true
     });
     
-    // Select2 para modal Detalle (Evaluaciones e Inducciones)
+    // Select2 para drawer de Detalle (Evaluaciones e Inducciones)
     $('#cmbNuevaEvaluacion').select2({
-        dropdownParent: $('#modalDetalleVacante'),
+        dropdownParent: $('#drawerDetalleVacante'),
         width: '100%',
         placeholder: 'Seleccione evaluación...',
         allowClear: true
     });
     
     $('#cmbProcesoEvaluacion').select2({
-        dropdownParent: $('#modalDetalleVacante'),
+        dropdownParent: $('#drawerDetalleVacante'),
         width: '100%',
         placeholder: 'Seleccione proceso...',
         allowClear: true
     });
     
     $('#cmbNuevaInduccion').select2({
-        dropdownParent: $('#modalDetalleVacante'),
+        dropdownParent: $('#drawerDetalleVacante'),
         width: '100%',
         placeholder: 'Seleccione inducción...',
         allowClear: true
@@ -340,7 +340,7 @@ async function loadVacantes() {
                         <span class="material-symbols-outlined">more_vert</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" onclick="openDetalleModal('${idEncoded}'); return false;">
+                        <li><a class="dropdown-item" href="#" onclick="openDetalleDrawer('${idEncoded}'); return false;">
                             <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">visibility</span>Ver detalle
                         </a></li>
                         <li><a class="dropdown-item" href="PostulantesVacante.php?IdVacante=${idEncoded}">
@@ -1063,7 +1063,7 @@ async function deleteVacante(idEncoded) {
 // MODAL DETALLE - INFORMACIÓN GENERAL
 // ==========================================
 
-async function openDetalleModal(idEncoded) {
+async function openDetalleDrawer(idEncoded) {
     try {
         const response = await $.post("Backend/Vacantes/App.php", {
             op: "getVacanteById",
@@ -1076,6 +1076,7 @@ async function openDetalleModal(idEncoded) {
             const vacante = result.Datos;
             $('#detalleIdVacante').val(idEncoded);
             $('#detalleNombre').text(vacante.NombreVacante);
+            $('#drawerVacanteTitulo').text(vacante.NombreVacante);
             $('#detalleArea').text(vacante.NombreArea || '-');
             $('#detallePuesto').text(vacante.Puesto || '-');
             $('#detalleSucursal').text(vacante.Sucursal || '-');
@@ -1096,22 +1097,15 @@ async function openDetalleModal(idEncoded) {
             $('#detalleFechaCierre').text(vacante.FechaCierre ? formatDate(vacante.FechaCierre) : '-');
             $('#detalleDescripcion').text(vacante.DescripcionPuesto || 'Sin descripción');
             
-            // Cargar requisitos, evaluaciones e inducciones
+            // Cargar requisitos, evaluaciones, inducciones y postulantes
             await Promise.all([
                 loadRequisitosDetalle(idEncoded),
                 loadEvaluacionesDetalle(idEncoded),
-                loadInduccionesDetalle(idEncoded)
+                loadInduccionesDetalle(idEncoded),
+                loadPostulantesDrawer(idEncoded)
             ]);
             
-            let modalEl = document.getElementById('modalDetalleVacante');
-            let modal = bootstrap.Modal.getInstance(modalEl);
-            if (!modal) {
-                modal = new bootstrap.Modal(modalEl, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-            }
-            modal.show();
+            openDrawerVacante();
         } else {
             const messageContent = `
                 <div class="alert-content">
@@ -1130,6 +1124,30 @@ async function openDetalleModal(idEncoded) {
         showBootstrapAlertWar(messageContent, "top-right", 5000);
     }
 }
+
+function openDrawerVacante() {
+    $('#drawerOverlayVacante').addClass('show');
+    $('#drawerDetalleVacante').addClass('open');
+    $('body').css('overflow', 'hidden');
+}
+
+function closeDrawerVacante() {
+    $('#drawerOverlayVacante').removeClass('show');
+    $('#drawerDetalleVacante').removeClass('open');
+    $('body').css('overflow', '');
+}
+
+// Cerrar drawer con ESC
+$(document).on('keydown', function(e) {
+    if (e.key === 'Escape' && $('#drawerDetalleVacante').hasClass('open')) {
+        closeDrawerVacante();
+    }
+});
+
+// Cerrar drawer al hacer clic en el overlay
+$('#drawerOverlayVacante').on('click', function() {
+    closeDrawerVacante();
+});
 
 function formatNumber(num) {
     return parseFloat(num).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1326,13 +1344,13 @@ function showAddEvaluacionForm() {
     $('#formAddEvaluacion').slideDown(200, function() {
         // Reinicializar Select2 después de que el form sea visible
         $('#cmbNuevaEvaluacion').select2('destroy').select2({
-            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            dropdownParent: $('#drawerDetalleVacante'),
             width: '100%',
             placeholder: 'Seleccione evaluación...',
             allowClear: true
         });
         $('#cmbProcesoEvaluacion').select2('destroy').select2({
-            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            dropdownParent: $('#drawerDetalleVacante'),
             width: '100%',
             placeholder: 'Seleccione proceso...',
             allowClear: true
@@ -1499,7 +1517,7 @@ function showAddInduccionForm() {
     $('#formAddInduccion').slideDown(200, function() {
         // Reinicializar Select2 después de que el form sea visible
         $('#cmbNuevaInduccion').select2('destroy').select2({
-            dropdownParent: $('#modalDetalleVacante .modal-content'),
+            dropdownParent: $('#drawerDetalleVacante'),
             width: '100%',
             placeholder: 'Seleccione inducción...',
             allowClear: true
@@ -2344,5 +2362,452 @@ async function eliminarPostulacion() {
         } catch (error) {
             console.error("Error al eliminar postulación:", error);
         }
+    }
+}
+
+// ==========================================
+// POSTULANTES EN DRAWER DE VACANTE
+// ==========================================
+
+ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+
+const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+
+let rawResultadosPostulante = [];
+let chartPostulanteGeneral = null;
+let rawComparativoVacante = [];
+let chartComparativoVacanteColumn = null;
+let chartComparativoVacanteRadar = null;
+window.currentIdPostulanteEncodedResultados = null;
+
+async function loadPostulantesDrawer(idVacanteEncoded) {
+    try {
+        const response = await $.post("Backend/Postulantes/App.php", {
+            op: "getPostulantesByVacante",
+            IdVacante: idVacanteEncoded
+        });
+        const result = JSON.parse(response);
+        if (result.Siguiente && result.Data) {
+            postulantesData = result.Data;
+            renderPostulantesDrawerList(result.Data);
+            updateDrawerPostulantesStats(result.Data);
+        } else {
+            postulantesData = [];
+            renderPostulantesDrawerList([]);
+            updateDrawerPostulantesStats([]);
+        }
+    } catch (error) {
+        console.error("Error al cargar postulantes en drawer:", error);
+        $('#drawerListaPostulantes').html('<p class="text-muted text-center small">Error al cargar.</p>');
+    }
+}
+
+function updateDrawerPostulantesStats(data) {
+    const total = data.length;
+    const enProceso = data.filter(p => parseInt(p.EstatusPostulacion) === 1).length;
+    const aceptados = data.filter(p => parseInt(p.EstatusPostulacion) === 2).length;
+    const rechazados = data.filter(p => parseInt(p.EstatusPostulacion) === 3).length;
+    $('#drawerStatTotal').text(total);
+    $('#drawerStatProceso').text(enProceso);
+    $('#drawerStatAceptados').text(aceptados);
+    $('#drawerStatRechazados').text(rechazados);
+}
+
+function renderPostulantesDrawerList(data) {
+    if (!data || data.length === 0) {
+        $('#drawerListaPostulantes').html('<p class="text-muted text-center small">Sin postulantes en esta vacante.</p>');
+        return;
+    }
+    let html = '<div class="list-group list-group-flush" style="max-height:400px;overflow-y:auto;">';
+    data.forEach(p => {
+        const idEncoded = btoa(p.IdPostulanteVacante);
+        const nombre = (p.NombreCompleto || 'Sin nombre');
+        const statusLabel = (() => {
+            switch(parseInt(p.EstatusPostulacion)) {
+                case 1: return '<span class="postulante-status en-proceso">En Proceso</span>';
+                case 2: return '<span class="postulante-status aceptado">Aceptado</span>';
+                case 3: return '<span class="postulante-status rechazado">Rechazado</span>';
+                case 4: return '<span class="postulante-status finalizado">Finalizado</span>';
+                default: return '<span class="postulante-status">-</span>';
+            }
+        })();
+        html += `
+            <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-1">
+                <div style="min-width:0;">
+                    <div class="fw-bold small text-truncate">${nombre}</div>
+                    <small class="text-muted">${p.UltimoProceso || 'Sin proceso'} &middot; ${p.FechaPostulacion || ''}</small>
+                </div>
+                <div class="d-flex align-items-center gap-1 flex-shrink-0 ms-2">
+                    ${statusLabel}
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-info btn-sm" onclick="verResultadosPostulante('${idEncoded}','${nombre.replace(/'/g,"\\'")}')" title="Resultados"><span class="material-symbols-outlined" style="font-size:16px;">analytics</span></button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle"><span class="material-symbols-outlined" style="font-size:16px;">visibility</span></button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="openDocumentosPostulante(${p.IdPostulanteVacante},'${nombre.replace(/'/g,"\\'")}')" title="Docs"><span class="material-symbols-outlined" style="font-size:16px;">folder_shared</span></button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    $('#drawerListaPostulantes').html(html);
+}
+
+function showAddPostulanteDrawer() {
+    const idVacante = $('#detalleIdVacante').val();
+    $('#addPostulanteIdVacante').val(idVacante);
+    clearPostulanteForm();
+    const modal = new bootstrap.Modal(document.getElementById('modalAddPostulante'));
+    modal.show();
+}
+
+// ==========================================
+// RESULTADOS DE EVALUACIÓN (INDIVIDUAL)
+// ==========================================
+
+async function verResultadosPostulante(idEncoded, nombre) {
+    window.currentIdPostulanteEncodedResultados = idEncoded;
+    try {
+        const response = await $.post("Backend/Postulantes/App.php", {
+            op: "getPostulanteResultadosEvaluaciones",
+            IdPostulanteVacante: idEncoded
+        });
+        const result = JSON.parse(response);
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            rawResultadosPostulante = result.Data;
+            const evaluaciones = [...new Set(rawResultadosPostulante.map(item => item.NombreEvaluacion))];
+            let options = '';
+            evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
+            $('#selResultadosPostulante').html(options);
+            $('#modalResultadosPostulanteLabel').html(`<span class="material-symbols-outlined align-middle me-2">analytics</span> Resultados - ${nombre}`);
+
+            let modalEl = document.getElementById('modalResultadosPostulante');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+            modal.show();
+
+            $('#modalResultadosPostulante').on('shown.bs.modal', function () {
+                drawResultadosPostulante();
+                $(this).off('shown.bs.modal');
+            });
+        } else {
+            if (typeof showBootstrapAlertWar === 'function') {
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">El postulante aún no tiene evaluaciones finalizadas.</span></div>`, 'top-right', 4000);
+            }
+        }
+    } catch (err) {
+        console.error('Error obteniendo gráficas de evaluación', err);
+    }
+}
+
+function drawResultadosPostulante() {
+    const seleccion = $('#selResultadosPostulante').val();
+    if (!seleccion) return;
+
+    let calificacionGeneral = 0;
+    const datosFiltrados = rawResultadosPostulante.filter(i => i.NombreEvaluacion === seleccion);
+    if (datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) {
+        calificacionGeneral = datosFiltrados[0].Calificacion;
+    }
+    $('#lblScoreGeneralPostulante').html(`Calificación Promedio General<br><b style="font-size:2rem;color:#0d6efd;">${calificacionGeneral}</b>`);
+
+    const chartData = datosFiltrados.map(item => ({
+        competencia: item.Competencia || 'Sin Competencia',
+        score: parseFloat(item.ScoreCompetencia)
+    }));
+
+    if (chartPostulanteGeneral) chartPostulanteGeneral.destroy();
+
+    chartPostulanteGeneral = new ej.charts.Chart({
+        isResponsive: true,
+        palettes: yellowPalette,
+        primaryXAxis: { valueType: 'Category', labelIntersectAction: 'MultipleRows' },
+        primaryYAxis: { minimum: 0, maximum: 100, interval: 20, labelFormat: '{value}' },
+        series: [{
+            dataSource: chartData, width: 2,
+            xName: 'competencia', yName: 'score',
+            name: 'Resultados (Competencias)',
+            type: 'Polar', drawType: 'Line',
+            marker: { visible: true, width: 7, height: 7 }
+        }],
+        title: seleccion,
+        tooltip: { enable: true }
+    });
+    chartPostulanteGeneral.appendTo('#chartPostulanteGeneral');
+}
+
+// ==========================================
+// COMPARATIVO DE RESULTADOS
+// ==========================================
+
+async function showComparativoResultadosDrawer() {
+    const idVacante = $('#detalleIdVacante').val();
+    if (!idVacante) return;
+
+    try {
+        const response = await $.post("Backend/Postulantes/App.php", {
+            op: "getComparativoResultadosVacante",
+            IdVacante: idVacante
+        });
+        const result = JSON.parse(response);
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            rawComparativoVacante = result.Data;
+            const evaluaciones = [...new Set(rawComparativoVacante.map(item => item.NombreEvaluacion))];
+            let options = '';
+            evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
+            $('#selComparativoEvaluaciones').html(options);
+
+            let modalEl = document.getElementById('modalComparativoResultados');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+            if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+            modal.show();
+
+            $('#modalComparativoResultados').on('shown.bs.modal', function () {
+                loadComparativoCandidatos();
+                $(this).off('shown.bs.modal');
+            });
+        } else {
+            if (typeof showBootstrapAlertWar === 'function') {
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.</span></div>`, 'top-right', 4000);
+            }
+        }
+    } catch (err) {
+        console.error('Error en gráficas comparativas', err);
+    }
+}
+
+function loadComparativoCandidatos() {
+    const seleccion = $('#selComparativoEvaluaciones').val();
+    if (!seleccion) return;
+    const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion);
+    let candidatosUnicosInfo = [];
+    datosFiltrados.forEach(i => {
+        if (!candidatosUnicosInfo.find(c => c.Nombre === i.NombreCandidato)) {
+            candidatosUnicosInfo.push({ Nombre: i.NombreCandidato, Calificacion: parseFloat(i.Calificacion || 0) });
+        }
+    });
+    candidatosUnicosInfo.sort((a, b) => b.Calificacion - a.Calificacion);
+    const $sel = $('#selCandidatosComparar');
+    if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+    $sel.empty();
+    candidatosUnicosInfo.forEach(c => { $sel.append(new Option(c.Nombre, c.Nombre, true, true)); });
+    const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
+    $sel.val(primerosCinco);
+    $sel.select2({ placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%', dropdownParent: $('#modalComparativoResultados') }).on('change', drawComparativoResultados);
+    drawComparativoResultados();
+}
+
+function drawComparativoResultados() {
+    const seleccion = $('#selComparativoEvaluaciones').val();
+    if (!seleccion) return;
+    const candidatosSeleccionados = $('#selCandidatosComparar').val() || [];
+    const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion && candidatosSeleccionados.includes(i.NombreCandidato));
+
+    // Column chart
+    let seriesDataColumn = [];
+    candidatosSeleccionados.forEach(candidato => {
+        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        seriesDataColumn.push({
+            dataSource: datosCandidato.map(d => ({ competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) })),
+            xName: 'competencia', yName: 'score', name: candidato, type: 'Column',
+            columnSpacing: 0.1, cornerRadius: { topLeft: 4, topRight: 4 },
+            marker: { dataLabel: { visible: true, position: 'Top', font: { fontWeight: '600' } } }
+        });
+    });
+    if (chartComparativoVacanteColumn) chartComparativoVacanteColumn.destroy();
+    chartComparativoVacanteColumn = new ej.charts.Chart({
+        isResponsive: true, palettes: yellowPalette,
+        primaryXAxis: { valueType: 'Category', labelIntersectAction: 'MultipleRows', majorGridLines: { width: 0 } },
+        primaryYAxis: { minimum: 0, maximum: 100, interval: 20, labelFormat: '{value}', majorTickLines: { width: 0 }, lineStyle: { width: 0 } },
+        series: seriesDataColumn,
+        title: `Comparativo de Competencias - ${seleccion}`,
+        tooltip: { enable: true },
+        legendSettings: { visible: true, position: 'Bottom' }
+    });
+    chartComparativoVacanteColumn.appendTo('#chartComparativoVacanteColumn');
+
+    // Radar chart
+    let seriesDataRadar = [];
+    candidatosSeleccionados.forEach(candidato => {
+        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        seriesDataRadar.push({
+            dataSource: datosCandidato.map(d => ({ competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) })),
+            xName: 'competencia', yName: 'score', name: candidato, type: 'Polar', drawType: 'Area',
+            opacity: 0.4, marker: { visible: true, width: 6, height: 6, shape: 'Circle' },
+            border: { width: 2, color: 'transparent' }
+        });
+    });
+    if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.destroy();
+    chartComparativoVacanteRadar = new ej.charts.Chart({
+        isResponsive: true, palettes: yellowPalette,
+        primaryXAxis: { valueType: 'Category', labelPlacement: 'OnTicks' },
+        primaryYAxis: { minimum: 0, maximum: 100, interval: 20, labelFormat: '{value}' },
+        series: seriesDataRadar,
+        title: `Comparativo de Competencias (Radar) - ${seleccion}`,
+        tooltip: { enable: true },
+        legendSettings: { visible: true, position: 'Bottom' }
+    });
+    chartComparativoVacanteRadar.appendTo('#chartComparativoVacanteRadar');
+
+    // Mini tablas por candidato
+    let htmlContenedorTablas = '';
+    candidatosSeleccionados.forEach((candidato, idx) => {
+        htmlContenedorTablas += `
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light text-center fw-bold text-dark">${candidato}</div>
+                    <div class="card-body p-0"><div id="tabla_comparativo_${idx}"></div></div>
+                </div>
+            </div>
+        `;
+    });
+    $('#contenedorTablasComparativo').html(htmlContenedorTablas);
+    candidatosSeleccionados.forEach((candidato, idx) => {
+        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        const tableData = datosCandidato.map(d => ({
+            Competencia: d.Competencia || 'Sin Competencia',
+            Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2)
+        }));
+        if (typeof Tabulator !== 'undefined') {
+            new Tabulator(`#tabla_comparativo_${idx}`, {
+                data: tableData, layout: "fitColumns",
+                columns: [
+                    { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 },
+                    { title: "SCORE", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 }
+                ]
+            });
+        }
+    });
+}
+
+function switchComparativoChart(type) {
+    $('#cardChartColumn, #cardChartRadar').removeClass('border-primary shadow-sm bg-white').addClass('border-0 shadow-none bg-light');
+    $('#textChartColumn, #textChartRadar').removeClass('text-primary').addClass('text-muted');
+    $('#containerChartColumn, #containerChartRadar').addClass('d-none');
+    if (type === 'column') {
+        $('#cardChartColumn').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
+        $('#textChartColumn').removeClass('text-muted').addClass('text-primary');
+        $('#containerChartColumn').removeClass('d-none');
+        if (chartComparativoVacanteColumn) chartComparativoVacanteColumn.refresh();
+    } else {
+        $('#cardChartRadar').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
+        $('#textChartRadar').removeClass('text-muted').addClass('text-primary');
+        $('#containerChartRadar').removeClass('d-none');
+        if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.refresh();
+    }
+}
+
+// ==========================================
+// DOCUMENTOS POSTULANTE
+// ==========================================
+
+function openDocumentosPostulante(idNumerico, nombrePostulante) {
+    const row = postulantesData.find(p => p.IdPostulanteVacante == idNumerico);
+    const rutaCV = (row && row.RutaCV) ? row.RutaCV : '';
+    const rutaSE = (row && row.RutaSolicitudEmpleo) ? row.RutaSolicitudEmpleo : '';
+    const hasCV = !!rutaCV;
+    const hasSE = !!rutaSE;
+    let html = '<div class="d-flex flex-column gap-2 align-items-center py-3">';
+    if (hasCV) {
+        html += `<a href="${rutaCV}" target="_blank" class="btn btn-primary w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">description</span> Ver CV</a>`;
+        html += `<a href="${rutaCV.replace('op=viewArchivo','op=downloadArchivo')}" target="_blank" class="btn btn-outline-primary btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar CV</a>`;
+    }
+    if (hasSE) {
+        html += `<a href="${rutaSE}" target="_blank" class="btn btn-info text-white w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">assignment</span> Ver Solicitud</a>`;
+        html += `<a href="${rutaSE.replace('op=viewArchivo','op=downloadArchivo')}" target="_blank" class="btn btn-outline-info btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar Solicitud</a>`;
+    }
+    if (!hasCV && !hasSE) {
+        html += `<div class="alert alert-warning w-100 text-center"><span class="material-symbols-outlined d-block mb-1">folder_off</span><b>${nombrePostulante}</b> no ha adjuntado documentos.</div>`;
+    }
+    html += '</div>';
+    $('#contenedorBotonesDocumentos').html(html);
+    let modalEl = document.getElementById('modalDocumentosPostulante');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+    modal.show();
+}
+
+// ==========================================
+// EVALUACION RESPUESTAS
+// ==========================================
+
+function cerrarEvaluacionRespuestas() {
+    let modalResp = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionRespuestas'));
+    if (modalResp) modalResp.hide();
+    let modalResu = bootstrap.Modal.getInstance(document.getElementById('modalResultadosPostulante'));
+    if (modalResu) modalResu.show();
+}
+
+async function abrirEvaluacionRespuestas() {
+    const seleccionEv = $('#selResultadosPostulante').val();
+    if (!seleccionEv || !window.currentIdPostulanteEncodedResultados) {
+        if (typeof showBootstrapAlertWar === 'function') {
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Atención!</span><span class="alert-text">Debes seleccionar una evaluación primero.</span></div>`, 'top-right', 3000);
+        }
+        return;
+    }
+    let modalResu = bootstrap.Modal.getInstance(document.getElementById('modalResultadosPostulante'));
+    if (modalResu) modalResu.hide();
+
+    $('#contenedorEvaluacionRespuestas').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando evaluación...</p></div>');
+    let modalResp = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionRespuestas'));
+    if (!modalResp) modalResp = new bootstrap.Modal(document.getElementById('modalEvaluacionRespuestas'), { backdrop: 'static', keyboard: false });
+    modalResp.show();
+
+    try {
+        const response = await $.post("Backend/Postulantes/App.php", {
+            op: "getPostulanteRespuestasDetalle",
+            IdPostulanteVacante: window.currentIdPostulanteEncodedResultados,
+            NombreEvaluacion: seleccionEv
+        });
+        const result = JSON.parse(response);
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            let html = '';
+            result.Data.forEach((item, index) => {
+                html += `<div class="card mb-4 shadow-sm border-0"><div class="card-body"><h6 class="fw-bold mb-1 d-flex align-items-start"><span class="badge bg-primary rounded-pill me-2 mt-1">${index + 1}</span><span>${item.TituloPregunta || 'Pregunta ' + (index + 1)}</span></h6>${item.Pregunta && item.Pregunta.trim() !== '' ? `<p class="mb-3 text-muted" style="margin-left:2.2rem;">${item.Pregunta}</p>` : '<div class="mb-3"></div>'}`;
+                if (item.Opciones && item.Opciones.length > 0) {
+                    html += '<div class="list-group ps-4">';
+                    item.Opciones.forEach(opt => {
+                        const rPost = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                        const oI = opt.IdOpcion ? String(opt.IdOpcion).trim().toLowerCase() : "";
+                        const oT = opt.Texto ? String(opt.Texto).trim().toLowerCase() : "";
+                        const isSelected = (rPost !== "" && (rPost === oI || rPost === oT));
+                        let isCorrectaOM = false;
+                        const corrO = item.RespuestaCorrectaOM ? String(item.RespuestaCorrectaOM).trim().toLowerCase() : "";
+                        const corrT = item.TextoRespuestaCorrectaOM ? String(item.TextoRespuestaCorrectaOM).trim().toLowerCase() : "";
+                        if ((corrO !== "" && oI === corrO) || (corrT !== "" && oT === corrT)) isCorrectaOM = true;
+                        let bg = "background-color:transparent;", icon = "";
+                        if (isSelected) {
+                            bg = isCorrectaOM ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;";
+                            icon = isCorrectaOM ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>';
+                        } else if (isCorrectaOM) {
+                            bg = "background-color:#d4edda;border-color:#c3e6cb;";
+                            icon = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>';
+                        }
+                        html += `<div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bg} border-width:1px;border-style:solid;"><span>${opt.Texto}</span>${icon}</div>`;
+                    });
+                    html += '</div>';
+                } else if (item.BoolCorreta !== null) {
+                    const rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                    const trueIsCorrect = (item.BoolCorreta == "1");
+                    const isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
+                    const isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
+                    let bgTrue = "", iconTrue = "", bgFalse = "", iconFalse = "";
+                    if (isTrueSelected) { bgTrue = trueIsCorrect ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;"; iconTrue = trueIsCorrect ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>'; }
+                    else if (trueIsCorrect) { bgTrue = "background-color:#d4edda;border-color:#c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>'; }
+                    if (isFalseSelected) { bgFalse = !trueIsCorrect ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;"; iconFalse = !trueIsCorrect ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>'; }
+                    else if (!trueIsCorrect) { bgFalse = "background-color:#d4edda;border-color:#c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>'; }
+                    html += `<div class="list-group ps-4 w-50"><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgTrue} border-width:1px;border-style:solid;"><span>Verdadero</span>${iconTrue}</div><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgFalse} border-width:1px;border-style:solid;"><span>Falso</span>${iconFalse}</div></div>`;
+                } else {
+                    html += `<div class="ps-4"><div class="p-3 bg-light rounded-3 text-dark mb-2">${item.RespuestaPostulante || '<em class="text-muted">Sin respuesta</em>'}</div></div>`;
+                }
+                html += `</div></div>`;
+            });
+            $('#contenedorEvaluacionRespuestas').html(html);
+        } else {
+            $('#contenedorEvaluacionRespuestas').html(`<div class="alert alert-warning m-4"><span class="material-symbols-outlined align-middle me-2">sentiment_dissatisfied</span>No se encontraron detalles para esta evaluación.</div>`);
+        }
+    } catch (err) {
+        console.error('Error al abrir evaluación:', err);
+        $('#contenedorEvaluacionRespuestas').html(`<div class="alert alert-danger m-4"><span class="material-symbols-outlined align-middle me-2">error</span>Ha ocurrido un error al cargar los datos.</div>`);
     }
 }

@@ -851,5 +851,6 @@ window.PostulanteEditor = {
     eliminarTelefonoPostulante,
     aplicarDireccionCompleta,
     updateDireccionPreview,
-    buscarCodigoPostalConValor
+    buscarCodigoPostalConValor,
+    isModoEdicion: function() { return modoEdicion; }
 };

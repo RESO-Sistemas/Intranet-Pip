@@ -62,26 +62,94 @@
             background-color: #f1f1f1;
         }
         
-        /* Fix para Select2 dentro de modales */
-        #modalDetalleVacante .modal-body {
-            overflow: visible;
+        /* ====== DRAWER DE DETALLE DE VACANTE ====== */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1050;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
-        #modalDetalleVacante .modal-content {
-            overflow: visible;
+        .drawer-overlay.show {
+            display: block;
+            opacity: 1;
         }
-        #modalDetalleVacante .modal-dialog {
-            overflow: visible;
+        .drawer-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 680px;
+            max-width: 95vw;
+            height: 100vh;
+            background: #fff;
+            z-index: 1055;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.15);
         }
-        #modalDetalleVacante .select2-container {
+        .drawer-panel.open {
+            transform: translateX(0);
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #dee2e6;
+            flex-shrink: 0;
+        }
+        .drawer-header h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .drawer-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #dee2e6;
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        /* Select2 dentro del drawer */
+        .drawer-panel .select2-container {
             z-index: 1060;
         }
-        #modalDetalleVacante .select2-container--open {
+        .drawer-panel .select2-container--open {
             z-index: 1070;
         }
-        #modalDetalleVacante .select2-dropdown {
+        .drawer-panel .select2-dropdown {
             z-index: 1070;
         }
-        /* Asegurar que los forms de agregar tengan altura suficiente */
+
+        /* Input groups con Select2 en drawer */
+        .detail-section .input-group .select2-container--default .select2-selection--single {
+            height: 38px;
+            border-radius: 0;
+            border: 1px solid #ced4da;
+        }
+        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            padding-left: 12px;
+        }
+        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+        .detail-section .input-group > .select2-container:first-child .select2-selection--single {
+            border-top-left-radius: 0.375rem;
+            border-bottom-left-radius: 0.375rem;
+        }
+
         #formAddEvaluacion, #formAddInduccion, #formAddRequisito {
             position: relative;
             z-index: 10;
@@ -95,26 +163,24 @@
             flex: 1;
             min-width: 150px;
         }
-        /* Mejorar diseño de los input groups con Select2 */
-        .detail-section .input-group .select2-container--default .select2-selection--single {
-            height: 38px;
-            border-radius: 0;
-            border: 1px solid #ced4da;
+
+        /* Dark mode para drawer */
+        [data-theme="dark"] .drawer-panel {
+            background-color: #1e1e1e;
         }
-        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-            padding-left: 12px;
+        [data-theme="dark"] .drawer-header {
+            border-bottom-color: #404040;
+            color: #e0e0e0;
         }
-        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
+        [data-theme="dark"] .drawer-body {
+            color: #e0e0e0;
         }
-        /* Primer select en el grupo */
-        .detail-section .input-group > .select2-container:first-child .select2-selection--single {
-            border-top-left-radius: 0.375rem;
-            border-bottom-left-radius: 0.375rem;
+        [data-theme="dark"] .drawer-footer {
+            border-top-color: #404040;
         }
-        
-        /* Dark mode para modal detalle */
+        [data-theme="dark"] .drawer-body p {
+            color: #b0b0b0;
+        }
         [data-theme="dark"] .detail-section {
             background-color: #2d2d2d;
             border: 1px solid #404040;
@@ -135,20 +201,6 @@
         [data-theme="dark"] .induccion-item:hover {
             background-color: #2a2a2a;
         }
-        [data-theme="dark"] #modalDetalleVacante .modal-content {
-            background-color: #1e1e1e;
-            border-color: #404040;
-        }
-        [data-theme="dark"] #modalDetalleVacante .modal-body {
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] #modalDetalleVacante .modal-body p {
-            color: #b0b0b0;
-        }
-        [data-theme="dark"] #modalDetalleVacante .modal-footer {
-            border-top-color: #404040;
-        }
-        /* Dark mode para Select2 dentro del modal */
         [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single {
             background-color: #2d2d2d;
             border-color: #404040;
@@ -172,6 +224,13 @@
             background-color: #1e1e1e;
             border-color: #404040;
             color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .drawer-panel {
+                width: 100vw;
+                max-width: 100vw;
+            }
         }
         
         /* ====== ESTILOS PARA POSTULANTES ====== */
@@ -679,144 +738,168 @@
         </div>
     </div>
 
-    <!-- Modal Detalle Vacante -->
-    <div class="modal fade" id="modalDetalleVacante" tabindex="-1" aria-labelledby="modalDetalleVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalDetalleVacanteLabel">
-                        <span class="material-symbols-outlined align-middle me-2">info</span>
-                        Detalle de Vacante
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="detalleIdVacante">
-                    
-                    <!-- Info General -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-primary">
-                            <span class="material-symbols-outlined align-middle me-2">description</span>
-                            Información General
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Nombre:</strong> <span id="detalleNombre">-</span></p>
-                                <p><strong>Área Técnica:</strong> <span id="detalleArea">-</span></p>
-                                <p><strong>Puesto:</strong> <span id="detallePuesto">-</span></p>
-                                <p><strong>Sucursal:</strong> <span id="detalleSucursal">-</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Tipo Contratación:</strong> <span id="detalleTipoContratacion">-</span></p>
-                                <p><strong>Rango Salarial:</strong> <span id="detalleSalario">-</span></p>
-                                <p><strong>Fecha Apertura:</strong> <span id="detalleFechaApertura">-</span></p>
-                                <p><strong>Fecha Cierre:</strong> <span id="detalleFechaCierre">-</span></p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <p><strong>Descripción:</strong></p>
-                                <p id="detalleDescripcion" class="text-muted">-</p>
-                            </div>
-                        </div>
+    <!-- ====== DRAWER DETALLE DE VACANTE (reemplaza modalDetalleVacante) ====== -->
+    <div class="drawer-overlay" id="drawerOverlayVacante"></div>
+    <div class="drawer-panel" id="drawerDetalleVacante">
+        <div class="drawer-header">
+            <h5>
+                <span class="material-symbols-outlined align-middle me-2">info</span>
+                <span id="drawerVacanteTitulo">Detalle de Vacante</span>
+            </h5>
+            <button type="button" class="btn-close" onclick="closeDrawerVacante()" aria-label="Cerrar"></button>
+        </div>
+        <div class="drawer-body">
+            <input type="hidden" id="detalleIdVacante">
+            
+            <!-- Info General -->
+            <div class="detail-section">
+                <h6 class="fw-bold text-primary">
+                    <span class="material-symbols-outlined align-middle me-2">description</span>
+                    Información General
+                </h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nombre:</strong> <span id="detalleNombre">-</span></p>
+                        <p><strong>Área Técnica:</strong> <span id="detalleArea">-</span></p>
+                        <p><strong>Puesto:</strong> <span id="detallePuesto">-</span></p>
+                        <p><strong>Sucursal:</strong> <span id="detalleSucursal">-</span></p>
                     </div>
-
-                    <!-- Requisitos -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-success d-flex justify-content-between align-items-center">
-                            <span>
-                                <span class="material-symbols-outlined align-middle me-2">checklist</span>
-                                Requisitos
-                            </span>
-                            <button type="button" class="btn btn-success btn-sm" onclick="showAddRequisitoForm()">
-                                <span class="material-symbols-outlined align-middle">add</span>
-                            </button>
-                        </h6>
-                        <div id="formAddRequisito" style="display:none;" class="mb-3">
-                            <div class="input-group">
-                                <input type="text" id="txtNuevoRequisito" class="form-control" placeholder="Nuevo requisito...">
-                                <input type="number" id="txtOrdenRequisito" class="form-control" style="max-width:80px;" placeholder="Orden" value="0">
-                                <button class="btn btn-success" onclick="addRequisito()">
-                                    <span class="material-symbols-outlined">save</span>
-                                </button>
-                                <button class="btn btn-secondary" onclick="hideAddRequisitoForm()">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="listaRequisitos">
-                            <p class="text-muted text-center">No hay requisitos configurados</p>
-                        </div>
-                    </div>
-
-                    <!-- Evaluaciones -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-warning d-flex justify-content-between align-items-center">
-                            <span>
-                                <span class="material-symbols-outlined align-middle me-2">quiz</span>
-                                Evaluaciones
-                            </span>
-                            <button type="button" class="btn btn-warning btn-sm" onclick="showAddEvaluacionForm()">
-                                <span class="material-symbols-outlined align-middle">add</span>
-                            </button>
-                        </h6>
-                        <div id="formAddEvaluacion" style="display:none;" class="mb-3">
-                            <div class="input-group">
-                                <select id="cmbNuevaEvaluacion" class="form-select">
-                                    <option value="">Seleccione evaluación...</option>
-                                </select>
-                                <select id="cmbProcesoEvaluacion" class="form-select">
-                                    <option value="">Seleccione proceso...</option>
-                                </select>
-                                <button class="btn btn-warning" onclick="addEvaluacion()">
-                                    <span class="material-symbols-outlined">save</span>
-                                </button>
-                                <button class="btn btn-secondary" onclick="hideAddEvaluacionForm()">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="listaEvaluaciones">
-                            <p class="text-muted text-center">No hay evaluaciones configuradas</p>
-                        </div>
-                    </div>
-
-                    <!-- Inducciones -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-danger d-flex justify-content-between align-items-center">
-                            <span>
-                                <span class="material-symbols-outlined align-middle me-2">school</span>
-                                Inducciones
-                            </span>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="showAddInduccionForm()">
-                                <span class="material-symbols-outlined align-middle">add</span>
-                            </button>
-                        </h6>
-                        <div id="formAddInduccion" style="display:none;" class="mb-3">
-                            <div class="input-group">
-                                <select id="cmbNuevaInduccion" class="form-select">
-                                    <option value="">Seleccione inducción...</option>
-                                </select>
-                                <button class="btn btn-danger" onclick="addInduccion()">
-                                    <span class="material-symbols-outlined">save</span>
-                                </button>
-                                <button class="btn btn-secondary" onclick="hideAddInduccionForm()">
-                                    <span class="material-symbols-outlined">close</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="listaInducciones">
-                            <p class="text-muted text-center">No hay inducciones configuradas</p>
-                        </div>
+                    <div class="col-md-6">
+                        <p><strong>Tipo Contratación:</strong> <span id="detalleTipoContratacion">-</span></p>
+                        <p><strong>Rango Salarial:</strong> <span id="detalleSalario">-</span></p>
+                        <p><strong>Fecha Apertura:</strong> <span id="detalleFechaApertura">-</span></p>
+                        <p><strong>Fecha Cierre:</strong> <span id="detalleFechaCierre">-</span></p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <span class="material-symbols-outlined align-middle me-1">close</span>
-                        Cerrar
-                    </button>
+                <div class="row">
+                    <div class="col-12">
+                        <p><strong>Descripción:</strong></p>
+                        <p id="detalleDescripcion" class="text-muted">-</p>
+                    </div>
                 </div>
             </div>
+
+            <!-- Requisitos -->
+            <div class="detail-section">
+                <h6 class="fw-bold text-success d-flex justify-content-between align-items-center">
+                    <span>
+                        <span class="material-symbols-outlined align-middle me-2">checklist</span>
+                        Requisitos
+                    </span>
+                    <button type="button" class="btn btn-success btn-sm" onclick="showAddRequisitoForm()">
+                        <span class="material-symbols-outlined align-middle">add</span>
+                    </button>
+                </h6>
+                <div id="formAddRequisito" style="display:none;" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" id="txtNuevoRequisito" class="form-control" placeholder="Nuevo requisito...">
+                        <input type="number" id="txtOrdenRequisito" class="form-control" style="max-width:80px;" placeholder="Orden" value="0">
+                        <button class="btn btn-success" onclick="addRequisito()">
+                            <span class="material-symbols-outlined">save</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="hideAddRequisitoForm()">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="listaRequisitos">
+                    <p class="text-muted text-center">No hay requisitos configurados</p>
+                </div>
+            </div>
+
+            <!-- Evaluaciones -->
+            <div class="detail-section">
+                <h6 class="fw-bold text-warning d-flex justify-content-between align-items-center">
+                    <span>
+                        <span class="material-symbols-outlined align-middle me-2">quiz</span>
+                        Evaluaciones
+                    </span>
+                    <button type="button" class="btn btn-warning btn-sm" onclick="showAddEvaluacionForm()">
+                        <span class="material-symbols-outlined align-middle">add</span>
+                    </button>
+                </h6>
+                <div id="formAddEvaluacion" style="display:none;" class="mb-3">
+                    <div class="input-group">
+                        <select id="cmbNuevaEvaluacion" class="form-select">
+                            <option value="">Seleccione evaluación...</option>
+                        </select>
+                        <select id="cmbProcesoEvaluacion" class="form-select">
+                            <option value="">Seleccione proceso...</option>
+                        </select>
+                        <button class="btn btn-warning" onclick="addEvaluacion()">
+                            <span class="material-symbols-outlined">save</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="hideAddEvaluacionForm()">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="listaEvaluaciones">
+                    <p class="text-muted text-center">No hay evaluaciones configuradas</p>
+                </div>
+            </div>
+
+            <!-- Inducciones -->
+            <div class="detail-section">
+                <h6 class="fw-bold text-danger d-flex justify-content-between align-items-center">
+                    <span>
+                        <span class="material-symbols-outlined align-middle me-2">school</span>
+                        Inducciones
+                    </span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="showAddInduccionForm()">
+                        <span class="material-symbols-outlined align-middle">add</span>
+                    </button>
+                </h6>
+                <div id="formAddInduccion" style="display:none;" class="mb-3">
+                    <div class="input-group">
+                        <select id="cmbNuevaInduccion" class="form-select">
+                            <option value="">Seleccione inducción...</option>
+                        </select>
+                        <button class="btn btn-danger" onclick="addInduccion()">
+                            <span class="material-symbols-outlined">save</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="hideAddInduccionForm()">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="listaInducciones">
+                    <p class="text-muted text-center">No hay inducciones configuradas</p>
+                </div>
+            </div>
+            <!-- Postulantes -->
+            <div class="detail-section" id="drawerPostulantesSection">
+                <h6 class="fw-bold text-info d-flex justify-content-between align-items-center">
+                    <span>
+                        <span class="material-symbols-outlined align-middle me-2">people</span>
+                        Postulantes
+                    </span>
+                    <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteDrawer()">
+                        <span class="material-symbols-outlined align-middle">person_add</span>
+                    </button>
+                </h6>
+                <!-- Stats -->
+                <div class="stats-postulantes mb-3 d-flex flex-wrap gap-2" id="drawerStatsPostulantes">
+                    <div class="stat-item total"><span class="stat-number" id="drawerStatTotal">0</span><span class="stat-label">Total</span></div>
+                    <div class="stat-item proceso"><span class="stat-number" id="drawerStatProceso">0</span><span class="stat-label">En Proceso</span></div>
+                    <div class="stat-item aceptados"><span class="stat-number" id="drawerStatAceptados">0</span><span class="stat-label">Aceptados</span></div>
+                    <div class="stat-item rechazados"><span class="stat-number" id="drawerStatRechazados">0</span><span class="stat-label">Rechazados</span></div>
+                </div>
+                <!-- Lista -->
+                <div id="drawerListaPostulantes">
+                    <p class="text-muted text-center small">Cargando postulantes...</p>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-info btn-sm" onclick="showComparativoResultadosDrawer()">
+                <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                Comparativo Postulantes
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="closeDrawerVacante()">
+                <span class="material-symbols-outlined align-middle me-1">close</span>
+                Cerrar
+            </button>
         </div>
     </div>
     
@@ -1152,11 +1235,171 @@
         </div>
     </div>
     
+    <!-- ====== MODAL RESULTADOS POSTULANTE ====== -->
+    <div class="modal fade" id="modalResultadosPostulante" tabindex="-1"
+        aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalResultadosPostulanteLabel">
+                        <span class="material-symbols-outlined align-middle me-2">analytics</span>
+                        Resultados de Evaluación
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                            onclick="abrirEvaluacionRespuestas()">
+                            <span class="material-symbols-outlined align-middle" style="font-size:18px;">visibility</span>
+                            Ver Evaluación
+                        </button>
+                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Evaluación:</label>
+                            <select id="selResultadosPostulante" class="form-select"
+                                onchange="drawResultadosPostulante()"></select>
+                        </div>
+                        <div class="col-md-8 text-center"
+                            style="display:flex; justify-content:center; flex-direction:column; align-items:center;">
+                            <h4 id="lblScoreGeneralPostulante"></h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <div id="chartPostulanteGeneral" style="width:100%; height:500px"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MODAL COMPARATIVO RESULTADOS ====== -->
+    <div class="modal fade" id="modalComparativoResultados" tabindex="-1"
+        aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalComparativoResultadosLabel">
+                        <span class="material-symbols-outlined align-middle me-2">bar_chart</span>
+                        Comparativo de Resultados por Evaluación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Seleccione Evaluación:</label>
+                            <select id="selComparativoEvaluaciones" class="form-select"
+                                onchange="loadComparativoCandidatos()"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Seleccione Candidatos a comparar:</label>
+                            <select id="selCandidatosComparar" class="form-control" multiple="multiple"
+                                style="width: 100%;">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row text-center mb-4">
+                        <div class="col-md-6 mb-2">
+                            <div class="card border-primary shadow-sm h-100 mb-0 bg-white" id="cardChartColumn"
+                                onclick="switchComparativoChart('column')"
+                                style="cursor: pointer; transition: all 0.2s;">
+                                <div class="card-body py-3">
+                                    <h6 class="mb-0 fw-bold text-primary" id="textChartColumn">
+                                        <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                                        Postulantes mejor puntuados</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="card border-0 shadow-none h-100 mb-0 bg-light" id="cardChartRadar"
+                                onclick="switchComparativoChart('radar')"
+                                style="cursor: pointer; transition: all 0.2s;">
+                                <div class="card-body py-3">
+                                    <h6 class="mb-0 fw-bold text-muted" id="textChartRadar">
+                                        <span class="material-symbols-outlined align-middle me-1">radar</span>
+                                        Postulantes por competencias</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="containerChartColumn">
+                        <div class="col-md-12">
+                            <div id="chartComparativoVacanteColumn" style="width:100%; height:450px"></div>
+                        </div>
+                    </div>
+                    <div class="row d-none" id="containerChartRadar">
+                        <div class="col-md-12">
+                            <div id="chartComparativoVacanteRadar" style="width:100%; height:450px"></div>
+                        </div>
+                    </div>
+                    <div class="row mt-4" id="contenedorTablasComparativo"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MODAL DOCUMENTOS POSTULANTE ====== -->
+    <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1"
+        aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDocumentosPostulanteLabel">
+                        <span class="material-symbols-outlined align-middle me-2">folder_shared</span>
+                        Documentos
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center" id="contenedorBotonesDocumentos"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== MODAL EVALUACION RESPUESTAS ====== -->
+    <div class="modal fade" id="modalEvaluacionRespuestas" tabindex="-1"
+        aria-labelledby="modalEvaluacionRespuestasLabel" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEvaluacionRespuestasLabel">
+                        <span class="material-symbols-outlined align-middle me-2">quiz</span>
+                        Evaluación del Postulante
+                    </h5>
+                    <button type="button" class="btn-close" onclick="cerrarEvaluacionRespuestas()"></button>
+                </div>
+                <div class="modal-body" style="background-color: #f8f9fa;">
+                    <div id="contenedorEvaluacionRespuestas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
-    
-    <!-- Scripts específicos de esta página -->
-    <script src="scripts/Vacantes.js?v=<?php echo time(); ?>"></script>
+
+    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
+    <script src="scripts/Vacantes.js?v=2"></script>
 </body>
 
 </html>
