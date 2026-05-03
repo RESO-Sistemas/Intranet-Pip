@@ -2,6 +2,18 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-02 20:51:49] ✨ feat: split-pane Postulantes y drawer Vacantes
+
+- ✨ **PostulantesGeneral:** Layout split-pane con lista de postulantes (340px) y panel de detalle con tabs a la derecha. Lista de tarjetas responsiva con búsqueda en vivo (debounce 200ms), reemplaza DataTable.
+- ✨ **Tabs Procesos:** Panel derecho con 3 tabs: Info (datos + edición), Procesos (vacantes + timeline + resultados evaluación), Teléfonos.
+- ✨ **Resultados Evaluación:** Nueva sección en pestaña Procesos con badges circulares por competencia.
+- ✨ **Vacantes Drawer:** Reemplazo de modalDetalleVacante (modal-xl) por drawer lateral deslizable desde la derecha.
+- ✨ **Postulantes en Drawer:** Nueva sección con stats, lista compacta con 3 acciones (resultados, detalle, docs) y botón Comparativo Postulantes.
+- ✨ **4 Modales Nuevos:** Resultados individual (radar), comparativo (barras+radar+tablas), documentos, visor de respuestas.
+- ✨ **Gráficos Syncfusion:** Todas las funciones de gráficos移植adas de PostulantesVacante.js a Vacantes.js.
+- ✨ **Scripts:** PostulantesGeneral.js reescrito con master-detail AJAX, Vacantes.js reescrito con openDetalleDrawer, closeDrawerVacante. PostulanteEditor.js añade isModoEdicion().
+- 📝 **Documentación:** Agregado docs/Planificacion postulantes y vacantes.md.
+
 ## [2026-04-29 00:00:00] ✨ feat: módulo Bolsa de Trabajo Ibero
 
 - ✨ **Bolsa de Trabajo:** Implementación completa del módulo de Bolsa de Trabajo con vistas para vacantes, postulaciones, evaluaciones y resultados
