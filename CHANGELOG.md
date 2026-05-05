@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-05 10:00:00] 🐛 fix: filtros y búsqueda en postulantes
+
+- 🐛 **Filtros de Estatus:** Se corrigió bug donde los botones de filtro (En Proceso, Aceptados, Rechazados, Finalizados) no filtraban correctamente. jQuery .data() convertía valores numéricos de data-filter a Number, rompiendo la comparación === con los String de data-estatus de las cards.
+- ♻️ **Refactor Filtrado:** filtrarPostulantesCards usa ahora el array en memoria postulantesData en lugar de manipular elementos DOM, alineándose con la estrategia de filtrarVacantes. Más robusto y sin problemas de tipos.
+- ✨ **Buscador Reactivo:** Cambio de onkeyup a oninput en el buscador de postulantes para respuesta en tiempo real (incluye paste, cut, delete).
+- ♻️ **Deprecación:** PostulantesVacante.php y scripts/PostulantesVacante.js marcados como deprecados, su funcionalidad migró a Vacantes.php y scripts/Vacantes.js.
+- ✨ **Backend:** Query de vacantes ahora incluye TotalPostulantes con subquery COUNT.
+
 ## [2026-05-02 20:51:49] ✨ feat: split-pane Postulantes y drawer Vacantes
 
 - ✨ **PostulantesGeneral:** Layout split-pane con lista de postulantes (340px) y panel de detalle con tabs a la derecha. Lista de tarjetas responsiva con búsqueda en vivo (debounce 200ms), reemplaza DataTable.
