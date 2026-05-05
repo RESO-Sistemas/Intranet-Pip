@@ -276,18 +276,14 @@ function setEditButtons(isEditing) {
         if ($btnToggle.attr('id') === 'btnToggleEditMode') {
             if (isEditing) {
                 $btnToggle.html('<span class="material-symbols-outlined align-middle me-1">visibility</span>Ver Información');
-                $btnToggle.removeClass('btn-outline-primary').addClass('btn-outline-secondary');
             } else {
                 $btnToggle.html('<span class="material-symbols-outlined align-middle me-1">edit</span>Editar Información');
-                $btnToggle.removeClass('btn-outline-secondary').addClass('btn-outline-primary');
             }
         } else {
             if (isEditing) {
-                $btnToggle.html('<i class="material-icons-outlined align-middle" style="font-size: 18px;">visibility</i> Ver Información');
-                $btnToggle.removeClass('btn-primary').addClass('btn-secondary');
+                $btnToggle.html('<span class="material-symbols-outlined align-middle" style="font-size: 18px;">visibility</span> Ver Información');
             } else {
-                $btnToggle.html('<i class="material-icons-outlined align-middle" style="font-size: 18px;">edit</i> Editar Información');
-                $btnToggle.removeClass('btn-secondary').addClass('btn-primary');
+                $btnToggle.html('<span class="material-symbols-outlined align-middle" style="font-size: 18px;">edit</span> Editar Información');
             }
         }
     }
@@ -407,7 +403,7 @@ async function guardarCambiosPostulante() {
         Ciudad: getVal(f.ciudad).trim(),
         Colonia: getVal(f.colonia)
     };
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -415,7 +411,7 @@ async function guardarCambiosPostulante() {
             data: datos,
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Postulante actualizado correctamente');
 
@@ -426,11 +422,11 @@ async function guardarCambiosPostulante() {
             datosOriginales.NumeroExterior = getVal(f.numeroExterior);
             datosOriginales.NumeroInterior = getVal(f.numeroInterior);
             updateDireccionPreview();
-            
+
             // Salir del modo edición
             modoEdicion = true; // Para que toggleEditMode lo ponga en false
             toggleEditMode();
-            
+
             // Recargar la tabla si existe
             if (typeof loadPostulantes === 'function') {
                 const idVacante = $('#postulantesIdVacante').val();
@@ -506,7 +502,7 @@ async function cargarTelefonosPostulante(idPostulante) {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado && response.Data) {
             telefonosPostulante = response.Data;
             renderizarTablaTelefonos();
@@ -534,7 +530,7 @@ function renderizarTablaTelefonos() {
         }
         return;
     }
-    
+
     let html = `
         <table class="table table-sm table-hover">
             <thead>
@@ -548,39 +544,39 @@ function renderizarTablaTelefonos() {
             </thead>
             <tbody>
     `;
-    
+
     telefonosPostulante.forEach(tel => {
         const telefonoFormatted = formatearTelefono(tel.Telefono);
         const activo = parseInt(tel.Activo) === 1;
         const principal = parseInt(tel.EsPrincipal) === 1;
-        
+
         html += `
             <tr class="${!activo ? 'table-secondary' : ''}">
                 <td><strong>${telefonoFormatted}</strong></td>
                 <td>${tel.FechaRegistro}</td>
                 <td>
-                    ${activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>'}
+                    ${activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-warning text-dark">Inactivo</span>'}
                 </td>
                 <td>
                     ${principal ? '<span class="badge bg-primary">Principal</span>' : '<span class="badge bg-light text-dark">Secundario</span>'}
                 </td>
                 <td>
                     ${!principal ? `
-                        <button class="btn btn-xs btn-primary" onclick="establecerTelefonoPrincipal(${tel.IdTelefonoHistorico})" title="Hacer principal">
+                        <button class="btn-minimal btn-xs" onclick="establecerTelefonoPrincipal(${tel.IdTelefonoHistorico})" title="Hacer principal">
                             <span class="material-symbols-outlined" style="font-size:14px;">star</span>
                         </button>
                     ` : ''}
                     ${activo ? `
-                        <button class="btn btn-xs btn-warning" onclick="desactivarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Desactivar">
+                        <button class="btn-minimal btn-xs" onclick="desactivarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Desactivar">
                             <span class="material-symbols-outlined" style="font-size:14px;">block</span>
                         </button>
                     ` : `
-                        <button class="btn btn-xs btn-success" onclick="reactivarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Reactivar">
+                        <button class="btn-minimal btn-xs" onclick="reactivarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Reactivar">
                             <span class="material-symbols-outlined" style="font-size:14px;">check_circle</span>
                         </button>
                     `}
                     ${!principal ? `
-                        <button class="btn btn-xs btn-danger" onclick="eliminarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Eliminar">
+                        <button class="btn-minimal btn-xs" onclick="eliminarTelefonoPostulante(${tel.IdTelefonoHistorico})" title="Eliminar">
                             <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
                         </button>
                     ` : ''}
@@ -588,7 +584,7 @@ function renderizarTablaTelefonos() {
             </tr>
         `;
     });
-    
+
     html += '</tbody></table>';
     if ($tabla.length) {
         $tabla.html(html);
@@ -606,22 +602,22 @@ function renderizarListaTelefonos() {
         $('#listaTelefonos').html('<small class="text-muted">Sin teléfonos registrados</small>');
         return;
     }
-    
+
     let html = '<div class="d-flex flex-wrap gap-2">';
-    
+
     telefonosPostulante.forEach(tel => {
         const activo = parseInt(tel.Activo) === 1;
         const principal = parseInt(tel.EsPrincipal) === 1;
         const telefonoFormatted = formatearTelefono(tel.Telefono);
-        
+
         html += `
-            <span class="badge ${activo ? (principal ? 'bg-primary' : 'bg-success') : 'bg-secondary'}" style="font-size:0.9rem;">
+            <span class="badge ${activo ? (principal ? 'bg-primary' : 'bg-success') : 'bg-warning text-dark'}" style="font-size:0.9rem;">
                 ${principal ? '⭐ ' : ''}${telefonoFormatted}
                 ${!activo ? ' (Inactivo)' : ''}
             </span>
         `;
     });
-    
+
     html += '</div>';
     $('#listaTelefonos').html(html);
 }
@@ -658,17 +654,17 @@ async function agregarTelefonoNuevo() {
     const telefono = $('#nuevoTelefono').val().trim();
     const observaciones = $('#observacionesTelefono').val().trim();
     const idPostulante = $('#detalleIdPostulante').val();
-    
+
     if (!telefono) {
         toastr.warning('Ingresa un número de teléfono');
         return;
     }
-    
+
     if (telefono.length !== 10) {
         toastr.error('El teléfono debe tener 10 dígitos');
         return;
     }
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -681,7 +677,7 @@ async function agregarTelefonoNuevo() {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Teléfono agregado correctamente');
             ocultarFormAgregarTelefono();
@@ -708,7 +704,7 @@ async function establecerTelefonoPrincipal(idTelefonoHistorico) {
         toastr.error('No se pudo identificar el teléfono seleccionado');
         return;
     }
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -721,7 +717,7 @@ async function establecerTelefonoPrincipal(idTelefonoHistorico) {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Teléfono principal actualizado');
             await cargarTelefonosPostulante(idPostulante);
@@ -739,9 +735,9 @@ async function establecerTelefonoPrincipal(idTelefonoHistorico) {
  */
 async function desactivarTelefonoPostulante(idTelefonoHistorico) {
     if (!confirm('¿Desactivar este teléfono?')) return;
-    
+
     const idPostulante = $('#detalleIdPostulante').val();
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -752,7 +748,7 @@ async function desactivarTelefonoPostulante(idTelefonoHistorico) {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Teléfono desactivado');
             await cargarTelefonosPostulante(idPostulante);
@@ -770,9 +766,9 @@ async function desactivarTelefonoPostulante(idTelefonoHistorico) {
  */
 async function reactivarTelefonoPostulante(idTelefonoHistorico) {
     if (!confirm('¿Reactivar este teléfono?')) return;
-    
+
     const idPostulante = $('#detalleIdPostulante').val();
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -783,7 +779,7 @@ async function reactivarTelefonoPostulante(idTelefonoHistorico) {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Teléfono reactivado');
             await cargarTelefonosPostulante(idPostulante);
@@ -801,9 +797,9 @@ async function reactivarTelefonoPostulante(idTelefonoHistorico) {
  */
 async function eliminarTelefonoPostulante(idTelefonoHistorico) {
     if (!confirm('¿Eliminar este teléfono permanentemente del histórico? Esta acción no se puede deshacer.')) return;
-    
+
     const idPostulante = $('#detalleIdPostulante').val();
-    
+
     try {
         const response = await $.ajax({
             type: 'POST',
@@ -814,7 +810,7 @@ async function eliminarTelefonoPostulante(idTelefonoHistorico) {
             },
             dataType: 'json'
         });
-        
+
         if (response.Resultado) {
             toastr.success(response.Msg || 'Teléfono eliminado');
             await cargarTelefonosPostulante(idPostulante);

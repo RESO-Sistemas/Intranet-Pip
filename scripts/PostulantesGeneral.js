@@ -358,20 +358,14 @@ function renderBotonesDocumentos(rutaCV, rutaSE) {
     let html = '<div class="d-flex flex-column gap-2">';
     if (hasCV) {
         html += `
-            <a href="${rutaCV}" target="_blank" class="btn btn-secondary btn-sm text-white w-100" style="border-radius:6px;">
-                <span class="material-symbols-outlined align-middle" style="font-size:16px;">description</span> Ver CV
-            </a>
-            <a href="${buildDownloadUrl(rutaCV)}" target="_blank" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:6px;">
+            <a href="${buildDownloadUrl(rutaCV)}" target="_blank" class="btn-minimal btn-sm w-100">
                 <span class="material-symbols-outlined align-middle" style="font-size:16px;">download</span> Descargar CV
             </a>
         `;
     }
     if (hasSE) {
         html += `
-            <a href="${rutaSE}" target="_blank" class="btn btn-secondary btn-sm text-white w-100" style="border-radius:6px;">
-                <span class="material-symbols-outlined align-middle" style="font-size:16px;">assignment</span> Ver Solicitud
-            </a>
-            <a href="${buildDownloadUrl(rutaSE)}" target="_blank" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:6px;">
+            <a href="${buildDownloadUrl(rutaSE)}" target="_blank" class="btn-minimal btn-sm w-100">
                 <span class="material-symbols-outlined align-middle" style="font-size:16px;">download</span> Descargar Solicitud
             </a>
         `;
