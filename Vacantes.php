@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
     <title>Vacantes - PIP</title>
-    
+
     <!-- Styles neptune -->
     <?php include("neptune_styles.php"); ?>
-    
+
     <!-- Styles adicionales -->
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
     <style>
@@ -19,221 +19,770 @@
             font-size: 0.85rem;
             padding: 0.35em 0.65em;
         }
+
         .published-badge {
             font-size: 0.75rem;
         }
+
         .vacancy-card {
             border-left: 4px solid #198754;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
         }
+
+        .vacancy-card:hover {
+            /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+            /* transform: translateY(-1px); */
+        }
+
+        .vacancy-card.active {
+            background-color: #e7f3ff;
+            border-left-color: #0d6efd;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+        }
+
         .vacancy-card.draft {
             border-left-color: #6c757d;
         }
-        .vacancy-card.active {
+
+        .vacancy-card.active-status {
             border-left-color: #198754;
         }
+
         .vacancy-card.closed {
             border-left-color: #dc3545;
         }
+
+        .card-postulante-count {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
         .text-borrador {
             color: #61ACFC !important;
         }
-        .detail-section {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .detail-section h6 {
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-        }
-        .requisito-item, .evaluacion-item, .induccion-item {
+
+        /* ====== NUEVO DISEÑO V2 ====== */
+
+        /* Header de Vacante */
+        .vacante-header-card {
             background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 8px 12px;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #ffc407;
+        }
+
+        .vacante-header-card .vacante-icon-lg {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffc407 0%, #ffdb58 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a2e;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.4em 0.9em;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-status.activa {
+            background-color: #d1f2d9;
+            color: #198754;
+        }
+
+        .badge-status.borrador {
+            background-color: #e2e3e5;
+            color: #6c757d;
+        }
+
+        .badge-status.cerrada {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+
+        /* Secciones V2 */
+        .section-title-v2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title-v2 .material-symbols-outlined {
+            font-size: 20px;
+            color: #ffc407;
+        }
+
+        /* Chips / Tags */
+        .chip-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff9e6;
+            color: #856404;
+            border: 1px solid #ffc407;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0 6px 6px 0;
+            transition: all 0.2s ease;
+        }
+
+        .chip-tag:hover {
+            background: #ffc407;
+            color: #1a1a2e;
+        }
+
+        .chip-tag button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0;
+            opacity: 0.6;
+        }
+
+        .chip-tag button:hover {
+            opacity: 1;
+        }
+
+        /* Mini Cards para Evaluaciones/Inducciones */
+        .mini-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 16px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.2s ease;
         }
-        .requisito-item:hover, .evaluacion-item:hover, .induccion-item:hover {
-            background-color: #f1f1f1;
+
+        .mini-card:hover {
+            border-color: #ffc407;
+            box-shadow: 0 2px 8px rgba(255, 196, 7, 0.15);
         }
-        
-        /* ====== DRAWER DE DETALLE DE VACANTE ====== */
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 1050;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.25s ease;
+
+        .mini-card-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a1a2e;
         }
-        .drawer-overlay.show {
-            display: block;
-            opacity: 1;
+
+        .mini-card-sub {
+            font-size: 0.8rem;
+            color: #6c757d;
         }
-        .drawer-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 680px;
-            max-width: 95vw;
-            height: 100vh;
-            background: #fff;
-            z-index: 1055;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: -4px 0 24px rgba(0,0,0,0.15);
-        }
-        .drawer-panel.open {
-            transform: translateX(0);
-        }
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
+
+        /* Botón Ghost Add */
+        .btn-add-ghost {
+            display: inline-flex;
             align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #dee2e6;
-            flex-shrink: 0;
+            gap: 6px;
+            background: transparent;
+            border: 1px dashed #adb5bd;
+            color: #6c757d;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
         }
-        .drawer-header h5 {
-            margin: 0;
+
+        .btn-add-ghost:hover {
+            border-color: #ffc407;
+            color: #1a1a2e;
+            background: #fff9e6;
+        }
+
+        /* Empty State */
+        .empty-state-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .empty-state-card .material-symbols-outlined {
+            font-size: 40px;
+            color: #adb5bd;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        /* KPIs rediseñados */
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .stat-kpi {
+            background: white;
+            border-radius: 12px;
+            padding: 10px 16px;
+            min-width: 120px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9ecef;
+            flex: 1;
+        }
+
+        .stat-kpi .stat-number {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .stat-kpi .stat-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .stat-kpi.total {
+            background: #e7f1ff;
+            border-color: #b6d4fe;
+        }
+
+        .stat-kpi.total .stat-number {
+            color: #0d6efd;
+        }
+
+        .stat-kpi.proceso {
+            background: #e6f7fb;
+            border-color: #b3e5fc;
+        }
+
+        .stat-kpi.proceso .stat-number {
+            color: #17a2b8;
+        }
+
+        .stat-kpi.aceptados {
+            background: #d1f2d9;
+            border-color: #a3e6b3;
+        }
+
+        .stat-kpi.aceptados .stat-number {
+            color: #198754;
+        }
+
+        .stat-kpi.rechazados {
+            background: #f8d7da;
+            border-color: #f1aeb5;
+        }
+
+        .stat-kpi.rechazados .stat-number {
+            color: #dc3545;
+        }
+
+        /* Wizard */
+        .wizard-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            gap: 0;
+        }
+
+        .wizard-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .wizard-step .step-number {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
             font-weight: 700;
         }
-        .drawer-body {
+
+        .wizard-step.active {
+            background: #fff9e6;
+            color: #1a1a2e;
+        }
+
+        .wizard-step.active .step-number {
+            background: #ffc407;
+            color: #1a1a2e;
+        }
+
+        .wizard-step.completed .step-number {
+            background: #198754;
+            color: white;
+        }
+
+        .wizard-connector {
+            width: 30px;
+            height: 2px;
+            background: #dee2e6;
+            margin: 0 4px;
+        }
+
+        .wizard-connector.completed {
+            background: #198754;
+        }
+
+        .wizard-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Avatar grande con gradiente */
+        .postulante-avatar-lg {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .postulante-avatar-xl {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-custom {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+
+        .breadcrumb-custom a {
+            color: #0d6efd;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
+        /* Tabs secundarios pequeños */
+        .nav-tabs-sm {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 16px;
+        }
+
+        .nav-tabs-sm .nav-link {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            color: #6c757d;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+        }
+
+        .nav-tabs-sm .nav-link:hover {
+            color: #1a1a2e;
+            border-bottom-color: #e9ecef;
+        }
+
+        .nav-tabs-sm .nav-link.active {
+            color: #1a1a2e;
+            border-bottom-color: #ffc407;
+            background: transparent;
+        }
+
+
+        /* Timeline compacto mejorado */
+        .timeline-compact {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline-compact::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .timeline-compact-item {
+            position: relative;
+            padding: 10px 0 10px 16px;
+        }
+
+        .timeline-compact-marker {
+            position: absolute;
+            left: -20px;
+            top: 14px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #ffc407;
+            z-index: 2;
+        }
+
+        .timeline-compact-marker.success {
+            border-color: #28a745;
+        }
+
+        .timeline-compact-marker.danger {
+            border-color: #dc3545;
+        }
+
+        .timeline-compact-marker.gray {
+            border-color: #6c757d;
+        }
+
+        .timeline-compact-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .timeline-compact-sub {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin: 2px 0 0 0;
+        }
+
+        .timeline-compact-time {
+            font-size: 0.75rem;
+            color: #adb5bd;
+        }
+
+        /* Dropdown de acciones en tabla */
+        .action-dropdown-btn {
+            background: none;
+            border: none;
+            color: #6c757d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-dropdown-btn:hover {
+            background: #f8f9fa;
+            color: #1a1a2e;
+        }
+
+        /* Status badge pill */
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pill.en-proceso {
+            background: #e6f7fb;
+            color: #0c5460;
+        }
+
+        .status-pill.aceptado {
+            background: #d1f2d9;
+            color: #155724;
+        }
+
+        .status-pill.rechazado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pill.finalizado {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        /* Layout altura unificado */
+        .split-pane-container {
+            display: flex;
+            align-items: stretch;
+            height: calc(100vh - 170px);
+            min-height: 500px;
+        }
+
+        #panelListaVacantes,
+        #panelDetalleVacante {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #panelListaVacantes .card,
+        #panelDetalleVacante .card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            overflow: visible;
+        }
+
+        #panelListaVacantes .card-body,
+        #panelDetalleVacante .card-body {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #listaVacantesCards {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-        }
-        .drawer-footer {
-            padding: 12px 20px;
-            border-top: 1px solid #dee2e6;
-            flex-shrink: 0;
-            text-align: right;
+            min-height: 0;
         }
 
-        /* Select2 dentro del drawer */
-        .drawer-panel .select2-container {
-            z-index: 1060;
-        }
-        .drawer-panel .select2-container--open {
-            z-index: 1070;
-        }
-        .drawer-panel .select2-dropdown {
-            z-index: 1070;
-        }
-
-        /* Input groups con Select2 en drawer */
-        .detail-section .input-group .select2-container--default .select2-selection--single {
-            height: 38px;
-            border-radius: 0;
-            border: 1px solid #ced4da;
-        }
-        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-            padding-left: 12px;
-        }
-        .detail-section .input-group .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-        }
-        .detail-section .input-group > .select2-container:first-child .select2-selection--single {
-            border-top-left-radius: 0.375rem;
-            border-bottom-left-radius: 0.375rem;
-        }
-
-        #formAddEvaluacion, #formAddInduccion, #formAddRequisito {
-            position: relative;
-            z-index: 10;
-        }
-        #formAddEvaluacion .input-group,
-        #formAddInduccion .input-group {
-            flex-wrap: nowrap;
-        }
-        #formAddEvaluacion .select2-container,
-        #formAddInduccion .select2-container {
+        #vacanteTabsContent {
             flex: 1;
-            min-width: 150px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
         }
 
-        /* Dark mode para drawer */
-        [data-theme="dark"] .drawer-panel {
-            background-color: #1e1e1e;
-        }
-        [data-theme="dark"] .drawer-header {
-            border-bottom-color: #404040;
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .drawer-body {
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .drawer-footer {
-            border-top-color: #404040;
-        }
-        [data-theme="dark"] .drawer-body p {
-            color: #b0b0b0;
-        }
-        [data-theme="dark"] .detail-section {
-            background-color: #2d2d2d;
-            border: 1px solid #404040;
-        }
-        [data-theme="dark"] .detail-section h6 {
-            border-bottom-color: #404040;
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .requisito-item,
-        [data-theme="dark"] .evaluacion-item,
-        [data-theme="dark"] .induccion-item {
-            background: #1e1e1e;
-            border-color: #404040;
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .requisito-item:hover,
-        [data-theme="dark"] .evaluacion-item:hover,
-        [data-theme="dark"] .induccion-item:hover {
-            background-color: #2a2a2a;
-        }
-        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single {
-            background-color: #2d2d2d;
-            border-color: #404040;
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .select2-dropdown {
-            background-color: #2d2d2d;
-            border-color: #404040;
-        }
-        [data-theme="dark"] .select2-container--default .select2-results__option {
-            color: #e0e0e0;
-        }
-        [data-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #f0b429;
-            color: #1e1e1e;
-        }
-        [data-theme="dark"] .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: #1e1e1e;
-            border-color: #404040;
-            color: #e0e0e0;
+        #vacanteTabsContent>.tab-pane {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
-        @media (max-width: 768px) {
-            .drawer-panel {
-                width: 100vw;
-                max-width: 100vw;
+        #vacanteTabsContent>.tab-pane.active {
+            display: flex !important;
+        }
+
+        /* Sub-vistas postulantes flex */
+        #subVistaListaPostulantes {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #contenedorCardsPostulantes {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* Tabs header limpio */
+        #panelDetalleVacante>.card>.card-header {
+            background: #fff !important;
+            padding: 1rem 1.25rem 0.75rem !important;
+            border-bottom: 1px solid #e9ecef !important;
+            flex-shrink: 0 !important;
+            overflow: visible !important;
+        }
+
+        #panelDetalleVacante>.card>.card-header .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            margin: 0 !important;
+        }
+
+        #panelDetalleVacante>.card>.card-header .nav-tabs .nav-item {
+            margin-bottom: 0;
+        }
+
+        #panelDetalleVacante>.card>.card-header .nav-link {
+            border: none;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 0.6rem 1rem 0.85rem;
+            position: relative;
+        }
+
+        #panelDetalleVacante>.card>.card-header .nav-link.active {
+            color: #1a1a2e;
+            background: transparent;
+        }
+
+        #panelDetalleVacante>.card>.card-header .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ffc407;
+            border-radius: 2px;
+        }
+
+        /* Sub-vistas animadas */
+        #subVistaListaPostulantes,
+        #wizardAddPostulante,
+        #subVistaDetallePostulante {
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-        
-        /* ====== ESTILOS PARA POSTULANTES ====== */
+
+        /* ====== CARDS DE POSTULANTES ====== */
+        .postulante-card-v2 {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .postulante-card-v2:hover {
+            border-color: #ffc407;
+            /* box-shadow: 0 4px 16px rgba(255, 196, 7, 0.12); */
+            /* transform: translateY(-1px); */
+        }
+
+        .postulante-card-v2 .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .postulante-card-v2 .card-main-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .postulante-card-v2 .card-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1a1a2e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .postulante-card-v2 .card-contact {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        .postulante-card-v2 .card-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .postulante-card-v2 .card-meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.78rem;
+            color: #6c757d;
+        }
+
+        .postulante-card-v2 .card-meta-item .material-symbols-outlined {
+            font-size: 15px;
+        }
+
+        .filtro-estatus-btn.active {
+            font-weight: 600;
+        }
+
+        /* Scrollbar personalizado para cards */
+        #contenedorCardsPostulantes::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #contenedorCardsPostulantes::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #contenedorCardsPostulantes::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        #contenedorCardsPostulantes::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Postulante card (viejo, se mantiene por compatibilidad) */
         .postulante-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -242,37 +791,56 @@
             margin-bottom: 15px;
             transition: all 0.2s ease;
         }
+
         .postulante-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+            /* transform: translateY(-2px); */
         }
+
         .postulante-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
             font-size: 1.2rem;
         }
+
         .postulante-status {
             font-size: 0.75rem;
             padding: 0.25em 0.6em;
         }
-        .postulante-status.en-proceso { background-color: #17a2b8; color: white; }
-        .postulante-status.aceptado { background-color: #28a745; color: white; }
-        .postulante-status.rechazado { background-color: #dc3545; color: white; }
-        .postulante-status.finalizado { background-color: #6c757d; color: white; }
-        
+
+        .postulante-status.en-proceso {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .postulante-status.aceptado {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .postulante-status.rechazado {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .postulante-status.finalizado {
+            background-color: #6c757d;
+            color: white;
+        }
+
         .stats-postulantes {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
         }
+
         .stat-item {
             background: #f8f9fa;
             border-radius: 8px;
@@ -280,21 +848,36 @@
             text-align: center;
             min-width: 80px;
         }
+
         .stat-item .stat-number {
             font-size: 1.5rem;
             font-weight: bold;
             display: block;
         }
+
         .stat-item .stat-label {
             font-size: 0.75rem;
             color: #6c757d;
         }
-        .stat-item.total .stat-number { color: #007bff; }
-        .stat-item.proceso .stat-number { color: #17a2b8; }
-        .stat-item.aceptados .stat-number { color: #28a745; }
-        .stat-item.rechazados .stat-number { color: #dc3545; }
-        
-        #tablePostulantes th, #tablePostulantes td {
+
+        .stat-item.total .stat-number {
+            color: #007bff;
+        }
+
+        .stat-item.proceso .stat-number {
+            color: #17a2b8;
+        }
+
+        .stat-item.aceptados .stat-number {
+            color: #28a745;
+        }
+
+        .stat-item.rechazados .stat-number {
+            color: #dc3545;
+        }
+
+        #tablePostulantes th,
+        #tablePostulantes td {
             vertical-align: middle;
         }
 
@@ -304,14 +887,17 @@
             padding-left: 22px;
             margin: 0;
         }
+
         .timeline-item {
             position: relative;
             padding: 12px 0 12px 18px;
             border-bottom: 1px solid #e9ecef;
         }
+
         .timeline-item:last-child {
             border-bottom: none;
         }
+
         .timeline-marker {
             position: absolute;
             left: 0;
@@ -322,6 +908,7 @@
             background: #6c757d;
             z-index: 2;
         }
+
         .timeline-item:before {
             content: '';
             position: absolute;
@@ -332,25 +919,31 @@
             background: #e9ecef;
             z-index: 1;
         }
+
         .timeline-item:first-child:before {
             top: 16px;
         }
+
         .timeline-item:last-child:before {
             bottom: calc(100% - 16px);
         }
+
         .timeline-title {
             font-weight: 600;
             margin: 0;
         }
+
         .timeline-sub {
             margin: 2px 0 0 0;
             font-size: 0.85rem;
         }
+
         .timeline-time {
             font-size: 0.8rem;
             color: #6c757d;
             white-space: nowrap;
         }
+
         .timeline-icon {
             font-size: 18px;
             vertical-align: middle;
@@ -360,71 +953,245 @@
         [data-theme="dark"] .timeline-item {
             border-bottom-color: #404040;
         }
+
         [data-theme="dark"] .timeline-item:before {
             background: #404040;
         }
+
         [data-theme="dark"] .timeline-time {
             color: #b0b0b0;
         }
-        
+
         /* Dark mode para postulantes */
         [data-theme="dark"] .postulante-card {
             background: #2d2d2d;
             border-color: #404040;
             color: #e0e0e0;
         }
+
         [data-theme="dark"] .stat-item {
             background: #1e1e1e;
         }
+
         [data-theme="dark"] .stat-item .stat-label {
             color: #b0b0b0;
         }
-        [data-theme="dark"] #modalPostulantes .modal-content {
-            background-color: #1e1e1e;
+
+        [data-theme="dark"] .vacancy-card {
+            background: #2d2d2d;
             border-color: #404040;
-        }
-        [data-theme="dark"] #modalPostulantes .modal-body {
             color: #e0e0e0;
         }
-        [data-theme="dark"] #modalAddPostulante .modal-content,
-        [data-theme="dark"] #modalDetallePostulante .modal-content {
-            background-color: #1e1e1e;
+
+        [data-theme="dark"] .vacancy-card.active {
+            background-color: #1a3a5c;
+            border-left-color: #0d6efd;
+        }
+
+        [data-theme="dark"] .detail-section {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+        }
+
+        [data-theme="dark"] .detail-section h6 {
+            border-bottom-color: #404040;
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .requisito-item,
+        [data-theme="dark"] .evaluacion-item,
+        [data-theme="dark"] .induccion-item {
+            background: #1e1e1e;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .requisito-item:hover,
+        [data-theme="dark"] .evaluacion-item:hover,
+        [data-theme="dark"] .induccion-item:hover {
+            background-color: #2a2a2a;
+        }
+
+        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single {
+            background-color: #2d2d2d;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .detail-section .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .select2-dropdown {
+            background-color: #2d2d2d;
             border-color: #404040;
         }
+
+        [data-theme="dark"] .select2-container--default .select2-results__option {
+            color: #e0e0e0;
+        }
+
+        [data-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #f0b429;
+            color: #1e1e1e;
+        }
+
+        [data-theme="dark"] .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: #1e1e1e;
+            border-color: #404040;
+            color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+
+            #panelListaVacantes .card,
+            #panelDetalleVacante .card {
+                height: auto;
+            }
+        }
+
         /* Fix dropdown overflow inside DataTable */
         .table-responsive {
             overflow: visible !important;
         }
+
         .dropdown-menu {
             z-index: 1050;
         }
+
         .dropdown-item .material-symbols-outlined {
             font-size: 18px;
             vertical-align: middle;
+        }
+
+        /* =============================================
+           BUTTON SYSTEM - Minimal + Ghost + Danger
+           ============================================= */
+
+        .btn-minimal {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            color: #1a1a2e;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            line-height: 1.2;
+            white-space: nowrap;
+            padding: 8px 14px;
+            font-size: 0.875rem;
+        }
+
+        .btn-minimal.btn-sm,
+        .btn-minimal.btn-xs {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-minimal .material-symbols-outlined {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .btn-minimal.is-flat,
+        .btn-minimal.is-flat:hover,
+        .btn-minimal.is-flat:focus {
+            box-shadow: none;
+            border-color: #e9ecef;
+        }
+
+        .btn-minimal:hover {
+            border-color: #ffc407;
+            color: #1a1a2e;
+            background: #fff9e6;
+        }
+
+        .btn-minimal:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 196, 7, 0.2);
+        }
+
+        .btn-minimal.active {
+            background: #ffc407 !important;
+            border-color: #ffc407 !important;
+            color: #1a1a2e !important;
+            font-weight: 600;
+        }
+
+        .btn-minimal.active:hover {
+            background: #e6b006 !important;
+            border-color: #e6b006 !important;
+            color: #1a1a2e !important;
+        }
+
+        .btn-minimal:not(.active):hover {
+            border-color: #ffc407;
+            color: #1a1a2e;
+            background: #fff9e6;
+        }
+
+        .btn-minimal-danger {
+            background: #fff;
+            border: 1px solid #f1aeb5;
+            color: #b02a37;
+        }
+
+        .btn-minimal-danger:hover {
+            border-color: #dc3545;
+            color: #b02a37;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.18);
+        }
+
+        .btn-minimal-danger:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-minimal.btn-responsive {
+            font-size: clamp(0.78rem, 0.2vw + 0.82rem, 0.9rem);
+        }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: 1px dashed #adb5bd;
+            color: #6c757d;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ghost:hover {
+            border-color: #ffc407;
+            color: #1a1a2e;
+            background: #fff9e6;
+        }
+
+        .btn-ghost.btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 
 <body>
     <div class="app align-content-stretch d-flex flex-wrap" id="main-wrapper">
-        <!-- Preloader -->
-        <!-- <div class="preloader">
-            <div class="loader">
-                <div class="loader__figure"></div>
-                <p class="loader__label">PIP</p>
-            </div>
-        </div> -->
-        
         <!-- Menu -->
         <div id="Menu">
             <?php include("menus.php"); ?>
         </div>
-        
+
         <div class="app-container">
             <?php include("includes/_Header.php"); ?>
             <div class="app-content">
                 <div class="content-wrapper">
-                    <div class="container">
+                    <div class="container-fluid">
                         <!-- Mensajes -->
                         <div class="row">
                             <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
@@ -435,100 +1202,720 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Título -->
                         <div class="row">
                             <div class="col">
                                 <div class="page-description">
                                     <h1>Gestión de Vacantes</h1>
-                                    <p class="text-muted">Administración de vacantes laborales, requisitos, evaluaciones e inducciones</p>
+                                    <p class="text-muted">Administración de vacantes laborales, requisitos, evaluaciones
+                                        e inducciones</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Estadísticas rápidas -->
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-primary" id="totalVacantes">0</h3>
-                                        <small class="text-muted">Total Vacantes</small>
-                                    </div>
+
+                        <!-- SPLIT PANE -->
+                        <div class="row split-pane-container">
+                            <!-- PANEL IZQUIERDO: Lista de Vacantes -->
+                            <div class="col-md-4 col-lg-4 mb-3" id="panelListaVacantes">
+                                <div class="d-grid mb-3">
+                                    <button type="button" class="btn btn-minimal" data-bs-toggle="modal"
+                                        data-bs-target="#modalAddVacante" onclick="prepareAddModal()">
+                                        <span class="material-symbols-outlined align-middle me-1">add</span>
+                                        Nueva Vacante
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-borrador" id="vacantesborrador">0</h3>
-                                        <small class="text-muted">Borrador</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-success" id="vacantesActivas">0</h3>
-                                        <small class="text-muted">Activas</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card text-center">
-                                    <div class="card-body py-3">
-                                        <h3 class="mb-1 text-danger" id="vacantesCerradas">0</h3>
-                                        <small class="text-muted">Cerradas</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tabla de vacantes -->
-                        <div class="row">
-                            <div class="col">
                                 <div class="card">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title fw-bold mb-0">
-                                            <span class="material-symbols-outlined align-middle me-2">work</span>
-                                            Listado de Vacantes
-                                        </h5>
-                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddVacante" onclick="prepareAddModal()">
-                                            <span class="material-symbols-outlined align-middle me-1">add</span>
-                                            Nueva Vacante
-                                        </button>
+                                    <div class="card-header py-2">
+                                        <input type="text" id="txtBuscarVacante" class="form-control form-control-sm"
+                                            placeholder="Buscar vacante..." onkeyup="filtrarVacantes()">
                                     </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table id="tableVacantes" class="table display text-center" style="width:100%">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Vacante</th>
-                                                        <th>Área Técnica</th>
-                                                        <th>Puesto</th>
-                                                        <th>Tipo Contratación</th>
-                                                        <th>Fecha Apertura</th>
-                                                        <th>Estatus</th>
-                                                        <th>Publicada</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                </tbody>
-                                            </table>
+                                    <div class="card-body p-2">
+                                        <div id="listaVacantesCards">
+                                            <p class="text-muted text-center py-3">Cargando vacantes...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PANEL DERECHO: Detalle + Tabs -->
+                            <div class="col-md-8 col-lg-8" id="panelDetalleVacante">
+                                <div class="card" style="height:auto !important;">
+                                    <div class="card-header" style="flex-shrink:0; overflow:visible;">
+                                        <ul class="nav nav-tabs card-header-tabs" id="vacanteTabs" role="tablist"
+                                            style="margin-top:0; margin-bottom:0;">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="tab-info-btn" data-bs-toggle="tab"
+                                                    data-bs-target="#tabInfoRequisitos" type="button" role="tab"
+                                                    onclick="updateUrlTab('info')">
+                                                    <span class="material-symbols-outlined align-middle me-1"
+                                                        style="font-size:18px;">info</span> Info y Requisitos
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="tab-postulantes-btn" data-bs-toggle="tab"
+                                                    data-bs-target="#tabPostulantes" type="button" role="tab"
+                                                    onclick="updateUrlTab('postulantes')">
+                                                    <span class="material-symbols-outlined align-middle me-1"
+                                                        style="font-size:18px;">people</span> Postulantes
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-body tab-content" id="vacanteTabsContent">
+
+                                        <!-- TAB INFO Y REQUISITOS -->
+                                        <div class="tab-pane fade show active" id="tabInfoRequisitos" role="tabpanel">
+                                            <div id="contenidoTabInfo">
+                                                <div class="text-center text-muted py-5">
+                                                    <span class="material-symbols-outlined"
+                                                        style="font-size:64px;">work</span>
+                                                    <p class="mt-3 fs-5">Selecciona una vacante de la lista para ver sus
+                                                        detalles</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- TAB POSTULANTES -->
+                                        <div class="tab-pane fade" id="tabPostulantes" role="tabpanel">
+                                            <input type="hidden" id="postulantesIdVacante">
+
+                                            <!-- SUB-VISTA: LISTA -->
+                                            <div id="subVistaListaPostulantes">
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                                    <div class="stats-row">
+                                                        <div class="stat-kpi total"><span class="stat-number"
+                                                                id="statTotal">0</span><span
+                                                                class="stat-label">Total</span></div>
+                                                        <div class="stat-kpi proceso"><span class="stat-number"
+                                                                id="statProceso">0</span><span class="stat-label">En
+                                                                Proceso</span></div>
+                                                        <div class="stat-kpi aceptados"><span class="stat-number"
+                                                                id="statAceptados">0</span><span
+                                                                class="stat-label">Aceptados</span></div>
+                                                        <div class="stat-kpi rechazados"><span class="stat-number"
+                                                                id="statRechazados">0</span><span
+                                                                class="stat-label">Rechazados</span></div>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-minimal btn-sm"
+                                                            onclick="mostrarFormAddPostulante()">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">person_add</span>
+                                                            Agregar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <!-- Búsqueda -->
+                                                <div class="mb-3">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-white border-end-0">
+                                                            <span class="material-symbols-outlined text-muted"
+                                                                style="font-size:20px;">search</span>
+                                                        </span>
+                                                        <input type="text" id="txtBuscarPostulanteLista"
+                                                            class="form-control border-start-0"
+                                                            placeholder="Buscar postulante por nombre, correo o teléfono..."
+                                                            oninput="filtrarPostulantesCards()">
+                                                    </div>
+                                                </div>
+                                                <!-- Filtros rápidos -->
+                                                <div class="d-flex gap-2 mb-3 flex-wrap" id="filtrosEstatusPostulantes">
+                                                    <button type="button" class="btn btn-minimal active"
+                                                        data-filter="todos"
+                                                        onclick="filtrarPostulantesPorEstatus('todos')">Todos</button>
+                                                    <button type="button" class="btn btn-minimal" data-filter="1"
+                                                        onclick="filtrarPostulantesPorEstatus('1')">En
+                                                        Proceso</button>
+                                                    <button type="button" class="btn btn-minimal" data-filter="2"
+                                                        onclick="filtrarPostulantesPorEstatus('2')">Aceptados</button>
+                                                    <button type="button" class="btn btn-minimal" data-filter="3"
+                                                        onclick="filtrarPostulantesPorEstatus('3')">Rechazados</button>
+                                                    <button type="button" class="btn btn-minimal" data-filter="4"
+                                                        onclick="filtrarPostulantesPorEstatus('4')">Finalizados</button>
+                                                </div>
+                                                <!-- Cards de postulantes -->
+                                                <div id="contenedorCardsPostulantes">
+                                                    <p class="text-muted text-center py-4">Selecciona una vacante para
+                                                        ver sus postulantes</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- SUB-VISTA: WIZARD ADD POSTULANTE -->
+                                            <div id="wizardAddPostulante" class="d-none">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="fw-bold mb-0">
+                                                        <span
+                                                            class="material-symbols-outlined align-middle me-2">person_add</span>
+                                                        Nuevo Postulante
+                                                    </h5>
+                                                    <button type="button" class="btn btn-minimal btn-sm"
+                                                        onclick="volverAListaPostulantes()">
+                                                        <span
+                                                            class="material-symbols-outlined align-middle me-1">arrow_back</span>
+                                                        Volver
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" id="addPostulanteIdVacante">
+
+                                                <!-- Barra de progreso del wizard -->
+                                                <div class="wizard-progress" id="wizardProgressBar">
+                                                    <div class="wizard-step active" data-step="1">
+                                                        <span class="step-number">1</span>
+                                                        <span>Búsqueda</span>
+                                                    </div>
+                                                    <div class="wizard-connector"></div>
+                                                    <div class="wizard-step" data-step="2">
+                                                        <span class="step-number">2</span>
+                                                        <span>Datos Básicos</span>
+                                                    </div>
+                                                    <div class="wizard-connector"></div>
+                                                    <div class="wizard-step" data-step="3">
+                                                        <span class="step-number">3</span>
+                                                        <span>Detalles</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Paso 1: Búsqueda -->
+                                                <div class="wizard-content" id="wizardStep1">
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">¿Ya existe el
+                                                                postulante?</label>
+                                                            <div class="input-group">
+                                                                <input type="text" id="txtBuscarPostulante"
+                                                                    class="form-control"
+                                                                    placeholder="Buscar por correo, CURP o nombre...">
+                                                                <button class="btn btn-minimal" type="button"
+                                                                    onclick="buscarPostulanteExistente()">
+                                                                    <span
+                                                                        class="material-symbols-outlined">search</span>
+                                                                </button>
+                                                            </div>
+                                                            <div id="resultadosBusqueda" class="mt-2"
+                                                                style="display:none;"></div>
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">¿Es empleado
+                                                                interno?</label>
+                                                            <div class="input-group">
+                                                                <input type="text" id="txtBuscarEmpleado"
+                                                                    class="form-control"
+                                                                    placeholder="Buscar por num. o nombre...">
+                                                                <button class="btn btn-minimal" type="button"
+                                                                    onclick="buscarEmpleadoInterno()">
+                                                                    <span
+                                                                        class="material-symbols-outlined">search</span>
+                                                                </button>
+                                                            </div>
+                                                            <div id="resultadosBusquedaEmpleado" class="mt-2"
+                                                                style="display:none;"></div>
+                                                            <input type="hidden" id="txtPostulanteIdEmpleado">
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-center mt-3">
+                                                        <p class="text-muted small mb-2">¿No encontraste al postulante?
+                                                        </p>
+                                                        <button type="button" class="btn btn-minimal"
+                                                            onclick="wizardGoToStep(2)">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">person_add</span>
+                                                            Registrar Nuevo Postulante
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Paso 2: Datos Básicos -->
+                                                <div class="wizard-content d-none" id="wizardStep2">
+                                                    <div class="row">
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label fw-bold">Nombre: <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input id="txtPostulanteNombre" type="text"
+                                                                class="form-control" placeholder="Nombre(s)">
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label fw-bold">Apellido Paterno: <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input id="txtPostulanteApPaterno" type="text"
+                                                                class="form-control" placeholder="Apellido Paterno">
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <label class="form-label fw-bold">Apellido Materno:</label>
+                                                            <input id="txtPostulanteApMaterno" type="text"
+                                                                class="form-control" placeholder="Apellido Materno">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">Correo Electrónico: <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input id="txtPostulanteCorreo" type="email"
+                                                                class="form-control" placeholder="correo@ejemplo.com">
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">Teléfono:</label>
+                                                            <input id="txtPostulanteTelefono" type="text"
+                                                                class="form-control" placeholder="10 dígitos">
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mt-2">
+                                                        <button type="button" class="btn btn-minimal"
+                                                            onclick="wizardGoToStep(1)">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">arrow_back</span>
+                                                            Anterior
+                                                        </button>
+                                                        <button type="button" class="btn btn-minimal"
+                                                            onclick="wizardGoToStep(3)">
+                                                            Siguiente <span
+                                                                class="material-symbols-outlined align-middle ms-1">arrow_forward</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Paso 3: Detalles -->
+                                                <div class="wizard-content d-none" id="wizardStep3">
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">CURP:</label>
+                                                            <input id="txtPostulanteCURP" type="text"
+                                                                class="form-control" placeholder="18 caracteres"
+                                                                maxlength="18" style="text-transform:uppercase;">
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">Dirección:</label>
+                                                            <input id="txtPostulanteDireccion" type="text"
+                                                                class="form-control"
+                                                                placeholder="Calle, número, colonia...">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">Estado:</label>
+                                                            <input id="txtPostulanteEstado" type="text"
+                                                                class="form-control" placeholder="Estado">
+                                                        </div>
+                                                        <div class="col-md-6 mb-3">
+                                                            <label class="form-label fw-bold">Ciudad:</label>
+                                                            <input id="txtPostulanteCiudad" type="text"
+                                                                class="form-control" placeholder="Ciudad">
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Observaciones:</label>
+                                                        <textarea id="txtPostulanteObservaciones" class="form-control"
+                                                            rows="2"
+                                                            placeholder="Observaciones iniciales..."></textarea>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mt-2">
+                                                        <button type="button" class="btn btn-minimal"
+                                                            onclick="wizardGoToStep(2)">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">arrow_back</span>
+                                                            Anterior
+                                                        </button>
+                                                        <button type="button" class="btn btn-minimal"
+                                                            onclick="addPostulanteVacante()">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">save</span>
+                                                            Registrar Postulante
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- SUB-VISTA: DETALLE POSTULANTE V2 -->
+                                            <div id="subVistaDetallePostulante" class="d-none">
+                                                <!-- Breadcrumb -->
+                                                <div class="breadcrumb-custom">
+                                                    <a onclick="volverAListaPostulantes()">Postulantes</a>
+                                                    <span class="mx-1">></span>
+                                                    <span id="breadcrumbPostulanteNombre">Detalle</span>
+                                                </div>
+
+                                                <input type="hidden" id="detalleIdPostulanteVacante">
+                                                <input type="hidden" id="detalleIdPostulante">
+                                                <input type="hidden" id="detalleIdPostulanteVacanteNum">
+                                                <input type="hidden" id="detallePostulanteNombreHidden">
+
+                                                <!-- Header del postulante -->
+                                                <div
+                                                    class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="postulante-avatar-xl" id="detallePostulanteAvatar">?
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="mb-1 fw-bold" id="detallePostulanteNombreHeader">
+                                                                Postulante</h4>
+                                                            <p class="text-muted mb-0 small"
+                                                                id="detallePostulantePuesto">Vacante</p>
+                                                            <span id="detallePostulanteStatus"
+                                                                class="status-pill en-proceso mt-1">En Proceso</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" class="btn btn-minimal btn-sm"
+                                                            id="btnVerResultados"
+                                                            onclick="verResultadosPostulanteDesdeHeader()"
+                                                            title="Ver resultados">
+                                                            <span class="material-symbols-outlined align-middle"
+                                                                style="font-size:18px;">analytics</span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-minimal btn-sm"
+                                                            id="btnVerDocumentos"
+                                                            onclick="verDocumentosPostulanteDesdeHeader()"
+                                                            title="Ver documentos">
+                                                            <span class="material-symbols-outlined align-middle"
+                                                                style="font-size:18px;">folder_shared</span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-minimal btn-sm"
+                                                            id="btnToggleEditMode" onclick="toggleEditMode()">
+                                                            <span
+                                                                class="material-symbols-outlined align-middle me-1">edit</span>
+                                                            Editar
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tabs secundarios -->
+                                                <ul class="nav nav-tabs-sm" id="detallePostulanteTabs" role="tablist">
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active" id="tab-dp-info-btn"
+                                                            data-bs-toggle="tab" data-bs-target="#tabDpInfo"
+                                                            type="button" role="tab">Información Personal</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="tab-dp-telefonos-btn"
+                                                            data-bs-toggle="tab" data-bs-target="#tabDpTelefonos"
+                                                            type="button" role="tab">Teléfonos</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="tab-dp-historial-btn"
+                                                            data-bs-toggle="tab" data-bs-target="#tabDpHistorial"
+                                                            type="button" role="tab">Historial</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="tab-dp-requisitos-btn"
+                                                            data-bs-toggle="tab" data-bs-target="#tabDpRequisitos"
+                                                            type="button" role="tab">Requisitos</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="tab-dp-estatus-btn"
+                                                            data-bs-toggle="tab" data-bs-target="#tabDpEstatus"
+                                                            type="button" role="tab">Estatus</button>
+                                                    </li>
+                                                </ul>
+
+                                                <div class="tab-content" id="detallePostulanteTabsContent">
+                                                    <!-- Tab Info Personal -->
+                                                    <div class="tab-pane fade show active" id="tabDpInfo"
+                                                        role="tabpanel">
+                                                        <div class="row">
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label fw-bold">Nombre(s):</label>
+                                                                <input type="text" id="edit_Nombre"
+                                                                    class="form-control form-control-sm" disabled>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label fw-bold">Apellido
+                                                                    Paterno:</label>
+                                                                <input type="text" id="edit_ApellidoPaterno"
+                                                                    class="form-control form-control-sm" disabled>
+                                                            </div>
+                                                            <div class="col-md-4 mb-3">
+                                                                <label class="form-label fw-bold">Apellido
+                                                                    Materno:</label>
+                                                                <input type="text" id="edit_ApellidoMaterno"
+                                                                    class="form-control form-control-sm" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">CURP:</label>
+                                                                <input type="text" id="edit_CURP"
+                                                                    class="form-control form-control-sm text-uppercase"
+                                                                    maxlength="18" disabled>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Correo
+                                                                    Electrónico:</label>
+                                                                <input type="email" id="edit_CorreoElectronico"
+                                                                    class="form-control form-control-sm" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Fecha
+                                                                    Postulación:</label>
+                                                                <input type="text" id="detallePostulanteFecha"
+                                                                    class="form-control form-control-sm bg-light"
+                                                                    readonly value="-">
+                                                            </div>
+                                                        </div>
+
+                                                        <hr class="my-4">
+
+                                                        <h6 class="section-title-v2 mb-3">
+                                                            <span class="material-symbols-outlined">location_on</span>
+                                                            Dirección
+                                                        </h6>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Código Postal:</label>
+                                                                <div class="input-group input-group-sm">
+                                                                    <input type="text" id="edit_CodigoPostal"
+                                                                        class="form-control" placeholder="5 dígitos"
+                                                                        maxlength="5" disabled>
+                                                                    <button class="btn btn-outline-secondary"
+                                                                        type="button" id="btnBuscarCP"
+                                                                        onclick="buscarCodigoPostal()" disabled>
+                                                                        <span
+                                                                            class="material-symbols-outlined">search</span>
+                                                                    </button>
+                                                                </div>
+                                                                <small class="text-muted" id="cpStatus"></small>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Colonia:</label>
+                                                                <select id="edit_Colonia"
+                                                                    class="form-select form-select-sm" disabled>
+                                                                    <option value="">Seleccionar...</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Calle:</label>
+                                                                <input type="text" id="edit_Calle"
+                                                                    class="form-control form-control-sm"
+                                                                    placeholder="Ej. Av. Juarez" disabled>
+                                                            </div>
+                                                            <div class="col-md-3 mb-3">
+                                                                <label class="form-label fw-bold">Num. Ext:</label>
+                                                                <input type="text" id="edit_NumeroExterior"
+                                                                    class="form-control form-control-sm"
+                                                                    placeholder="Ej. 123" disabled>
+                                                            </div>
+                                                            <div class="col-md-3 mb-3">
+                                                                <label class="form-label fw-bold">Num. Int:</label>
+                                                                <input type="text" id="edit_NumeroInterior"
+                                                                    class="form-control form-control-sm"
+                                                                    placeholder="Ej. 2B" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <input type="hidden" id="edit_Direccion">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Dirección
+                                                                completa:</label>
+                                                            <div id="direccionPreview"
+                                                                class="form-control form-control-sm bg-light"
+                                                                style="min-height: 38px;">-</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-bold">Estado:</label>
+                                                                <input type="text" id="edit_Estado"
+                                                                    class="form-control form-control-sm" readonly>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label
+                                                                    class="form-label fw-bold">Municipio/Ciudad:</label>
+                                                                <input type="text" id="edit_Ciudad"
+                                                                    class="form-control form-control-sm" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Teléfonos -->
+                                                    <div class="tab-pane fade" id="tabDpTelefonos" role="tabpanel">
+                                                        <div id="formAgregarTelefono" class="d-none mb-3">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <input type="text" id="nuevoTelefono"
+                                                                        class="form-control form-control-sm"
+                                                                        placeholder="10 dígitos" maxlength="10">
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <input type="text" id="observacionesTelefono"
+                                                                        class="form-control form-control-sm"
+                                                                        placeholder="Observaciones (opcional)">
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <button class="btn btn-minimal btn-sm me-1"
+                                                                        onclick="agregarTelefonoNuevo()">
+                                                                        <span
+                                                                            class="material-symbols-outlined">save</span>
+                                                                    </button>
+                                                                    <button class="btn btn-minimal btn-sm"
+                                                                        onclick="ocultarFormAgregarTelefono()">
+                                                                        <span
+                                                                            class="material-symbols-outlined">close</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-2">
+                                                            <h6 class="section-title-v2 mb-0">
+                                                                <span class="material-symbols-outlined">phone</span>
+                                                                Teléfonos Registrados
+                                                            </h6>
+                                                            <button type="button" class="btn btn-minimal btn-sm"
+                                                                onclick="openEditModal('${idEncoded}')" title="Editar">
+                                                                <span class="material-symbols-outlined align-middle"
+                                                                    style="font-size:18px;">edit</span>
+                                                            </button>
+                                                        </div>
+                                                        <div id="tablaTelefonos">
+                                                            <p class="text-muted text-center">Cargando teléfonos...</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Historial -->
+                                                    <div class="tab-pane fade" id="tabDpHistorial" role="tabpanel">
+                                                        <div id="formAddHistorial" style="display:none;" class="mb-3">
+                                                            <div class="row g-2">
+                                                                <div class="col-md-4">
+                                                                    <select id="cmbNuevoProceso"
+                                                                        class="form-select form-select-sm">
+                                                                        <option value="">Seleccione proceso...</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <select id="cmbResultadoProceso"
+                                                                        class="form-select form-select-sm">
+                                                                        <option value="">Resultado...</option>
+                                                                        <option value="1">Aprobado</option>
+                                                                        <option value="0">Reprobado</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="text" id="txtObservacionesProceso"
+                                                                        class="form-control form-control-sm"
+                                                                        placeholder="Observaciones...">
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <button class="btn btn-minimal btn-sm me-1"
+                                                                        onclick="addHistorialProceso()">
+                                                                        <span
+                                                                            class="material-symbols-outlined">save</span>
+                                                                    </button>
+                                                                    <button class="btn btn-minimal btn-sm"
+                                                                        onclick="hideAddHistorialForm()">
+                                                                        <span
+                                                                            class="material-symbols-outlined">close</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-2">
+                                                            <h6 class="section-title-v2 mb-0">
+                                                                <span class="material-symbols-outlined">history</span>
+                                                                Historial de Procesos
+                                                            </h6>
+                                                            <button type="button" class="btn btn-ghost btn-sm"
+                                                                onclick="mostrarFormAgregarTelefono()">
+                                                                <span
+                                                                    class="material-symbols-outlined align-middle">add</span>
+                                                            </button>
+                                                        </div>
+                                                        <div id="listaHistorial">
+                                                            <p class="text-muted text-center">No hay historial
+                                                                registrado</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Requisitos -->
+                                                    <div class="tab-pane fade" id="tabDpRequisitos" role="tabpanel">
+                                                        <h6 class="section-title-v2">
+                                                            <span class="material-symbols-outlined">checklist</span>
+                                                            Cumplimiento de Requisitos
+                                                        </h6>
+                                                        <div id="listaRequisitosPostulante">
+                                                            <p class="text-muted text-center">No hay requisitos
+                                                                configurados</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tab Estatus -->
+                                                    <div class="tab-pane fade" id="tabDpEstatus" role="tabpanel">
+                                                        <h6 class="section-title-v2">
+                                                            <span
+                                                                class="material-symbols-outlined">pending_actions</span>
+                                                            Estatus de Postulación
+                                                        </h6>
+                                                        <div class="row align-items-end g-3">
+                                                            <div class="col-md-5">
+                                                                <label class="form-label fw-bold">Cambiar
+                                                                    Estatus:</label>
+                                                                <select id="cmbEstatusPostulante" class="form-select">
+                                                                    <option value="1">En Proceso</option>
+                                                                    <option value="2">Aceptado</option>
+                                                                    <option value="3">Rechazado</option>
+                                                                    <option value="4">Finalizado</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                <label class="form-label fw-bold">Observaciones:</label>
+                                                                <input type="text" id="txtObservacionesEstatus"
+                                                                    class="form-control"
+                                                                    placeholder="Motivo del cambio...">
+                                                            </div>
+                                                            <div class="col-md-2 d-grid">
+                                                                <button class="btn btn-minimal"
+                                                                    onclick="actualizarEstatusPostulante()">
+                                                                    <span class="material-symbols-outlined">save</span>
+                                                                    Guardar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <hr class="my-4">
+                                                        <div class="d-flex justify-content-between">
+                                                            <button type="button" class="btn btn-minimal-danger btn-sm"
+                                                                onclick="eliminarPostulacion()">
+                                                                <span
+                                                                    class="material-symbols-outlined align-middle me-1">delete</span>
+                                                                Eliminar Postulación
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="editModeButtons" class="d-none mt-3">
+                                                    <button type="button" class="btn btn-minimal"
+                                                        onclick="guardarCambiosPostulante()">
+                                                        <span
+                                                            class="material-symbols-outlined align-middle me-1">save</span>
+                                                        Guardar Cambios
+                                                    </button>
+                                                    <button type="button" class="btn btn-minimal"
+                                                        onclick="cancelarEdicion()">
+                                                        <span
+                                                            class="material-symbols-outlined align-middle me-1">close</span>
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
-    
+
     <!-- Modal Agregar Vacante -->
-    <div class="modal fade" id="modalAddVacante" tabindex="-1" aria-labelledby="modalAddVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modalAddVacante" tabindex="-1" aria-labelledby="modalAddVacanteLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -541,11 +1928,14 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Nombre de la Vacante: <span class="text-danger">*</span></label>
-                            <input id="txtNombreVacante" type="text" class="form-control" placeholder="Ej. Desarrollador Full Stack">
+                            <label class="form-label fw-bold">Nombre de la Vacante: <span
+                                    class="text-danger">*</span></label>
+                            <input id="txtNombreVacante" type="text" class="form-control"
+                                placeholder="Ej. Desarrollador Full Stack">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Tipo de Contratación: <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Tipo de Contratación: <span
+                                    class="text-danger">*</span></label>
                             <select id="cmbTipoContratacion" class="form-select">
                                 <option value="">Seleccione...</option>
                                 <option value="Tiempo completo">Tiempo completo</option>
@@ -578,11 +1968,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Salario Mínimo:</label>
-                            <input id="txtSalarioMinimo" type="number" step="0.01" class="form-control" placeholder="0.00">
+                            <input id="txtSalarioMinimo" type="number" step="0.01" class="form-control"
+                                placeholder="0.00">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Salario Máximo:</label>
-                            <input id="txtSalarioMaximo" type="number" step="0.01" class="form-control" placeholder="0.00">
+                            <input id="txtSalarioMaximo" type="number" step="0.01" class="form-control"
+                                placeholder="0.00">
                         </div>
                     </div>
                     <div class="row">
@@ -597,7 +1989,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Descripción del Puesto:</label>
-                        <textarea id="txtDescripcionPuesto" class="form-control" rows="3" placeholder="Detalle las responsabilidades y requisitos del puesto..."></textarea>
+                        <textarea id="txtDescripcionPuesto" class="form-control" rows="3"
+                            placeholder="Detalle las responsabilidades y requisitos del puesto..."></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -619,11 +2012,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-success" id="btnAddVacante">
+                    <button type="button" class="btn btn-minimal" id="btnAddVacante">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Registrar
                     </button>
@@ -633,7 +2026,8 @@
     </div>
 
     <!-- Modal Editar Vacante -->
-    <div class="modal fade" id="modalEditVacante" tabindex="-1" aria-labelledby="modalEditVacanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="modalEditVacante" tabindex="-1" aria-labelledby="modalEditVacanteLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -647,11 +2041,14 @@
                     <input type="hidden" id="editIdVacante">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Nombre de la Vacante: <span class="text-danger">*</span></label>
-                            <input id="editNombreVacante" type="text" class="form-control" placeholder="Nombre de la vacante">
+                            <label class="form-label fw-bold">Nombre de la Vacante: <span
+                                    class="text-danger">*</span></label>
+                            <input id="editNombreVacante" type="text" class="form-control"
+                                placeholder="Nombre de la vacante">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Tipo de Contratación: <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Tipo de Contratación: <span
+                                    class="text-danger">*</span></label>
                             <select id="editTipoContratacion" class="form-select">
                                 <option value="">Seleccione...</option>
                                 <option value="Tiempo completo">Tiempo completo</option>
@@ -684,11 +2081,13 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Salario Mínimo:</label>
-                            <input id="editSalarioMinimo" type="number" step="0.01" class="form-control" placeholder="0.00">
+                            <input id="editSalarioMinimo" type="number" step="0.01" class="form-control"
+                                placeholder="0.00">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Salario Máximo:</label>
-                            <input id="editSalarioMaximo" type="number" step="0.01" class="form-control" placeholder="0.00">
+                            <input id="editSalarioMaximo" type="number" step="0.01" class="form-control"
+                                placeholder="0.00">
                         </div>
                     </div>
                     <div class="row">
@@ -703,7 +2102,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Descripción del Puesto:</label>
-                        <textarea id="editDescripcionPuesto" class="form-control" rows="3" placeholder="Descripción del puesto..."></textarea>
+                        <textarea id="editDescripcionPuesto" class="form-control" rows="3"
+                            placeholder="Descripción del puesto..."></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -725,11 +2125,11 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-primary" id="btnSaveEdit">
+                    <button type="button" class="btn btn-minimal" id="btnSaveEdit">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Guardar Cambios
                     </button>
@@ -738,172 +2138,7 @@
         </div>
     </div>
 
-    <!-- ====== DRAWER DETALLE DE VACANTE (reemplaza modalDetalleVacante) ====== -->
-    <div class="drawer-overlay" id="drawerOverlayVacante"></div>
-    <div class="drawer-panel" id="drawerDetalleVacante">
-        <div class="drawer-header">
-            <h5>
-                <span class="material-symbols-outlined align-middle me-2">info</span>
-                <span id="drawerVacanteTitulo">Detalle de Vacante</span>
-            </h5>
-            <button type="button" class="btn-close" onclick="closeDrawerVacante()" aria-label="Cerrar"></button>
-        </div>
-        <div class="drawer-body">
-            <input type="hidden" id="detalleIdVacante">
-            
-            <!-- Info General -->
-            <div class="detail-section">
-                <h6 class="fw-bold text-primary">
-                    <span class="material-symbols-outlined align-middle me-2">description</span>
-                    Información General
-                </h6>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Nombre:</strong> <span id="detalleNombre">-</span></p>
-                        <p><strong>Área Técnica:</strong> <span id="detalleArea">-</span></p>
-                        <p><strong>Puesto:</strong> <span id="detallePuesto">-</span></p>
-                        <p><strong>Sucursal:</strong> <span id="detalleSucursal">-</span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Tipo Contratación:</strong> <span id="detalleTipoContratacion">-</span></p>
-                        <p><strong>Rango Salarial:</strong> <span id="detalleSalario">-</span></p>
-                        <p><strong>Fecha Apertura:</strong> <span id="detalleFechaApertura">-</span></p>
-                        <p><strong>Fecha Cierre:</strong> <span id="detalleFechaCierre">-</span></p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <p><strong>Descripción:</strong></p>
-                        <p id="detalleDescripcion" class="text-muted">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Requisitos -->
-            <div class="detail-section">
-                <h6 class="fw-bold text-success d-flex justify-content-between align-items-center">
-                    <span>
-                        <span class="material-symbols-outlined align-middle me-2">checklist</span>
-                        Requisitos
-                    </span>
-                    <button type="button" class="btn btn-success btn-sm" onclick="showAddRequisitoForm()">
-                        <span class="material-symbols-outlined align-middle">add</span>
-                    </button>
-                </h6>
-                <div id="formAddRequisito" style="display:none;" class="mb-3">
-                    <div class="input-group">
-                        <input type="text" id="txtNuevoRequisito" class="form-control" placeholder="Nuevo requisito...">
-                        <input type="number" id="txtOrdenRequisito" class="form-control" style="max-width:80px;" placeholder="Orden" value="0">
-                        <button class="btn btn-success" onclick="addRequisito()">
-                            <span class="material-symbols-outlined">save</span>
-                        </button>
-                        <button class="btn btn-secondary" onclick="hideAddRequisitoForm()">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="listaRequisitos">
-                    <p class="text-muted text-center">No hay requisitos configurados</p>
-                </div>
-            </div>
-
-            <!-- Evaluaciones -->
-            <div class="detail-section">
-                <h6 class="fw-bold text-warning d-flex justify-content-between align-items-center">
-                    <span>
-                        <span class="material-symbols-outlined align-middle me-2">quiz</span>
-                        Evaluaciones
-                    </span>
-                    <button type="button" class="btn btn-warning btn-sm" onclick="showAddEvaluacionForm()">
-                        <span class="material-symbols-outlined align-middle">add</span>
-                    </button>
-                </h6>
-                <div id="formAddEvaluacion" style="display:none;" class="mb-3">
-                    <div class="input-group">
-                        <select id="cmbNuevaEvaluacion" class="form-select">
-                            <option value="">Seleccione evaluación...</option>
-                        </select>
-                        <select id="cmbProcesoEvaluacion" class="form-select">
-                            <option value="">Seleccione proceso...</option>
-                        </select>
-                        <button class="btn btn-warning" onclick="addEvaluacion()">
-                            <span class="material-symbols-outlined">save</span>
-                        </button>
-                        <button class="btn btn-secondary" onclick="hideAddEvaluacionForm()">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="listaEvaluaciones">
-                    <p class="text-muted text-center">No hay evaluaciones configuradas</p>
-                </div>
-            </div>
-
-            <!-- Inducciones -->
-            <div class="detail-section">
-                <h6 class="fw-bold text-danger d-flex justify-content-between align-items-center">
-                    <span>
-                        <span class="material-symbols-outlined align-middle me-2">school</span>
-                        Inducciones
-                    </span>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="showAddInduccionForm()">
-                        <span class="material-symbols-outlined align-middle">add</span>
-                    </button>
-                </h6>
-                <div id="formAddInduccion" style="display:none;" class="mb-3">
-                    <div class="input-group">
-                        <select id="cmbNuevaInduccion" class="form-select">
-                            <option value="">Seleccione inducción...</option>
-                        </select>
-                        <button class="btn btn-danger" onclick="addInduccion()">
-                            <span class="material-symbols-outlined">save</span>
-                        </button>
-                        <button class="btn btn-secondary" onclick="hideAddInduccionForm()">
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="listaInducciones">
-                    <p class="text-muted text-center">No hay inducciones configuradas</p>
-                </div>
-            </div>
-            <!-- Postulantes -->
-            <div class="detail-section" id="drawerPostulantesSection">
-                <h6 class="fw-bold text-info d-flex justify-content-between align-items-center">
-                    <span>
-                        <span class="material-symbols-outlined align-middle me-2">people</span>
-                        Postulantes
-                    </span>
-                    <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteDrawer()">
-                        <span class="material-symbols-outlined align-middle">person_add</span>
-                    </button>
-                </h6>
-                <!-- Stats -->
-                <div class="stats-postulantes mb-3 d-flex flex-wrap gap-2" id="drawerStatsPostulantes">
-                    <div class="stat-item total"><span class="stat-number" id="drawerStatTotal">0</span><span class="stat-label">Total</span></div>
-                    <div class="stat-item proceso"><span class="stat-number" id="drawerStatProceso">0</span><span class="stat-label">En Proceso</span></div>
-                    <div class="stat-item aceptados"><span class="stat-number" id="drawerStatAceptados">0</span><span class="stat-label">Aceptados</span></div>
-                    <div class="stat-item rechazados"><span class="stat-number" id="drawerStatRechazados">0</span><span class="stat-label">Rechazados</span></div>
-                </div>
-                <!-- Lista -->
-                <div id="drawerListaPostulantes">
-                    <p class="text-muted text-center small">Cargando postulantes...</p>
-                </div>
-            </div>
-        </div>
-        <div class="drawer-footer d-flex justify-content-between align-items-center">
-            <button type="button" class="btn btn-info btn-sm" onclick="showComparativoResultadosDrawer()">
-                <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
-                Comparativo Postulantes
-            </button>
-            <button type="button" class="btn btn-secondary" onclick="closeDrawerVacante()">
-                <span class="material-symbols-outlined align-middle me-1">close</span>
-                Cerrar
-            </button>
-        </div>
-    </div>
-    
-    <!-- ====== MODAL AGREGAR AREA TECNICA DESDE VACANTES ====== -->
+    <!-- Modal Agregar Area Tecnica -->
     <div class="modal fade" id="modalAddAreaTecnicaVacante" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -917,20 +2152,24 @@
                 <div class="modal-body">
                     <input type="hidden" id="selectTargetAreaTecnica">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nombre del Área Técnica: <span class="text-danger">*</span></label>
-                        <input id="txtNombreAreaNew" type="text" class="form-control" placeholder="Ej. Mantenimiento, Sistemas, Producción">
+                        <label class="form-label fw-bold">Nombre del Área Técnica: <span
+                                class="text-danger">*</span></label>
+                        <input id="txtNombreAreaNew" type="text" class="form-control"
+                            placeholder="Ej. Mantenimiento, Sistemas, Producción">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Descripción:</label>
-                        <textarea id="txtDescripcionAreaNew" class="form-control" rows="3" placeholder="Breve descripción de la función del área"></textarea>
+                        <textarea id="txtDescripcionAreaNew" class="form-control" rows="3"
+                            placeholder="Breve descripción de la función del área"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="$('#modalAddAreaTecnicaVacante').modal('hide')">
+                    <button type="button" class="btn btn-ghost"
+                        onclick="$('#modalAddAreaTecnicaVacante').modal('hide')">
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
-                    <button type="button" class="btn btn-success" id="btnGuardarAreaTecnicaVacante">
+                    <button type="button" class="btn btn-minimal" id="btnGuardarAreaTecnicaVacante">
                         <span class="material-symbols-outlined align-middle me-1">save</span>
                         Registrar
                     </button>
@@ -939,303 +2178,7 @@
         </div>
     </div>
 
-    <!-- ====== MODAL POSTULANTES DE VACANTE ====== -->
-    <div class="modal fade" id="modalPostulantes" tabindex="-1" aria-labelledby="modalPostulantesLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h5 class="modal-title" id="modalPostulantesLabel">
-                        <span class="material-symbols-outlined align-middle me-2">people</span>
-                        Postulantes - <span id="nombreVacantePostulantes">Vacante</span>
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="postulantesIdVacante">
-                    
-                    <!-- Estadísticas -->
-                    <div class="stats-postulantes" id="statsPostulantes">
-                        <div class="stat-item total">
-                            <span class="stat-number" id="statTotal">0</span>
-                            <span class="stat-label">Total</span>
-                        </div>
-                        <div class="stat-item proceso">
-                            <span class="stat-number" id="statProceso">0</span>
-                            <span class="stat-label">En Proceso</span>
-                        </div>
-                        <div class="stat-item aceptados">
-                            <span class="stat-number" id="statAceptados">0</span>
-                            <span class="stat-label">Aceptados</span>
-                        </div>
-                        <div class="stat-item rechazados">
-                            <span class="stat-number" id="statRechazados">0</span>
-                            <span class="stat-label">Rechazados</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Botón agregar postulante -->
-                    <div class="d-flex justify-content-end mb-3">
-                        <button type="button" class="btn btn-success btn-sm" onclick="showAddPostulanteModal()">
-                            <span class="material-symbols-outlined align-middle me-1">person_add</span>
-                            Agregar Postulante
-                        </button>
-                    </div>
-                    
-                    <!-- Tabla de postulantes -->
-                    <div class="table-responsive">
-                        <table id="tablePostulantes" class="table table-hover display text-center" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Postulante</th>
-                                    <th>Correo</th>
-                                    <th>Teléfono</th>
-                                    <th>Fecha Postulación</th>
-                                    <th>Último Proceso</th>
-                                    <th>Estatus</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyPostulantes">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <span class="material-symbols-outlined align-middle me-1">close</span>
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====== MODAL AGREGAR POSTULANTE ====== -->
-    <div class="modal fade" id="modalAddPostulante" tabindex="-1" aria-labelledby="modalAddPostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAddPostulanteLabel">
-                        <span class="material-symbols-outlined align-middle me-2">person_add</span>
-                        Nuevo Postulante
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="addPostulanteIdVacante">
-                    
-                    <!-- Búsqueda de postulante existente -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">¿Ya existe el postulante?</label>
-                        <div class="input-group">
-                            <input type="text" id="txtBuscarPostulante" class="form-control" placeholder="Buscar por correo, CURP o nombre...">
-                            <button class="btn btn-outline-primary" type="button" onclick="buscarPostulanteExistente()">
-                                <span class="material-symbols-outlined">search</span>
-                            </button>
-                        </div>
-                        <div id="resultadosBusqueda" class="mt-2" style="display:none;"></div>
-                    </div>
-                    
-                    <hr>
-                    <p class="text-muted small">O registrar nuevo postulante:</p>
-                    
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Nombre: <span class="text-danger">*</span></label>
-                            <input id="txtPostulanteNombre" type="text" class="form-control" placeholder="Nombre(s)">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Apellido Paterno: <span class="text-danger">*</span></label>
-                            <input id="txtPostulanteApPaterno" type="text" class="form-control" placeholder="Apellido Paterno">
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Apellido Materno:</label>
-                            <input id="txtPostulanteApMaterno" type="text" class="form-control" placeholder="Apellido Materno">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Correo Electrónico: <span class="text-danger">*</span></label>
-                            <input id="txtPostulanteCorreo" type="email" class="form-control" placeholder="correo@ejemplo.com">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Teléfono:</label>
-                            <input id="txtPostulanteTelefono" type="text" class="form-control" placeholder="10 dígitos">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">CURP:</label>
-                            <input id="txtPostulanteCURP" type="text" class="form-control" placeholder="18 caracteres" maxlength="18" style="text-transform:uppercase;">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Dirección:</label>
-                            <input id="txtPostulanteDireccion" type="text" class="form-control" placeholder="Calle, número, colonia...">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Estado:</label>
-                            <input id="txtPostulanteEstado" type="text" class="form-control" placeholder="Estado">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Ciudad:</label>
-                            <input id="txtPostulanteCiudad" type="text" class="form-control" placeholder="Ciudad">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones:</label>
-                        <textarea id="txtPostulanteObservaciones" class="form-control" rows="2" placeholder="Observaciones iniciales..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <span class="material-symbols-outlined align-middle me-1">close</span>
-                        Cancelar
-                    </button>
-                    <button type="button" class="btn btn-success" id="btnAddPostulante" onclick="addPostulanteVacante()">
-                        <span class="material-symbols-outlined align-middle me-1">save</span>
-                        Registrar Postulante
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====== MODAL DETALLE POSTULANTE ====== -->
-    <div class="modal fade" id="modalDetallePostulante" tabindex="-1" aria-labelledby="modalDetallePostulanteLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-info">
-                    <h5 class="modal-title" id="modalDetallePostulanteLabel">
-                        <span class="material-symbols-outlined align-middle me-2">person</span>
-                        Detalle del Postulante
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="detalleIdPostulanteVacante">
-                    
-                    <!-- Info del postulante -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-primary">
-                            <span class="material-symbols-outlined align-middle me-2">badge</span>
-                            Información Personal
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Nombre Completo:</strong> <span id="detallePostulanteNombre">-</span></p>
-                                <p><strong>CURP:</strong> <span id="detallePostulanteCURP">-</span></p>
-                                <p><strong>Correo:</strong> <span id="detallePostulanteCorreo">-</span></p>
-                                <p><strong>Teléfono:</strong> <span id="detallePostulanteTelefono">-</span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Dirección:</strong> <span id="detallePostulanteDireccion">-</span></p>
-                                <p><strong>Estado:</strong> <span id="detallePostulanteEstado">-</span></p>
-                                <p><strong>Ciudad:</strong> <span id="detallePostulanteCiudad">-</span></p>
-                                <p><strong>Fecha Postulación:</strong> <span id="detallePostulanteFecha">-</span></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Estatus de postulación -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-warning">
-                            <span class="material-symbols-outlined align-middle me-2">pending_actions</span>
-                            Estatus de Postulación
-                        </h6>
-                        <div class="row align-items-center">
-                            <div class="col-md-4">
-                                <label class="form-label">Cambiar Estatus:</label>
-                                <select id="cmbEstatusPostulante" class="form-select">
-                                    <option value="1">En Proceso</option>
-                                    <option value="2">Aceptado</option>
-                                    <option value="3">Rechazado</option>
-                                    <option value="4">Finalizado</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Observaciones:</label>
-                                <input type="text" id="txtObservacionesEstatus" class="form-control" placeholder="Motivo del cambio...">
-                            </div>
-                            <div class="col-md-2 d-grid">
-                                <label class="form-label">&nbsp;</label>
-                                <button class="btn btn-warning" onclick="actualizarEstatusPostulante()">
-                                    <span class="material-symbols-outlined">save</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Historial de procesos -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-success d-flex justify-content-between align-items-center">
-                            <span>
-                                <span class="material-symbols-outlined align-middle me-2">history</span>
-                                Historial de Procesos
-                            </span>
-                            <button type="button" class="btn btn-success btn-sm" onclick="showAddHistorialForm()">
-                                <span class="material-symbols-outlined align-middle">add</span>
-                            </button>
-                        </h6>
-                        <div id="formAddHistorial" style="display:none;" class="mb-3">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <select id="cmbNuevoProceso" class="form-select">
-                                        <option value="">Seleccione proceso...</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <select id="cmbResultadoProceso" class="form-select">
-                                        <option value="">Resultado...</option>
-                                        <option value="1">Aprobado</option>
-                                        <option value="0">Reprobado</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="text" id="txtObservacionesProceso" class="form-control" placeholder="Observaciones...">
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-success me-1" onclick="addHistorialProceso()">
-                                        <span class="material-symbols-outlined">save</span>
-                                    </button>
-                                    <button class="btn btn-secondary" onclick="hideAddHistorialForm()">
-                                        <span class="material-symbols-outlined">close</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="listaHistorial">
-                            <p class="text-muted text-center">No hay historial registrado</p>
-                        </div>
-                    </div>
-
-                    <!-- Requisitos evaluados -->
-                    <div class="detail-section">
-                        <h6 class="fw-bold text-danger">
-                            <span class="material-symbols-outlined align-middle me-2">checklist</span>
-                            Cumplimiento de Requisitos
-                        </h6>
-                        <div id="listaRequisitosPostulante">
-                            <p class="text-muted text-center">No hay requisitos configurados</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger me-auto" onclick="eliminarPostulacion()">
-                        <span class="material-symbols-outlined align-middle me-1">delete</span>
-                        Eliminar Postulación
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <span class="material-symbols-outlined align-middle me-1">close</span>
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ====== MODAL RESULTADOS POSTULANTE ====== -->
+    <!-- Modal Resultados Postulante -->
     <div class="modal fade" id="modalResultadosPostulante" tabindex="-1"
         aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -1247,12 +2190,14 @@
                         Resultados de Evaluación
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                        <button type="button" class="btn btn-sm btn-ghost fw-bold"
                             onclick="abrirEvaluacionRespuestas()">
-                            <span class="material-symbols-outlined align-middle" style="font-size:18px;">visibility</span>
+                            <span class="material-symbols-outlined align-middle"
+                                style="font-size:18px;">visibility</span>
                             Ver Evaluación
                         </button>
-                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                 </div>
                 <div class="modal-body">
@@ -1275,13 +2220,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-ghost w-100" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ====== MODAL COMPARATIVO RESULTADOS ====== -->
+    <!-- Modal Comparativo Resultados -->
     <div class="modal fade" id="modalComparativoResultados" tabindex="-1"
         aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -1317,7 +2262,8 @@
                                 <div class="card-body py-3">
                                     <h6 class="mb-0 fw-bold text-primary" id="textChartColumn">
                                         <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
-                                        Postulantes mejor puntuados</h6>
+                                        Postulantes mejor puntuados
+                                    </h6>
                                 </div>
                             </div>
                         </div>
@@ -1328,7 +2274,8 @@
                                 <div class="card-body py-3">
                                     <h6 class="mb-0 fw-bold text-muted" id="textChartRadar">
                                         <span class="material-symbols-outlined align-middle me-1">radar</span>
-                                        Postulantes por competencias</h6>
+                                        Postulantes por competencias
+                                    </h6>
                                 </div>
                             </div>
                         </div>
@@ -1346,13 +2293,13 @@
                     <div class="row mt-4" id="contenedorTablasComparativo"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ====== MODAL DOCUMENTOS POSTULANTE ====== -->
+    <!-- Modal Documentos Postulante -->
     <div class="modal fade" id="modalDocumentosPostulante" tabindex="-1"
         aria-labelledby="modalDocumentosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -1367,13 +2314,13 @@
                 </div>
                 <div class="modal-body text-center" id="contenedorBotonesDocumentos"></div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-ghost w-100" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ====== MODAL EVALUACION RESPUESTAS ====== -->
+    <!-- Modal Evaluacion Respuestas -->
     <div class="modal fade" id="modalEvaluacionRespuestas" tabindex="-1"
         aria-labelledby="modalEvaluacionRespuestasLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
@@ -1398,8 +2345,14 @@
 
     <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+        integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
-    <script src="scripts/Vacantes.js?v=2"></script>
+    <script src="scripts/Vacantes.js?v=<?php echo filemtime('scripts/Vacantes.js'); ?>"></script>
 </body>
 
 </html>

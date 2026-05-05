@@ -1,3 +1,8 @@
+/**
+ * DEPRECADO: La funcionalidad de este archivo ha sido migrada a Vacantes.js
+ * Este archivo se mantiene solo como respaldo. No debe ser incluido en páginas.
+ * Fecha de migración: Mayo 2026
+ */
 // Vista Postulantes por Vacante (sin modal)
 
 let tablePostulantes;

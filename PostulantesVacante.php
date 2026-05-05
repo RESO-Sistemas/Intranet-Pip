@@ -1,4 +1,10 @@
-<?php include("AutorizaPagina.php"); ?>
+<?php
+/**
+ * DEPRECADO: La funcionalidad de esta página ha sido migrada a Vacantes.php
+ * Este archivo se mantiene solo como respaldo. No se debe acceder directamente.
+ * Fecha de migración: Mayo 2026
+ */
+include("AutorizaPagina.php"); ?>
 <!DOCTYPE html>
 <html>
 

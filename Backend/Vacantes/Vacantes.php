@@ -27,17 +27,18 @@ class Vacantes extends Conexiones
         // Auto-cerrar vacantes activas y publicadas cuya fecha de cierre ya pasó
         $this->ProcedureExec("UPDATE Vacantes SET Estatus = 3 WHERE FechaCierre < CURDATE() AND Estatus = 2 AND Publicada = 1", array());
 
-        $q = "SELECT v.*, 
+        $q = "SELECT v.*,
                      a.NombreArea,
                      p.Puesto,
                      s.Sucursal,
-                     CASE v.Estatus 
+                     CASE v.Estatus
                         WHEN 1 THEN 'Borrador'
                         WHEN 2 THEN 'Activa'
                         WHEN 3 THEN 'Cerrada'
-                     END AS EstatusTexto
-              FROM Vacantes v 
-              LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica 
+                     END AS EstatusTexto,
+                     (SELECT COUNT(*) FROM PostulantesVacantes pv WHERE pv.IdVacante = v.IdVacante) AS TotalPostulantes
+              FROM Vacantes v
+              LEFT JOIN AreasTecnicas a ON v.IdAreaTecnica = a.IdAreaTecnica
               LEFT JOIN Puestos p ON v.IdPuesto = p.IdPuesto
               LEFT JOIN SucursalDepto s ON v.IdSucursal = s.IdSucursal
               ORDER BY v.IdVacante DESC";

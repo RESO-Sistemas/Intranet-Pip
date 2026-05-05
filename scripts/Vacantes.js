@@ -1,28 +1,101 @@
 // ==========================================
-// VACANTES.JS - Gestión de Vacantes
+// VACANTES.JS - Gestión de Vacantes y Postulantes Unificado
 // ==========================================
 
-let tableVacantes;
 let vacantesData = [];
+let vacanteSeleccionadaId = null;
+
+// Postulantes
+let postulantesData = [];
+let postulantesProcesosList = [];
+let postulantesFilterByEstatus = 'todos';
+
+// Charts
+const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+let rawResultadosPostulante = [];
+let chartPostulanteGeneral = null;
+let rawComparativoVacante = [];
+let chartComparativoVacanteColumn = null;
+let chartComparativoVacanteRadar = null;
+window.currentIdPostulanteEncodedResultados = null;
+
+// ==========================================
+// LOADING (blockUI sobre pestañas)
+// ==========================================
+
+function showTabLoading() {
+    const $target = $('#vacanteTabsContent');
+    if ($target.length && typeof $target.block === 'function') {
+        $target.block({
+            message: '<div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>',
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: 'transparent',
+                color: '#000'
+            },
+            overlayCSS: {
+                backgroundColor: '#fff',
+                opacity: 0.8,
+                cursor: 'wait'
+            }
+        });
+    }
+}
+
+function hideTabLoading() {
+    const $target = $('#vacanteTabsContent');
+    if ($target.length && typeof $target.unblock === 'function') {
+        $target.unblock();
+    }
+}
 
 // ==========================================
 // INICIALIZACIÓN
 // ==========================================
 
 $(document).ready(function() {
-    initDataTable();
     initSelect2();
     loadVacantes();
     loadCombos();
     setupEventListeners();
+    initPostulantesTable();
+    initDeepLinking();
+    ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 });
 
 // ==========================================
-// INICIALIZAR SELECT2
+// DEEP LINKING
+// ==========================================
+
+function initDeepLinking() {
+    const params = new URLSearchParams(window.location.search);
+    const idVacante = params.get('vacante');
+    const tab = params.get('tab');
+    if (idVacante) {
+        setTimeout(() => {
+            seleccionarVacante(idVacante);
+            if (tab === 'postulantes') {
+                const tabBtn = document.getElementById('tab-postulantes-btn');
+                if (tabBtn) bootstrap.Tab.getOrCreateInstance(tabBtn).show();
+            }
+        }, 500);
+    }
+}
+
+function updateUrlTab(tabName) {
+    if (!vacanteSeleccionadaId) return;
+    const url = new URL(window.location);
+    url.searchParams.set('vacante', vacanteSeleccionadaId);
+    if (tabName) url.searchParams.set('tab', tabName);
+    window.history.replaceState({}, '', url);
+}
+
+// ==========================================
+// SELECT2
 // ==========================================
 
 function initSelect2() {
-    // Helper function para crear áreas técnicas desde el combo
     const createAreaTecnicaTag = function (params) {
         var term = $.trim(params.term);
         if (term === '') { return null; }
@@ -37,18 +110,12 @@ function initSelect2() {
     const handleAreaTecnicaSelect = function (e, selectId) {
         if (e.params.data.newTag) {
             let text = e.params.data.cleanText;
-            
-            // Remove ghost option from Select2 so it doesn't get "stuck"
             $(selectId).find('[value="' + e.params.data.id + '"]').remove();
-            
-            // Crear una etiqueta temporal y almacenarla automáticamente (sin modal)
             let tempId = 'NEW_TEMP_' + new Date().getTime();
             let newOptionCmb = new Option(text, tempId, false, false);
             let newOptionEdit = new Option(text, tempId, false, false);
-            
             $(newOptionCmb).attr('data-new', 'true').attr('data-desc', '');
             $(newOptionEdit).attr('data-new', 'true').attr('data-desc', '');
-
             if(selectId === '#cmbAreaTecnica') {
                 newOptionCmb = new Option(text, tempId, true, true);
                 $(newOptionCmb).attr('data-new', 'true').attr('data-desc', '');
@@ -56,13 +123,11 @@ function initSelect2() {
                 newOptionEdit = new Option(text, tempId, true, true);
                 $(newOptionEdit).attr('data-new', 'true').attr('data-desc', '');
             }
-
             $('#cmbAreaTecnica').append(newOptionCmb).trigger('change');
             $('#editAreaTecnica').append(newOptionEdit).trigger('change');
         }
     };
 
-    // Select2 para modal Agregar
     $('#cmbAreaTecnica').select2({
         dropdownParent: $('#modalAddVacante'),
         width: '100%',
@@ -72,28 +137,10 @@ function initSelect2() {
         createTag: createAreaTecnicaTag
     }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#cmbAreaTecnica'); });
     
-    $('#cmbPuesto').select2({
-        dropdownParent: $('#modalAddVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
+    $('#cmbPuesto').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
+    $('#cmbSucursal').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
+    $('#cmbTipoContratacion').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     
-    $('#cmbSucursal').select2({
-        dropdownParent: $('#modalAddVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
-    
-    $('#cmbTipoContratacion').select2({
-        dropdownParent: $('#modalAddVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
-    
-    // Select2 para modal Editar
     $('#editAreaTecnica').select2({
         dropdownParent: $('#modalEditVacante'),
         width: '100%',
@@ -103,87 +150,53 @@ function initSelect2() {
         createTag: createAreaTecnicaTag
     }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#editAreaTecnica'); });
     
-    $('#editPuesto').select2({
-        dropdownParent: $('#modalEditVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
+    $('#editPuesto').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
+    $('#editSucursal').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
+    $('#editTipoContratacion').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     
-    $('#editSucursal').select2({
-        dropdownParent: $('#modalEditVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
-    
-    $('#editTipoContratacion').select2({
-        dropdownParent: $('#modalEditVacante'),
-        width: '100%',
-        placeholder: 'Seleccione...',
-        allowClear: true
-    });
-    
-    // Select2 para drawer de Detalle (Evaluaciones e Inducciones)
     $('#cmbNuevaEvaluacion').select2({
-        dropdownParent: $('#drawerDetalleVacante'),
+        dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
         placeholder: 'Seleccione evaluación...',
         allowClear: true
     });
     
     $('#cmbProcesoEvaluacion').select2({
-        dropdownParent: $('#drawerDetalleVacante'),
+        dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
         placeholder: 'Seleccione proceso...',
         allowClear: true
     });
     
     $('#cmbNuevaInduccion').select2({
-        dropdownParent: $('#drawerDetalleVacante'),
+        dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
         placeholder: 'Seleccione inducción...',
         allowClear: true
     });
 }
 
-function initDataTable() {
-    tableVacantes = $('#tableVacantes').DataTable({
-        language: {
-            "sProcessing": "Procesando...",
-            "sLengthMenu": "Mostrar _MENU_ registros",
-            "sZeroRecords": "No se encontraron resultados",
-            "sEmptyTable": "Ningún dato disponible en esta tabla",
-            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-            "sSearch": "Buscar:",
-            "oPaginate": {
-                "sFirst": "Primero",
-                "sLast": "Último",
-                "sNext": "Siguiente",
-                "sPrevious": "Anterior"
-            }
-        },
-        responsive: true,
-        order: [], // Respetar el orden del backend (descendente por ID)
-        columnDefs: [
-            { className: "text-center", targets: [0, 1, 2, 3, 4, 5, 6, 7] }, // Centrar todas excepto Acciones
-            { orderable: false, targets: [8] } // Columna Acciones no ordenable
-        ]
-    });
+function initPostulantesTable() {
+    // Ya no se usa DataTable. Los postulantes se renderizan como cards verticales.
+    // Esta función se mantiene para compatibilidad con la llamada en $(document).ready.
 }
 
 function setupEventListeners() {
-    // Botón agregar vacante
     $('#btnAddVacante').on('click', addVacante);
-    
-    // Botón guardar edición
     $('#btnSaveEdit').on('click', updateVacante);
-    
-    // Limpiar modal al cerrar
-    $('#modalAddVacante').on('hidden.bs.modal', function() {
-        clearAddForm();
+    $('#modalAddVacante').on('hidden.bs.modal', function() { clearAddForm(); });
+
+    // Spinner al cambiar a la pestaña Postulantes si aún no hay datos cargados
+    $('#tab-postulantes-btn').on('shown.bs.tab', function () {
+        const idVacante = $('#postulantesIdVacante').val();
+        if (idVacante && postulantesData.length === 0) {
+            showTabLoading();
+            loadPostulantes(idVacante).then(() => {
+                hideTabLoading();
+            }).catch(() => {
+                hideTabLoading();
+            });
+        }
     });
 }
 
@@ -206,198 +219,144 @@ async function loadAreasTecnicas() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getAreasTecnicasActivas" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione...</option>';
         if (data && data.length > 0) {
-            data.forEach(item => {
-                options += `<option value="${item.IdAreaTecnica}">${item.NombreArea}</option>`;
-            });
+            data.forEach(item => { options += `<option value="${item.IdAreaTecnica}">${item.NombreArea}</option>`; });
         }
-        
         $('#cmbAreaTecnica').html(options).trigger('change');
         $('#editAreaTecnica').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar áreas técnicas:", error);
-    }
+    } catch (error) { console.error("Error al cargar áreas técnicas:", error); }
 }
 
 async function loadPuestos() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getPuestosActivos" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione...</option>';
         if (data && data.length > 0) {
-            data.forEach(item => {
-                options += `<option value="${item.IdPuesto}">${item.Puesto}</option>`;
-            });
+            data.forEach(item => { options += `<option value="${item.IdPuesto}">${item.Puesto}</option>`; });
         }
-        
         $('#cmbPuesto').html(options).trigger('change');
         $('#editPuesto').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar puestos:", error);
-    }
+    } catch (error) { console.error("Error al cargar puestos:", error); }
 }
 
 async function loadSucursales() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getSucursalesActivas" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione...</option>';
         if (data && data.length > 0) {
-            data.forEach(item => {
-                options += `<option value="${item.IdSucursal}">${item.Sucursal}</option>`;
-            });
+            data.forEach(item => { options += `<option value="${item.IdSucursal}">${item.Sucursal}</option>`; });
         }
-        
         $('#cmbSucursal').html(options).trigger('change');
         $('#editSucursal').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar sucursales:", error);
-    }
+    } catch (error) { console.error("Error al cargar sucursales:", error); }
 }
 
 async function loadProcesosVacantes() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getProcesosVacantesActivos" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione proceso...</option>';
-        data.forEach(item => {
-            options += `<option value="${item.IdProceso}">${item.NombreProceso}</option>`;
-        });
-        
+        data.forEach(item => { options += `<option value="${item.IdProceso}">${item.NombreProceso}</option>`; });
         $('#cmbProcesoEvaluacion').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar procesos:", error);
-    }
+    } catch (error) { console.error("Error al cargar procesos:", error); }
 }
 
 async function loadEvaluaciones() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getEvaluacionesActivas" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione evaluación...</option>';
-        data.forEach(item => {
-            options += `<option value="${item.idEvaluaciones}">${item.Titulo}</option>`;
-        });
-        
+        data.forEach(item => { options += `<option value="${item.idEvaluaciones}">${item.Titulo}</option>`; });
         $('#cmbNuevaEvaluacion').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar evaluaciones:", error);
-    }
+    } catch (error) { console.error("Error al cargar evaluaciones:", error); }
 }
 
 async function loadInducciones() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getInduccionesActivas" });
         const data = JSON.parse(response);
-        
         let options = '<option value="">Seleccione inducción...</option>';
-        data.forEach(item => {
-            options += `<option value="${item.IdInduccion}">${item.NombreInduccion}</option>`;
-        });
-        
+        data.forEach(item => { options += `<option value="${item.IdInduccion}">${item.NombreInduccion}</option>`; });
         $('#cmbNuevaInduccion').html(options).trigger('change');
-    } catch (error) {
-        console.error("Error al cargar inducciones:", error);
-    }
+    } catch (error) { console.error("Error al cargar inducciones:", error); }
 }
 
 // ==========================================
-// CRUD PRINCIPAL DE VACANTES
+// CRUD VACANTES + LISTA DE TARJETAS
 // ==========================================
 
 async function loadVacantes() {
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getVacantes" });
         vacantesData = JSON.parse(response);
-        
-        tableVacantes.clear();
-        
-        // Contadores para estadísticas
-        let borrador = 0, activas = 0, cerradas = 0;
-        
-        vacantesData.forEach((vacante, index) => {
-            // Contar por estatus
-            if (vacante.Estatus == 1) borrador++;
-            if (vacante.Estatus == 2) activas++;
-            if (vacante.Estatus == 3) cerradas++;
-            
-            const statusBadge = getStatusBadge(vacante.Estatus);
-            const publishedBadge = vacante.Publicada == 1 
-                ? '<span class="badge bg-success published-badge text-dark">Sí</span>' 
-                : '<span class="badge bg-secondary published-badge text-dark">No</span>';
-            
-            const idEncoded = btoa(vacante.IdVacante);
-            
-            const actions = `
-                <div class="dropdown">
-                    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="material-symbols-outlined">more_vert</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" onclick="openDetalleDrawer('${idEncoded}'); return false;">
-                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">visibility</span>Ver detalle
-                        </a></li>
-                        <li><a class="dropdown-item" href="PostulantesVacante.php?IdVacante=${idEncoded}">
-                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">people</span>Ver postulantes
-                        </a></li>
-                        ${vacante.Publicada == 0 ? `
-                        <li><a class="dropdown-item" href="#" onclick="openEditModal('${idEncoded}'); return false;">
-                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit</span>Editar
-                        </a></li>
-                        ` : ''}
-                        ${getStatusDropdownItems(vacante, idEncoded)}
-                        ${vacante.Publicada == 0 && vacante.Estatus == 2 ? `
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-success" href="#" onclick="publicarVacante('${idEncoded}'); return false;">
-                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">publish</span>Publicar
-                        </a></li>
-                        ` : ''}
-                        ${vacante.Publicada == 0 ? `
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteVacante('${idEncoded}'); return false;">
-                            <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">delete</span>Eliminar
-                        </a></li>
-                        ` : ''}
-                    </ul>
-                </div>
-            `;
-            
-            tableVacantes.row.add([
-                index + 1,
-                vacante.NombreVacante,
-                vacante.NombreArea || '<span class="text-muted">-</span>',
-                vacante.Puesto || '<span class="text-muted">-</span>',
-                vacante.TipoContratacion,
-                formatDate(vacante.FechaApertura),
-                statusBadge,
-                publishedBadge,
-                actions
-            ]);
-        });
-        
-        tableVacantes.draw();
-        
-        // Actualizar estadísticas
-        $('#totalVacantes').text(vacantesData.length);
-        $('#vacantesborrador').text(borrador);
-        $('#vacantesActivas').text(activas);
-        $('#vacantesCerradas').text(cerradas);
-        
+        renderVacantesCards(vacantesData);
     } catch (error) {
         console.error("Error al cargar vacantes:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudieron cargar las vacantes.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        $('#listaVacantesCards').html('<p class="text-danger text-center py-3">Error al cargar vacantes</p>');
     }
+}
+
+function renderVacantesCards(data) {
+    let html = '';
+    if (!data || data.length === 0) {
+        $('#listaVacantesCards').html('<p class="text-muted text-center py-3">No hay vacantes registradas</p>');
+        return;
+    }
+    data.forEach(vacante => {
+        const statusClass = vacante.Estatus == 1 ? 'draft' : (vacante.Estatus == 2 ? 'active-status' : 'closed');
+        const statusText = vacante.Estatus == 1 ? 'Borrador' : (vacante.Estatus == 2 ? 'Activa' : 'Cerrada');
+        const idEncoded = btoa(vacante.IdVacante);
+        const isActive = vacanteSeleccionadaId === idEncoded ? 'active' : '';
+        html += `
+            <div class="vacancy-card ${statusClass} ${isActive}" onclick="seleccionarVacante('${idEncoded}')" data-id="${idEncoded}">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div style="min-width:0; flex:1;">
+                        <div class="fw-bold small text-truncate">${vacante.NombreVacante}</div>
+                        <div class="text-muted small">${vacante.NombreArea || 'Sin área'} • ${vacante.Puesto || 'Sin puesto'}</div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 ms-2">
+                        <span class="badge ${vacante.Estatus == 1 ? 'bg-secondary' : (vacante.Estatus == 2 ? 'bg-success' : 'bg-danger')} status-badge">${statusText}</span>
+                        ${vacante.Estatus == 1 ? `
+                        <div class="dropdown" onclick="event.stopPropagation()">
+                            <button class="btn btn-sm p-0 px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="material-symbols-outlined text-muted" style="font-size:18px;">more_vert</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="openEditModal('${idEncoded}'); return false;">
+                                    <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit</span>Editar
+                                </a></li>
+                                ${getStatusDropdownItems(vacante, idEncoded)}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="deleteVacante('${idEncoded}'); return false;">
+                                    <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">delete</span>Eliminar
+                                </a></li>
+                            </ul>
+                        </div>` : ''}
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="card-postulante-count">
+                        <span class="material-symbols-outlined align-middle" style="font-size:14px;">people</span> ${vacante.TotalPostulantes || 0} postulantes
+                    </span>
+                    <span class="text-muted small">${formatDate(vacante.FechaApertura)}</span>
+                </div>
+            </div>
+        `;
+    });
+    $('#listaVacantesCards').html(html);
+}
+
+function filtrarVacantes() {
+    const term = $('#txtBuscarVacante').val().toLowerCase();
+    const filtradas = vacantesData.filter(v => 
+        (v.NombreVacante || '').toLowerCase().includes(term) ||
+        (v.NombreArea || '').toLowerCase().includes(term) ||
+        (v.Puesto || '').toLowerCase().includes(term)
+    );
+    renderVacantesCards(filtradas);
 }
 
 function getStatusBadge(estatus) {
@@ -409,72 +368,209 @@ function getStatusBadge(estatus) {
     }
 }
 
-function getStatusActions(vacante, idEncoded) {
-    let actions = '';
-    
-    if (vacante.Publicada == 0) {
-        if (vacante.Estatus == 1) {
-            actions += `<button type="button" class="btn btn-success btn-sm" onclick="cambiarEstatus('${idEncoded}', 2)" title="Activar">
-                <span class="material-symbols-outlined">play_arrow</span>
-            </button>`;
-        } else if (vacante.Estatus == 2) {
-            actions += `<button type="button" class="btn btn-warning btn-sm" onclick="cambiarEstatus('${idEncoded}', 1)" title="Volver a borrador">
-                <span class="material-symbols-outlined">edit_note</span>
-            </button>`;
-            actions += `<button type="button" class="btn btn-danger btn-sm" onclick="cambiarEstatus('${idEncoded}', 3)" title="Cerrar">
-                <span class="material-symbols-outlined">stop</span>
-            </button>`;
-        } else if (vacante.Estatus == 3) {
-            actions += `<button type="button" class="btn btn-success btn-sm" onclick="cambiarEstatus('${idEncoded}', 2)" title="Reactivar">
-                <span class="material-symbols-outlined">replay</span>
-            </button>`;
-        }
-    }
-    
-    return actions;
-}
-
 function getStatusDropdownItems(vacante, idEncoded) {
     let items = '';
-    
     if (vacante.Publicada == 0) {
         if (vacante.Estatus == 1) {
-            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;">
-                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">play_arrow</span>Activar
-            </a></li>`;
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;"><span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">play_arrow</span>Activar</a></li>`;
         } else if (vacante.Estatus == 2) {
-            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 1); return false;">
-                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit_note</span>Volver a borrador
-            </a></li>`;
-            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 3); return false;">
-                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">stop</span>Cerrar
-            </a></li>`;
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 1); return false;"><span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">edit_note</span>Volver a borrador</a></li>`;
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 3); return false;"><span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">stop</span>Cerrar</a></li>`;
         } else if (vacante.Estatus == 3) {
-            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;">
-                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">replay</span>Reactivar
-            </a></li>`;
+            items += `<li><a class="dropdown-item" href="#" onclick="cambiarEstatus('${idEncoded}', 2); return false;"><span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">replay</span>Reactivar</a></li>`;
         }
     }
-    
     return items;
 }
 
 function formatDate(dateString) {
     if (!dateString) return '-';
-    // Si la cadena es sólo YYYY-MM-DD, le agregamos T00:00:00 para evitar que JS lo tome como UTC y lo recorra un día atrás
     const dateParsed = dateString.length === 10 ? dateString + 'T00:00:00' : dateString;
     const date = new Date(dateParsed);
     return date.toLocaleDateString('es-MX');
 }
 
+function formatNumber(num) {
+    return parseFloat(num).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 // ==========================================
-// AGREGAR VACANTE
+// SELECCIÓN DE VACANTE (SPLIT PANE)
+// ==========================================
+
+async function seleccionarVacante(idEncoded) {
+    vacanteSeleccionadaId = idEncoded;
+    postulantesData = []; // reset para que el tab Postulantes sepa que debe recargar
+    $('.vacancy-card').removeClass('active');
+    $(`.vacancy-card[data-id="${idEncoded}"]`).addClass('active');
+    
+    const url = new URL(window.location);
+    url.searchParams.set('vacante', idEncoded);
+    window.history.replaceState({}, '', url);
+    
+    showTabLoading();
+    
+    try {
+        const response = await $.post("Backend/Vacantes/App.php", { op: "getVacanteById", IdVacante: idEncoded });
+        const result = JSON.parse(response);
+        
+        if (result.Resultado && result.Siguiente) {
+            const vacante = result.Datos;
+            renderTabInfo(vacante, idEncoded);
+            $('#postulantesIdVacante').val(idEncoded);
+            $('#nombreVacantePostulantes').text(vacante.NombreVacante || 'Vacante');
+            
+            await Promise.all([
+                loadPostulantes(idEncoded),
+                loadProcesosParaHistorial()
+            ]);
+        }
+    } catch (error) {
+        console.error("Error al seleccionar vacante:", error);
+    } finally {
+        hideTabLoading();
+    }
+}
+
+function renderTabInfo(vacante, idEncoded) {
+    let salario = '-';
+    if (vacante.SalarioMinimo && vacante.SalarioMaximo) {
+        salario = `$${formatNumber(vacante.SalarioMinimo)} - $${formatNumber(vacante.SalarioMaximo)}`;
+    } else if (vacante.SalarioMinimo) {
+        salario = `Desde $${formatNumber(vacante.SalarioMinimo)}`;
+    } else if (vacante.SalarioMaximo) {
+        salario = `Hasta $${formatNumber(vacante.SalarioMaximo)}`;
+    }
+    
+    const statusClass = vacante.Estatus == 1 ? 'borrador' : (vacante.Estatus == 2 ? 'activa' : 'cerrada');
+    const statusText = vacante.Estatus == 1 ? 'Borrador' : (vacante.Estatus == 2 ? 'Activa' : 'Cerrada');
+    
+    const html = `
+        <!-- Header prominente -->
+        <div class="vacante-header-card">
+            <div class="d-flex align-items-start gap-3">
+                <div class="vacante-icon-lg flex-shrink-0">
+                    <span class="material-symbols-outlined">work</span>
+                </div>
+                <div class="flex-grow-1" style="min-width:0;">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <h4 class="mb-1 fw-bold text-truncate">${vacante.NombreVacante}</h4>
+                        <span class="badge-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="text-muted small d-flex gap-3 flex-wrap mt-1">
+                        <span><span class="material-symbols-outlined align-middle" style="font-size:16px;">location_on</span> ${vacante.Sucursal || 'Sin sucursal'}</span>
+                        <span><span class="material-symbols-outlined align-middle" style="font-size:16px;">business</span> ${vacante.NombreArea || 'Sin área'}</span>
+                        <span><span class="material-symbols-outlined align-middle" style="font-size:16px;">badge</span> ${vacante.Puesto || 'Sin puesto'}</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-1 flex-shrink-0">
+                    ${vacante.Publicada == 0 ? `
+                    <button class="btn btn-minimal btn-sm" onclick="openEditModal('${idEncoded}')" title="Editar">
+                        <span class="material-symbols-outlined align-middle" style="font-size:18px;">edit</span>
+                    </button>` : ''}
+                    <div class="dropdown">
+                        <button class="btn btn-sm p-0 px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="material-symbols-outlined align-middle" style="font-size:18px;">more_vert</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            ${getStatusDropdownItems(vacante, idEncoded)}
+                            ${vacante.Publicada == 0 && vacante.Estatus == 2 ? `
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-success" href="#" onclick="publicarVacante('${idEncoded}'); return false;">
+                                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">publish</span>Publicar
+                            </a></li>` : ''}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteVacante('${idEncoded}'); return false;">
+                                <span class="material-symbols-outlined me-2" style="font-size:18px;vertical-align:middle;">delete</span>Eliminar
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-4 mt-3 text-muted small flex-wrap">
+                <span><strong><span class="material-symbols-outlined align-middle" style="font-size:16px;">payments</span></strong> ${salario}</span>
+                <span><strong><span class="material-symbols-outlined align-middle" style="font-size:16px;">calendar_month</span></strong> ${formatDate(vacante.FechaApertura)} - ${vacante.FechaCierre ? formatDate(vacante.FechaCierre) : 'Sin fecha de cierre'}</span>
+                <span><strong><span class="material-symbols-outlined align-middle" style="font-size:16px;">schedule</span></strong> ${vacante.TipoContratacion}</span>
+            </div>
+            <div class="mt-3 pt-3" style="border-top:1px solid #e9ecef;">
+                <p class="text-muted mb-0" style="font-size:0.9rem; line-height:1.6;">${vacante.DescripcionPuesto || 'Sin descripción del puesto.'}</p>
+            </div>
+        </div>
+
+        <!-- Requisitos -->
+        <div class="mb-4">
+            <h6 class="section-title-v2">
+                <span class="material-symbols-outlined">checklist</span> Requisitos
+            </h6>
+            <div id="formAddRequisito" style="display:none;" class="mb-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" id="txtNuevoRequisito" class="form-control" placeholder="Nuevo requisito...">
+                    <input type="number" id="txtOrdenRequisito" class="form-control" style="max-width:70px;" placeholder="Orden" value="0">
+                    <button class="btn btn-minimal btn-sm" onclick="addRequisito()"><span class="material-symbols-outlined" style="font-size:18px;">save</span></button>
+                    <button class="btn btn-minimal btn-sm" onclick="hideAddRequisitoForm()"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                </div>
+            </div>
+            <div id="listaRequisitos"><p class="text-muted text-center">Cargando...</p></div>
+        </div>
+
+        <!-- Evaluaciones -->
+        <div class="mb-4">
+            <h6 class="section-title-v2">
+                <span class="material-symbols-outlined">quiz</span> Evaluaciones
+            </h6>
+            <div id="formAddEvaluacion" style="display:none;" class="mb-3">
+                <div class="input-group input-group-sm">
+                    <select id="cmbNuevaEvaluacion" class="form-select"><option value="">Seleccione evaluación...</option></select>
+                    <select id="cmbProcesoEvaluacion" class="form-select"><option value="">Seleccione proceso...</option></select>
+                    <button class="btn btn-minimal btn-sm" onclick="addEvaluacion()"><span class="material-symbols-outlined" style="font-size:18px;">save</span></button>
+                    <button class="btn btn-minimal btn-sm" onclick="hideAddEvaluacionForm()"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                </div>
+            </div>
+            <div id="listaEvaluaciones"><p class="text-muted text-center">Cargando...</p></div>
+        </div>
+
+        <!-- Inducciones -->
+        <div class="mb-4">
+            <h6 class="section-title-v2">
+                <span class="material-symbols-outlined">school</span> Inducciones
+            </h6>
+            <div id="formAddInduccion" style="display:none;" class="mb-3">
+                <div class="input-group input-group-sm">
+                    <select id="cmbNuevaInduccion" class="form-select"><option value="">Seleccione inducción...</option></select>
+                    <button class="btn btn-minimal btn-sm" onclick="addInduccion()"><span class="material-symbols-outlined" style="font-size:18px;">save</span></button>
+                    <button class="btn btn-minimal btn-sm" onclick="hideAddInduccionForm()"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                </div>
+            </div>
+            <div id="listaInducciones"><p class="text-muted text-center">Cargando...</p></div>
+        </div>
+
+        <input type="hidden" id="detalleIdVacante" value="${idEncoded}">
+    `;
+    
+    $('#contenidoTabInfo').html(html);
+    
+    // Re-inicializar selects del tab info
+    loadEvaluaciones().then(() => {
+        $('#cmbNuevaEvaluacion').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione evaluación...', allowClear: true });
+    });
+    loadInducciones().then(() => {
+        $('#cmbNuevaInduccion').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione inducción...', allowClear: true });
+    });
+    loadProcesosVacantes().then(() => {
+        $('#cmbProcesoEvaluacion').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione proceso...', allowClear: true });
+    });
+    
+    loadRequisitosDetalle(idEncoded);
+    loadEvaluacionesDetalle(idEncoded);
+    loadInduccionesDetalle(idEncoded);
+}
+
+// ==========================================
+// AGREGAR / EDITAR / CAMBIAR ESTATUS VACANTE
 // ==========================================
 
 function prepareAddModal() {
-    // Establecer fecha de hoy como predeterminada (usando zona horaria local)
     const today = new Date();
-    // Ajustar para obtener formato YYYY-MM-DD local
     const tzOffset = today.getTimezoneOffset() * 60000;
     const localISOTime = (new Date(today - tzOffset)).toISOString().slice(0, -1).split('T')[0];
     $('#txtFechaApertura').val(localISOTime);
@@ -492,174 +588,35 @@ async function addVacante() {
     const salarioMaximoRaw = $('#txtSalarioMaximo').val();
     const fechaCierre = $('#txtFechaCierre').val();
     
-    if (!nombre) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El nombre de la vacante es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtNombreVacante').focus();
-        return;
-    }
+    if (!nombre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El nombre de la vacante es requerido.</span></div>`, "top-right", 5000); $('#txtNombreVacante').focus(); return; }
+    if (!tipoContratacion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El tipo de contratación es requerido.</span></div>`, "top-right", 5000); $('#cmbTipoContratacion').focus(); return; }
+    if (!fechaApertura) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de apertura es requerida.</span></div>`, "top-right", 5000); $('#txtFechaApertura').focus(); return; }
+    if (!areaTecnica) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El área técnica es requerida.</span></div>`, "top-right", 5000); $('#cmbAreaTecnica').focus(); return; }
+    if (!puesto) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El puesto es requerido.</span></div>`, "top-right", 5000); $('#cmbPuesto').focus(); return; }
+    if (!sucursal) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La sucursal es requerida.</span></div>`, "top-right", 5000); $('#cmbSucursal').focus(); return; }
+    if (!salarioMinimoRaw) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El salario mínimo es requerido.</span></div>`, "top-right", 5000); $('#txtSalarioMinimo').focus(); return; }
+    if (!salarioMaximoRaw) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El salario máximo es requerido.</span></div>`, "top-right", 5000); $('#txtSalarioMaximo').focus(); return; }
     
-    if (!tipoContratacion) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El tipo de contratación es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbTipoContratacion').focus();
-        return;
-    }
-    
-    if (!fechaApertura) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La fecha de apertura es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtFechaApertura').focus();
-        return;
-    }
-
-    if (!areaTecnica) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El área técnica es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbAreaTecnica').focus();
-        return;
-    }
-
-    if (!puesto) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El puesto es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbPuesto').focus();
-        return;
-    }
-
-    if (!sucursal) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La sucursal es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbSucursal').focus();
-        return;
-    }
-
-    if (!salarioMinimoRaw) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El salario mínimo es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtSalarioMinimo').focus();
-        return;
-    }
-
-    if (!salarioMaximoRaw) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El salario máximo es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtSalarioMaximo').focus();
-        return;
-    }
-
     const salarioMinimo = parseFloat(salarioMinimoRaw);
     const salarioMaximo = parseFloat(salarioMaximoRaw);
-    if (Number.isNaN(salarioMinimo) || Number.isNaN(salarioMaximo)) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Verifica los salarios (deben ser numéricos).</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        return;
-    }
-
-    if (salarioMinimo > salarioMaximo) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El salario mínimo no puede ser mayor al salario máximo.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtSalarioMinimo').focus();
-        return;
-    }
-
-    if (!fechaCierre) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La fecha de cierre es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtFechaCierre').focus();
-        return;
-    }
-
-    if (fechaCierre && fechaApertura && new Date(fechaCierre) < new Date(fechaApertura)) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La fecha de cierre no puede ser menor a la fecha de apertura.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtFechaCierre').focus();
-        return;
-    }
-
-    if (!descripcionPuesto) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La descripción del puesto es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtDescripcionPuesto').focus();
-        return;
-    }
+    if (Number.isNaN(salarioMinimo) || Number.isNaN(salarioMaximo)) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Verifica los salarios (deben ser numéricos).</span></div>`, "top-right", 5000); return; }
+    if (salarioMinimo > salarioMaximo) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El salario mínimo no puede ser mayor al salario máximo.</span></div>`, "top-right", 5000); $('#txtSalarioMinimo').focus(); return; }
+    if (!fechaCierre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de cierre es requerida.</span></div>`, "top-right", 5000); $('#txtFechaCierre').focus(); return; }
+    if (new Date(fechaCierre) < new Date(fechaApertura)) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de cierre no puede ser menor a la fecha de apertura.</span></div>`, "top-right", 5000); $('#txtFechaCierre').focus(); return; }
+    if (!descripcionPuesto) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La descripción del puesto es requerida.</span></div>`, "top-right", 5000); $('#txtDescripcionPuesto').focus(); return; }
     
     try {
         let areaTecnicaFinal = areaTecnica;
-        
-        // Verificar si es un área técnica nueva
         const selectedOption = $('#cmbAreaTecnica option:selected');
         if (selectedOption.attr('data-new') === 'true') {
             const tempNombre = selectedOption.text();
             const tempDesc = selectedOption.attr('data-desc');
-            
-            // Crear el área técnica primero
             try {
                 const resAreaStr = await $.post("Backend/Vacantes/App.php", { op: "addAreaTecnica", NombreArea: tempNombre, Descripcion: tempDesc });
                 const dataArea = JSON.parse(resAreaStr);
-                
-                if (dataArea.estatus || dataArea.id) {
-                    areaTecnicaFinal = dataArea.id;
-                } else {
-                    Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error');
-                    return;
-                }
-            } catch (areaErr) {
-                Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error');
-                return;
-            }
+                if (dataArea.estatus || dataArea.id) { areaTecnicaFinal = dataArea.id; }
+                else { Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error'); return; }
+            } catch (areaErr) { Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error'); return; }
         }
 
         const response = await $.post("Backend/Vacantes/App.php", {
@@ -677,34 +634,16 @@ async function addVacante() {
             BanderaCV: $('#chkBanderaCV').is(':checked') ? 1 : 0,
             BanderaSE: $('#chkBanderaSE').is(':checked') ? 1 : 0
         });
-        
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000);
             $('#modalAddVacante').modal('hide');
             loadVacantes();
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000);
         }
     } catch (error) {
-        console.error("Error al agregar vacante:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo registrar la vacante.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">No se pudo registrar la vacante.</span></div>`, "top-right", 5000);
     }
 }
 
@@ -723,19 +662,10 @@ function clearAddForm() {
     $('#chkBanderaSE').prop('checked', false);
 }
 
-// ==========================================
-// EDITAR VACANTE
-// ==========================================
-
 async function openEditModal(idEncoded) {
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getVacanteById",
-            IdVacante: idEncoded
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "getVacanteById", IdVacante: idEncoded });
         const result = JSON.parse(response);
-        
         if (result.Resultado && result.Siguiente) {
             const vacante = result.Datos;
             $('#editIdVacante').val(idEncoded);
@@ -754,29 +684,13 @@ async function openEditModal(idEncoded) {
             
             let modalEl = document.getElementById('modalEditVacante');
             let modal = bootstrap.Modal.getInstance(modalEl);
-            if (!modal) {
-                modal = new bootstrap.Modal(modalEl, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-            }
+            if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
             modal.show();
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg || 'No se encontró la vacante'}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg || 'No se encontró la vacante'}</span></div>`, "top-right", 5000);
         }
     } catch (error) {
-        console.error("Error al cargar vacante:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo cargar la información de la vacante.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">No se pudo cargar la información de la vacante.</span></div>`, "top-right", 5000);
     }
 }
 
@@ -786,63 +700,22 @@ async function updateVacante() {
     const tipoContratacion = $('#editTipoContratacion').val();
     const fechaApertura = $('#editFechaApertura').val();
     
-    if (!nombre) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El nombre de la vacante es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#editNombreVacante').focus();
-        return;
-    }
-    
-    if (!tipoContratacion) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El tipo de contratación es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#editTipoContratacion').focus();
-        return;
-    }
-    
-    if (!fechaApertura) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">La fecha de apertura es requerida.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#editFechaApertura').focus();
-        return;
-    }
+    if (!nombre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El nombre de la vacante es requerido.</span></div>`, "top-right", 5000); $('#editNombreVacante').focus(); return; }
+    if (!tipoContratacion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El tipo de contratación es requerido.</span></div>`, "top-right", 5000); $('#editTipoContratacion').focus(); return; }
+    if (!fechaApertura) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de apertura es requerida.</span></div>`, "top-right", 5000); $('#editFechaApertura').focus(); return; }
     
     try {
         let areaTecnicaFinal = $('#editAreaTecnica').val();
-        
-        // Verificar si es un área técnica nueva
         const selectedOption = $('#editAreaTecnica option:selected');
         if (selectedOption.attr('data-new') === 'true') {
             const tempNombre = selectedOption.text();
             const tempDesc = selectedOption.attr('data-desc');
-            
-            // Crear el área técnica primero
             try {
                 const resAreaStr = await $.post("Backend/Vacantes/App.php", { op: "addAreaTecnica", NombreArea: tempNombre, Descripcion: tempDesc });
                 const dataArea = JSON.parse(resAreaStr);
-                
-                if (dataArea.estatus || dataArea.id) {
-                    areaTecnicaFinal = dataArea.id;
-                } else {
-                    Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error');
-                    return;
-                }
-            } catch (areaErr) {
-                Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error');
-                return;
-            }
+                if (dataArea.estatus || dataArea.id) { areaTecnicaFinal = dataArea.id; }
+                else { Swal.fire('Error', dataArea.msg || 'No se pudo crear la nueva Área Técnica.', 'error'); return; }
+            } catch (areaErr) { Swal.fire('Error', 'Hubo un problema al crear la nueva Área Técnica.', 'error'); return; }
         }
 
         const response = await $.post("Backend/Vacantes/App.php", {
@@ -861,48 +734,22 @@ async function updateVacante() {
             BanderaCV: $('#editBanderaCV').is(':checked') ? 1 : 0,
             BanderaSE: $('#editBanderaSE').is(':checked') ? 1 : 0
         });
-        
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000);
             $('#modalEditVacante').modal('hide');
             loadVacantes();
+            if (vacanteSeleccionadaId === idVacante) seleccionarVacante(idVacante);
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000);
         }
     } catch (error) {
-        console.error("Error al actualizar vacante:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo actualizar la vacante.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">No se pudo actualizar la vacante.</span></div>`, "top-right", 5000);
     }
 }
 
-// ==========================================
-// CAMBIAR ESTATUS
-// ==========================================
-
 async function cambiarEstatus(idEncoded, nuevoEstatus) {
-    const estatusTexto = {
-        1: 'Borrador',
-        2: 'Activa',
-        3: 'Cerrada'
-    };
-    
+    const estatusTexto = { 1: 'Borrador', 2: 'Activa', 3: 'Cerrada' };
     const result = await Swal.fire({
         title: '¿Cambiar estatus?',
         text: `La vacante cambiará a estado: ${estatusTexto[nuevoEstatus]}`,
@@ -913,54 +760,27 @@ async function cambiarEstatus(idEncoded, nuevoEstatus) {
         confirmButtonText: 'Sí, cambiar',
         cancelButtonText: 'Cancelar'
     });
-    
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "cambiarEstatusVacante",
-                IdVacante: idEncoded,
-                NuevoEstatus: nuevoEstatus
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "cambiarEstatusVacante", IdVacante: idEncoded, NuevoEstatus: nuevoEstatus });
             const data = JSON.parse(response);
-            
             if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
                 loadVacantes();
+                if (vacanteSeleccionadaId === idEncoded) seleccionarVacante(idEncoded);
             } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
             }
         } catch (error) {
-            console.error("Error al cambiar estatus:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al cambiar el estatus.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al cambiar el estatus.</span></div>`, "top-right", 5000);
         }
     }
 }
 
-// ==========================================
-// PUBLICAR VACANTE
-// ==========================================
-
 async function publicarVacante(idEncoded) {
     const result = await Swal.fire({
         title: '¿Publicar vacante?',
-        html: `<p>Una vez publicada, la vacante <strong>no podrá ser editada ni eliminada</strong>.</p>
-               <p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>`,
+        html: `<p>Una vez publicada, la vacante <strong>no podrá ser editada ni eliminada</strong>.</p><p class="text-danger"><strong>Esta acción no se puede deshacer.</strong></p>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
@@ -968,47 +788,22 @@ async function publicarVacante(idEncoded) {
         confirmButtonText: 'Sí, publicar',
         cancelButtonText: 'Cancelar'
     });
-    
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "publicarVacante",
-                IdVacante: idEncoded
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "publicarVacante", IdVacante: idEncoded });
             const data = JSON.parse(response);
-            
             if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
                 loadVacantes();
+                if (vacanteSeleccionadaId === idEncoded) seleccionarVacante(idEncoded);
             } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
             }
         } catch (error) {
-            console.error("Error al publicar vacante:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al publicar la vacante.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al publicar la vacante.</span></div>`, "top-right", 5000);
         }
     }
 }
-
-// ==========================================
-// ELIMINAR VACANTE
-// ==========================================
 
 async function deleteVacante(idEncoded) {
     const result = await Swal.fire({
@@ -1021,780 +816,493 @@ async function deleteVacante(idEncoded) {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
     });
-    
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "deleteVacante",
-                IdVacante: idEncoded
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "deleteVacante", IdVacante: idEncoded });
             const data = JSON.parse(response);
-            
             if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
+                if (vacanteSeleccionadaId === idEncoded) {
+                    vacanteSeleccionadaId = null;
+                    $('#contenidoTabInfo').html(`<div class="text-center text-muted py-5"><span class="material-symbols-outlined" style="font-size:64px;">work</span><p class="mt-3 fs-5">Selecciona una vacante de la lista para ver sus detalles</p></div>`);
+                    $('#postulantesIdVacante').val('');
+                    renderPostulantesCards([]);
+                    updatePostulantesStats([]);
+                }
                 loadVacantes();
             } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
             }
         } catch (error) {
-            console.error("Error al eliminar vacante:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al eliminar la vacante.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al eliminar la vacante.</span></div>`, "top-right", 5000);
         }
     }
 }
 
 // ==========================================
-// MODAL DETALLE - INFORMACIÓN GENERAL
-// ==========================================
-
-async function openDetalleDrawer(idEncoded) {
-    try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getVacanteById",
-            IdVacante: idEncoded
-        });
-        
-        const result = JSON.parse(response);
-        
-        if (result.Resultado && result.Siguiente) {
-            const vacante = result.Datos;
-            $('#detalleIdVacante').val(idEncoded);
-            $('#detalleNombre').text(vacante.NombreVacante);
-            $('#drawerVacanteTitulo').text(vacante.NombreVacante);
-            $('#detalleArea').text(vacante.NombreArea || '-');
-            $('#detallePuesto').text(vacante.Puesto || '-');
-            $('#detalleSucursal').text(vacante.Sucursal || '-');
-            $('#detalleTipoContratacion').text(vacante.TipoContratacion);
-            
-            // Formato de salario
-            let salario = '-';
-            if (vacante.SalarioMinimo && vacante.SalarioMaximo) {
-                salario = `$${formatNumber(vacante.SalarioMinimo)} - $${formatNumber(vacante.SalarioMaximo)}`;
-            } else if (vacante.SalarioMinimo) {
-                salario = `Desde $${formatNumber(vacante.SalarioMinimo)}`;
-            } else if (vacante.SalarioMaximo) {
-                salario = `Hasta $${formatNumber(vacante.SalarioMaximo)}`;
-            }
-            $('#detalleSalario').text(salario);
-            
-            $('#detalleFechaApertura').text(formatDate(vacante.FechaApertura));
-            $('#detalleFechaCierre').text(vacante.FechaCierre ? formatDate(vacante.FechaCierre) : '-');
-            $('#detalleDescripcion').text(vacante.DescripcionPuesto || 'Sin descripción');
-            
-            // Cargar requisitos, evaluaciones, inducciones y postulantes
-            await Promise.all([
-                loadRequisitosDetalle(idEncoded),
-                loadEvaluacionesDetalle(idEncoded),
-                loadInduccionesDetalle(idEncoded),
-                loadPostulantesDrawer(idEncoded)
-            ]);
-            
-            openDrawerVacante();
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg || 'No se encontró la vacante'}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al cargar detalle:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">No se pudo cargar el detalle de la vacante.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
-}
-
-function openDrawerVacante() {
-    $('#drawerOverlayVacante').addClass('show');
-    $('#drawerDetalleVacante').addClass('open');
-    $('body').css('overflow', 'hidden');
-}
-
-function closeDrawerVacante() {
-    $('#drawerOverlayVacante').removeClass('show');
-    $('#drawerDetalleVacante').removeClass('open');
-    $('body').css('overflow', '');
-}
-
-// Cerrar drawer con ESC
-$(document).on('keydown', function(e) {
-    if (e.key === 'Escape' && $('#drawerDetalleVacante').hasClass('open')) {
-        closeDrawerVacante();
-    }
-});
-
-// Cerrar drawer al hacer clic en el overlay
-$('#drawerOverlayVacante').on('click', function() {
-    closeDrawerVacante();
-});
-
-function formatNumber(num) {
-    return parseFloat(num).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// ==========================================
-// REQUISITOS
+// REQUISITOS / EVALUACIONES / INDUCCIONES
 // ==========================================
 
 async function loadRequisitosDetalle(idVacante) {
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getRequisitosVacante",
-            IdVacante: idVacante
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "getRequisitosVacante", IdVacante: idVacante });
         const requisitos = JSON.parse(response);
-        
         if (requisitos && requisitos.length > 0) {
-            let html = '';
+            let html = '<div class="d-flex flex-wrap">';
             requisitos.forEach(req => {
                 const idEncoded = btoa(req.IdVacanteRequisito);
-                html += `
-                    <div class="requisito-item">
-                        <span>${req.Requisito}</span>
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteRequisito('${idEncoded}')">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    </div>
-                `;
+                html += `<span class="chip-tag">${req.Requisito}<button onclick="deleteRequisito('${idEncoded}')">&times;</button></span>`;
             });
+            html += '</div>';
+            html += `<button class="btn-add-ghost mt-2" onclick="showAddRequisitoForm()">
+                <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar requisito
+            </button>`;
             $('#listaRequisitos').html(html);
         } else {
-            $('#listaRequisitos').html('<p class="text-muted text-center">No hay requisitos configurados</p>');
+            $('#listaRequisitos').html(`
+                <div class="empty-state-card">
+                    <span class="material-symbols-outlined">checklist</span>
+                    <p>Aún no hay requisitos configurados</p>
+                    <button class="btn-add-ghost" onclick="showAddRequisitoForm()">
+                        <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar primer requisito
+                    </button>
+                </div>
+            `);
         }
-    } catch (error) {
-        console.error("Error al cargar requisitos:", error);
-    }
+    } catch (error) { console.error("Error al cargar requisitos:", error); }
 }
 
-function showAddRequisitoForm() {
-    $('#formAddRequisito').slideDown();
-    $('#txtNuevoRequisito').focus();
-}
-
-function hideAddRequisitoForm() {
-    $('#formAddRequisito').slideUp();
-    $('#txtNuevoRequisito').val('');
-    $('#txtOrdenRequisito').val('0');
-}
+function showAddRequisitoForm() { $('#formAddRequisito').slideDown(); $('#txtNuevoRequisito').focus(); }
+function hideAddRequisitoForm() { $('#formAddRequisito').slideUp(); $('#txtNuevoRequisito').val(''); $('#txtOrdenRequisito').val('0'); }
 
 async function addRequisito() {
     const idVacante = $('#detalleIdVacante').val();
     const requisito = $('#txtNuevoRequisito').val().trim();
     const orden = $('#txtOrdenRequisito').val() || 0;
-    
-    if (!requisito) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El requisito es requerido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#txtNuevoRequisito').focus();
-        return;
-    }
-    
+    if (!requisito) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El requisito es requerido.</span></div>`, "top-right", 5000); $('#txtNuevoRequisito').focus(); return; }
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "addRequisitoVacante",
-            IdVacante: idVacante,
-            Requisito: requisito,
-            Orden: orden
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "addRequisitoVacante", IdVacante: idVacante, Requisito: requisito, Orden: orden });
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000);
             hideAddRequisitoForm();
             loadRequisitosDetalle(idVacante);
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al agregar requisito:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">Error al agregar el requisito.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
+        } else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000); }
+    } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al agregar el requisito.</span></div>`, "top-right", 5000); }
 }
 
 async function deleteRequisito(idEncoded) {
-    const result = await Swal.fire({
-        title: '¿Eliminar requisito?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
-    
+    const result = await Swal.fire({ title: '¿Eliminar requisito?', text: 'Esta acción no se puede deshacer', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' });
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "deleteRequisitoVacante",
-                IdVacanteRequisito: idEncoded
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "deleteRequisitoVacante", IdVacanteRequisito: idEncoded });
             const data = JSON.parse(response);
-            
             if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000);
                 loadRequisitosDetalle($('#detalleIdVacante').val());
-            } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
-            }
-        } catch (error) {
-            console.error("Error al eliminar requisito:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al eliminar el requisito.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
+            } else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000); }
+        } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al eliminar el requisito.</span></div>`, "top-right", 5000); }
     }
 }
 
-// ==========================================
-// EVALUACIONES
-// ==========================================
-
 async function loadEvaluacionesDetalle(idVacante) {
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getEvaluacionesVacante",
-            IdVacante: idVacante
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "getEvaluacionesVacante", IdVacante: idVacante });
         const evaluaciones = JSON.parse(response);
-        
         if (evaluaciones && evaluaciones.length > 0) {
             let html = '';
             evaluaciones.forEach(ev => {
                 const idEncoded = btoa(ev.IdVacanteEvaluacion);
                 html += `
-                    <div class="evaluacion-item">
-                        <span>
-                            <strong>${ev.NombreEvaluacion}</strong>
-                            <small class="text-muted ms-2">(${ev.NombreProceso})</small>
-                        </span>
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteEvaluacion('${idEncoded}')">
-                            <span class="material-symbols-outlined">delete</span>
+                    <div class="mini-card">
+                        <div>
+                            <div class="mini-card-title">${ev.NombreEvaluacion}</div>
+                            <div class="mini-card-sub">${ev.NombreProceso}</div>
+                        </div>
+                        <button type="button" class="btn btn-minimal-danger btn-sm" onclick="deleteEvaluacion('${idEncoded}')">
+                            <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
                         </button>
                     </div>
                 `;
             });
+            html += `<button class="btn-add-ghost mt-2" onclick="showAddEvaluacionForm()">
+                <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar evaluación
+            </button>`;
             $('#listaEvaluaciones').html(html);
         } else {
-            $('#listaEvaluaciones').html('<p class="text-muted text-center">No hay evaluaciones configuradas</p>');
+            $('#listaEvaluaciones').html(`
+                <div class="empty-state-card">
+                    <span class="material-symbols-outlined">quiz</span>
+                    <p>Aún no hay evaluaciones configuradas</p>
+                    <button class="btn-add-ghost" onclick="showAddEvaluacionForm()">
+                        <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar evaluación
+                    </button>
+                </div>
+            `);
         }
-    } catch (error) {
-        console.error("Error al cargar evaluaciones:", error);
-    }
+    } catch (error) { console.error("Error al cargar evaluaciones:", error); }
 }
 
 function showAddEvaluacionForm() {
     $('#formAddEvaluacion').slideDown(200, function() {
-        // Reinicializar Select2 después de que el form sea visible
-        $('#cmbNuevaEvaluacion').select2('destroy').select2({
-            dropdownParent: $('#drawerDetalleVacante'),
-            width: '100%',
-            placeholder: 'Seleccione evaluación...',
-            allowClear: true
-        });
-        $('#cmbProcesoEvaluacion').select2('destroy').select2({
-            dropdownParent: $('#drawerDetalleVacante'),
-            width: '100%',
-            placeholder: 'Seleccione proceso...',
-            allowClear: true
-        });
+        $('#cmbNuevaEvaluacion').select2('destroy').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione evaluación...', allowClear: true });
+        $('#cmbProcesoEvaluacion').select2('destroy').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione proceso...', allowClear: true });
     });
 }
-
-function hideAddEvaluacionForm() {
-    $('#formAddEvaluacion').slideUp();
-    $('#cmbNuevaEvaluacion').val('');
-    $('#cmbProcesoEvaluacion').val('');
-}
+function hideAddEvaluacionForm() { $('#formAddEvaluacion').slideUp(); $('#cmbNuevaEvaluacion').val(''); $('#cmbProcesoEvaluacion').val(''); }
 
 async function addEvaluacion() {
     const idVacante = $('#detalleIdVacante').val();
     const idEvaluacion = $('#cmbNuevaEvaluacion').val();
     const idProceso = $('#cmbProcesoEvaluacion').val();
-    
-    if (!idEvaluacion) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Seleccione una evaluación.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbNuevaEvaluacion').focus();
-        return;
-    }
-    
-    if (!idProceso) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Seleccione un proceso.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbProcesoEvaluacion').focus();
-        return;
-    }
-    
+    if (!idEvaluacion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Seleccione una evaluación.</span></div>`, "top-right", 5000); $('#cmbNuevaEvaluacion').focus(); return; }
+    if (!idProceso) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Seleccione un proceso.</span></div>`, "top-right", 5000); $('#cmbProcesoEvaluacion').focus(); return; }
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "addEvaluacionVacante",
-            IdVacante: idVacante,
-            IdEvaluacion: idEvaluacion,
-            IdProceso: idProceso
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "addEvaluacionVacante", IdVacante: idVacante, IdEvaluacion: idEvaluacion, IdProceso: idProceso });
         const result = JSON.parse(response);
-        
-        if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            hideAddEvaluacionForm();
-            loadEvaluacionesDetalle(idVacante);
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al agregar evaluación:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">Error al agregar la evaluación.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
+        if (result.Siguiente) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000); hideAddEvaluacionForm(); loadEvaluacionesDetalle(idVacante); }
+        else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000); }
+    } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al agregar la evaluación.</span></div>`, "top-right", 5000); }
 }
 
 async function deleteEvaluacion(idEncoded) {
-    const result = await Swal.fire({
-        title: '¿Eliminar evaluación?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
-    
+    const result = await Swal.fire({ title: '¿Eliminar evaluación?', text: 'Esta acción no se puede deshacer', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' });
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "deleteEvaluacionVacante",
-                IdVacanteEvaluacion: idEncoded
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "deleteEvaluacionVacante", IdVacanteEvaluacion: idEncoded });
             const data = JSON.parse(response);
-            
-            if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                loadEvaluacionesDetalle($('#detalleIdVacante').val());
-            } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
-            }
-        } catch (error) {
-            console.error("Error al eliminar evaluación:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al eliminar la evaluación.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
+            if (data.Siguiente) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000); loadEvaluacionesDetalle($('#detalleIdVacante').val()); }
+            else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000); }
+        } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al eliminar la evaluación.</span></div>`, "top-right", 5000); }
     }
 }
 
-// ==========================================
-// INDUCCIONES
-// ==========================================
-
 async function loadInduccionesDetalle(idVacante) {
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getInduccionesVacante",
-            IdVacante: idVacante
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "getInduccionesVacante", IdVacante: idVacante });
         const inducciones = JSON.parse(response);
-        
         if (inducciones && inducciones.length > 0) {
             let html = '';
             inducciones.forEach(ind => {
                 const idEncoded = btoa(ind.IdVacanteInduccion);
                 html += `
-                    <div class="induccion-item">
-                        <span>${ind.NombreInduccion}</span>
-                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteInduccion('${idEncoded}')">
-                            <span class="material-symbols-outlined">delete</span>
+                    <div class="mini-card">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="material-symbols-outlined text-danger" style="font-size:20px;">school</span>
+                            <span class="mini-card-title">${ind.NombreInduccion}</span>
+                        </div>
+                        <button type="button" class="btn btn-minimal-danger btn-sm" onclick="deleteInduccion('${idEncoded}')">
+                            <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
                         </button>
                     </div>
                 `;
             });
+            html += `<button class="btn-add-ghost mt-2" onclick="showAddInduccionForm()">
+                <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar inducción
+            </button>`;
             $('#listaInducciones').html(html);
         } else {
-            $('#listaInducciones').html('<p class="text-muted text-center">No hay inducciones configuradas</p>');
+            $('#listaInducciones').html(`
+                <div class="empty-state-card">
+                    <span class="material-symbols-outlined">school</span>
+                    <p>Aún no hay inducciones configuradas</p>
+                    <button class="btn-add-ghost" onclick="showAddInduccionForm()">
+                        <span class="material-symbols-outlined" style="font-size:18px;">add</span> Agregar inducción
+                    </button>
+                </div>
+            `);
         }
-    } catch (error) {
-        console.error("Error al cargar inducciones:", error);
-    }
+    } catch (error) { console.error("Error al cargar inducciones:", error); }
 }
 
 function showAddInduccionForm() {
     $('#formAddInduccion').slideDown(200, function() {
-        // Reinicializar Select2 después de que el form sea visible
-        $('#cmbNuevaInduccion').select2('destroy').select2({
-            dropdownParent: $('#drawerDetalleVacante'),
-            width: '100%',
-            placeholder: 'Seleccione inducción...',
-            allowClear: true
-        });
+        $('#cmbNuevaInduccion').select2('destroy').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione inducción...', allowClear: true });
     });
 }
-
-function hideAddInduccionForm() {
-    $('#formAddInduccion').slideUp();
-    $('#cmbNuevaInduccion').val('');
-}
+function hideAddInduccionForm() { $('#formAddInduccion').slideUp(); $('#cmbNuevaInduccion').val(''); }
 
 async function addInduccion() {
     const idVacante = $('#detalleIdVacante').val();
     const idInduccion = $('#cmbNuevaInduccion').val();
-    
-    if (!idInduccion) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Seleccione una inducción.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 5000);
-        $('#cmbNuevaInduccion').focus();
-        return;
-    }
-    
+    if (!idInduccion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Seleccione una inducción.</span></div>`, "top-right", 5000); $('#cmbNuevaInduccion').focus(); return; }
     try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "addInduccionVacante",
-            IdVacante: idVacante,
-            IdInduccion: idInduccion
-        });
-        
+        const response = await $.post("Backend/Vacantes/App.php", { op: "addInduccionVacante", IdVacante: idVacante, IdInduccion: idInduccion });
         const result = JSON.parse(response);
-        
-        if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            hideAddInduccionForm();
-            loadInduccionesDetalle(idVacante);
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al agregar inducción:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">Error al agregar la inducción.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-    }
+        if (result.Siguiente) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000); hideAddInduccionForm(); loadInduccionesDetalle(idVacante); }
+        else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, "top-right", 5000); }
+    } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al agregar la inducción.</span></div>`, "top-right", 5000); }
 }
 
 async function deleteInduccion(idEncoded) {
-    const result = await Swal.fire({
-        title: '¿Eliminar inducción?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
-    
+    const result = await Swal.fire({ title: '¿Eliminar inducción?', text: 'Esta acción no se puede deshacer', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' });
     if (result.isConfirmed) {
         try {
-            const response = await $.post("Backend/Vacantes/App.php", {
-                op: "deleteInduccionVacante",
-                IdVacanteInduccion: idEncoded
-            });
-            
+            const response = await $.post("Backend/Vacantes/App.php", { op: "deleteInduccionVacante", IdVacanteInduccion: idEncoded });
             const data = JSON.parse(response);
-            
-            if (data.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                loadInduccionesDetalle($('#detalleIdVacante').val());
-            } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${data.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
-            }
-        } catch (error) {
-            console.error("Error al eliminar inducción:", error);
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">Error al eliminar la inducción.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            if (data.Siguiente) { showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000); loadInduccionesDetalle($('#detalleIdVacante').val()); }
+            else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${data.Msg}</span></div>`, "top-right", 5000); }
+        } catch (error) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al eliminar la inducción.</span></div>`, "top-right", 5000); }
+    }
+}
+
+
+// ==========================================
+// NAVEGACIÓN SUB-VISTAS POSTULANTES
+// ==========================================
+
+function mostrarListaPostulantes() {
+    $('#subVistaListaPostulantes').removeClass('d-none');
+    $('#wizardAddPostulante').addClass('d-none');
+    $('#subVistaDetallePostulante').addClass('d-none');
+}
+
+function mostrarFormAddPostulante() {
+    const idVacante = $('#postulantesIdVacante').val();
+    if (!idVacante) {
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Selecciona una vacante primero.</span></div>`, 'top-right', 3000);
+        return;
+    }
+    $('#addPostulanteIdVacante').val(idVacante);
+    clearPostulanteForm();
+    wizardGoToStep(1);
+    $('#subVistaListaPostulantes').addClass('d-none');
+    $('#wizardAddPostulante').removeClass('d-none');
+    $('#subVistaDetallePostulante').addClass('d-none');
+}
+
+function volverAListaPostulantes() {
+    mostrarListaPostulantes();
+    const idVacante = $('#postulantesIdVacante').val();
+    if (idVacante) loadPostulantes(idVacante);
+}
+
+// ==========================================
+// WIZARD ADD POSTULANTE
+// ==========================================
+
+let wizardCurrentStep = 1;
+
+function wizardGoToStep(step) {
+    wizardCurrentStep = step;
+    
+    // Actualizar barra de progreso
+    $('.wizard-step').each(function() {
+        const stepNum = parseInt($(this).data('step'));
+        $(this).removeClass('active completed');
+        if (stepNum === step) {
+            $(this).addClass('active');
+        } else if (stepNum < step) {
+            $(this).addClass('completed');
         }
-    }
-}
-
-// ==========================================
-// SECCIÓN: POSTULANTES
-// ==========================================
-
-let tablePostulantes;
-let postulantesData = [];
-let postulantesProcesosList = [];
-
-// Abrir modal de postulantes
-async function showPostulantes(idEncoded) {
-    const idVacanteDec = atob(idEncoded);
-    $('#postulantesIdVacante').val(idEncoded);
-    
-    // Obtener nombre de la vacante
-    const vacante = vacantesData.find(v => v.IdVacante == idVacanteDec);
-    if (vacante) {
-        $('#nombreVacantePostulantes').text(vacante.NombrePuesto || 'Vacante');
-    }
-    
-    // Cargar lista de procesos para historial
-    await loadProcesosParaHistorial();
-    
-    // Inicializar DataTable si no existe
-    if (!tablePostulantes) {
-        initPostulantesTable();
-    }
-    
-    // Cargar datos
-    await loadPostulantes(idEncoded);
-    
-    const modal = new bootstrap.Modal(document.getElementById('modalPostulantes'));
-    modal.show();
-}
-
-// Inicializar tabla de postulantes
-function initPostulantesTable() {
-    tablePostulantes = $('#tablePostulantes').DataTable({
-        data: [],
-        columns: [
-            { data: 'NombreCompleto' },
-            { data: 'CorreoElectronico' },
-            { data: 'Telefono' },
-            { data: 'FechaPostulacion' },
-            { data: 'UltimoProceso' },
-            { 
-                data: 'EstatusPostulacion',
-                render: function(data, type, row) {
-                    return getPostulanteStatusBadge(data);
-                }
-            },
-            {
-                data: null,
-                render: function(data, type, row) {
-                    const idEncoded = btoa(row.IdPostulanteVacante);
-                    return `
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-info btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle">
-                                <span class="material-symbols-outlined">visibility</span>
-                            </button>
-                        </div>
-                    `;
-                }
-            }
-        ],
-        language: {
-            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-        },
-        responsive: true,
-        order: [[3, 'desc']]
     });
+    
+    $('.wizard-connector').each(function(idx) {
+        $(this).removeClass('completed');
+        if (idx < step - 1) {
+            $(this).addClass('completed');
+        }
+    });
+    
+    // Mostrar/ocultar contenido
+    $('[id^="wizardStep"]').addClass('d-none');
+    $(`#wizardStep${step}`).removeClass('d-none');
 }
 
-// Obtener badge de estatus de postulante
-function getPostulanteStatusBadge(estatus) {
-    switch(parseInt(estatus)) {
-        case 1:
-            return '<span class="postulante-status en-proceso">En Proceso</span>';
-        case 2:
-            return '<span class="postulante-status aceptado">Aceptado</span>';
-        case 3:
-            return '<span class="postulante-status rechazado">Rechazado</span>';
-        case 4:
-            return '<span class="postulante-status finalizado">Finalizado</span>';
-        default:
-            return '<span class="postulante-status">Desconocido</span>';
+function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function getAvatarGradient(name) {
+    const gradients = [
+        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+        'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+        'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+        'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+        'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
+    return gradients[Math.abs(hash) % gradients.length];
 }
 
-// Cargar postulantes de una vacante
+// ==========================================
+// CARGA Y STATS DE POSTULANTES (CARDS V2)
+// ==========================================
+
 async function loadPostulantes(idVacante) {
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulantesByVacante",
-            IdVacante: idVacante
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulantesByVacante', IdVacante: idVacante });
         const result = JSON.parse(response);
-        
         if (result.Siguiente && result.Data) {
             postulantesData = result.Data;
-            tablePostulantes.clear().rows.add(postulantesData).draw();
-            
-            // Actualizar estadísticas
-            updatePostulantesStats(postulantesData);
         } else {
             postulantesData = [];
-            tablePostulantes.clear().draw();
-            updatePostulantesStats([]);
         }
     } catch (error) {
         console.error("Error al cargar postulantes:", error);
+        postulantesData = [];
     }
+
+    postulantesFilterByEstatus = 'todos';
+    $('#filtrosEstatusPostulantes button').removeClass('active');
+    $('#filtrosEstatusPostulantes button[data-filter="todos"]').addClass('active');
+    $('#txtBuscarPostulanteLista').val('');
+
+    renderPostulantesCards(postulantesData);
+    updatePostulantesStats(postulantesData);
 }
 
-// Actualizar estadísticas de postulantes
+function renderPostulantesCards(data) {
+    const container = $('#contenedorCardsPostulantes');
+    if (!data || data.length === 0) {
+        container.html(`
+            <div class="empty-state-card">
+                <span class="material-symbols-outlined">people</span>
+                <p>Aún no hay postulantes registrados</p>
+                <button class="btn-add-ghost" onclick="mostrarFormAddPostulante()">
+                    <span class="material-symbols-outlined align-middle me-1">person_add</span> Agregar postulante
+                </button>
+            </div>
+        `);
+        return;
+    }
+
+    let html = '';
+    data.forEach(row => {
+        const idEncoded = btoa(row.IdPostulanteVacante);
+        const idNumerico = row.IdPostulanteVacante;
+        const nombrePostulante = row.NombreCompleto || 'Postulante';
+        const nombreEsc = nombrePostulante.replace(/'/g, "\\'");
+        const initials = getInitials(nombrePostulante);
+        const gradient = getAvatarGradient(nombrePostulante);
+        const statusPill = getPostulanteStatusPill(row.EstatusPostulacion);
+
+         html += `
+             <div class="postulante-card-v2" data-nombre="${nombrePostulante.toLowerCase()}" data-correo="${(row.CorreoElectronico || '').toLowerCase()}" data-telefono="${(row.Telefono || '').toLowerCase()}" data-estatus="${row.EstatusPostulacion}" onclick="showDetallePostulante('${idEncoded}')">
+                 <div class="card-header-row">
+                     <div class="card-main-info">
+                         <div style="min-width:0;">
+                             <div class="card-name">${nombrePostulante}</div>
+                             <div class="card-contact">${row.CorreoElectronico || 'Sin correo'}</div>
+                         </div>
+                     </div>
+                    <div class="d-flex align-items-center">
+                        ${statusPill}
+                    </div>
+                </div>
+                <div class="card-meta-row">
+                    <span class="card-meta-item">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        ${row.FechaPostulacion || '-'}
+                    </span>
+                    <span class="card-meta-item">
+                        <span class="material-symbols-outlined">phone</span>
+                        ${row.Telefono || 'Sin teléfono'}
+                    </span>
+                    <span class="card-meta-item">
+                        <span class="material-symbols-outlined">task_alt</span>
+                        ${row.UltimoProceso || 'Sin proceso'}
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+    container.html(html);
+}
+
+function filtrarPostulantesCards() {
+    const term = $('#txtBuscarPostulanteLista').val().toLowerCase().trim();
+
+    let data = postulantesData;
+
+    if (postulantesFilterByEstatus !== 'todos') {
+        const estatusNum = parseInt(postulantesFilterByEstatus);
+        data = data.filter(p => parseInt(p.EstatusPostulacion) === estatusNum);
+    }
+
+    if (term) {
+        data = data.filter(p => {
+            return (p.NombreCompleto || '').toLowerCase().includes(term)
+                || (p.CorreoElectronico || '').toLowerCase().includes(term)
+                || (p.Telefono || '').toLowerCase().includes(term);
+        });
+    }
+
+    renderPostulantesCards(data);
+    updatePostulantesStats(postulantesData);
+}
+
+function filtrarPostulantesPorEstatus(estatus) {
+    postulantesFilterByEstatus = estatus;
+    $('#filtrosEstatusPostulantes button').removeClass('active');
+    $(`#filtrosEstatusPostulantes button[data-filter="${estatus}"]`).addClass('active');
+    filtrarPostulantesCards();
+}
+
 function updatePostulantesStats(data) {
     const total = data.length;
     const enProceso = data.filter(p => parseInt(p.EstatusPostulacion) === 1).length;
     const aceptados = data.filter(p => parseInt(p.EstatusPostulacion) === 2).length;
     const rechazados = data.filter(p => parseInt(p.EstatusPostulacion) === 3).length;
-    
     $('#statTotal').text(total);
     $('#statProceso').text(enProceso);
     $('#statAceptados').text(aceptados);
     $('#statRechazados').text(rechazados);
 }
 
-// Cargar procesos para el select de historial
-async function loadProcesosParaHistorial() {
-    try {
-        const response = await $.post("Backend/Vacantes/App.php", {
-            op: "getProcesosVacantesActivos"
-        });
-        
-        const result = JSON.parse(response);
-        
-        if (result && Array.isArray(result)) {
-            postulantesProcesosList = result;
-            
-            let options = '<option value="">Seleccione proceso...</option>';
-            result.forEach(p => {
-                options += `<option value="${p.IdProceso}">${p.NombreProceso}</option>`;
-            });
-            $('#cmbNuevoProceso').html(options);
-        }
-    } catch (error) {
-        console.error("Error al cargar procesos:", error);
+function getPostulanteStatusBadge(estatus) {
+    switch(parseInt(estatus)) {
+        case 1: return '<span class="postulante-status en-proceso">En Proceso</span>';
+        case 2: return '<span class="postulante-status aceptado">Aceptado</span>';
+        case 3: return '<span class="postulante-status rechazado">Rechazado</span>';
+        case 4: return '<span class="postulante-status finalizado">Finalizado</span>';
+        default: return '<span class="postulante-status">Desconocido</span>';
     }
 }
 
-// Mostrar modal para agregar postulante
-function showAddPostulanteModal() {
-    const idVacante = $('#postulantesIdVacante').val();
-    $('#addPostulanteIdVacante').val(idVacante);
-    clearPostulanteForm();
-    
-    const modal = new bootstrap.Modal(document.getElementById('modalAddPostulante'));
-    modal.show();
+function getPostulanteStatusPill(estatus) {
+    switch(parseInt(estatus)) {
+        case 1: return '<span class="status-pill en-proceso">En Proceso</span>';
+        case 2: return '<span class="status-pill aceptado">Aceptado</span>';
+        case 3: return '<span class="status-pill rechazado">Rechazado</span>';
+        case 4: return '<span class="status-pill finalizado">Finalizado</span>';
+        default: return '<span class="status-pill">Desconocido</span>';
+    }
 }
 
-// Limpiar formulario de postulante
+async function loadProcesosParaHistorial() {
+    try {
+        const response = await $.post('Backend/Vacantes/App.php', { op: 'getProcesosVacantesActivos' });
+        const result = JSON.parse(response);
+        if (result && Array.isArray(result)) {
+            postulantesProcesosList = result;
+            let options = '<option value="">Seleccione proceso...</option>';
+            result.forEach(p => { options += `<option value="${p.IdProceso}">${p.NombreProceso}</option>`; });
+            $('#cmbNuevoProceso').html(options);
+        }
+    } catch (error) { console.error("Error al cargar procesos:", error); }
+}
+
+// ==========================================
+// AGREGAR POSTULANTE (INLINE)
+// ==========================================
+
 function clearPostulanteForm() {
     $('#txtBuscarPostulante').val('');
     $('#resultadosBusqueda').hide().html('');
+    $('#txtBuscarEmpleado').val('');
+    $('#resultadosBusquedaEmpleado').hide().html('');
     $('#txtPostulanteNombre').val('');
     $('#txtPostulanteApPaterno').val('');
     $('#txtPostulanteApMaterno').val('');
@@ -1805,55 +1313,104 @@ function clearPostulanteForm() {
     $('#txtPostulanteEstado').val('');
     $('#txtPostulanteCiudad').val('');
     $('#txtPostulanteObservaciones').val('');
+    $('#txtPostulanteIdEmpleado').val('');
 }
 
-// Buscar postulante existente
 async function buscarPostulanteExistente() {
     const termino = $('#txtBuscarPostulante').val().trim();
-    
     if (termino.length < 3) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Ingrese al menos 3 caracteres para buscar.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Ingrese al menos 3 caracteres para buscar.</span></div>`, 'top-right', 3000);
         return;
     }
-    
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "searchPostulante",
-            Termino: termino
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'searchPostulante', Termino: termino });
         const result = JSON.parse(response);
-        
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             let html = '<div class="list-group">';
             result.Data.forEach(p => {
-                html += `
-                    <a href="#" class="list-group-item list-group-item-action" onclick="seleccionarPostulanteExistente(${p.IdPostulante}, '${p.NombreCompleto}', '${p.CorreoElectronico || ''}')">
-                        <strong>${p.NombreCompleto}</strong><br>
-                        <small class="text-muted">${p.CorreoElectronico || 'Sin correo'} | CURP: ${p.CURP || 'N/A'}</small>
-                    </a>
-                `;
+                html += `<a href="#" class="list-group-item list-group-item-action" onclick="seleccionarPostulanteExistente(${p.IdPostulante}, '${p.NombreCompleto}', '${p.CorreoElectronico || ''}')"><strong>${p.NombreCompleto}</strong><br><small class="text-muted">${p.CorreoElectronico || 'Sin correo'} | CURP: ${p.CURP || 'N/A'}</small></a>`;
             });
             html += '</div>';
             $('#resultadosBusqueda').html(html).show();
         } else {
             $('#resultadosBusqueda').html('<p class="text-muted small">No se encontraron resultados</p>').show();
         }
+    } catch (error) { console.error("Error al buscar postulante:", error); }
+}
+
+async function buscarEmpleadoInterno() {
+    const termino = $('#txtBuscarEmpleado').val().trim().toLowerCase();
+    if (termino.length < 3) {
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Información!</span><span class="alert-text">Ingrese al menos 3 caracteres para buscar un empleado.</span></div>`, 'top-right', 4000);
+        return;
+    }
+    $('#resultadosBusquedaEmpleado').html('<div class="spinner-border spinner-border-sm text-success" role="status"></div> Buscando...').show();
+    try {
+        const response = await $.post('Backend/Empleados/App.php', { op: 'getPersonal', puesto: '', sucursal: '', division: '' });
+        let empleados = [];
+        try { empleados = JSON.parse(response); } catch (e) { console.error("Error parseando respuesta", e); }
+        if (empleados && Array.isArray(empleados)) {
+            const empleadosFiltrados = empleados.filter(e => {
+                const nombreCompleto = `${e.Nombre || ''} ${e.ApellidoPaterno || ''} ${e.ApellidoMaterno || ''}`.toLowerCase();
+                const numEmpleado = (e.NoEmpleado || e.IdEmpleado || '').toString();
+                return nombreCompleto.includes(termino) || numEmpleado.includes(termino);
+            });
+            if (empleadosFiltrados.length > 0) {
+                let html = '<div class="list-group list-group-flush border rounded-3 mt-1 shadow-sm" style="max-height: 200px; overflow-y: auto;">';
+                empleadosFiltrados.forEach(e => {
+                    const encodedEmpl = btoa(encodeURIComponent(JSON.stringify(e)));
+                    html += `<button type="button" class="list-group-item list-group-item-action py-2" onclick="seleccionarEmpleadoInterno('${encodedEmpl}')"><div class="d-flex w-100 justify-content-between align-items-center"><div><h6 class="mb-0 fw-bold text-success">${e.Nombre || ''} ${e.ApellidoPaterno || ''} ${e.ApellidoMaterno || ''}</h6><small class="text-muted"><span class="material-symbols-outlined align-middle" style="font-size:14px;">badge</span> #${e.NoEmpleado || e.IdEmpleado || 'N/A'}</small></div><span class="material-symbols-outlined text-success">add_circle</span></div></button>`;
+                });
+                html += '</div>';
+                $('#resultadosBusquedaEmpleado').html(html).show();
+            } else {
+                $('#resultadosBusquedaEmpleado').html('<div class="alert alert-warning py-2 small mb-0"><span class="material-symbols-outlined align-middle me-1" style="font-size:16px;">sentiment_dissatisfied</span> No se encontró ningún empleado interno.</div>').show();
+            }
+        } else {
+            $('#resultadosBusquedaEmpleado').html('<div class="alert alert-danger py-2 small mb-0">Error al buscar empleados.</div>').show();
+        }
     } catch (error) {
-        console.error("Error al buscar postulante:", error);
+        console.error('Error al buscar empleado interno:', error);
+        $('#resultadosBusquedaEmpleado').html('<div class="alert alert-danger py-2 small mb-0">Error de conexión.</div>').show();
     }
 }
 
-// Seleccionar postulante existente y agregarlo a la vacante
+function seleccionarEmpleadoInterno(encodedEmpl) {
+    try {
+        const e = JSON.parse(decodeURIComponent(atob(encodedEmpl)));
+        let nombreCompleto = e.Nombre || '';
+        let nombre = '', apPaterno = '', apMaterno = '';
+        if (nombreCompleto.includes(',')) {
+            const partes = nombreCompleto.split(',');
+            nombre = partes[1].trim();
+            const apellidos = partes[0].trim().split(' ');
+            apPaterno = apellidos[0] || '';
+            apMaterno = apellidos.slice(1).join(' ') || '';
+        } else {
+            const partes = nombreCompleto.trim().split(' ');
+            if (partes.length >= 3) { nombre = partes.slice(2).join(' '); apPaterno = partes[0]; apMaterno = partes[1]; }
+            else if (partes.length === 2) { nombre = partes[1]; apPaterno = partes[0]; }
+            else { nombre = nombreCompleto; }
+        }
+        $('#txtPostulanteNombre').val(nombre);
+        $('#txtPostulanteApPaterno').val(apPaterno || e.ApellidoPaterno || '');
+        $('#txtPostulanteApMaterno').val(apMaterno || e.ApellidoMaterno || '');
+        $('#txtPostulanteCURP').val(e.CURP || e.Curp || '');
+        $('#txtPostulanteTelefono').val(e.TelefonoCelular || e.Telefono || e.Telefono_Celular || e.Movil || '');
+        $('#txtPostulanteCorreo').val(e.CorreoElectronico || e.Correo_Electronico || e.Email || '');
+        $('#txtPostulanteDireccion').val(e.Calle || e.Direccion || '');
+        $('#txtPostulanteEstado').val(e.Estado || e.EntidadFederativa || '');
+        $('#txtPostulanteCiudad').val(e.Ciudad || e.Municipio || '');
+        $('#txtPostulanteIdEmpleado').val(e.NoEmpleado || e.IdEmpleado || '');
+        $('#resultadosBusquedaEmpleado').hide();
+        $('#txtBuscarEmpleado').val('');
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Empleado Cargado!</span><span class="alert-text">Por favor verifica y completa la información restante.</span></div>`, 'top-right', 4000);
+    } catch (err) { console.error("Error al decodificar datos del empleado", err); }
+}
+
 async function seleccionarPostulanteExistente(idPostulante, nombre, correo) {
     const idVacante = $('#addPostulanteIdVacante').val();
     const observaciones = $('#txtPostulanteObservaciones').val();
-    
     const confirmResult = await Swal.fire({
         title: '¿Agregar postulante?',
         html: `¿Desea agregar a <strong>${nombre}</strong> como postulante de esta vacante?`,
@@ -1864,43 +1421,21 @@ async function seleccionarPostulanteExistente(idPostulante, nombre, correo) {
         confirmButtonText: 'Sí, agregar',
         cancelButtonText: 'Cancelar'
     });
-    
     if (confirmResult.isConfirmed) {
         try {
-            const response = await $.post("Backend/Postulantes/App.php", {
-                op: "addPostulacion",
-                IdVacante: idVacante,
-                IdPostulante: btoa(idPostulante),
-                Observaciones: observaciones
-            });
-            
+            const response = await $.post('Backend/Postulantes/App.php', { op: 'addPostulacion', IdVacante: idVacante, IdPostulante: btoa(idPostulante), Observaciones: observaciones });
             const result = JSON.parse(response);
-            
             if (result.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${result.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                
-                bootstrap.Modal.getInstance(document.getElementById('modalAddPostulante')).hide();
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
+                volverAListaPostulantes();
                 loadPostulantes(idVacante);
             } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${result.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
+                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
             }
-        } catch (error) {
-            console.error("Error al agregar postulación:", error);
-        }
+        } catch (error) { console.error('Error al agregar postulación:', error); }
     }
 }
 
-// Agregar nuevo postulante a la vacante
 async function addPostulanteVacante() {
     const idVacante = $('#addPostulanteIdVacante').val();
     const nombre = $('#txtPostulanteNombre').val().trim();
@@ -1913,225 +1448,202 @@ async function addPostulanteVacante() {
     const estado = $('#txtPostulanteEstado').val().trim();
     const ciudad = $('#txtPostulanteCiudad').val().trim();
     const observaciones = $('#txtPostulanteObservaciones').val().trim();
-    
-    // Validaciones
-    if (!nombre) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Ingrese el nombre del postulante.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
-        $('#txtPostulanteNombre').focus();
+    const idEmpleado = $('#txtPostulanteIdEmpleado').val().trim();
+
+    if (!nombre || !apPaterno || !correo) {
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Ingrese el nombre, apellido paterno y correo del postulante.</span></div>`, 'top-right', 3000);
+        if (!nombre) $('#txtPostulanteNombre').focus();
+        else if (!apPaterno) $('#txtPostulanteApPaterno').focus();
+        else if (!correo) $('#txtPostulanteCorreo').focus();
         return;
     }
-    
-    if (!apPaterno) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Ingrese el apellido paterno.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
-        $('#txtPostulanteApPaterno').focus();
-        return;
-    }
-    
-    if (!correo) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Ingrese el correo electrónico.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
-        $('#txtPostulanteCorreo').focus();
-        return;
-    }
-    
-    // Validar formato de correo
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(correo)) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">El correo electrónico no tiene un formato válido.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El correo electrónico no tiene un formato válido.</span></div>`, 'top-right', 3000);
         $('#txtPostulanteCorreo').focus();
         return;
     }
-    
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "addPostulanteConPostulacion",
-            IdVacante: idVacante,
-            Nombre: nombre,
-            ApellidoPaterno: apPaterno,
-            ApellidoMaterno: apMaterno,
-            CorreoElectronico: correo,
-            Telefono: telefono,
-            CURP: curp,
-            Direccion: direccion,
-            Estado: estado,
-            Ciudad: ciudad,
-            Observaciones: observaciones
-        });
-        
+        const formData = new FormData();
+        formData.append('op', 'addPostulanteConPostulacion');
+        formData.append('IdVacante', idVacante);
+        formData.append('Nombre', nombre);
+        formData.append('ApellidoPaterno', apPaterno);
+        formData.append('ApellidoMaterno', apMaterno);
+        formData.append('CorreoElectronico', correo);
+        formData.append('Telefono', telefono);
+        formData.append('CURP', curp);
+        formData.append('Direccion', direccion);
+        formData.append('Estado', estado);
+        formData.append('Ciudad', ciudad);
+        formData.append('Observaciones', observaciones);
+        if (idEmpleado) formData.append('IdEmpleado', idEmpleado);
+
+        const fileCVInput = $('#filePostulanteCV');
+        if (fileCVInput.length > 0 && fileCVInput[0].files.length > 0) {
+            formData.append('CV', fileCVInput[0].files[0]);
+        }
+
+        const response = await $.ajax({ url: 'Backend/Postulantes/App.php', type: 'POST', data: formData, processData: false, contentType: false });
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
-            
-            bootstrap.Modal.getInstance(document.getElementById('modalAddPostulante')).hide();
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
+            volverAListaPostulantes();
             loadPostulantes(idVacante);
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
         }
     } catch (error) {
-        console.error("Error al agregar postulante:", error);
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Alerta!</span>
-                <span class="alert-text">Error al agregar el postulante.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
+        console.error('Error al agregar postulante:', error);
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">Error al agregar el postulante.</span></div>`, 'top-right', 5000);
     }
 }
 
-// Mostrar detalle de postulante
+// ==========================================
+// DETALLE POSTULANTE (INLINE)
+// ==========================================
+
 async function showDetallePostulante(idEncoded) {
     $('#detalleIdPostulanteVacante').val(idEncoded);
-    
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulanteDetalle",
-            IdPostulanteVacante: idEncoded
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulanteDetalle', IdPostulanteVacante: idEncoded });
         const result = JSON.parse(response);
-        
         if (result.Siguiente && result.Data) {
             const p = result.Data;
-            
-            // Llenar información personal
-            $('#detallePostulanteNombre').text(`${p.Nombre} ${p.ApellidoPaterno} ${p.ApellidoMaterno || ''}`);
-            $('#detallePostulanteCURP').text(p.CURP || 'N/A');
-            $('#detallePostulanteCorreo').text(p.CorreoElectronico || 'N/A');
-            $('#detallePostulanteTelefono').text(p.Telefono || 'N/A');
-            $('#detallePostulanteDireccion').text(p.Direccion || 'N/A');
-            $('#detallePostulanteEstado').text(p.Estado || 'N/A');
-            $('#detallePostulanteCiudad').text(p.Ciudad || 'N/A');
-            $('#detallePostulanteFecha').text(p.FechaPostulacion || 'N/A');
-            
-            // Establecer estatus actual
+            $('#detalleIdPostulante').val(p.IdPostulante);
+            $('#detalleIdPostulanteVacanteNum').val(p.IdPostulanteVacante);
+            $('#detallePostulanteNombreHidden').val(`${p.Nombre || ''} ${p.ApellidoPaterno || ''} ${p.ApellidoMaterno || ''}`.trim());
+            window.currentIdPostulanteEncodedResultados = idEncoded;
+            $('#edit_Nombre').val(p.Nombre || '');
+            $('#edit_ApellidoPaterno').val(p.ApellidoPaterno || '');
+            $('#edit_ApellidoMaterno').val(p.ApellidoMaterno || '');
+            $('#edit_CURP').val(p.CURP || '');
+            $('#edit_CorreoElectronico').val(p.CorreoElectronico || '');
+            $('#edit_Estado').val(p.Estado || '');
+            $('#edit_Ciudad').val(p.Ciudad || '');
+
+             const nombreCompleto = `${p.Nombre || ''} ${p.ApellidoPaterno || ''} ${p.ApellidoMaterno || ''}`.trim();
+             
+             $('#detallePostulanteNombreHeader').text(nombreCompleto);
+            $('#detallePostulantePuesto').text($('#nombreVacantePostulantes').text());
+            $('#breadcrumbPostulanteNombre').text(nombreCompleto);
+            $('#detallePostulanteStatus').attr('class', 'status-pill mt-1 ' + getStatusClass(p.EstatusPostulacion));
+            $('#detallePostulanteStatus').text(getStatusText(p.EstatusPostulacion));
+
+            if (window.PostulanteEditor && typeof window.PostulanteEditor.aplicarDireccionCompleta === 'function') {
+                await window.PostulanteEditor.aplicarDireccionCompleta(p.Direccion || '', '');
+                if (window.PostulanteEditor.updateDireccionPreview) window.PostulanteEditor.updateDireccionPreview();
+            }
+
+            $('#edit_Nombre, #edit_ApellidoPaterno, #edit_ApellidoMaterno, #edit_CURP, #edit_CorreoElectronico, #edit_CodigoPostal, #edit_Colonia, #edit_Calle, #edit_NumeroExterior, #edit_NumeroInterior').prop('disabled', true);
+            $('#btnBuscarCP').prop('disabled', true);
+            $('#editModeButtons').addClass('d-none');
+            $('#btnToggleEditMode').html('<span class="material-symbols-outlined align-middle me-1">edit</span>Editar');
+            $('#btnToggleEditMode').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+            if (window.PostulanteEditor) window.PostulanteEditor.toggleEditMode = window.PostulanteEditor.toggleEditMode || toggleEditMode;
+            if ($('#cpStatus').length) $('#cpStatus').text('');
+            $('#detallePostulanteFecha').val(p.FechaPostulacion || 'N/A');
+
+            if (typeof cargarTelefonosPostulante === 'function') {
+                await cargarTelefonosPostulante(p.IdPostulante);
+            }
+
             $('#cmbEstatusPostulante').val(p.EstatusPostulacion);
             $('#txtObservacionesEstatus').val('');
-            
-            // Cargar historial y requisitos
+
             await loadHistorialPostulante(idEncoded);
             await loadRequisitosPostulante(idEncoded);
-            
-            const modal = new bootstrap.Modal(document.getElementById('modalDetallePostulante'));
-            modal.show();
+
+            // Resetear tabs secundarios al primero
+            const firstTab = document.getElementById('tab-dp-info-btn');
+            if (firstTab) $(firstTab).tab('show');
+
+            $('#subVistaListaPostulantes').addClass('d-none');
+            $('#wizardAddPostulante').addClass('d-none');
+            $('#subVistaDetallePostulante').removeClass('d-none');
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Error!</span>
-                    <span class="alert-text">No se pudo cargar la información del postulante.</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Error!</span><span class="alert-text">No se pudo cargar la información del postulante.</span></div>`, 'top-right', 5000);
         }
     } catch (error) {
-        console.error("Error al cargar detalle de postulante:", error);
+        console.error('Error al cargar detalle de postulante:', error);
     }
 }
 
-// Actualizar estatus de postulante
+function getStatusClass(estatus) {
+    switch(parseInt(estatus)) {
+        case 1: return 'en-proceso';
+        case 2: return 'aceptado';
+        case 3: return 'rechazado';
+        case 4: return 'finalizado';
+        default: return '';
+    }
+}
+
+function getStatusText(estatus) {
+    switch(parseInt(estatus)) {
+        case 1: return 'En Proceso';
+        case 2: return 'Aceptado';
+        case 3: return 'Rechazado';
+        case 4: return 'Finalizado';
+        default: return 'Desconocido';
+    }
+}
+
+function verResultadosPostulanteDesdeHeader() {
+    const idEncoded = $('#detalleIdPostulanteVacante').val();
+    const nombre = $('#detallePostulanteNombreHidden').val();
+    if (idEncoded && nombre) {
+        verResultadosPostulante(idEncoded, nombre);
+    }
+}
+
+function verDocumentosPostulanteDesdeHeader() {
+    const idNumerico = $('#detalleIdPostulanteVacanteNum').val();
+    const nombre = $('#detallePostulanteNombreHidden').val();
+    if (idNumerico && nombre) {
+        openDocumentosPostulante(idNumerico, nombre);
+    }
+}
+
 async function actualizarEstatusPostulante() {
     const idPostulanteVacante = $('#detalleIdPostulanteVacante').val();
     const estatus = $('#cmbEstatusPostulante').val();
     const observaciones = $('#txtObservacionesEstatus').val().trim();
-    
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "updateEstatusPostulacion",
-            IdPostulanteVacante: idPostulanteVacante,
-            EstatusPostulacion: estatus,
-            Observaciones: observaciones
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'updateEstatusPostulacion', IdPostulanteVacante: idPostulanteVacante, EstatusPostulacion: estatus, Observaciones: observaciones });
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
             $('#txtObservacionesEstatus').val('');
-            
-            // Recargar historial
             await loadHistorialPostulante(idPostulanteVacante);
-            
-            // Recargar tabla principal
             const idVacante = $('#postulantesIdVacante').val();
-            if (idVacante) {
-                loadPostulantes(idVacante);
-            }
+            if (idVacante) loadPostulantes(idVacante);
         } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
         }
-    } catch (error) {
-        console.error("Error al actualizar estatus:", error);
-    }
+    } catch (error) { console.error('Error al actualizar estatus:', error); }
 }
 
-// Cargar historial de procesos del postulante
 async function loadHistorialPostulante(idPostulanteVacante) {
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulanteHistorial",
-            IdPostulanteVacante: idPostulanteVacante
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulanteHistorial', IdPostulanteVacante: idPostulanteVacante });
         const result = JSON.parse(response);
-        
         if (result.Siguiente && result.Data && result.Data.length > 0) {
-            let html = '<div class="timeline">';
+            let html = '<div class="timeline-compact">';
             result.Data.forEach(h => {
                 const isOk = h.Resultado == 1;
                 const isNo = h.Resultado == 0;
-                const markerColor = isOk ? '#28a745' : (isNo ? '#dc3545' : '#6c757d');
-                const icon = isOk
-                    ? '<span class="material-symbols-outlined text-success timeline-icon">check_circle</span>'
-                    : (isNo ? '<span class="material-symbols-outlined text-danger timeline-icon">cancel</span>' : '');
-
+                const markerClass = isOk ? 'success' : (isNo ? 'danger' : 'gray');
+                const icon = isOk ? '<span class="material-symbols-outlined text-success" style="font-size:16px; vertical-align:middle;">check_circle</span>' : (isNo ? '<span class="material-symbols-outlined text-danger" style="font-size:16px; vertical-align:middle;">cancel</span>' : '');
                 html += `
-                    <div class="timeline-item">
-                        <span class="timeline-marker" style="background:${markerColor}"></span>
+                    <div class="timeline-compact-item">
+                        <div class="timeline-compact-marker ${markerClass}"></div>
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="me-3">
-                                <p class="timeline-title">${h.NombreProceso || 'Proceso'} ${icon}</p>
-                                <p class="timeline-sub text-muted">${h.Observaciones || 'ninguna'}</p>
-                                ${h.NombreUsuario ? `<small class="text-primary"><span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle;">person</span> ${h.NombreUsuario}</small>` : ''}
+                                <p class="timeline-compact-title">${h.NombreProceso || 'Proceso'} ${icon}</p>
+                                <p class="timeline-compact-sub">${h.Observaciones || 'Sin observaciones'}</p>
                             </div>
-                            <span class="timeline-time">${h.Fecha || ''}</span>
+                            <span class="timeline-compact-time">${h.Fecha || ''}</span>
                         </div>
                     </div>
                 `;
@@ -2139,184 +1651,84 @@ async function loadHistorialPostulante(idPostulanteVacante) {
             html += '</div>';
             $('#listaHistorial').html(html);
         } else {
-            $('#listaHistorial').html('<p class="text-muted text-center">No hay historial registrado</p>');
+            $('#listaHistorial').html(`
+                <div class="empty-state-card">
+                    <span class="material-symbols-outlined">history</span>
+                    <p>No hay historial de procesos registrado</p>
+                </div>
+            `);
         }
-    } catch (error) {
-        console.error("Error al cargar historial:", error);
-    }
+    } catch (error) { console.error('Error al cargar historial:', error); }
 }
 
-// Mostrar formulario para agregar historial
 function showAddHistorialForm() {
     $('#cmbNuevoProceso').val('');
     $('#cmbResultadoProceso').val('');
     $('#txtObservacionesProceso').val('');
     $('#formAddHistorial').slideDown();
 }
+function hideAddHistorialForm() { $('#formAddHistorial').slideUp(); }
 
-// Ocultar formulario de historial
-function hideAddHistorialForm() {
-    $('#formAddHistorial').slideUp();
-}
-
-// Agregar registro al historial
 async function addHistorialProceso() {
     const idPostulanteVacante = $('#detalleIdPostulanteVacante').val();
     const idProceso = $('#cmbNuevoProceso').val();
     const resultado = $('#cmbResultadoProceso').val();
     const observaciones = $('#txtObservacionesProceso').val().trim();
-    
-    if (!idProceso) {
-        const messageContent = `
-            <div class="alert-content">
-                <span class="alert-title">Información!</span>
-                <span class="alert-text">Seleccione un proceso.</span>
-            </div>`;
-        showBootstrapAlert(messageContent, "top-right", 3000);
-        return;
-    }
-    
+    if (!idProceso) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Seleccione un proceso.</span></div>`, 'top-right', 3000); return; }
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "addPostulanteHistorial",
-            IdPostulanteVacante: idPostulanteVacante,
-            IdProceso: idProceso,
-            Resultado: resultado,
-            Observaciones: observaciones
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'addPostulanteHistorial', IdPostulanteVacante: idPostulanteVacante, IdProceso: idProceso, Resultado: resultado, Observaciones: observaciones });
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 5000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
             hideAddHistorialForm();
             loadHistorialPostulante(idPostulanteVacante);
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al agregar historial:", error);
-    }
+        } else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000); }
+    } catch (error) { console.error('Error al agregar historial:', error); }
 }
 
-// Cargar requisitos del postulante
 async function loadRequisitosPostulante(idPostulanteVacante) {
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulanteRequisitos",
-            IdPostulanteVacante: idPostulanteVacante
-        });
-        
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulanteRequisitos', IdPostulanteVacante: idPostulanteVacante });
         const result = JSON.parse(response);
-        
         if (result.Siguiente && result.Data && result.Data.length > 0) {
-            let html = '<div class="table-responsive"><table class="table table-sm table-bordered">';
-            html += '<thead><tr><th>Requisito</th><th>Respuesta</th><th>Cumple</th><th>Acciones</th></tr></thead><tbody>';
-            
+            let html = '<div class="table-responsive"><table class="table table-sm table-bordered"><thead><tr><th>Requisito</th><th>Respuesta</th><th>Cumple</th><th>Acciones</th></tr></thead><tbody>';
             result.Data.forEach(r => {
-                const cumpleIcon = r.Cumple == 1 ? 
-                    '<span class="badge bg-success">Sí</span>' : 
-                    (r.Cumple == 0 ? '<span class="badge bg-danger">No</span>' : '<span class="badge bg-secondary">Pendiente</span>');
-                
-                // Usar ID numérico directo para elementos HTML (sin base64)
                 const idReqVacante = r.IdVacanteRequisito;
                 const idReqPostulante = r.IdPostulanteRequisito || 0;
-                
-                html += `
-                    <tr>
-                        <td>${r.Requisito || 'Requisito'}</td>
-                        <td><input type="text" class="form-control form-control-sm" id="respRequisito_${idReqVacante}" value="${r.Respuesta || ''}" placeholder="Respuesta..."></td>
-                        <td>
-                            <select class="form-select form-select-sm" id="cumpleRequisito_${idReqVacante}">
-                                <option value="" ${!r.Cumple && r.Cumple !== 0 ? 'selected' : ''}>Pendiente</option>
-                                <option value="1" ${r.Cumple == 1 ? 'selected' : ''}>Sí</option>
-                                <option value="0" ${r.Cumple == 0 ? 'selected' : ''}>No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="updateRequisitoPostulante(${idReqPostulante}, ${idReqVacante})">
-                                <span class="material-symbols-outlined">save</span>
-                            </button>
-                        </td>
-                    </tr>
-                `;
+                html += `<tr><td>${r.Requisito || 'Requisito'}</td><td><input type="text" class="form-control form-control-sm" id="respRequisito_${idReqVacante}" value="${r.Respuesta || ''}" placeholder="Respuesta..."></td><td><select class="form-select form-select-sm" id="cumpleRequisito_${idReqVacante}"><option value="" ${!r.Cumple && r.Cumple !== 0 ? 'selected' : ''}>Pendiente</option><option value="1" ${r.Cumple == 1 ? 'selected' : ''}>Sí</option><option value="0" ${r.Cumple == 0 ? 'selected' : ''}>No</option></select></td><td><button class="btn btn-minimal btn-sm" onclick="updateRequisitoPostulante(${idReqPostulante}, ${idReqVacante})"><span class="material-symbols-outlined">save</span></button></td></tr>`;
             });
-            
             html += '</tbody></table></div>';
             $('#listaRequisitosPostulante').html(html);
-        } else {
-            $('#listaRequisitosPostulante').html('<p class="text-muted text-center">No hay requisitos configurados para esta vacante</p>');
-        }
-    } catch (error) {
-        console.error("Error al cargar requisitos:", error);
-    }
+        } else { $('#listaRequisitosPostulante').html('<p class="text-muted text-center">No hay requisitos configurados para esta vacante</p>'); }
+    } catch (error) { console.error('Error al cargar requisitos:', error); }
 }
 
-// Actualizar requisito del postulante
 async function updateRequisitoPostulante(idPostulanteRequisito, idVacanteRequisito) {
     const idPostulanteVacante = $('#detalleIdPostulanteVacante').val();
     const respuesta = $(`#respRequisito_${idVacanteRequisito}`).val();
     const cumple = $(`#cumpleRequisito_${idVacanteRequisito}`).val();
-    
     try {
         let response;
-        
         if (idPostulanteRequisito > 0) {
-            // Actualizar existente
-            response = await $.post("Backend/Postulantes/App.php", {
-                op: "updatePostulanteRequisito",
-                IdPostulanteRequisito: btoa(idPostulanteRequisito),
-                Respuesta: respuesta,
-                Cumple: cumple
-            });
+            response = await $.post('Backend/Postulantes/App.php', { op: 'updatePostulanteRequisito', IdPostulanteRequisito: btoa(idPostulanteRequisito), Respuesta: respuesta, Cumple: cumple });
         } else {
-            // Crear nuevo
-            response = await $.post("Backend/Postulantes/App.php", {
-                op: "addPostulanteRequisito",
-                IdPostulanteVacante: idPostulanteVacante,
-                IdVacanteRequisito: btoa(idVacanteRequisito),
-                Respuesta: respuesta,
-                Cumple: cumple
-            });
+            response = await $.post('Backend/Postulantes/App.php', { op: 'addPostulanteRequisito', IdPostulanteVacante: idPostulanteVacante, IdVacanteRequisito: btoa(idVacanteRequisito), Respuesta: respuesta, Cumple: cumple });
         }
-        
         const result = JSON.parse(response);
-        
         if (result.Siguiente) {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">¡Completado!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertSuc(messageContent, "top-right", 3000);
+            showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 3000);
             loadRequisitosPostulante(idPostulanteVacante);
-        } else {
-            const messageContent = `
-                <div class="alert-content">
-                    <span class="alert-title">Alerta!</span>
-                    <span class="alert-text">${result.Msg}</span>
-                </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
-        }
-    } catch (error) {
-        console.error("Error al actualizar requisito:", error);
-    }
+        } else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000); }
+    } catch (error) { console.error('Error al actualizar requisito:', error); }
 }
 
-// Eliminar postulación
+async function preEliminarPostulacion(idEncoded) {
+    $('#detalleIdPostulanteVacante').val(idEncoded);
+    eliminarPostulacion();
+}
+
 async function eliminarPostulacion() {
     const idPostulanteVacante = $('#detalleIdPostulanteVacante').val();
-    
     const confirmResult = await Swal.fire({
         title: '¿Eliminar postulación?',
         text: 'Se eliminará esta postulación de la vacante. Esta acción no se puede deshacer.',
@@ -2327,136 +1739,55 @@ async function eliminarPostulacion() {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
     });
-    
     if (confirmResult.isConfirmed) {
         try {
-            const response = await $.post("Backend/Postulantes/App.php", {
-                op: "deletePostulacion",
-                IdPostulanteVacante: idPostulanteVacante
-            });
-            
+            const response = await $.post('Backend/Postulantes/App.php', { op: 'deletePostulacion', IdPostulanteVacante: idPostulanteVacante });
             const result = JSON.parse(response);
-            
             if (result.Siguiente) {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">¡Completado!</span>
-                        <span class="alert-text">${result.Msg}</span>
-                    </div>`;
-                showBootstrapAlertSuc(messageContent, "top-right", 5000);
-                
-                bootstrap.Modal.getInstance(document.getElementById('modalDetallePostulante')).hide();
-                
+                showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">¡Completado!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000);
+                volverAListaPostulantes();
                 const idVacante = $('#postulantesIdVacante').val();
-                if (idVacante) {
-                    loadPostulantes(idVacante);
-                }
-            } else {
-                const messageContent = `
-                    <div class="alert-content">
-                        <span class="alert-title">Alerta!</span>
-                        <span class="alert-text">${result.Msg}</span>
-                    </div>`;
-                showBootstrapAlertWar(messageContent, "top-right", 5000);
-            }
-        } catch (error) {
-            console.error("Error al eliminar postulación:", error);
-        }
+                if (idVacante) loadPostulantes(idVacante);
+            } else { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Alerta!</span><span class="alert-text">${result.Msg}</span></div>`, 'top-right', 5000); }
+        } catch (error) { console.error('Error al eliminar postulación:', error); }
     }
 }
 
 // ==========================================
-// POSTULANTES EN DRAWER DE VACANTE
+// DOCUMENTOS POSTULANTE
 // ==========================================
 
-ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
-
-const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
-
-let rawResultadosPostulante = [];
-let chartPostulanteGeneral = null;
-let rawComparativoVacante = [];
-let chartComparativoVacanteColumn = null;
-let chartComparativoVacanteRadar = null;
-window.currentIdPostulanteEncodedResultados = null;
-
-async function loadPostulantesDrawer(idVacanteEncoded) {
-    try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulantesByVacante",
-            IdVacante: idVacanteEncoded
-        });
-        const result = JSON.parse(response);
-        if (result.Siguiente && result.Data) {
-            postulantesData = result.Data;
-            renderPostulantesDrawerList(result.Data);
-            updateDrawerPostulantesStats(result.Data);
-        } else {
-            postulantesData = [];
-            renderPostulantesDrawerList([]);
-            updateDrawerPostulantesStats([]);
-        }
-    } catch (error) {
-        console.error("Error al cargar postulantes en drawer:", error);
-        $('#drawerListaPostulantes').html('<p class="text-muted text-center small">Error al cargar.</p>');
-    }
+function buildDownloadUrl(viewUrl) {
+    if (!viewUrl) return '';
+    return viewUrl.replace('op=viewArchivo', 'op=downloadArchivo');
 }
 
-function updateDrawerPostulantesStats(data) {
-    const total = data.length;
-    const enProceso = data.filter(p => parseInt(p.EstatusPostulacion) === 1).length;
-    const aceptados = data.filter(p => parseInt(p.EstatusPostulacion) === 2).length;
-    const rechazados = data.filter(p => parseInt(p.EstatusPostulacion) === 3).length;
-    $('#drawerStatTotal').text(total);
-    $('#drawerStatProceso').text(enProceso);
-    $('#drawerStatAceptados').text(aceptados);
-    $('#drawerStatRechazados').text(rechazados);
-}
-
-function renderPostulantesDrawerList(data) {
-    if (!data || data.length === 0) {
-        $('#drawerListaPostulantes').html('<p class="text-muted text-center small">Sin postulantes en esta vacante.</p>');
-        return;
+function renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante) {
+    const hasCV = !!rutaCV;
+    const hasSE = !!rutaSE;
+    let html = '<div class="d-flex flex-column gap-3 align-items-center justify-content-center py-3">';
+    if (hasCV) {
+        html += `<div class="w-100"><a href="${rutaCV}" target="_blank" class="btn btn-minimal btn-lg w-100 rounded-pill shadow-sm mb-2"><span class="material-symbols-outlined align-middle me-2">description</span> Ver CV</a><a href="${buildDownloadUrl(rutaCV)}" target="_blank" class="btn btn-ghost btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar CV</a></div>`;
     }
-    let html = '<div class="list-group list-group-flush" style="max-height:400px;overflow-y:auto;">';
-    data.forEach(p => {
-        const idEncoded = btoa(p.IdPostulanteVacante);
-        const nombre = (p.NombreCompleto || 'Sin nombre');
-        const statusLabel = (() => {
-            switch(parseInt(p.EstatusPostulacion)) {
-                case 1: return '<span class="postulante-status en-proceso">En Proceso</span>';
-                case 2: return '<span class="postulante-status aceptado">Aceptado</span>';
-                case 3: return '<span class="postulante-status rechazado">Rechazado</span>';
-                case 4: return '<span class="postulante-status finalizado">Finalizado</span>';
-                default: return '<span class="postulante-status">-</span>';
-            }
-        })();
-        html += `
-            <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-1">
-                <div style="min-width:0;">
-                    <div class="fw-bold small text-truncate">${nombre}</div>
-                    <small class="text-muted">${p.UltimoProceso || 'Sin proceso'} &middot; ${p.FechaPostulacion || ''}</small>
-                </div>
-                <div class="d-flex align-items-center gap-1 flex-shrink-0 ms-2">
-                    ${statusLabel}
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-info btn-sm" onclick="verResultadosPostulante('${idEncoded}','${nombre.replace(/'/g,"\\'")}')" title="Resultados"><span class="material-symbols-outlined" style="font-size:16px;">analytics</span></button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="showDetallePostulante('${idEncoded}')" title="Ver detalle"><span class="material-symbols-outlined" style="font-size:16px;">visibility</span></button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="openDocumentosPostulante(${p.IdPostulanteVacante},'${nombre.replace(/'/g,"\\'")}')" title="Docs"><span class="material-symbols-outlined" style="font-size:16px;">folder_shared</span></button>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+    if (hasSE) {
+        html += `<div class="w-100"><a href="${rutaSE}" target="_blank" class="btn btn-minimal btn-lg w-100 rounded-pill shadow-sm mb-2"><span class="material-symbols-outlined align-middle me-2">assignment</span> Ver Solicitud</a><a href="${buildDownloadUrl(rutaSE)}" target="_blank" class="btn btn-ghost btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar Solicitud</a></div>`;
+    }
+    if (!hasCV && !hasSE) {
+        html += `<div class="alert alert-warning w-100 text-center"><span class="material-symbols-outlined align-middle me-2 mb-1">folder_off</span><br><b>${nombrePostulante}</b> no ha adjuntado documentos.</div>`;
+    }
     html += '</div>';
-    $('#drawerListaPostulantes').html(html);
+    return html;
 }
 
-function showAddPostulanteDrawer() {
-    const idVacante = $('#detalleIdVacante').val();
-    $('#addPostulanteIdVacante').val(idVacante);
-    clearPostulanteForm();
-    const modal = new bootstrap.Modal(document.getElementById('modalAddPostulante'));
+function openDocumentosPostulante(idNumerico, nombrePostulante) {
+    const row = postulantesData.find(p => p.IdPostulanteVacante == idNumerico);
+    const rutaCV = (row && row.RutaCV) ? row.RutaCV : '';
+    const rutaSE = (row && row.RutaSolicitudEmpleo) ? row.RutaSolicitudEmpleo : '';
+    const html = renderBotonesDocumentos(rutaCV, rutaSE, nombrePostulante);
+    $('#contenedorBotonesDocumentos').html(html);
+    let modalEl = document.getElementById('modalDocumentosPostulante');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
     modal.show();
 }
 
@@ -2467,10 +1798,7 @@ function showAddPostulanteDrawer() {
 async function verResultadosPostulante(idEncoded, nombre) {
     window.currentIdPostulanteEncodedResultados = idEncoded;
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulanteResultadosEvaluaciones",
-            IdPostulanteVacante: idEncoded
-        });
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulanteResultadosEvaluaciones', IdPostulanteVacante: idEncoded });
         const result = JSON.parse(response);
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             rawResultadosPostulante = result.Data;
@@ -2479,56 +1807,32 @@ async function verResultadosPostulante(idEncoded, nombre) {
             evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
             $('#selResultadosPostulante').html(options);
             $('#modalResultadosPostulanteLabel').html(`<span class="material-symbols-outlined align-middle me-2">analytics</span> Resultados - ${nombre}`);
-
             let modalEl = document.getElementById('modalResultadosPostulante');
             let modal = bootstrap.Modal.getInstance(modalEl);
             if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
             modal.show();
-
-            $('#modalResultadosPostulante').on('shown.bs.modal', function () {
-                drawResultadosPostulante();
-                $(this).off('shown.bs.modal');
-            });
+            $('#modalResultadosPostulante').on('shown.bs.modal', function () { drawResultadosPostulante(); $(this).off('shown.bs.modal'); });
         } else {
-            if (typeof showBootstrapAlertWar === 'function') {
-                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">El postulante aún no tiene evaluaciones finalizadas.</span></div>`, 'top-right', 4000);
-            }
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">El postulante aún no tiene evaluaciones finalizadas registradas.</span></div>`, 'top-right', 4000);
         }
-    } catch (err) {
-        console.error('Error obteniendo gráficas de evaluación', err);
-    }
+    } catch (err) { console.error('Error obteniendo gráficas de evaluación', err); }
 }
 
 function drawResultadosPostulante() {
     const seleccion = $('#selResultadosPostulante').val();
     if (!seleccion) return;
-
     let calificacionGeneral = 0;
     const datosFiltrados = rawResultadosPostulante.filter(i => i.NombreEvaluacion === seleccion);
-    if (datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) {
-        calificacionGeneral = datosFiltrados[0].Calificacion;
-    }
+    if (datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) calificacionGeneral = datosFiltrados[0].Calificacion;
     $('#lblScoreGeneralPostulante').html(`Calificación Promedio General<br><b style="font-size:2rem;color:#0d6efd;">${calificacionGeneral}</b>`);
-
-    const chartData = datosFiltrados.map(item => ({
-        competencia: item.Competencia || 'Sin Competencia',
-        score: parseFloat(item.ScoreCompetencia)
-    }));
-
+    const chartData = datosFiltrados.map(item => ({ competencia: item.Competencia || 'Sin Competencia', score: parseFloat(item.ScoreCompetencia) }));
     if (chartPostulanteGeneral) chartPostulanteGeneral.destroy();
-
     chartPostulanteGeneral = new ej.charts.Chart({
         isResponsive: true,
         palettes: yellowPalette,
         primaryXAxis: { valueType: 'Category', labelIntersectAction: 'MultipleRows' },
         primaryYAxis: { minimum: 0, maximum: 100, interval: 20, labelFormat: '{value}' },
-        series: [{
-            dataSource: chartData, width: 2,
-            xName: 'competencia', yName: 'score',
-            name: 'Resultados (Competencias)',
-            type: 'Polar', drawType: 'Line',
-            marker: { visible: true, width: 7, height: 7 }
-        }],
+        series: [{ dataSource: chartData, width: 2, xName: 'competencia', yName: 'score', name: 'Resultados (Competencias)', type: 'Polar', drawType: 'Line', marker: { visible: true, width: 7, height: 7 } }],
         title: seleccion,
         tooltip: { enable: true }
     });
@@ -2539,15 +1843,14 @@ function drawResultadosPostulante() {
 // COMPARATIVO DE RESULTADOS
 // ==========================================
 
-async function showComparativoResultadosDrawer() {
-    const idVacante = $('#detalleIdVacante').val();
-    if (!idVacante) return;
-
+async function showComparativoResultadosModal() {
+    const idVacante = $('#postulantesIdVacante').val();
+    if (!idVacante) {
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Selecciona una vacante primero.</span></div>`, 'top-right', 3000);
+        return;
+    }
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getComparativoResultadosVacante",
-            IdVacante: idVacante
-        });
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getComparativoResultadosVacante', IdVacante: idVacante });
         const result = JSON.parse(response);
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             rawComparativoVacante = result.Data;
@@ -2555,24 +1858,15 @@ async function showComparativoResultadosDrawer() {
             let options = '';
             evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
             $('#selComparativoEvaluaciones').html(options);
-
             let modalEl = document.getElementById('modalComparativoResultados');
             let modal = bootstrap.Modal.getInstance(modalEl);
             if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
             modal.show();
-
-            $('#modalComparativoResultados').on('shown.bs.modal', function () {
-                loadComparativoCandidatos();
-                $(this).off('shown.bs.modal');
-            });
+            $('#modalComparativoResultados').on('shown.bs.modal', function () { loadComparativoCandidatos(); $(this).off('shown.bs.modal'); });
         } else {
-            if (typeof showBootstrapAlertWar === 'function') {
-                showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.</span></div>`, 'top-right', 4000);
-            }
+            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.</span></div>`, 'top-right', 4000);
         }
-    } catch (err) {
-        console.error('Error en gráficas comparativas', err);
-    }
+    } catch (err) { console.error('Error en gráficas comparativas', err); }
 }
 
 function loadComparativoCandidatos() {
@@ -2589,10 +1883,14 @@ function loadComparativoCandidatos() {
     const $sel = $('#selCandidatosComparar');
     if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
     $sel.empty();
-    candidatosUnicosInfo.forEach(c => { $sel.append(new Option(c.Nombre, c.Nombre, true, true)); });
+    candidatosUnicosInfo.forEach((candidatoObj) => {
+        const option = new Option(candidatoObj.Nombre, candidatoObj.Nombre, true, true);
+        $sel.append(option);
+    });
     const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
     $sel.val(primerosCinco);
-    $sel.select2({ placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%', dropdownParent: $('#modalComparativoResultados') }).on('change', drawComparativoResultados);
+    $sel.select2({ placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' }).on('change', function () { drawComparativoResultados(); });
+    $('#listCheckCandidatosComparar').html('');
     drawComparativoResultados();
 }
 
@@ -2602,14 +1900,12 @@ function drawComparativoResultados() {
     const candidatosSeleccionados = $('#selCandidatosComparar').val() || [];
     const datosFiltrados = rawComparativoVacante.filter(i => i.NombreEvaluacion === seleccion && candidatosSeleccionados.includes(i.NombreCandidato));
 
-    // Column chart
     let seriesDataColumn = [];
     candidatosSeleccionados.forEach(candidato => {
-        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
         seriesDataColumn.push({
             dataSource: datosCandidato.map(d => ({ competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) })),
-            xName: 'competencia', yName: 'score', name: candidato, type: 'Column',
-            columnSpacing: 0.1, cornerRadius: { topLeft: 4, topRight: 4 },
+            xName: 'competencia', yName: 'score', name: candidato, type: 'Column', columnSpacing: 0.1, cornerRadius: { topLeft: 4, topRight: 4 },
             marker: { dataLabel: { visible: true, position: 'Top', font: { fontWeight: '600' } } }
         });
     });
@@ -2619,21 +1915,19 @@ function drawComparativoResultados() {
         primaryXAxis: { valueType: 'Category', labelIntersectAction: 'MultipleRows', majorGridLines: { width: 0 } },
         primaryYAxis: { minimum: 0, maximum: 100, interval: 20, labelFormat: '{value}', majorTickLines: { width: 0 }, lineStyle: { width: 0 } },
         series: seriesDataColumn,
-        title: `Comparativo de Competencias - ${seleccion}`,
+        title: `Comparativo de Competencias (Barras) - ${seleccion}`,
         tooltip: { enable: true },
         legendSettings: { visible: true, position: 'Bottom' }
     });
     chartComparativoVacanteColumn.appendTo('#chartComparativoVacanteColumn');
 
-    // Radar chart
     let seriesDataRadar = [];
     candidatosSeleccionados.forEach(candidato => {
-        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
         seriesDataRadar.push({
             dataSource: datosCandidato.map(d => ({ competencia: d.Competencia || 'Sin Competencia', score: parseFloat(d.ScoreCompetencia) })),
-            xName: 'competencia', yName: 'score', name: candidato, type: 'Polar', drawType: 'Area',
-            opacity: 0.4, marker: { visible: true, width: 6, height: 6, shape: 'Circle' },
-            border: { width: 2, color: 'transparent' }
+            xName: 'competencia', yName: 'score', name: candidato, type: 'Polar', drawType: 'Area', opacity: 0.4,
+            marker: { visible: true, width: 6, height: 6, shape: 'Circle' }, border: { width: 2, color: 'transparent' }
         });
     });
     if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.destroy();
@@ -2648,34 +1942,15 @@ function drawComparativoResultados() {
     });
     chartComparativoVacanteRadar.appendTo('#chartComparativoVacanteRadar');
 
-    // Mini tablas por candidato
     let htmlContenedorTablas = '';
     candidatosSeleccionados.forEach((candidato, idx) => {
-        htmlContenedorTablas += `
-            <div class="col-md-4 col-sm-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-light text-center fw-bold text-dark">${candidato}</div>
-                    <div class="card-body p-0"><div id="tabla_comparativo_${idx}"></div></div>
-                </div>
-            </div>
-        `;
+        htmlContenedorTablas += `<div class="col-md-4 col-sm-6 mb-4"><div class="card shadow-sm h-100"><div class="card-header bg-light text-center fw-bold text-dark">${candidato}</div><div class="card-body p-0"><div id="tabla_comparativo_${idx}"></div></div></div></div>`;
     });
     $('#contenedorTablasComparativo').html(htmlContenedorTablas);
     candidatosSeleccionados.forEach((candidato, idx) => {
-        const datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
-        const tableData = datosCandidato.map(d => ({
-            Competencia: d.Competencia || 'Sin Competencia',
-            Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2)
-        }));
-        if (typeof Tabulator !== 'undefined') {
-            new Tabulator(`#tabla_comparativo_${idx}`, {
-                data: tableData, layout: "fitColumns",
-                columns: [
-                    { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 },
-                    { title: "SCORE", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 }
-                ]
-            });
-        }
+        let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
+        let tableData = datosCandidato.map(d => ({ Competencia: d.Competencia || 'Sin Competencia', Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2) }));
+        new Tabulator(`#tabla_comparativo_${idx}`, { data: tableData, layout: "fitColumns", columns: [ { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 }, { title: "SCORE", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 } ] });
     });
 }
 
@@ -2697,106 +1972,76 @@ function switchComparativoChart(type) {
 }
 
 // ==========================================
-// DOCUMENTOS POSTULANTE
-// ==========================================
-
-function openDocumentosPostulante(idNumerico, nombrePostulante) {
-    const row = postulantesData.find(p => p.IdPostulanteVacante == idNumerico);
-    const rutaCV = (row && row.RutaCV) ? row.RutaCV : '';
-    const rutaSE = (row && row.RutaSolicitudEmpleo) ? row.RutaSolicitudEmpleo : '';
-    const hasCV = !!rutaCV;
-    const hasSE = !!rutaSE;
-    let html = '<div class="d-flex flex-column gap-2 align-items-center py-3">';
-    if (hasCV) {
-        html += `<a href="${rutaCV}" target="_blank" class="btn btn-primary w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">description</span> Ver CV</a>`;
-        html += `<a href="${rutaCV.replace('op=viewArchivo','op=downloadArchivo')}" target="_blank" class="btn btn-outline-primary btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar CV</a>`;
-    }
-    if (hasSE) {
-        html += `<a href="${rutaSE}" target="_blank" class="btn btn-info text-white w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">assignment</span> Ver Solicitud</a>`;
-        html += `<a href="${rutaSE.replace('op=viewArchivo','op=downloadArchivo')}" target="_blank" class="btn btn-outline-info btn-sm w-100 rounded-pill"><span class="material-symbols-outlined align-middle me-1">download</span> Descargar Solicitud</a>`;
-    }
-    if (!hasCV && !hasSE) {
-        html += `<div class="alert alert-warning w-100 text-center"><span class="material-symbols-outlined d-block mb-1">folder_off</span><b>${nombrePostulante}</b> no ha adjuntado documentos.</div>`;
-    }
-    html += '</div>';
-    $('#contenedorBotonesDocumentos').html(html);
-    let modalEl = document.getElementById('modalDocumentosPostulante');
-    let modal = bootstrap.Modal.getInstance(modalEl);
-    if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-    modal.show();
-}
-
-// ==========================================
-// EVALUACION RESPUESTAS
+// EVALUACIÓN RESPUESTAS
 // ==========================================
 
 function cerrarEvaluacionRespuestas() {
-    let modalResp = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionRespuestas'));
+    let modalElResp = document.getElementById('modalEvaluacionRespuestas');
+    let modalResp = bootstrap.Modal.getInstance(modalElResp);
     if (modalResp) modalResp.hide();
-    let modalResu = bootstrap.Modal.getInstance(document.getElementById('modalResultadosPostulante'));
+    let modalElResu = document.getElementById('modalResultadosPostulante');
+    let modalResu = bootstrap.Modal.getInstance(modalElResu);
     if (modalResu) modalResu.show();
 }
 
 async function abrirEvaluacionRespuestas() {
     const seleccionEv = $('#selResultadosPostulante').val();
     if (!seleccionEv || !window.currentIdPostulanteEncodedResultados) {
-        if (typeof showBootstrapAlertWar === 'function') {
-            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Atención!</span><span class="alert-text">Debes seleccionar una evaluación primero.</span></div>`, 'top-right', 3000);
-        }
+        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Atención!</span><span class="alert-text">Debes seleccionar una evaluación primero.</span></div>`, 'top-right', 3000);
         return;
     }
-    let modalResu = bootstrap.Modal.getInstance(document.getElementById('modalResultadosPostulante'));
+    let modalElResu = document.getElementById('modalResultadosPostulante');
+    let modalResu = bootstrap.Modal.getInstance(modalElResu);
     if (modalResu) modalResu.hide();
-
-    $('#contenedorEvaluacionRespuestas').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Cargando evaluación...</p></div>');
-    let modalResp = bootstrap.Modal.getInstance(document.getElementById('modalEvaluacionRespuestas'));
-    if (!modalResp) modalResp = new bootstrap.Modal(document.getElementById('modalEvaluacionRespuestas'), { backdrop: 'static', keyboard: false });
+    $('#contenedorEvaluacionRespuestas').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-muted">Cargando evaluación...</p></div>');
+    let modalElResp = document.getElementById('modalEvaluacionRespuestas');
+    let modalResp = bootstrap.Modal.getInstance(modalElResp);
+    if (!modalResp) modalResp = new bootstrap.Modal(modalElResp, { backdrop: 'static', keyboard: false });
     modalResp.show();
-
     try {
-        const response = await $.post("Backend/Postulantes/App.php", {
-            op: "getPostulanteRespuestasDetalle",
-            IdPostulanteVacante: window.currentIdPostulanteEncodedResultados,
-            NombreEvaluacion: seleccionEv
-        });
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getPostulanteRespuestasDetalle', IdPostulanteVacante: window.currentIdPostulanteEncodedResultados, NombreEvaluacion: seleccionEv });
         const result = JSON.parse(response);
         if (result.Siguiente && result.Data && result.Data.length > 0) {
             let html = '';
             result.Data.forEach((item, index) => {
-                html += `<div class="card mb-4 shadow-sm border-0"><div class="card-body"><h6 class="fw-bold mb-1 d-flex align-items-start"><span class="badge bg-primary rounded-pill me-2 mt-1">${index + 1}</span><span>${item.TituloPregunta || 'Pregunta ' + (index + 1)}</span></h6>${item.Pregunta && item.Pregunta.trim() !== '' ? `<p class="mb-3 text-muted" style="margin-left:2.2rem;">${item.Pregunta}</p>` : '<div class="mb-3"></div>'}`;
+                html += `<div class="card mb-4 shadow-sm border-0"><div class="card-body"><h6 class="fw-bold mb-1 d-flex align-items-start"><span class="badge bg-primary rounded-pill me-2 mt-1">${index + 1}</span><span>${item.TituloPregunta || 'Pregunta ' + (index + 1)}</span></h6>${item.Pregunta && item.Pregunta.trim() !== '' ? `<p class="mb-3 text-muted" style="margin-left: 2.2rem;">${item.Pregunta}</p>` : '<div class="mb-3"></div>'}`;
                 if (item.Opciones && item.Opciones.length > 0) {
                     html += '<div class="list-group ps-4">';
                     item.Opciones.forEach(opt => {
-                        const rPost = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
-                        const oI = opt.IdOpcion ? String(opt.IdOpcion).trim().toLowerCase() : "";
-                        const oT = opt.Texto ? String(opt.Texto).trim().toLowerCase() : "";
-                        const isSelected = (rPost !== "" && (rPost === oI || rPost === oT));
+                        let rPost = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                        let oI = opt.IdOpcion ? String(opt.IdOpcion).trim().toLowerCase() : "";
+                        let oT = opt.Texto ? String(opt.Texto).trim().toLowerCase() : "";
+                        let isSelected = (rPost !== "" && (rPost === oI || rPost === oT));
                         let isCorrectaOM = false;
-                        const corrO = item.RespuestaCorrectaOM ? String(item.RespuestaCorrectaOM).trim().toLowerCase() : "";
-                        const corrT = item.TextoRespuestaCorrectaOM ? String(item.TextoRespuestaCorrectaOM).trim().toLowerCase() : "";
+                        let corrO = item.RespuestaCorrectaOM ? String(item.RespuestaCorrectaOM).trim().toLowerCase() : "";
+                        let corrT = item.TextoRespuestaCorrectaOM ? String(item.TextoRespuestaCorrectaOM).trim().toLowerCase() : "";
                         if ((corrO !== "" && oI === corrO) || (corrT !== "" && oT === corrT)) isCorrectaOM = true;
-                        let bg = "background-color:transparent;", icon = "";
+                        let bgColor = "background-color: transparent;";
+                        let borderColor = "border-color: #dee2e6;";
+                        let iconOption = "";
                         if (isSelected) {
-                            bg = isCorrectaOM ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;";
-                            icon = isCorrectaOM ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>';
-                        } else if (isCorrectaOM) {
-                            bg = "background-color:#d4edda;border-color:#c3e6cb;";
-                            icon = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>';
-                        }
-                        html += `<div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bg} border-width:1px;border-style:solid;"><span>${opt.Texto}</span>${icon}</div>`;
+                            if (isCorrectaOM) { bgColor = "background-color: #d4edda;"; borderColor = "border-color: #c3e6cb;"; iconOption = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                            else { bgColor = "background-color: #f8d7da;"; borderColor = "border-color: #f5c6cb;"; iconOption = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                        } else if (isCorrectaOM) { bgColor = "background-color: #d4edda;"; borderColor = "border-color: #c3e6cb;"; iconOption = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                        html += `<div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgColor} ${borderColor} border-width:1px; border-style:solid;"><span>${opt.Texto}</span>${iconOption}</div>`;
                     });
                     html += '</div>';
                 } else if (item.BoolCorreta !== null) {
-                    const rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
-                    const trueIsCorrect = (item.BoolCorreta == "1");
-                    const isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
-                    const isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
-                    let bgTrue = "", iconTrue = "", bgFalse = "", iconFalse = "";
-                    if (isTrueSelected) { bgTrue = trueIsCorrect ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;"; iconTrue = trueIsCorrect ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>'; }
-                    else if (trueIsCorrect) { bgTrue = "background-color:#d4edda;border-color:#c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>'; }
-                    if (isFalseSelected) { bgFalse = !trueIsCorrect ? "background-color:#d4edda;border-color:#c3e6cb;" : "background-color:#f8d7da;border-color:#f5c6cb;"; iconFalse = !trueIsCorrect ? '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>' : '<span class="material-symbols-outlined text-danger ms-auto">cancel</span>'; }
-                    else if (!trueIsCorrect) { bgFalse = "background-color:#d4edda;border-color:#c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto">check_circle</span>'; }
-                    html += `<div class="list-group ps-4 w-50"><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgTrue} border-width:1px;border-style:solid;"><span>Verdadero</span>${iconTrue}</div><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgFalse} border-width:1px;border-style:solid;"><span>Falso</span>${iconFalse}</div></div>`;
+                    let rPostBool = item.RespuestaPostulante ? String(item.RespuestaPostulante).trim().toLowerCase() : "";
+                    let isTrueSelected = (rPostBool == "1" || rPostBool == "true" || rPostBool == "verdadero");
+                    let isFalseSelected = (rPostBool == "0" || rPostBool == "false" || rPostBool == "falso");
+                    let trueIsCorrect = (item.BoolCorreta == "1");
+                    let bgTrue = "", iconTrue = "";
+                    if (isTrueSelected) {
+                        if (trueIsCorrect) { bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                        else { bgTrue = "background-color: #f8d7da; border-color: #f5c6cb;"; iconTrue = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                    } else if (trueIsCorrect) { bgTrue = "background-color: #d4edda; border-color: #c3e6cb;"; iconTrue = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                    let bgFalse = "", iconFalse = "";
+                    if (isFalseSelected) {
+                        if (!trueIsCorrect) { bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                        else { bgFalse = "background-color: #f8d7da; border-color: #f5c6cb;"; iconFalse = '<span class="material-symbols-outlined text-danger ms-auto align-middle">cancel</span>'; }
+                    } else if (!trueIsCorrect) { bgFalse = "background-color: #d4edda; border-color: #c3e6cb;"; iconFalse = '<span class="material-symbols-outlined text-success ms-auto align-middle">check_circle</span>'; }
+                    html += `<div class="list-group ps-4 w-50"><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgTrue} border-width:1px; border-style:solid;"><span>Verdadero</span> ${iconTrue}</div><div class="list-group-item d-flex justify-content-between align-items-center mb-1 rounded-3" style="${bgFalse} border-width:1px; border-style:solid;"><span>Falso</span> ${iconFalse}</div></div>`;
                 } else {
                     html += `<div class="ps-4"><div class="p-3 bg-light rounded-3 text-dark mb-2">${item.RespuestaPostulante || '<em class="text-muted">Sin respuesta</em>'}</div></div>`;
                 }

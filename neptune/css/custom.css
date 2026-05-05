@@ -332,6 +332,118 @@ a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
 
 /* ============================================= */
 
+/* =============================================
+   BUTTON SYSTEM - Minimal + Ghost + Danger
+   ============================================= */
+
+.btn-minimal {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  color: #1a1a2e;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+}
+
+.btn-minimal.btn-sm,
+.btn-minimal.btn-xs {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.btn-minimal .material-symbols-outlined {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.btn-minimal.is-flat,
+.btn-minimal.is-flat:hover,
+.btn-minimal.is-flat:focus {
+  box-shadow: none;
+  border-color: #e9ecef;
+}
+
+.btn-minimal:hover {
+  border-color: #ffc407;
+  color: #1a1a2e;
+  background: #fff9e6;
+}
+
+.btn-minimal:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 196, 7, 0.2);
+}
+
+.btn-minimal.active {
+  background: #ffc407 !important;
+  border-color: #ffc407 !important;
+  color: #1a1a2e !important;
+  font-weight: 600;
+}
+
+.btn-minimal.active:hover {
+  background: #e6b006 !important;
+  border-color: #e6b006 !important;
+  color: #1a1a2e !important;
+}
+
+.btn-minimal:not(.active):hover {
+  border-color: #ffc407;
+  color: #1a1a2e;
+  background: #fff9e6;
+}
+
+/* Variants */
+.btn-minimal-danger {
+  background: #fff;
+  border: 1px solid #f1aeb5;
+  color: #b02a37;
+}
+
+.btn-minimal-danger:hover {
+  border-color: #dc3545;
+  color: #b02a37;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.18);
+}
+
+.btn-minimal-danger:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.2);
+}
+
+/* Text sizing helper (optional) */
+.btn-minimal.btn-responsive {
+  font-size: clamp(0.78rem, 0.2vw + 0.82rem, 0.9rem);
+}
+
+/* Ghost button (reusable) */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed #adb5bd;
+  color: #6c757d;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  border-color: #ffc407;
+  color: #1a1a2e;
+  background: #fff9e6;
+}
+
 /* NUEVOS ESTILOS */
 
 /*******************
