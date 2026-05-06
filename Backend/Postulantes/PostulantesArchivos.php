@@ -554,6 +554,126 @@ class PostulantesArchivos extends Conexiones
         ];
     }
 
+    // ==========================================
+    // REUTILIZACIÓN DE ARCHIVOS (POSTULACIÓN AUTOMÁTICA)
+    // ==========================================
+
+    /**
+     * Verifica si un postulante tiene archivos (CV o SolicitudEmpleo) de postulaciones anteriores
+     * @param string $curp - CURP del postulante
+     * @return array - ['tieneCV' => bool, 'tieneSE' => bool]
+     */
+    public function verificarArchivosPorCurp($curp)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+
+            if (empty($curp)) {
+                return [
+                    'Resultado' => false,
+                    'Msg' => 'CURP requerida.'
+                ];
+            }
+
+            $q = "SELECT pa.TipoArchivo
+                  FROM PostulantesArchivos pa
+                  INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pa.IdPostulanteVacante
+                  INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                  WHERE UPPER(p.CURP) = UPPER('$curp')
+                  GROUP BY pa.TipoArchivo";
+
+            $resultado = $this->SelectNotClose($q);
+
+            $tieneCV = false;
+            $tieneSE = false;
+
+            if (!empty($resultado)) {
+                foreach ($resultado as $row) {
+                    if ($row['TipoArchivo'] === 'CV') $tieneCV = true;
+                    if ($row['TipoArchivo'] === 'SolicitudEmpleo') $tieneSE = true;
+                }
+            }
+
+            return [
+                'Resultado' => true,
+                'tieneCV' => $tieneCV,
+                'tieneSE' => $tieneSE
+            ];
+        } catch (\Exception $e) {
+            error_log("Error en verificarArchivosPorCurp: " . $e->getMessage());
+            return [
+                'Resultado' => false,
+                'Msg' => 'Error al verificar archivos.'
+            ];
+        }
+    }
+
+    /**
+     * Copia el archivo más reciente de un tipo (CV/SolicitudEmpleo) 
+     * de postulaciones anteriores a una nueva postulación
+     * @param string $curp - CURP del postulante
+     * @param int $idPostulanteVacante - ID de la nueva postulación
+     * @param string $tipoArchivo - 'CV' o 'SolicitudEmpleo'
+     * @return array - Resultado de la operación
+     */
+    public function copiarUltimoArchivoPorCurp($curp, $idPostulanteVacante, $tipoArchivo)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+            $idPostulanteVacante = intval($idPostulanteVacante);
+
+            if (!in_array($tipoArchivo, ['CV', 'SolicitudEmpleo'])) {
+                return [
+                    'Resultado' => false,
+                    'Msg' => 'Tipo de archivo no válido.'
+                ];
+            }
+
+            // Verificar si ya existe un archivo de este tipo en la postulación destino
+            if ($this->verificarArchivoExistente($idPostulanteVacante, $tipoArchivo)) {
+                return [
+                    'Resultado' => true,
+                    'Msg' => 'Ya existe un archivo de este tipo en la postulación.'
+                ];
+            }
+
+            // Copiar el archivo más reciente usando INSERT ... SELECT para preservar el BLOB
+            $q = "INSERT IGNORE INTO PostulantesArchivos 
+                  (IdPostulanteVacante, TipoArchivo, NombreArchivo, ContentType, Contenido, TamanoBytes, FechaCreacion)
+                  SELECT $idPostulanteVacante, pa.TipoArchivo, pa.NombreArchivo, pa.ContentType, pa.Contenido, pa.TamanoBytes, NOW()
+                  FROM PostulantesArchivos pa
+                  INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pa.IdPostulanteVacante
+                  INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                  WHERE UPPER(p.CURP) = UPPER('$curp')
+                    AND pa.TipoArchivo = '$tipoArchivo'
+                  ORDER BY pa.FechaCreacion DESC
+                  LIMIT 1";
+
+            $resultado = $this->SelectNotClose($q);
+
+            if ($resultado !== false) {
+                // Actualizar la URL encriptada en PostulantesVacantes
+                $this->actualizarRutaEncriptada($idPostulanteVacante, $tipoArchivo);
+
+                return [
+                    'Resultado' => true,
+                    'Msg' => 'Archivo copiado correctamente.'
+                ];
+            }
+
+            return [
+                'Resultado' => false,
+                'Msg' => 'No se encontró un archivo previo para copiar.'
+            ];
+        } catch (\Exception $e) {
+            error_log("Error en copiarUltimoArchivoPorCurp: " . $e->getMessage());
+            return [
+                'Resultado' => false,
+                'Msg' => 'Error al copiar archivo.'
+            ];
+        }
+    }
+
     /**
      * Encripta un token con AES-256-CBC
      * @param string $data - Datos a encriptar (formato: idPostulanteVacante|tipoArchivo)

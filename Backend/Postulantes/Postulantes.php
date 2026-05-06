@@ -1436,6 +1436,97 @@ class Postulantes extends Conexiones
     }
 
     // ==========================================
+    // VERIFICACIÓN Y CONSULTA POR CURP (PORTAL PÚBLICO)
+    // ==========================================
+
+    /**
+     * Verificar si existe un postulante registrado con una CURP
+     * No retorna datos personales por seguridad
+     */
+    public function verificarCurpExistente($curp)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+
+            if (empty($curp)) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Msg" => "CURP requerida para la verificación."
+                ]);
+            }
+
+            $q = "SELECT IdPostulante
+                  FROM Postulantes
+                  WHERE UPPER(CURP) = UPPER('$curp')
+                  LIMIT 1";
+
+            $resultado = $this->Procedure($q);
+
+            if (sizeof($resultado) > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Existe" => true
+                ]);
+            }
+
+            return json_encode([
+                "Resultado" => true,
+                "Existe" => false
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en verificarCurpExistente: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Msg" => "Error al verificar CURP."
+            ]);
+        }
+    }
+
+    /**
+     * Obtener datos completos del postulante por CURP
+     * Usado para auto-llenar formularios de postulación
+     */
+    public function getDatosPostulantePorCurp($curp)
+    {
+        try {
+            $curp = $this->sanitize($curp);
+
+            if (empty($curp)) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Msg" => "CURP requerida."
+                ]);
+            }
+
+            $q = "SELECT Nombre, ApellidoPaterno, ApellidoMaterno, CURP,
+                         Telefono, CorreoElectronico, Direccion, Estado, Ciudad
+                  FROM Postulantes
+                  WHERE UPPER(CURP) = UPPER('$curp')
+                  LIMIT 1";
+
+            $resultado = $this->Procedure($q);
+
+            if (sizeof($resultado) > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Data" => $resultado[0]
+                ]);
+            }
+
+            return json_encode([
+                "Resultado" => false,
+                "Msg" => "No se encontraron datos del postulante."
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error en getDatosPostulantePorCurp: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Msg" => "Error al obtener datos."
+            ]);
+        }
+    }
+
+    // ==========================================
     // UTILIDADES
     // ==========================================
 

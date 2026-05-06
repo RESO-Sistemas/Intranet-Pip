@@ -14,11 +14,12 @@ $user_session_json = json_encode([
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oportunidades PIP - Bolsa de Trabajo Matamoros</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -44,9 +45,15 @@ $user_session_json = json_encode([
 
         /* Aurora / Text Shine Effect */
         @keyframes text-shine {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
         }
+
         .text-shine {
             background: linear-gradient(110deg, #ffffff 30%, #f2bb46 50%, #ffffff 70%);
             background-size: 200% auto;
@@ -58,8 +65,13 @@ $user_session_json = json_encode([
 
         /* Shine Border (Border Beam Estilo Magic UI) */
         @keyframes border-beam {
-            from { offset-distance: 0%; }
-            to { offset-distance: 100%; }
+            from {
+                offset-distance: 0%;
+            }
+
+            to {
+                offset-distance: 100%;
+            }
         }
 
         .magic-card {
@@ -70,7 +82,7 @@ $user_session_json = json_encode([
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .magic-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 40px -15px rgba(242, 187, 70, 0.15);
@@ -102,6 +114,7 @@ $user_session_json = json_encode([
             position: relative;
             overflow: hidden;
         }
+
         .ripple-span {
             position: absolute;
             background: rgba(255, 255, 255, 0.4);
@@ -111,35 +124,55 @@ $user_session_json = json_encode([
             animation: ripple-anim 0.6s linear;
             z-index: 0;
         }
+
         @keyframes ripple-anim {
-            0% { width: 0; height: 0; opacity: 0.5; }
-            100% { width: 500px; height: 500px; opacity: 0; }
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.5;
+            }
+
+            100% {
+                width: 500px;
+                height: 500px;
+                opacity: 0;
+            }
         }
 
         /* Inputs estilo minimalista */
         .minimal-input {
             background: transparent;
             border: none;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             padding: 0.75rem 0;
             font-size: 0.95rem;
             transition: all 0.3s;
             width: 100%;
         }
+
         .minimal-input:focus {
             outline: none;
             border-bottom-color: #f2bb46;
             box-shadow: 0 1px 0 0 #f2bb46;
         }
+
         .minimal-input::placeholder {
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
+
         .animate-float {
             animation: float 12s ease-in-out infinite;
         }
@@ -153,40 +186,45 @@ $user_session_json = json_encode([
         .modal-scroll::-webkit-scrollbar {
             width: 6px;
         }
+
         .modal-scroll::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 3px;
         }
+
         .modal-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 3px;
         }
+
         .modal-scroll::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Search input */
         .search-input {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             transition: all 0.3s;
         }
+
         .search-input:focus {
             outline: none;
             border-color: #f2bb46;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 0 3px rgba(242, 187, 70, 0.1);
         }
+
         .search-input::placeholder {
-            color: rgba(255,255,255,0.4);
+            color: rgba(255, 255, 255, 0.4);
         }
 
         /* Select con estilo minimalista */
         .minimal-select {
             background: transparent;
             border: none;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             padding: 0.75rem 0;
             font-size: 0.95rem;
@@ -201,15 +239,18 @@ $user_session_json = json_encode([
             background-position: right 0 center;
             padding-right: 24px;
         }
+
         .minimal-select:focus {
             outline: none;
             border-bottom-color: #f2bb46;
             box-shadow: 0 1px 0 0 #f2bb46;
         }
+
         .minimal-select:disabled {
             opacity: 0.4;
             cursor: not-allowed;
         }
+
         .minimal-select option {
             background: #1e1e1e;
             color: white;
@@ -219,12 +260,13 @@ $user_session_json = json_encode([
         /* Input readonly con estilo deshabilitado */
         .minimal-input:read-only {
             opacity: 0.7;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             cursor: not-allowed;
-            border-bottom-color: rgba(255,255,255,0.05);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
         }
+
         .minimal-input:read-only:focus {
-            border-bottom-color: rgba(255,255,255,0.05);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
             box-shadow: none;
         }
 
@@ -232,65 +274,70 @@ $user_session_json = json_encode([
         .cp-input-wrapper {
             position: relative;
         }
+
         .cp-loading {
             position: absolute;
             right: 0;
             top: 50%;
             transform: translateY(-50%);
         }
+
         .cp-success {
             color: #22c55e;
         }
+
         .cp-error-text {
             color: #ef4444;
             font-size: 0.75rem;
             margin-top: 0.25rem;
         }
+
         .cp-help-link {
             color: #f2bb46;
             font-size: 0.7rem;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .cp-help-link:hover {
             color: #fff;
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body class="min-h-screen bg-[#121212] text-white selection:bg-[#f2bb46] selection:text-black font-sans">
-    
+
     <div class="fixed inset-0 z-0">
         <div class="absolute inset-0 bg-dot-pattern opacity-40"></div>
         <div class="glow-orb w-[600px] h-[600px] bg-[#f2bb46] top-[-10%] left-[-10%] animate-float"></div>
-        <div class="glow-orb w-[500px] h-[500px] bg-blue-900/40 bottom-[-10%] right-[-5%] animate-float" style="animation-delay: -6s;"></div>
+        <div class="glow-orb w-[500px] h-[500px] bg-blue-900/40 bottom-[-10%] right-[-5%] animate-float"
+            style="animation-delay: -6s;"></div>
     </div>
 
     <div class="relative z-10">
         <div class="absolute top-6 left-6 md:top-8 md:left-8 z-50">
-            <a href="EstatusPostulante.php" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-[#f2bb46]/30 text-[#f2bb46] hover:bg-[#f2bb46]/10 hover:border-[#f2bb46]/50 transition-all text-sm font-bold backdrop-blur-md shadow-lg shadow-[#f2bb46]/5">
+            <a href="EstatusPostulante.php"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-[#f2bb46]/30 text-[#f2bb46] hover:bg-[#f2bb46]/10 hover:border-[#f2bb46]/50 transition-all text-sm font-bold backdrop-blur-md shadow-lg shadow-[#f2bb46]/5">
                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                 Mi Estatus
             </a>
         </div>
 
         <header class="pt-20 pb-16 px-4 text-center">
-            
+
             <div class="mb-8 flex justify-center">
-                <img 
-                    src="assets/images/logo-pip.png" 
-                    alt="Logo PIP" 
-                    class="w-48 md:w-64 h-auto object-contain" 
-                />
+                <img src="assets/images/logo-pip.png" alt="Logo PIP" class="w-48 md:w-64 h-auto object-contain" />
             </div>
 
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-[#f2bb46] uppercase tracking-[0.2em] mb-6">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-[#f2bb46] uppercase tracking-[0.2em] mb-6">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 Bolsa de Trabajo
             </div>
-            
+
             <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-                Forma parte de la empresa. <br class="hidden md:block"/> Encuentra tu próximo reto aquí.
+                Forma parte de la empresa. <br class="hidden md:block" /> Encuentra tu próximo reto aquí.
             </p>
         </header>
 
@@ -298,13 +345,10 @@ $user_session_json = json_encode([
             <!-- Buscador -->
             <div class="mb-10 max-w-xl mx-auto">
                 <div class="relative">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"></i>
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        placeholder="Buscar por área o puesto..." 
-                        class="search-input w-full pl-12 pr-4 py-4 rounded-2xl text-sm"
-                    >
+                    <i data-lucide="search"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por área o puesto..."
+                        class="search-input w-full pl-12 pr-4 py-4 rounded-2xl text-sm">
                 </div>
             </div>
 
@@ -320,9 +364,11 @@ $user_session_json = json_encode([
     </div>
 
     <!-- Modal de Postulación -->
-    <div id="modal-postulacion" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-        <div class="modal-content w-full max-w-2xl max-h-[90vh] bg-[#1a1a1a] rounded-2xl border border-white/10 shadow-2xl flex flex-col scale-95 opacity-0 transition-all duration-200">
-            
+    <div id="modal-postulacion"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div
+            class="modal-content w-full max-w-2xl max-h-[90vh] bg-[#1a1a1a] rounded-2xl border border-white/10 shadow-2xl flex flex-col scale-95 opacity-0 transition-all duration-200">
+
             <!-- Header del modal -->
             <div class="flex-shrink-0 px-6 py-5 border-b border-white/10 flex justify-between items-start">
                 <div>
@@ -330,17 +376,15 @@ $user_session_json = json_encode([
                     <h2 id="modal-title" class="text-xl font-bold text-white">Nombre del puesto</h2>
                     <p id="modal-subtitle" class="text-sm text-gray-500 mt-1">Área • Sucursal</p>
                 </div>
-                <button 
-                    onclick="cerrarModalPostulacion()" 
-                    class="text-gray-500 hover:text-white transition-colors p-2 bg-white/5 rounded-xl hover:bg-white/10"
-                >
+                <button onclick="cerrarModalPostulacion()"
+                    class="text-gray-500 hover:text-white transition-colors p-2 bg-white/5 rounded-xl hover:bg-white/10">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <!-- Contenido del modal (scrolleable) -->
             <div class="flex-1 overflow-y-auto modal-scroll">
-                
+
                 <!-- Mensaje de éxito -->
                 <div id="modal-success" class="hidden flex-col items-center justify-center text-center p-12">
                     <div class="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mb-5">
@@ -357,18 +401,88 @@ $user_session_json = json_encode([
                     </div>
                     <p class="text-2xl font-bold text-white">Error al enviar</p>
                     <p class="text-gray-400 mt-3 error-detail">Por favor intenta nuevamente.</p>
-                    <button 
-                        onclick="reintentarPostulacion()" 
-                        class="mt-6 px-8 py-3 bg-white/10 rounded-xl text-white font-semibold hover:bg-white/20 transition-colors"
-                    >
+                    <button onclick="reintentarPostulacion()"
+                        class="mt-6 px-8 py-3 bg-white/10 rounded-xl text-white font-semibold hover:bg-white/20 transition-colors">
                         Reintentar
                     </button>
+                </div>
+
+                <!-- Paso 1: Verificación de CURP (no logueado) -->
+                <div id="modal-curp-input" class="hidden flex-col items-center justify-center text-center p-12">
+                    <div class="w-20 h-20 rounded-full bg-[#f2bb46]/20 flex items-center justify-center mb-5">
+                        <i data-lucide="search" class="w-10 h-10 text-[#f2bb46]"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-white mb-2">Verifica tu CURP</p>
+                    <p class="text-gray-400 mb-6 max-w-md">Ingresa tu CURP para verificar si ya te has registrado
+                        anteriormente con nosotros.</p>
+                    <div class="w-full max-w-sm">
+                        <input type="text" name="curp-verificacion"
+                            class="minimal-input uppercase text-center text-lg tracking-widest"
+                            placeholder="XXXX000000XXXXXX00" maxlength="18" pattern="[A-Z0-9]{18}" autocomplete="off">
+                    </div>
+                    <button id="btn-verificar-curp"
+                        class="ripple-btn mt-6 px-10 py-3 bg-[#f2bb46] text-[#1e1e1e] rounded-xl font-extrabold hover:bg-[#fcd34d] transition-colors uppercase text-xs tracking-widest">
+                        Verificar
+                    </button>
+                </div>
+
+                <!-- CURP ya registrada -->
+                <div id="modal-curp-existe" class="hidden flex-col items-center justify-center text-center p-12">
+                    <div class="w-20 h-20 rounded-full bg-[#f2bb46]/20 flex items-center justify-center mb-5">
+                        <i data-lucide="user-check" class="w-10 h-10 text-[#f2bb46]"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-white mb-2">¡Ya estás registrado!</p>
+                    <p class="text-gray-400 mb-6 max-w-md">Ya tienes una cuenta con nosotros. Inicia sesión para
+                        postularte a esta y otras vacantes, o consulta el estatus de tus postulaciones.</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="EstatusPostulante.php"
+                            class="ripple-btn px-8 py-3 bg-[#f2bb46] text-[#1e1e1e] rounded-xl font-extrabold hover:bg-[#fcd34d] transition-colors uppercase text-xs tracking-widest inline-block text-center">
+                            Iniciar Sesión
+                        </a>
+                        <button onclick="cerrarModalPostulacion()"
+                            class="px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-semibold hover:bg-white/10 transition-colors uppercase text-xs tracking-widest">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Postulación automática (logueado) -->
+                <div id="modal-auto-submitting" class="hidden flex-col items-center justify-center text-center p-12">
+                    <div class="w-20 h-20 rounded-full bg-[#f2bb46]/20 flex items-center justify-center mb-5">
+                        <div class="animate-spin rounded-full h-10 w-10 border-3 border-[#f2bb46] border-t-transparent">
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-white mb-2">Postulando...</p>
+                    <p class="text-gray-400">Estamos enviando tu postulación automáticamente.</p>
+                </div>
+
+                <!-- Subida de archivos faltantes (logueado) -->
+                <div id="modal-subir-archivos" class="hidden p-6">
+                    <div class="flex flex-col items-center text-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-[#f2bb46]/20 flex items-center justify-center mb-4">
+                            <i data-lucide="upload-cloud" class="w-8 h-8 text-[#f2bb46]"></i>
+                        </div>
+                        <p class="text-xl font-bold text-white mb-1">Documentos requeridos</p>
+                        <p id="subir-archivos-mensaje" class="text-gray-400 text-sm"></p>
+                    </div>
+                    <form id="form-subir-archivos" class="space-y-5">
+                        <div id="subir-archivos-campos" class="space-y-5"></div>
+                        <button type="submit" class="ripple-btn w-full text-[#1e1e1e] bg-[#f2bb46] font-extrabold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(242,187,70,0.3)] hover:shadow-[0_0_30px_rgba(242,187,70,0.5)] transition-all mt-4 uppercase text-xs tracking-widest flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span class="relative z-10 flex items-center justify-center gap-2 btn-text-archivos">
+                                Enviar postulación
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </span>
+                            <span class="hidden loading-spinner">
+                                <div class="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
+                            </span>
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Formulario -->
                 <div id="modal-form-container" class="p-6">
                     <form id="form-postulacion" class="space-y-5">
-                        
+
                         <!-- Nombre -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
@@ -376,83 +490,94 @@ $user_session_json = json_encode([
                             </label>
                             <input required type="text" name="Nombre" class="minimal-input" placeholder="Tu nombre...">
                         </div>
-                        
+
                         <!-- Apellidos en una fila -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Apellido Paterno <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="ApellidoPaterno" class="minimal-input" placeholder="Paterno...">
+                                <input required type="text" name="ApellidoPaterno" class="minimal-input"
+                                    placeholder="Paterno...">
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Apellido Materno <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="ApellidoMaterno" class="minimal-input" placeholder="Materno...">
+                                <input required type="text" name="ApellidoMaterno" class="minimal-input"
+                                    placeholder="Materno...">
                             </div>
                         </div>
-                        
+
                         <!-- CURP -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                 CURP <span class="text-red-500">*</span>
                             </label>
-                            <input required type="text" name="CURP" class="minimal-input uppercase" placeholder="XXXX000000XXXXXX00" maxlength="18" pattern="[A-Z0-9]{18}">
+                            <input required type="text" name="CURP" class="minimal-input uppercase"
+                                placeholder="XXXX000000XXXXXX00" maxlength="18" pattern="[A-Z0-9]{18}">
                         </div>
-                        
+
                         <!-- Teléfono y Correo -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Teléfono <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="tel" name="Telefono" class="minimal-input" placeholder="10 dígitos..." maxlength="10" pattern="[0-9]{10}">
+                                <input required type="tel" name="Telefono" class="minimal-input"
+                                    placeholder="10 dígitos..." maxlength="10" pattern="[0-9]{10}">
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Correo <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="email" name="CorreoElectronico" class="minimal-input" placeholder="correo@ejemplo.com">
+                                <input required type="email" name="CorreoElectronico" class="minimal-input"
+                                    placeholder="correo@ejemplo.com">
                             </div>
                         </div>
-                        
+
                         <!-- Código Postal -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                 Código Postal <span class="text-red-500">*</span>
                             </label>
                             <div class="cp-input-wrapper">
-                                <input required type="text" name="CodigoPostal" id="input-cp" class="minimal-input" placeholder="5 dígitos..." maxlength="5" pattern="[0-9]{5}" inputmode="numeric">
+                                <input required type="text" name="CodigoPostal" id="input-cp" class="minimal-input"
+                                    placeholder="5 dígitos..." maxlength="5" pattern="[0-9]{5}" inputmode="numeric">
                                 <span class="cp-loading hidden" id="cp-loading">
-                                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-[#f2bb46] border-t-transparent"></div>
+                                    <div
+                                        class="animate-spin rounded-full h-4 w-4 border-2 border-[#f2bb46] border-t-transparent">
+                                    </div>
                                 </span>
                                 <span class="cp-loading cp-success hidden" id="cp-success">
                                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                                 </span>
                             </div>
                             <div id="cp-error" class="cp-error-text hidden"></div>
-                            <a href="https://www.correosdemexico.gob.mx/SSLServicios/ConsultaCP/Descarga.aspx" target="_blank" rel="noopener noreferrer" class="cp-help-link mt-1">
+                            <a href="https://www.correosdemexico.gob.mx/SSLServicios/ConsultaCP/Descarga.aspx"
+                                target="_blank" rel="noopener noreferrer" class="cp-help-link mt-1">
                                 ¿No conoces tu CP? Consúltalo aquí
                             </a>
                         </div>
-                        
+
                         <!-- Estado y Municipio (readonly, llenados por SEPOMEX) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Estado <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="Estado" id="input-estado" class="minimal-input" placeholder="Se llenará automáticamente..." readonly>
+                                <input required type="text" name="Estado" id="input-estado" class="minimal-input"
+                                    placeholder="Se llenará automáticamente..." readonly>
                             </div>
                             <div class="flex flex-col">
                                 <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                     Municipio <span class="text-red-500">*</span>
                                 </label>
-                                <input required type="text" name="Ciudad" id="input-municipio" class="minimal-input" placeholder="Se llenará automáticamente..." readonly>
+                                <input required type="text" name="Ciudad" id="input-municipio" class="minimal-input"
+                                    placeholder="Se llenará automáticamente..." readonly>
                             </div>
                         </div>
-                        
+
                         <!-- Colonia (select poblado por SEPOMEX) -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
@@ -462,34 +587,39 @@ $user_session_json = json_encode([
                                 <option value="">Primero ingresa tu código postal...</option>
                             </select>
                         </div>
-                        
+
                         <!-- Dirección (calle y número) -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                 Calle y Número <span class="text-red-500">*</span>
                             </label>
-                            <input required type="text" name="CalleNumero" id="input-calle" class="minimal-input" placeholder="Calle, número exterior e interior...">
+                            <input required type="text" name="CalleNumero" id="input-calle" class="minimal-input"
+                                placeholder="Calle, número exterior e interior...">
                         </div>
-                        
+
                         <!-- Campos de archivo (CV y/o Solicitud de Empleo) - Se generan dinámicamente -->
                         <div id="campos-archivo" class="space-y-5"></div>
-                        
+
                         <!-- Observaciones (opcional) -->
                         <div class="flex flex-col">
                             <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
                                 Sobre ti (opcional)
                             </label>
-                            <textarea name="Observaciones" class="minimal-input resize-none h-24" placeholder="Cuéntanos sobre tus habilidades, experiencia..."></textarea>
+                            <textarea name="Observaciones" class="minimal-input resize-none h-24"
+                                placeholder="Cuéntanos sobre tus habilidades, experiencia..."></textarea>
                         </div>
-                        
+
                         <!-- Botón de enviar -->
-                        <button type="submit" class="ripple-btn w-full text-[#1e1e1e] bg-[#f2bb46] font-extrabold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(242,187,70,0.3)] hover:shadow-[0_0_30px_rgba(242,187,70,0.5)] transition-all mt-6 uppercase text-xs tracking-widest flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit"
+                            class="ripple-btn w-full text-[#1e1e1e] bg-[#f2bb46] font-extrabold py-4 px-4 rounded-xl shadow-[0_0_20px_rgba(242,187,70,0.3)] hover:shadow-[0_0_30px_rgba(242,187,70,0.5)] transition-all mt-6 uppercase text-xs tracking-widest flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span class="relative z-10 flex items-center justify-center gap-2 btn-text">
                                 Enviar postulación
                                 <i data-lucide="send" class="w-4 h-4"></i>
                             </span>
                             <span class="hidden loading-spinner">
-                                <div class="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
+                                <div
+                                    class="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent">
+                                </div>
                             </span>
                         </button>
                     </form>
@@ -500,8 +630,9 @@ $user_session_json = json_encode([
 
     <!-- jQuery (requerido para las peticiones AJAX) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <!-- Script principal de Bolsa de Trabajo -->
-    <script src="scripts/BolsaDeTrabajo.js "></script>
+    <script src="scripts/BolsaDeTrabajo.js?v=<?= time() ?>"></script>
 </body>
+
 </html>

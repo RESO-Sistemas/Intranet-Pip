@@ -257,6 +257,17 @@ if ($op == "publicApplyToVacante") {
         // Obtener el IdPostulanteVacante para guardar los archivos
         $IdPostulanteVacante = isset($resObj['IdPostulanteVacante']) ? $resObj['IdPostulanteVacante'] : null;
         
+        // Reusar archivos de postulaciones anteriores si se solicita
+        $reusarArchivos = isset($_POST['reusarArchivos']) && $_POST['reusarArchivos'] == '1';
+        if ($IdPostulanteVacante && $reusarArchivos) {
+            if (!isset($archivosParaGuardar['CV'])) {
+                $PostulantesArchivos->copiarUltimoArchivoPorCurp($CURP, $IdPostulanteVacante, 'CV');
+            }
+            if (!isset($archivosParaGuardar['SolicitudEmpleo'])) {
+                $PostulantesArchivos->copiarUltimoArchivoPorCurp($CURP, $IdPostulanteVacante, 'SolicitudEmpleo');
+            }
+        }
+        
         if ($IdPostulanteVacante && count($archivosParaGuardar) > 0) {
             $erroresGuardado = [];
             
@@ -582,7 +593,60 @@ if ($op == "deleteAllArchivos") {
 }
 
 // ==========================================
-// CONSULTA DE CÓDIGOS POSTALES (SEPOMEX)
+// VERIFICACIÓN Y CONSULTA POR CURP (PORTAL PÚBLICO)
+// ==========================================
+
+// Verificar si existe un postulante registrado con una CURP
+if ($op == "verificarCurp") {
+    header('Content-Type: application/json; charset=utf-8');
+    $curp = isset($_POST["CURP"]) ? strtoupper(trim($_POST["CURP"])) : '';
+
+    if (empty($curp) || strlen($curp) !== 18) {
+        echo json_encode(["Resultado" => false, "Msg" => "Ingresa una CURP válida de 18 caracteres."]);
+        exit;
+    }
+
+    echo trim($Postulantes->verificarCurpExistente($curp));
+}
+
+// Obtener datos completos del postulante por CURP (auto-llenado / auto-postulación)
+if ($op == "getDatosPostulante") {
+    header('Content-Type: application/json; charset=utf-8');
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+    $curp = isset($_POST["CURP"]) ? strtoupper(trim($_POST["CURP"])) : '';
+
+    // Fallback: usar CURP de sesión si no se envió explícitamente
+    if (empty($curp) && isset($_SESSION['curp_candidato'])) {
+        $curp = strtoupper(trim($_SESSION['curp_candidato']));
+    }
+
+    if (empty($curp)) {
+        echo json_encode(["Resultado" => false, "Msg" => "CURP requerida."]);
+        exit;
+    }
+
+    echo trim($Postulantes->getDatosPostulantePorCurp($curp));
+}
+
+// Verificar si el candidato (por sesión) tiene archivos de postulaciones anteriores
+if ($op == "resumenArchivosCandidato") {
+    header('Content-Type: application/json; charset=utf-8');
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset($_SESSION['curp_candidato'])) {
+        echo json_encode(["Resultado" => false, "Msg" => "No hay sesión activa."]);
+        exit;
+    }
+
+    $PostulantesArchivos = new PostulantesArchivos();
+    $curp = $_SESSION['curp_candidato'];
+    echo json_encode($PostulantesArchivos->verificarArchivosPorCurp($curp));
+    exit;
+}
+
+// ==========================================
+// CONSULTA DE CÓDIGO POSTAL (SEPOMEX)
 // ==========================================
 
 // Consultar información de un código postal

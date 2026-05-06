@@ -535,73 +535,24 @@ function abrirModalPostulacion(idVacante) {
     const modal = document.getElementById('modal-postulacion');
     const modalTitle = document.getElementById('modal-title');
     const modalSubtitle = document.getElementById('modal-subtitle');
-    const formContainer = document.getElementById('modal-form-container');
-    const successMsg = document.getElementById('modal-success');
-    const errorMsg = document.getElementById('modal-error');
     
-    // Configurar título del modal
     modalTitle.textContent = vacanteSeleccionada.NombreVacante;
     modalSubtitle.textContent = `${vacanteSeleccionada.NombreArea} • ${vacanteSeleccionada.Sucursal}`;
     
-    // Generar campos de archivo dinámicamente
-    const camposArchivo = generarCamposArchivo(vacanteSeleccionada);
-    document.getElementById('campos-archivo').innerHTML = camposArchivo;
+    hideAllSections();
     
-    // Configurar el ID de vacante en el formulario
-    document.getElementById('form-postulacion').dataset.vacanteId = idVacante;
-    document.getElementById('form-postulacion').dataset.banderaCv = vacanteSeleccionada.BanderaCV;
-    document.getElementById('form-postulacion').dataset.banderaSe = vacanteSeleccionada.BanderaSE;
-    
-    // Resetear estados
-    formContainer.classList.remove('hidden');
-    successMsg.classList.add('hidden');
-    errorMsg.classList.add('hidden');
-    document.getElementById('form-postulacion').reset();
-    
-    // Mostrar modal
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
     
-    // Auto-completar datos si el usuario tiene sesión activa
     if (typeof USER_SESSION !== 'undefined' && USER_SESSION.loggedIn) {
-        const form = document.getElementById('form-postulacion');
-        if(form) {
-            const inputs = {
-                'Nombre': USER_SESSION.nombre || '',
-                'ApellidoPaterno': USER_SESSION.apellidoPaterno || '',
-                'ApellidoMaterno': USER_SESSION.apellidoMaterno || '',
-                'CURP': USER_SESSION.curp || '',
-                'CorreoElectronico': USER_SESSION.correo || '',
-                'Telefono': USER_SESSION.telefono || ''
-            };
-            
-            for (const [name, value] of Object.entries(inputs)) {
-                if (value) {
-                    const inputEl = form.querySelector(`input[name="${name}"]`);
-                    if (inputEl) {
-                        inputEl.value = value;
-                        inputEl.readOnly = true;
-                        inputEl.classList.add('cursor-not-allowed', 'opacity-60', 'bg-white/5');
-                    }
-                }
-            }
-        }
+        autoAplicarComoLogueado(idVacante);
+    } else {
+        mostrarPasoCURP(idVacante);
     }
     
-    // Inicializar iconos de Lucide para los nuevos elementos
     lucide.createIcons();
     
-    // Adjuntar eventos a los inputs de archivo
-    attachFileInputEvents();
-    
-    // Adjuntar evento al input de código postal (SEPOMEX)
-    attachCodigoPostalEvent();
-    
-    // Resetear campos de dirección SEPOMEX
-    resetearCamposSepomex();
-    
-    // Animar entrada
     setTimeout(() => {
         modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
         modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
@@ -615,7 +566,6 @@ function cerrarModalPostulacion() {
     const modal = document.getElementById('modal-postulacion');
     const modalContent = modal.querySelector('.modal-content');
     
-    // Animar salida
     modalContent.classList.remove('scale-100', 'opacity-100');
     modalContent.classList.add('scale-95', 'opacity-0');
     
@@ -625,8 +575,10 @@ function cerrarModalPostulacion() {
         document.body.style.overflow = '';
         vacanteSeleccionada = null;
         
-        // Resetear formulario
-        document.getElementById('form-postulacion').reset();
+        const form = document.getElementById('form-postulacion');
+        if (form) form.reset();
+        
+        hideAllSections();
     }, 200);
 }
 
@@ -814,11 +766,11 @@ async function enviarPostulacion(e) {
  * Muestra mensaje de error en el modal
  */
 function mostrarErrorModal(mensaje) {
-    const formContainer = document.getElementById('modal-form-container');
+    hideAllSections();
+
     const errorMsg = document.getElementById('modal-error');
     const errorDetail = errorMsg.querySelector('.error-detail');
     
-    formContainer.classList.add('hidden');
     errorMsg.classList.remove('hidden');
     errorMsg.classList.add('flex');
     if (errorDetail) {
@@ -835,6 +787,452 @@ function reintentarPostulacion() {
     
     errorMsg.classList.add('hidden');
     formContainer.classList.remove('hidden');
+}
+
+/**
+ * Oculta todas las secciones del modal
+ */
+function hideAllSections() {
+    const sections = [
+        'modal-form-container', 'modal-success', 'modal-error',
+        'modal-curp-input', 'modal-curp-existe', 'modal-auto-submitting',
+        'modal-subir-archivos'
+    ];
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+    });
+}
+
+/**
+ * Muestra el paso de verificación CURP para usuarios no logueados
+ */
+function mostrarPasoCURP(idVacante) {
+    const curpSection = document.getElementById('modal-curp-input');
+    curpSection.classList.remove('hidden');
+    curpSection.classList.add('flex');
+
+    const inputCurp = curpSection.querySelector('input[name="curp-verificacion"]');
+    if (inputCurp) {
+        inputCurp.value = '';
+        setTimeout(() => inputCurp.focus(), 100);
+        inputCurp.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verificarCurpStep(idVacante);
+            }
+        };
+    }
+
+    const btnVerificar = document.getElementById('btn-verificar-curp');
+    if (btnVerificar) {
+        const newBtn = btnVerificar.cloneNode(true);
+        btnVerificar.parentNode.replaceChild(newBtn, btnVerificar);
+        newBtn.onclick = (e) => {
+            handleRipple(e, newBtn);
+            verificarCurpStep(idVacante);
+        };
+    }
+}
+
+/**
+ * Verifica la CURP contra el backend
+ */
+async function verificarCurpStep(idVacante) {
+    const inputCurp = document.querySelector('input[name="curp-verificacion"]');
+    const curp = inputCurp.value.trim().toUpperCase();
+
+    if (!curp || curp.length !== 18) {
+        mostrarErrorModal('Ingresa una CURP válida de 18 caracteres.');
+        return;
+    }
+
+    const btnVerificar = document.getElementById('btn-verificar-curp');
+    const originalText = btnVerificar.textContent;
+    btnVerificar.disabled = true;
+    btnVerificar.textContent = 'Verificando...';
+
+    try {
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { op: "verificarCurp", CURP: curp },
+            dataType: "json"
+        });
+
+        if (respuesta.Resultado && respuesta.Existe) {
+            mostrarCurpExiste();
+        } else if (respuesta.Resultado && !respuesta.Existe) {
+            transicionarAFormulario(idVacante, curp);
+        } else {
+            mostrarErrorModal(respuesta.Msg || 'Error al verificar la CURP. Intenta nuevamente.');
+        }
+    } catch (error) {
+        console.error('Error al verificar CURP:', error);
+        mostrarErrorModal('Error de conexión al verificar CURP. Intenta nuevamente.');
+    } finally {
+        btnVerificar.disabled = false;
+        btnVerificar.textContent = originalText;
+    }
+}
+
+/**
+ * Muestra el mensaje de CURP ya registrada
+ */
+function mostrarCurpExiste() {
+    document.getElementById('modal-curp-input').classList.add('hidden');
+    document.getElementById('modal-curp-input').classList.remove('flex');
+
+    const existeSection = document.getElementById('modal-curp-existe');
+    existeSection.classList.remove('hidden');
+    existeSection.classList.add('flex');
+
+    lucide.createIcons();
+}
+
+/**
+ * Transiciona del paso CURP al formulario completo
+ */
+function transicionarAFormulario(idVacante, curp) {
+    document.getElementById('modal-curp-input').classList.add('hidden');
+    document.getElementById('modal-curp-input').classList.remove('flex');
+
+    const formContainer = document.getElementById('modal-form-container');
+    formContainer.classList.remove('hidden');
+
+    const camposArchivo = generarCamposArchivo(vacanteSeleccionada);
+    document.getElementById('campos-archivo').innerHTML = camposArchivo;
+
+    const form = document.getElementById('form-postulacion');
+    form.dataset.vacanteId = idVacante;
+    form.dataset.banderaCv = vacanteSeleccionada.BanderaCV;
+    form.dataset.banderaSe = vacanteSeleccionada.BanderaSE;
+    form.reset();
+
+    if (curp) {
+        const curpInput = form.querySelector('input[name="CURP"]');
+        if (curpInput) {
+            curpInput.value = curp;
+            curpInput.readOnly = true;
+            curpInput.classList.add('cursor-not-allowed', 'opacity-60', 'bg-white/5');
+        }
+    }
+
+    attachFileInputEvents();
+    attachCodigoPostalEvent();
+    resetearCamposSepomex();
+    lucide.createIcons();
+}
+
+/**
+ * Aplica automáticamente a la vacante usando los datos del postulante logueado
+ * Verifica requisitos de archivos antes de enviar
+ */
+async function autoAplicarComoLogueado(idVacante) {
+    document.getElementById('modal-auto-submitting').classList.remove('hidden');
+    document.getElementById('modal-auto-submitting').classList.add('flex');
+
+    const requiereCV = vacanteSeleccionada.BanderaCV === 1;
+    const requiereSE = vacanteSeleccionada.BanderaSE === 1;
+
+    if (!requiereCV && !requiereSE) {
+        await ejecutarAutoSubmit(idVacante, false);
+        return;
+    }
+
+    try {
+        const resumenResp = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { op: "resumenArchivosCandidato" },
+            dataType: "json"
+        });
+
+        if (!resumenResp.Resultado) {
+            mostrarErrorModal('No se pudo verificar tus archivos. Intenta nuevamente.');
+            return;
+        }
+
+        const faltaCV = requiereCV && !resumenResp.tieneCV;
+        const faltaSE = requiereSE && !resumenResp.tieneSE;
+
+        if (!faltaCV && !faltaSE) {
+            await ejecutarAutoSubmit(idVacante, true);
+        } else {
+            mostrarSubidaArchivos();
+        }
+    } catch (error) {
+        console.error('Error al verificar archivos:', error);
+        mostrarErrorModal('Error de conexión al verificar archivos.');
+    }
+}
+
+/**
+ * Ejecuta el auto-submit contra el backend
+ */
+async function ejecutarAutoSubmit(idVacante, reusarArchivos) {
+    document.getElementById('modal-auto-submitting').classList.remove('hidden');
+    document.getElementById('modal-auto-submitting').classList.add('flex');
+
+    try {
+        const datosRespuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { op: "getDatosPostulante", CURP: USER_SESSION.curp },
+            dataType: "json"
+        });
+
+        if (!datosRespuesta.Resultado || !datosRespuesta.Data) {
+            mostrarErrorModal('No se pudieron obtener tus datos. Intenta nuevamente.');
+            return;
+        }
+
+        const datos = datosRespuesta.Data;
+
+        const formData = new FormData();
+        formData.append('op', 'publicApplyToVacante');
+        formData.append('IdVacante', idVacante);
+        formData.append('Nombre', datos.Nombre || '');
+        formData.append('ApellidoPaterno', datos.ApellidoPaterno || '');
+        formData.append('ApellidoMaterno', datos.ApellidoMaterno || '');
+        formData.append('CURP', datos.CURP || '');
+        formData.append('Telefono', datos.Telefono || '');
+        formData.append('CorreoElectronico', datos.CorreoElectronico || '');
+        formData.append('Direccion', datos.Direccion || '');
+        formData.append('Estado', datos.Estado || '');
+        formData.append('Ciudad', datos.Ciudad || '');
+        formData.append('Observaciones', 'Postulación automática');
+
+        if (reusarArchivos) {
+            formData.append('reusarArchivos', '1');
+        }
+
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json"
+        });
+
+        document.getElementById('modal-auto-submitting').classList.add('hidden');
+        document.getElementById('modal-auto-submitting').classList.remove('flex');
+
+        if (respuesta.Resultado) {
+            const successMsg = document.getElementById('modal-success');
+            successMsg.classList.remove('hidden');
+            successMsg.classList.add('flex');
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            mostrarErrorModal(respuesta.Msg || respuesta.Mensaje || 'Error al procesar la postulación automática.');
+        }
+    } catch (error) {
+        console.error('Error en auto-postulación:', error);
+        mostrarErrorModal('Error de conexión. Intenta nuevamente.');
+    }
+}
+
+/**
+ * Muestra solo los campos de archivo requeridos cuando faltan en la cuenta del postulante
+ */
+function mostrarSubidaArchivos() {
+    document.getElementById('modal-auto-submitting').classList.add('hidden');
+    document.getElementById('modal-auto-submitting').classList.remove('flex');
+
+    const requiereCV = vacanteSeleccionada.BanderaCV === 1;
+    const requiereSE = vacanteSeleccionada.BanderaSE === 1;
+
+    const section = document.getElementById('modal-subir-archivos');
+    section.classList.remove('hidden');
+
+    const mensaje = document.getElementById('subir-archivos-mensaje');
+    const camposContainer = document.getElementById('subir-archivos-campos');
+
+    let html = '';
+    const piezas = [];
+
+    if (requiereCV) {
+        piezas.push('Curriculum Vitae (CV)');
+        html += `
+            <div class="flex flex-col">
+                <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
+                    Curriculum Vitae (CV) <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input type="file" name="cv" accept=".pdf,.jpg,.jpeg,.png" required
+                        class="file-input-archivos absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <div class="file-display-archivos-cv flex items-center gap-3 p-4 border border-dashed border-white/20 rounded-xl bg-white/5 hover:border-[#f2bb46]/50 transition-colors">
+                        <i data-lucide="file-text" class="w-6 h-6 text-gray-400"></i>
+                        <span class="text-sm text-gray-400 file-name-archivos-cv">PDF, JPG o PNG (max 20MB)...</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    if (requiereSE) {
+        piezas.push('Solicitud de Empleo');
+        html += `
+            <div class="flex flex-col">
+                <label class="text-[10px] uppercase text-gray-500 mb-1 font-bold tracking-wider">
+                    Solicitud de Empleo <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input type="file" name="solicitud_empleo" accept=".pdf,.jpg,.jpeg,.png" required
+                        class="file-input-archivos absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <div class="file-display-archivos-se flex items-center gap-3 p-4 border border-dashed border-white/20 rounded-xl bg-white/5 hover:border-[#f2bb46]/50 transition-colors">
+                        <i data-lucide="file-text" class="w-6 h-6 text-gray-400"></i>
+                        <span class="text-sm text-gray-400 file-name-archivos-se">PDF, JPG o PNG (max 20MB)...</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    mensaje.textContent = 'Para continuar necesitas subir: ' + piezas.join(' y ') + '.';
+    camposContainer.innerHTML = html;
+
+    lucide.createIcons();
+    attachFileInputEventsArchivos();
+    resetFormSubirArchivos();
+}
+
+function resetFormSubirArchivos() {
+    const form = document.getElementById('form-subir-archivos');
+    if (form) form.reset();
+    const btn = form?.querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = false;
+        const btnText = btn.querySelector('.btn-text-archivos');
+        const spinner = btn.querySelector('.loading-spinner');
+        if (btnText) btnText.classList.remove('hidden');
+        if (spinner) spinner.classList.add('hidden');
+    }
+}
+
+function attachFileInputEventsArchivos() {
+    const section = document.getElementById('modal-subir-archivos');
+
+    const inputCV = section.querySelector('input[name="cv"]');
+    if (inputCV) {
+        const newCV = inputCV.cloneNode(true);
+        inputCV.parentNode.replaceChild(newCV, inputCV);
+        newCV.addEventListener('change', (e) => {
+            const name = e.target.files[0]?.name || 'PDF, JPG o PNG (max 20MB)...';
+            section.querySelector('.file-name-archivos-cv').textContent = name;
+            if (e.target.files[0]) {
+                const display = section.querySelector('.file-display-archivos-cv');
+                display.classList.add('border-[#f2bb46]', 'border-solid');
+                display.classList.remove('border-white/20', 'border-dashed');
+            }
+        });
+    }
+
+    const inputSE = section.querySelector('input[name="solicitud_empleo"]');
+    if (inputSE) {
+        const newSE = inputSE.cloneNode(true);
+        inputSE.parentNode.replaceChild(newSE, inputSE);
+        newSE.addEventListener('change', (e) => {
+            const name = e.target.files[0]?.name || 'PDF, JPG o PNG (max 20MB)...';
+            section.querySelector('.file-name-archivos-se').textContent = name;
+            if (e.target.files[0]) {
+                const display = section.querySelector('.file-display-archivos-se');
+                display.classList.add('border-[#f2bb46]', 'border-solid');
+                display.classList.remove('border-white/20', 'border-dashed');
+            }
+        });
+    }
+}
+
+async function enviarPostulacionConArchivos(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const btnText = submitBtn.querySelector('.btn-text-archivos');
+    const loadingSpinner = submitBtn.querySelector('.loading-spinner');
+
+    submitBtn.disabled = true;
+    btnText.classList.add('hidden');
+    loadingSpinner.classList.remove('hidden');
+
+    try {
+        const datosRespuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: { op: "getDatosPostulante", CURP: USER_SESSION.curp },
+            dataType: "json"
+        });
+
+        if (!datosRespuesta.Resultado || !datosRespuesta.Data) {
+            mostrarErrorModal('No se pudieron obtener tus datos. Intenta nuevamente.');
+            return;
+        }
+
+        const datos = datosRespuesta.Data;
+        const idVacante = vacanteSeleccionada.IdVacante;
+
+        const formData = new FormData();
+        formData.append('op', 'publicApplyToVacante');
+        formData.append('IdVacante', idVacante);
+        formData.append('Nombre', datos.Nombre || '');
+        formData.append('ApellidoPaterno', datos.ApellidoPaterno || '');
+        formData.append('ApellidoMaterno', datos.ApellidoMaterno || '');
+        formData.append('CURP', datos.CURP || '');
+        formData.append('Telefono', datos.Telefono || '');
+        formData.append('CorreoElectronico', datos.CorreoElectronico || '');
+        formData.append('Direccion', datos.Direccion || '');
+        formData.append('Estado', datos.Estado || '');
+        formData.append('Ciudad', datos.Ciudad || '');
+        formData.append('Observaciones', 'Postulación con archivos requeridos');
+
+        const inputCV = form.querySelector('input[name="cv"]');
+        const inputSE = form.querySelector('input[name="solicitud_empleo"]');
+
+        if (inputCV && inputCV.files && inputCV.files.length > 0) {
+            formData.append('cv', inputCV.files[0]);
+        }
+        if (inputSE && inputSE.files && inputSE.files.length > 0) {
+            formData.append('solicitud_empleo', inputSE.files[0]);
+        }
+
+        const respuesta = await $.ajax({
+            type: "POST",
+            url: "Backend/Postulantes/App.php",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json"
+        });
+
+        document.getElementById('modal-subir-archivos').classList.add('hidden');
+
+        if (respuesta.Resultado) {
+            const successMsg = document.getElementById('modal-success');
+            successMsg.classList.remove('hidden');
+            successMsg.classList.add('flex');
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            mostrarErrorModal(respuesta.Msg || respuesta.Mensaje || 'Error al procesar la postulación.');
+        }
+    } catch (error) {
+        console.error('Error al enviar postulación con archivos:', error);
+        mostrarErrorModal('Error de conexión. Intenta nuevamente.');
+    } finally {
+        submitBtn.disabled = false;
+        btnText.classList.remove('hidden');
+        loadingSpinner.classList.add('hidden');
+    }
 }
 
 /**
@@ -920,11 +1318,23 @@ document.addEventListener('DOMContentLoaded', () => {
         formPostulacion.addEventListener('submit', enviarPostulacion);
     }
     
-    // Cerrar modal al hacer click fuera
+    // Configurar el formulario de subida de archivos faltantes
+    const formSubirArchivos = document.getElementById('form-subir-archivos');
+    if (formSubirArchivos) {
+        formSubirArchivos.addEventListener('submit', enviarPostulacionConArchivos);
+    }
+    
+    // Cerrar modal al hacer click fuera (solo si no hay formulario visible)
     const modal = document.getElementById('modal-postulacion');
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
+                const formContainer = document.getElementById('modal-form-container');
+                const subirArchivos = document.getElementById('modal-subir-archivos');
+                if ((formContainer && !formContainer.classList.contains('hidden')) ||
+                    (subirArchivos && !subirArchivos.classList.contains('hidden'))) {
+                    return;
+                }
                 cerrarModalPostulacion();
             }
         });
