@@ -108,39 +108,7 @@ function renderActions(ev) {
   const container = document.getElementById("actionsContainer");
   container.innerHTML = "";
 
-  // 1. Preguntas
-  if (ev.PreguntasAceptadas == 1 || ev.Activado == 1) {
-    container.appendChild(
-      createActionBtn(
-        "Preguntas",
-        "question_mark",
-        "btn-outline-warning",
-        null,
-        true,
-        "Preguntas bloqueadas"
-      )
-    );
-  } else {
-    container.appendChild(
-      createActionBtn("Preguntas", "question_mark", "btn-outline-warning", function () {
-        window.location.href = "questionsEv.php?Ev=" + ev.idEvaluaciones;
-      })
-    );
-  }
-
-  // 2. Cambiar Status (Activo/Inactivo)
-  container.appendChild(
-    createActionBtn(
-      "Cambiar Status",
-      "sync",
-      "btn-outline-info",
-      function () {
-        updateStatusEvaluacion(ev.Status, ev.idEvaluaciones);
-      }
-    )
-  );
-
-  // 3. Ver Evaluados
+  // 1. Ver Evaluados
   if (ev.TipoEvaluacion == 1) {
     if (ev.Activado == 0) {
       container.appendChild(
@@ -162,7 +130,7 @@ function renderActions(ev) {
     }
   }
 
-  // 4. Ver Resultados
+  // 2. Ver Resultados
   if (ev.TipoEvaluacion == 1) {
     if (ev.Activado == 0) {
       container.appendChild(
@@ -184,7 +152,7 @@ function renderActions(ev) {
     }
   }
 
-  // 5. Publicar
+  // 3. Publicar
   if (ev.ConPreguntas > 0) {
     if (ev.PreguntasAceptadas == 1) {
       if (ev.Activado == 1) {
@@ -230,7 +198,7 @@ function renderActions(ev) {
     );
   }
 
-  // 6. Ver Restantes (if there are remaining)
+  // 4. Ver Restantes (if there are remaining)
   if (ev.TipoEvaluacion == 1 && ev.Restantes > 0) {
     container.appendChild(
       createActionBtn(
@@ -312,9 +280,9 @@ async function acceptQuestionsEv(iEvaluation) {
 async function openShareEvaluation(evaluation) {
   // Usar currentEvaluation que tiene los datos de la evaluación actual
   const tipoEvaluacion = currentEvaluation ? currentEvaluation.TipoEvaluacion : null;
-  
+
   console.log("openShareEvaluation - TipoEvaluacion:", tipoEvaluacion);
-  
+
   if (tipoEvaluacion == 1) {
     // Evaluación 360° - Ir a la página de configuración de evaluadores
     console.log("Redirigiendo a publish-evaluation.php (360°)");
@@ -338,19 +306,19 @@ async function publishNormalSurveyDirectly(evaluation) {
     op: "acceptPublicationOfTheEvaluation",
     ev: evaluation,
   };
-  
+
   // Mostrar loader
-  $.blockUI({ 
+  $.blockUI({
     message: '<div class="d-flex justify-content-center align-items-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><span class="ms-2">Publicando encuesta...</span></div>',
-    css: { 
-      border: 'none', 
-      padding: '15px', 
-      backgroundColor: '#fff', 
+    css: {
+      border: 'none',
+      padding: '15px',
+      backgroundColor: '#fff',
       borderRadius: '10px',
-      opacity: .9 
+      opacity: .9
     }
   });
-  
+
   try {
     let respuesta = await $.ajax({
       type: "post",
@@ -359,9 +327,9 @@ async function publishNormalSurveyDirectly(evaluation) {
       dataType: "json",
       timeout: 30000,
     });
-    
+
     $.unblockUI();
-    
+
     if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
       toastr.success(respuesta.Msg || "Encuesta publicada exitosamente.", "¡Completado!");
       // Recargar la página de detalle para reflejar cambios

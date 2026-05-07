@@ -50,6 +50,214 @@ function hideTabLoading() {
     }
 }
 
+function getBootstrapModalInstance(modalEl, options = {}) {
+    if (!modalEl || typeof bootstrap === 'undefined' || !bootstrap.Modal) return null;
+
+    if (typeof bootstrap.Modal.getOrCreateInstance === 'function') {
+        return bootstrap.Modal.getOrCreateInstance(modalEl, options);
+    }
+
+    let instance = typeof bootstrap.Modal.getInstance === 'function'
+        ? bootstrap.Modal.getInstance(modalEl)
+        : null;
+
+    if (!instance) {
+        instance = new bootstrap.Modal(modalEl, options);
+    }
+
+    return instance;
+}
+
+function showBootstrapTab(tabEl) {
+    if (!tabEl) return;
+
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+        if (typeof bootstrap.Tab.getOrCreateInstance === 'function') {
+            bootstrap.Tab.getOrCreateInstance(tabEl).show();
+            return;
+        }
+
+        let instance = typeof bootstrap.Tab.getInstance === 'function'
+            ? bootstrap.Tab.getInstance(tabEl)
+            : null;
+
+        if (!instance) {
+            instance = new bootstrap.Tab(tabEl);
+        }
+
+        instance.show();
+        return;
+    }
+
+    if (typeof $ === 'function') {
+        $(tabEl).tab('show');
+    }
+}
+
+function ensureStaticModal(modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl || typeof bootstrap === 'undefined' || !bootstrap.Modal) return;
+
+    modalEl.setAttribute('data-bs-backdrop', 'static');
+    modalEl.setAttribute('data-bs-keyboard', 'false');
+    getBootstrapModalInstance(modalEl, { backdrop: 'static', keyboard: false });
+}
+
+function syncDetallePostulanteEditButtonVisibility() {
+    const $button = $('#btnToggleEditMode');
+    if (!$button.length) return;
+
+    const activeTabId = $('#detallePostulanteTabs .nav-link.active').attr('id');
+    const isInfoTab = activeTabId === 'tab-dp-info-btn';
+
+    if (!isInfoTab && window.PostulanteEditor && typeof window.PostulanteEditor.isModoEdicion === 'function' && window.PostulanteEditor.isModoEdicion()) {
+        window.PostulanteEditor.toggleEditMode();
+    }
+
+    $button.toggleClass('d-none', !isInfoTab);
+    if (!isInfoTab) {
+        $('#editModeButtons').addClass('d-none');
+    }
+}
+
+function resetDetallePostulanteState(showListView = false) {
+    if (window.PostulanteEditor && typeof window.PostulanteEditor.isModoEdicion === 'function' && window.PostulanteEditor.isModoEdicion()) {
+        window.PostulanteEditor.toggleEditMode();
+    }
+
+    $('#detalleIdPostulanteVacante').val('');
+    $('#detalleIdPostulante').val('');
+    $('#detalleIdPostulanteVacanteNum').val('');
+    $('#detallePostulanteNombreHidden').val('');
+    $('#detallePostulanteNombreHeader').text('Postulante');
+    $('#detallePostulantePuesto').text('Vacante');
+    $('#breadcrumbPostulanteNombre').text('Detalle');
+    $('#detallePostulanteStatus').attr('class', 'status-pill en-proceso mt-1').text('En Proceso');
+    $('#detallePostulanteFecha').val('-');
+    $('#edit_Nombre, #edit_ApellidoPaterno, #edit_ApellidoMaterno, #edit_CURP, #edit_CorreoElectronico, #edit_CodigoPostal, #edit_Calle, #edit_NumeroExterior, #edit_NumeroInterior, #edit_Estado, #edit_Ciudad').val('');
+    $('#edit_Colonia').html('<option value="">Seleccionar...</option>').val('');
+    $('#edit_Direccion').val('');
+    $('#direccionPreview').text('-');
+    $('#cpStatus').text('');
+    $('#cmbEstatusPostulante').val('1');
+    $('#txtObservacionesEstatus').val('');
+    $('#listaHistorial').html('<p class="text-muted text-center">No hay historial registrado</p>');
+    $('#listaRequisitosPostulante').html('<p class="text-muted text-center">No hay requisitos configurados</p>');
+    $('#tablaTelefonos').html('<p class="text-muted text-center">Cargando teléfonos...</p>');
+    $('#btnToggleEditMode').removeClass('d-none btn-outline-secondary').addClass('btn-outline-primary').html('<span class="material-symbols-outlined align-middle me-1">edit</span>Editar');
+    $('#editModeButtons').addClass('d-none');
+
+    const firstTab = document.getElementById('tab-dp-info-btn');
+    showBootstrapTab(firstTab);
+
+    syncDetallePostulanteEditButtonVisibility();
+
+    if (showListView) {
+        mostrarListaPostulantes();
+    }
+}
+
+function updateComparativoTabState(vacante = null) {
+    const hasVacante = !!vacante;
+    $('#comparativoVacanteNombre').text(hasVacante ? (vacante.NombreVacante || 'Vacante') : 'Sin vacante seleccionada');
+
+    if (!hasVacante) {
+        resetComparativoInlineState();
+    }
+}
+
+function destroyComparativoCharts() {
+    if (chartComparativoVacanteColumn) {
+        chartComparativoVacanteColumn.destroy();
+        chartComparativoVacanteColumn = null;
+    }
+
+    if (chartComparativoVacanteRadar) {
+        chartComparativoVacanteRadar.destroy();
+        chartComparativoVacanteRadar = null;
+    }
+}
+
+function renderComparativoEmptyState(title, description, icon = 'monitoring') {
+    $('#comparativoEmptyState').removeClass('d-none').html(`
+        <span class="material-symbols-outlined">${icon}</span>
+        <p class="mb-2">${title}</p>
+        <p class="small text-muted mb-0">${description}</p>
+    `);
+}
+
+function resetComparativoInlineState() {
+    rawComparativoVacante = [];
+    destroyComparativoCharts();
+
+    const $selEvaluaciones = $('#selComparativoEvaluaciones');
+    const $selCandidatos = $('#selCandidatosComparar');
+
+    if ($selCandidatos.hasClass('select2-hidden-accessible')) {
+        $selCandidatos.select2('destroy');
+    }
+
+    $selEvaluaciones.html('');
+    $selCandidatos.empty();
+    $('#contenedorTablasComparativo').html('');
+    $('#comparativoContent').addClass('d-none');
+    $('#comparativoLoadingState').addClass('d-none');
+    renderComparativoEmptyState(
+        'Selecciona una vacante con evaluaciones finalizadas para consultar su comparativo.',
+        'Aquí podrás comparar postulantes por evaluación, score general y competencias sin salir de la ficha de la vacante.'
+    );
+    switchComparativoChart('column');
+}
+
+async function loadComparativoResultadosTab() {
+    const idVacante = $('#postulantesIdVacante').val();
+    if (!idVacante) {
+        resetComparativoInlineState();
+        return;
+    }
+
+    $('#comparativoEmptyState').addClass('d-none');
+    $('#comparativoContent').addClass('d-none');
+    $('#comparativoLoadingState').removeClass('d-none');
+
+    try {
+        const response = await $.post('Backend/Postulantes/App.php', { op: 'getComparativoResultadosVacante', IdVacante: idVacante });
+        const result = JSON.parse(response);
+
+        if (result.Siguiente && result.Data && result.Data.length > 0) {
+            rawComparativoVacante = result.Data;
+            const evaluaciones = [...new Set(rawComparativoVacante.map(item => item.NombreEvaluacion))];
+            let options = '';
+            evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
+            $('#selComparativoEvaluaciones').html(options);
+            $('#comparativoLoadingState').addClass('d-none');
+            $('#comparativoContent').removeClass('d-none');
+            switchComparativoChart('column');
+            loadComparativoCandidatos();
+        } else {
+            $('#comparativoLoadingState').addClass('d-none');
+            $('#comparativoContent').addClass('d-none');
+            renderComparativoEmptyState(
+                'Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.',
+                'Cuando existan resultados comparables por evaluación, se mostrarán aquí automáticamente.'
+            );
+            destroyComparativoCharts();
+            $('#contenedorTablasComparativo').html('');
+        }
+    } catch (err) {
+        console.error('Error en gráficas comparativas', err);
+        $('#comparativoLoadingState').addClass('d-none');
+        $('#comparativoContent').addClass('d-none');
+        renderComparativoEmptyState(
+            'No se pudo cargar el comparativo de esta vacante.',
+            'Intenta cambiar de pestaña o volver a seleccionar la vacante.',
+            'error'
+        );
+        destroyComparativoCharts();
+        $('#contenedorTablasComparativo').html('');
+    }
+}
+
 // ==========================================
 // INICIALIZACIÓN
 // ==========================================
@@ -60,6 +268,7 @@ $(document).ready(function() {
     loadCombos();
     setupEventListeners();
     initPostulantesTable();
+    updateComparativoTabState(null);
     initDeepLinking();
     ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 });
@@ -75,10 +284,13 @@ function initDeepLinking() {
     if (idVacante) {
         setTimeout(() => {
             seleccionarVacante(idVacante);
-            if (tab === 'postulantes') {
-                const tabBtn = document.getElementById('tab-postulantes-btn');
-                if (tabBtn) bootstrap.Tab.getOrCreateInstance(tabBtn).show();
-            }
+            const tabButtons = {
+                postulantes: 'tab-postulantes-btn',
+                comparativo: 'tab-comparativo-btn',
+                info: 'tab-info-btn'
+            };
+            const tabBtn = document.getElementById(tabButtons[tab] || 'tab-info-btn');
+            showBootstrapTab(tabBtn);
         }, 500);
     }
 }
@@ -136,11 +348,11 @@ function initSelect2() {
         tags: true,
         createTag: createAreaTecnicaTag
     }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#cmbAreaTecnica'); });
-    
+
     $('#cmbPuesto').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     $('#cmbSucursal').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     $('#cmbTipoContratacion').select2({ dropdownParent: $('#modalAddVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
-    
+
     $('#editAreaTecnica').select2({
         dropdownParent: $('#modalEditVacante'),
         width: '100%',
@@ -149,25 +361,25 @@ function initSelect2() {
         tags: true,
         createTag: createAreaTecnicaTag
     }).on('select2:select', function(e) { handleAreaTecnicaSelect(e, '#editAreaTecnica'); });
-    
+
     $('#editPuesto').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     $('#editSucursal').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
     $('#editTipoContratacion').select2({ dropdownParent: $('#modalEditVacante'), width: '100%', placeholder: 'Seleccione...', allowClear: true });
-    
+
     $('#cmbNuevaEvaluacion').select2({
         dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
         placeholder: 'Seleccione evaluación...',
         allowClear: true
     });
-    
+
     $('#cmbProcesoEvaluacion').select2({
         dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
         placeholder: 'Seleccione proceso...',
         allowClear: true
     });
-    
+
     $('#cmbNuevaInduccion').select2({
         dropdownParent: $('#tabInfoRequisitos'),
         width: '100%',
@@ -182,9 +394,16 @@ function initPostulantesTable() {
 }
 
 function setupEventListeners() {
+    ensureStaticModal('modalAddVacante');
+    ensureStaticModal('modalEditVacante');
+
     $('#btnAddVacante').on('click', addVacante);
     $('#btnSaveEdit').on('click', updateVacante);
     $('#modalAddVacante').on('hidden.bs.modal', function() { clearAddForm(); });
+    $(document).on('shown.bs.tab', '#detallePostulanteTabs .nav-link', syncDetallePostulanteEditButtonVisibility);
+    $('#tab-comparativo-btn').on('shown.bs.tab', function () {
+        loadComparativoResultadosTab();
+    });
 
     // Spinner al cambiar a la pestaña Postulantes si aún no hay datos cargados
     $('#tab-postulantes-btn').on('shown.bs.tab', function () {
@@ -351,7 +570,7 @@ function renderVacantesCards(data) {
 
 function filtrarVacantes() {
     const term = $('#txtBuscarVacante').val().toLowerCase();
-    const filtradas = vacantesData.filter(v => 
+    const filtradas = vacantesData.filter(v =>
         (v.NombreVacante || '').toLowerCase().includes(term) ||
         (v.NombreArea || '').toLowerCase().includes(term) ||
         (v.Puesto || '').toLowerCase().includes(term)
@@ -401,29 +620,37 @@ function formatNumber(num) {
 async function seleccionarVacante(idEncoded) {
     vacanteSeleccionadaId = idEncoded;
     postulantesData = []; // reset para que el tab Postulantes sepa que debe recargar
+    resetDetallePostulanteState(true);
     $('.vacancy-card').removeClass('active');
     $(`.vacancy-card[data-id="${idEncoded}"]`).addClass('active');
-    
+
     const url = new URL(window.location);
     url.searchParams.set('vacante', idEncoded);
     window.history.replaceState({}, '', url);
-    
+
     showTabLoading();
-    
+
     try {
         const response = await $.post("Backend/Vacantes/App.php", { op: "getVacanteById", IdVacante: idEncoded });
         const result = JSON.parse(response);
-        
+
         if (result.Resultado && result.Siguiente) {
             const vacante = result.Datos;
             renderTabInfo(vacante, idEncoded);
             $('#postulantesIdVacante').val(idEncoded);
             $('#nombreVacantePostulantes').text(vacante.NombreVacante || 'Vacante');
-            
+            updateComparativoTabState(vacante);
+
+            const comparativoTabActivo = $('#tab-comparativo-btn').hasClass('active');
+
             await Promise.all([
                 loadPostulantes(idEncoded),
                 loadProcesosParaHistorial()
             ]);
+
+            if (comparativoTabActivo) {
+                await loadComparativoResultadosTab();
+            }
         }
     } catch (error) {
         console.error("Error al seleccionar vacante:", error);
@@ -441,10 +668,11 @@ function renderTabInfo(vacante, idEncoded) {
     } else if (vacante.SalarioMaximo) {
         salario = `Hasta $${formatNumber(vacante.SalarioMaximo)}`;
     }
-    
+
     const statusClass = vacante.Estatus == 1 ? 'borrador' : (vacante.Estatus == 2 ? 'activa' : 'cerrada');
     const statusText = vacante.Estatus == 1 ? 'Borrador' : (vacante.Estatus == 2 ? 'Activa' : 'Cerrada');
-    
+    const showPublicationLegend = parseInt(vacante.Estatus) === 2 && parseInt(vacante.Publicada) === 0;
+
     const html = `
         <!-- Header prominente -->
         <div class="vacante-header-card">
@@ -457,6 +685,11 @@ function renderTabInfo(vacante, idEncoded) {
                         <h4 class="mb-1 fw-bold text-truncate">${vacante.NombreVacante}</h4>
                         <span class="badge-status ${statusClass}">${statusText}</span>
                     </div>
+                    ${showPublicationLegend ? `
+                    <div class="small mt-2 text-warning fw-semibold">
+                        <span class="material-symbols-outlined align-middle" style="font-size:16px;">campaign</span>
+                        Esta vacante sigue activa, pero todavia no ha sido publicada.
+                    </div>` : ''}
                     <div class="text-muted small d-flex gap-3 flex-wrap mt-1">
                         <span><span class="material-symbols-outlined align-middle" style="font-size:16px;">location_on</span> ${vacante.Sucursal || 'Sin sucursal'}</span>
                         <span><span class="material-symbols-outlined align-middle" style="font-size:16px;">business</span> ${vacante.NombreArea || 'Sin área'}</span>
@@ -519,11 +752,17 @@ function renderTabInfo(vacante, idEncoded) {
                 <span class="material-symbols-outlined">quiz</span> Evaluaciones
             </h6>
             <div id="formAddEvaluacion" style="display:none;" class="mb-3">
-                <div class="input-group input-group-sm">
-                    <select id="cmbNuevaEvaluacion" class="form-select"><option value="">Seleccione evaluación...</option></select>
-                    <select id="cmbProcesoEvaluacion" class="form-select"><option value="">Seleccione proceso...</option></select>
-                    <button class="btn btn-minimal btn-sm" onclick="addEvaluacion()"><span class="material-symbols-outlined" style="font-size:18px;">save</span></button>
-                    <button class="btn btn-minimal btn-sm" onclick="hideAddEvaluacionForm()"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                <div class="row g-2 align-items-stretch">
+                    <div class="col-md-5">
+                        <select id="cmbNuevaEvaluacion" class="form-select"><option value="">Seleccione evaluación...</option></select>
+                    </div>
+                    <div class="col-md-5">
+                        <select id="cmbProcesoEvaluacion" class="form-select"><option value="">Seleccione proceso...</option></select>
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button class="btn btn-minimal btn-sm flex-fill" type="button" onclick="addEvaluacion()"><span class="material-symbols-outlined" style="font-size:18px;">save</span></button>
+                        <button class="btn btn-minimal btn-sm flex-fill" type="button" onclick="hideAddEvaluacionForm()"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                    </div>
                 </div>
             </div>
             <div id="listaEvaluaciones"><p class="text-muted text-center">Cargando...</p></div>
@@ -546,9 +785,9 @@ function renderTabInfo(vacante, idEncoded) {
 
         <input type="hidden" id="detalleIdVacante" value="${idEncoded}">
     `;
-    
+
     $('#contenidoTabInfo').html(html);
-    
+
     // Re-inicializar selects del tab info
     loadEvaluaciones().then(() => {
         $('#cmbNuevaEvaluacion').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione evaluación...', allowClear: true });
@@ -559,7 +798,7 @@ function renderTabInfo(vacante, idEncoded) {
     loadProcesosVacantes().then(() => {
         $('#cmbProcesoEvaluacion').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione proceso...', allowClear: true });
     });
-    
+
     loadRequisitosDetalle(idEncoded);
     loadEvaluacionesDetalle(idEncoded);
     loadInduccionesDetalle(idEncoded);
@@ -587,7 +826,7 @@ async function addVacante() {
     const salarioMinimoRaw = $('#txtSalarioMinimo').val();
     const salarioMaximoRaw = $('#txtSalarioMaximo').val();
     const fechaCierre = $('#txtFechaCierre').val();
-    
+
     if (!nombre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El nombre de la vacante es requerido.</span></div>`, "top-right", 5000); $('#txtNombreVacante').focus(); return; }
     if (!tipoContratacion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El tipo de contratación es requerido.</span></div>`, "top-right", 5000); $('#cmbTipoContratacion').focus(); return; }
     if (!fechaApertura) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de apertura es requerida.</span></div>`, "top-right", 5000); $('#txtFechaApertura').focus(); return; }
@@ -596,7 +835,7 @@ async function addVacante() {
     if (!sucursal) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La sucursal es requerida.</span></div>`, "top-right", 5000); $('#cmbSucursal').focus(); return; }
     if (!salarioMinimoRaw) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El salario mínimo es requerido.</span></div>`, "top-right", 5000); $('#txtSalarioMinimo').focus(); return; }
     if (!salarioMaximoRaw) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El salario máximo es requerido.</span></div>`, "top-right", 5000); $('#txtSalarioMaximo').focus(); return; }
-    
+
     const salarioMinimo = parseFloat(salarioMinimoRaw);
     const salarioMaximo = parseFloat(salarioMaximoRaw);
     if (Number.isNaN(salarioMinimo) || Number.isNaN(salarioMaximo)) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Verifica los salarios (deben ser numéricos).</span></div>`, "top-right", 5000); return; }
@@ -604,7 +843,7 @@ async function addVacante() {
     if (!fechaCierre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de cierre es requerida.</span></div>`, "top-right", 5000); $('#txtFechaCierre').focus(); return; }
     if (new Date(fechaCierre) < new Date(fechaApertura)) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de cierre no puede ser menor a la fecha de apertura.</span></div>`, "top-right", 5000); $('#txtFechaCierre').focus(); return; }
     if (!descripcionPuesto) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La descripción del puesto es requerida.</span></div>`, "top-right", 5000); $('#txtDescripcionPuesto').focus(); return; }
-    
+
     try {
         let areaTecnicaFinal = areaTecnica;
         const selectedOption = $('#cmbAreaTecnica option:selected');
@@ -681,7 +920,7 @@ async function openEditModal(idEncoded) {
             $('#editFechaCierre').val(vacante.FechaCierre || '');
             $('#editBanderaCV').prop('checked', vacante.BanderaCV == 1);
             $('#editBanderaSE').prop('checked', vacante.BanderaSE == 1);
-            
+
             let modalEl = document.getElementById('modalEditVacante');
             let modal = bootstrap.Modal.getInstance(modalEl);
             if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
@@ -699,11 +938,11 @@ async function updateVacante() {
     const nombre = $('#editNombreVacante').val().trim();
     const tipoContratacion = $('#editTipoContratacion').val();
     const fechaApertura = $('#editFechaApertura').val();
-    
+
     if (!nombre) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El nombre de la vacante es requerido.</span></div>`, "top-right", 5000); $('#editNombreVacante').focus(); return; }
     if (!tipoContratacion) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">El tipo de contratación es requerido.</span></div>`, "top-right", 5000); $('#editTipoContratacion').focus(); return; }
     if (!fechaApertura) { showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La fecha de apertura es requerida.</span></div>`, "top-right", 5000); $('#editFechaApertura').focus(); return; }
-    
+
     try {
         let areaTecnicaFinal = $('#editAreaTecnica').val();
         const selectedOption = $('#editAreaTecnica option:selected');
@@ -826,6 +1065,7 @@ async function deleteVacante(idEncoded) {
                     vacanteSeleccionadaId = null;
                     $('#contenidoTabInfo').html(`<div class="text-center text-muted py-5"><span class="material-symbols-outlined" style="font-size:64px;">work</span><p class="mt-3 fs-5">Selecciona una vacante de la lista para ver sus detalles</p></div>`);
                     $('#postulantesIdVacante').val('');
+                    updateComparativoTabState(null);
                     renderPostulantesCards([]);
                     updatePostulantesStats([]);
                 }
@@ -949,7 +1189,11 @@ function showAddEvaluacionForm() {
         $('#cmbProcesoEvaluacion').select2('destroy').select2({ dropdownParent: $('#tabInfoRequisitos'), width: '100%', placeholder: 'Seleccione proceso...', allowClear: true });
     });
 }
-function hideAddEvaluacionForm() { $('#formAddEvaluacion').slideUp(); $('#cmbNuevaEvaluacion').val(''); $('#cmbProcesoEvaluacion').val(''); }
+function hideAddEvaluacionForm() {
+    $('#formAddEvaluacion').slideUp();
+    $('#cmbNuevaEvaluacion').val('').trigger('change');
+    $('#cmbProcesoEvaluacion').val('').trigger('change');
+}
 
 async function addEvaluacion() {
     const idVacante = $('#detalleIdVacante').val();
@@ -1085,7 +1329,7 @@ let wizardCurrentStep = 1;
 
 function wizardGoToStep(step) {
     wizardCurrentStep = step;
-    
+
     // Actualizar barra de progreso
     $('.wizard-step').each(function() {
         const stepNum = parseInt($(this).data('step'));
@@ -1096,14 +1340,14 @@ function wizardGoToStep(step) {
             $(this).addClass('completed');
         }
     });
-    
+
     $('.wizard-connector').each(function(idx) {
         $(this).removeClass('completed');
         if (idx < step - 1) {
             $(this).addClass('completed');
         }
     });
-    
+
     // Mostrar/ocultar contenido
     $('[id^="wizardStep"]').addClass('d-none');
     $(`#wizardStep${step}`).removeClass('d-none');
@@ -1523,7 +1767,7 @@ async function showDetallePostulante(idEncoded) {
             $('#edit_Ciudad').val(p.Ciudad || '');
 
              const nombreCompleto = `${p.Nombre || ''} ${p.ApellidoPaterno || ''} ${p.ApellidoMaterno || ''}`.trim();
-             
+
              $('#detallePostulanteNombreHeader').text(nombreCompleto);
             $('#detallePostulantePuesto').text($('#nombreVacantePostulantes').text());
             $('#breadcrumbPostulanteNombre').text(nombreCompleto);
@@ -1556,11 +1800,12 @@ async function showDetallePostulante(idEncoded) {
 
             // Resetear tabs secundarios al primero
             const firstTab = document.getElementById('tab-dp-info-btn');
-            if (firstTab) $(firstTab).tab('show');
+            showBootstrapTab(firstTab);
 
             $('#subVistaListaPostulantes').addClass('d-none');
             $('#wizardAddPostulante').addClass('d-none');
             $('#subVistaDetallePostulante').removeClass('d-none');
+            syncDetallePostulanteEditButtonVisibility();
         } else {
             showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Error!</span><span class="alert-text">No se pudo cargar la información del postulante.</span></div>`, 'top-right', 5000);
         }
@@ -1844,29 +2089,9 @@ function drawResultadosPostulante() {
 // ==========================================
 
 async function showComparativoResultadosModal() {
-    const idVacante = $('#postulantesIdVacante').val();
-    if (!idVacante) {
-        showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">Selecciona una vacante primero.</span></div>`, 'top-right', 3000);
-        return;
-    }
-    try {
-        const response = await $.post('Backend/Postulantes/App.php', { op: 'getComparativoResultadosVacante', IdVacante: idVacante });
-        const result = JSON.parse(response);
-        if (result.Siguiente && result.Data && result.Data.length > 0) {
-            rawComparativoVacante = result.Data;
-            const evaluaciones = [...new Set(rawComparativoVacante.map(item => item.NombreEvaluacion))];
-            let options = '';
-            evaluaciones.forEach(ev => { options += `<option value="${ev}">${ev}</option>`; });
-            $('#selComparativoEvaluaciones').html(options);
-            let modalEl = document.getElementById('modalComparativoResultados');
-            let modal = bootstrap.Modal.getInstance(modalEl);
-            if (!modal) modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-            modal.show();
-            $('#modalComparativoResultados').on('shown.bs.modal', function () { loadComparativoCandidatos(); $(this).off('shown.bs.modal'); });
-        } else {
-            showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">¡Aviso!</span><span class="alert-text">Aún no hay evaluaciones finalizadas por los postulantes de esta vacante.</span></div>`, 'top-right', 4000);
-        }
-    } catch (err) { console.error('Error en gráficas comparativas', err); }
+    const comparativoTabBtn = document.getElementById('tab-comparativo-btn');
+    showBootstrapTab(comparativoTabBtn);
+    return loadComparativoResultadosTab();
 }
 
 function loadComparativoCandidatos() {
@@ -1889,8 +2114,7 @@ function loadComparativoCandidatos() {
     });
     const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
     $sel.val(primerosCinco);
-    $sel.select2({ placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' }).on('change', function () { drawComparativoResultados(); });
-    $('#listCheckCandidatosComparar').html('');
+    $sel.select2({ dropdownParent: $('#tabComparativo'), placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' }).on('change', function () { drawComparativoResultados(); });
     drawComparativoResultados();
 }
 
@@ -1950,7 +2174,7 @@ function drawComparativoResultados() {
     candidatosSeleccionados.forEach((candidato, idx) => {
         let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
         let tableData = datosCandidato.map(d => ({ Competencia: d.Competencia || 'Sin Competencia', Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2) }));
-        new Tabulator(`#tabla_comparativo_${idx}`, { data: tableData, layout: "fitColumns", columns: [ { title: "COMPETENCIA", field: "Competencia", headerHozAlign: "center", widthGrow: 2 }, { title: "SCORE", field: "Calificacion", hozAlign: "center", headerHozAlign: "center", widthGrow: 1 } ] });
+        renderComparativoTable(`#tabla_comparativo_${idx}`, tableData);
     });
 }
 
@@ -1969,6 +2193,44 @@ function switchComparativoChart(type) {
         $('#containerChartRadar').removeClass('d-none');
         if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.refresh();
     }
+}
+
+function renderComparativoTable(tableSelector, tableData) {
+    if (typeof Tabulator !== 'undefined') {
+        new Tabulator(tableSelector, {
+            data: tableData,
+            layout: 'fitColumns',
+            columns: [
+                { title: 'COMPETENCIA', field: 'Competencia', headerHozAlign: 'center', widthGrow: 2 },
+                { title: 'SCORE', field: 'Calificacion', hozAlign: 'center', headerHozAlign: 'center', widthGrow: 1 }
+            ]
+        });
+        return;
+    }
+
+    const container = document.querySelector(tableSelector);
+    if (!container) return;
+
+    const rows = tableData.map(row => `
+        <tr>
+            <td>${row.Competencia}</td>
+            <td class="text-center">${row.Calificacion}</td>
+        </tr>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="text-center">COMPETENCIA</th>
+                        <th class="text-center">SCORE</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+    `;
 }
 
 // ==========================================

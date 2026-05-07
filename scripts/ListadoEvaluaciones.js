@@ -8,6 +8,68 @@ let gridEvaluaciones = null;
 let evDataMap = {};
 let _panelCurrentEv = null;
 
+function shouldHideEvaluationResultTabs(row) {
+  if (!row) return false;
+
+  const tipoEvaluacion = String(row.TipoEvaluacion ?? "").trim();
+  const dirigidoA = String(row.DirigidoA ?? "").trim();
+  const txTipoEvaluacion = String(row.TxTipoEvaluacion ?? "").trim().toLowerCase();
+  const txDirigidoA = String(row.TxDirigidoA ?? "").trim().toLowerCase();
+
+  const isEncuestaNormal = tipoEvaluacion === "2" || txTipoEvaluacion.includes("normal");
+  const isDirigidaPostulantes = dirigidoA === "2" || txDirigidoA.includes("postulantes");
+
+  return isEncuestaNormal && isDirigidaPostulantes;
+}
+
+function setEvaluationPanelTabVisibility(row) {
+  const hideResultTabs = shouldHideEvaluationResultTabs(row);
+  const tabConfig = [
+    {
+      buttonId: "ev-tab-evaluados-btn",
+      paneId: "ev-tab-evaluados",
+      frameId: "evPanelEvaluadosFrame"
+    },
+    {
+      buttonId: "ev-tab-resultados-btn",
+      paneId: "ev-tab-resultados",
+      frameId: "evPanelResultadosFrame"
+    }
+  ];
+
+  tabConfig.forEach(({ buttonId, paneId, frameId }) => {
+    const button = document.getElementById(buttonId);
+    const pane = document.getElementById(paneId);
+    const frame = document.getElementById(frameId);
+    const tabItem = button ? button.closest("li") : null;
+
+    if (tabItem) {
+      tabItem.style.display = hideResultTabs ? "none" : "";
+    }
+
+    if (button) {
+      button.disabled = hideResultTabs;
+      button.setAttribute("aria-hidden", hideResultTabs ? "true" : "false");
+    }
+
+    if (pane && hideResultTabs) {
+      pane.classList.remove("show", "active");
+    }
+
+    if (frame && hideResultTabs) {
+      frame.src = "about:blank";
+    }
+  });
+
+  if (hideResultTabs) {
+    const activeHiddenBtn = document.querySelector("#ev-tab-evaluados-btn.active, #ev-tab-resultados-btn.active");
+    const overviewBtn = document.getElementById("ev-tab-overview-btn");
+    if (activeHiddenBtn && overviewBtn) {
+      new bootstrap.Tab(overviewBtn).show();
+    }
+  }
+}
+
 // Lazy-load iframes solo cuando se activa la pestaña
 document.addEventListener("DOMContentLoaded", function () {
   const tabMap = {
@@ -38,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (f) f.src = "about:blank";
       });
       _panelCurrentEv = null;
+      setEvaluationPanelTabVisibility(null);
       // Volver a pestaña Resumen
       const overviewBtn = document.getElementById("ev-tab-overview-btn");
       if (overviewBtn) new bootstrap.Tab(overviewBtn).show();
@@ -51,6 +114,8 @@ function openEvaluationPanel(id) {
 
   const ev = btoa(row.idEvaluaciones);
   _panelCurrentEv = ev;
+
+  setEvaluationPanelTabVisibility(row);
 
   document.getElementById("evPanelTitle").textContent = row.Titulo;
   document.getElementById("evPanelMeta").textContent = `ID: ${row.idEvaluaciones}`;

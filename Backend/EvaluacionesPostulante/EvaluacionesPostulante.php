@@ -1,10 +1,11 @@
 <?php
+
 if (file_exists("../Conexiones/Conexiones.php")) {
     require_once("../Conexiones/Conexiones.php");
 } else {
     if (file_exists("./Conexiones/Conexiones.php")) {
         require_once("./Conexiones/Conexiones.php");
-    } else if (file_exists("../../Conexiones/Conexiones.php")) {
+    } elseif (file_exists("../../Conexiones/Conexiones.php")) {
         require_once("../../Conexiones/Conexiones.php");
     }
 }
@@ -17,11 +18,14 @@ class EvaluacionesPostulante extends Conexiones
 
     private function sanitize($str)
     {
-        if ($str === null) return '';
+        if ($str === null) {
+            return '';
+        }
         $str = trim($str);
         $str = stripslashes($str);
         $str = htmlspecialchars($str);
         $str = str_replace("'", "''", $str);
+
         return $str;
     }
 
@@ -34,7 +38,7 @@ class EvaluacionesPostulante extends Conexiones
      * autenticado, agrupadas por vacante y proceso.
      * Verifica que el CURP de sesión sea dueño del IdPostulanteVacante.
      */
-    function getEvaluacionesPostulante($curpSesion)
+    public function getEvaluacionesPostulante($curpSesion)
     {
         try {
             $curpSesion = $this->sanitize($curpSesion);
@@ -69,15 +73,16 @@ class EvaluacionesPostulante extends Conexiones
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
-                "Data"      => $resultado
+                "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             error_log("Error en getEvaluacionesPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
-                "Data"      => [],
-                "Msg"       => "Error al obtener evaluaciones."
+                "Data" => [],
+                "Msg" => "Error al obtener evaluaciones."
             ]);
         }
     }
@@ -87,7 +92,7 @@ class EvaluacionesPostulante extends Conexiones
      * para un proceso específico de una vacante.
      * Verifica que el CURP de sesión sea dueño del IdPostulanteVacante.
      */
-    function getEvaluacionesPorProceso($IdProceso, $curpSesion)
+    public function getEvaluacionesPorProceso($IdProceso, $curpSesion)
     {
         try {
             $IdProceso = intval($IdProceso);
@@ -124,15 +129,16 @@ class EvaluacionesPostulante extends Conexiones
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
-                "Data"      => $resultado
+                "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             error_log("Error en getEvaluacionesPorProceso: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
-                "Data"      => [],
-                "Msg"       => "Error al obtener evaluaciones del proceso."
+                "Data" => [],
+                "Msg" => "Error al obtener evaluaciones del proceso."
             ]);
         }
     }
@@ -141,7 +147,7 @@ class EvaluacionesPostulante extends Conexiones
      * Obtener las preguntas de una evaluación específica.
      * Verifica que el IdPostulanteEvaluacion pertenezca al CURP de sesión.
      */
-    function getPreguntasEvaluacionPostulante($IdPostulanteEvaluacion, $curpSesion)
+    public function getPreguntasEvaluacionPostulante($IdPostulanteEvaluacion, $curpSesion)
     {
         try {
             $IdPostulanteEvaluacion = intval($IdPostulanteEvaluacion);
@@ -161,12 +167,12 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "No tienes permiso para acceder a esta evaluación."
+                    "Msg" => "No tienes permiso para acceder a esta evaluación."
                 ]);
             }
 
             $idEvaluacion = $resVerif[0]['IdEvaluacion'];
-            $estatus      = intval($resVerif[0]['EstatusEvaluacion']);
+            $estatus = intval($resVerif[0]['EstatusEvaluacion']);
 
             // Obtener preguntas
             $qPreguntas = "SELECT PE.idPreguntasEvaluacion AS IdPregunta,
@@ -185,7 +191,7 @@ class EvaluacionesPostulante extends Conexiones
             // Para cada pregunta obtener opciones, rango y respuesta previa
             for ($i = 0; $i < count($preguntas); $i++) {
                 $idPregunta = $preguntas[$i]['IdPregunta'];
-                $tipo       = $preguntas[$i]['idTipoPregunta'];
+                $tipo = $preguntas[$i]['idTipoPregunta'];
 
                 // Opción múltiple
                 if ($tipo == 2 || $tipo == 4) {
@@ -220,15 +226,16 @@ class EvaluacionesPostulante extends Conexiones
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
-                "Estatus"   => $estatus,
-                "Data"      => $preguntas
+                "Estatus" => $estatus,
+                "Data" => $preguntas
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPreguntasEvaluacionPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
-                "Msg"       => "Error al obtener preguntas."
+                "Msg" => "Error al obtener preguntas."
             ]);
         }
     }
@@ -242,7 +249,7 @@ class EvaluacionesPostulante extends Conexiones
      * Acepta un array JSON de respuestas: [{"IdPregunta":5,"Respuesta":"A"}, ...]
      * Marca la evaluación como "En progreso" automáticamente.
      */
-    function saveRespuestasPostulante($IdPostulanteEvaluacion, $respuestas, $curpSesion)
+    public function saveRespuestasPostulante($IdPostulanteEvaluacion, $respuestas, $curpSesion)
     {
         try {
             $IdPostulanteEvaluacion = intval($IdPostulanteEvaluacion);
@@ -261,7 +268,7 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "No tienes permiso para esta evaluación."
+                    "Msg" => "No tienes permiso para esta evaluación."
                 ]);
             }
 
@@ -269,7 +276,7 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "Esta evaluación ya fue completada. No puedes modificar las respuestas."
+                    "Msg" => "Esta evaluación ya fue completada. No puedes modificar las respuestas."
                 ]);
             }
 
@@ -284,10 +291,28 @@ class EvaluacionesPostulante extends Conexiones
             // Recorrer y guardar cada respuesta (upsert)
             $guardadas = 0;
             foreach ($respuestas as $resp) {
-                $idPregunta     = intval($resp['IdPregunta']);
+                $idPregunta = intval($resp['IdPregunta']);
                 $valorRespuesta = $this->sanitize($resp['Respuesta']);
 
-                if ($idPregunta <= 0) continue;
+                if ($idPregunta <= 0) {
+                    continue;
+                }
+
+                $ConPregunta = new Conexiones();
+                $qPregunta = "SELECT BoolCorreta
+                             FROM PreguntasConfiguracion
+                             WHERE idPreguntasEvaluacion = $idPregunta
+                             LIMIT 1";
+                $resPregunta = $ConPregunta->Select($qPregunta);
+
+                if (count($resPregunta) > 0 && $resPregunta[0]['BoolCorreta'] !== null) {
+                    $valorNormalizado = mb_strtolower(trim($valorRespuesta), 'UTF-8');
+                    if (in_array($valorNormalizado, ['1', 'true', 'verdadero'], true)) {
+                        $valorRespuesta = '1';
+                    } elseif (in_array($valorNormalizado, ['0', 'false', 'falso'], true)) {
+                        $valorRespuesta = '0';
+                    }
+                }
 
                 // ¿Ya existe?
                 $Con3 = new Conexiones();
@@ -314,16 +339,17 @@ class EvaluacionesPostulante extends Conexiones
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
-                "ConMsg"    => true,
-                "Msg"       => "Se guardaron $guardadas respuesta(s) correctamente.",
+                "ConMsg" => true,
+                "Msg" => "Se guardaron $guardadas respuesta(s) correctamente.",
                 "Guardadas" => $guardadas
             ]);
         } catch (\Exception $e) {
             error_log("Error en saveRespuestasPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
-                "Msg"       => "Error al guardar respuestas."
+                "Msg" => "Error al guardar respuestas."
             ]);
         }
     }
@@ -334,7 +360,7 @@ class EvaluacionesPostulante extends Conexiones
      * - Calcula la calificación.
      * - Marca como Completada (EstatusEvaluacion = 3).
      */
-    function finalizarEvaluacionPostulante($IdPostulanteEvaluacion, $curpSesion)
+    public function finalizarEvaluacionPostulante($IdPostulanteEvaluacion, $curpSesion)
     {
         try {
             $IdPostulanteEvaluacion = intval($IdPostulanteEvaluacion);
@@ -354,7 +380,7 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "No tienes permiso para esta evaluación."
+                    "Msg" => "No tienes permiso para esta evaluación."
                 ]);
             }
 
@@ -362,7 +388,7 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "Esta evaluación ya fue completada."
+                    "Msg" => "Esta evaluación ya fue completada."
                 ]);
             }
 
@@ -386,7 +412,7 @@ class EvaluacionesPostulante extends Conexiones
                 return json_encode([
                     "Resultado" => false,
                     "Siguiente" => false,
-                    "Msg"       => "Faltan " . ($totalPreguntas - $respondidas) . " pregunta(s) por responder."
+                    "Msg" => "Faltan " . ($totalPreguntas - $respondidas) . " pregunta(s) por responder."
                 ]);
             }
 
@@ -404,10 +430,13 @@ class EvaluacionesPostulante extends Conexiones
                         END) AS TotalEvaluables,
                         -- Cuántas de esas fueron respondidas correctamente
                         SUM(CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND BINARY pr.Respuesta = BINARY CAST(pc.BoolCorreta AS CHAR) THEN 1
+                            WHEN pc.BoolCorreta IS NOT NULL AND (
+                                (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
+                                OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
+                            ) THEN 1
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
-                                BINARY pr.Respuesta = BINARY CAST(pc.RespuestaCorrectaOM AS CHAR)
-                                OR BINARY pr.Respuesta = BINARY ppr.DescripcionRespuesta
+                                LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)))
+                                OR LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(ppr.DescripcionRespuesta USING utf8mb4)))
                             ) THEN 1
                             ELSE 0
                         END) AS Correctas
@@ -420,8 +449,8 @@ class EvaluacionesPostulante extends Conexiones
 
             // Denominador = preguntas evaluables (evitar división por cero)
             $totalEvaluables = max(intval($resCalc[0]['TotalEvaluables'] ?? 0), 1);
-            $correctas       = intval($resCalc[0]['Correctas'] ?? 0);
-            $calificacion    = round(($correctas / $totalEvaluables) * 100, 2);
+            $correctas = intval($resCalc[0]['Correctas'] ?? 0);
+            $calificacion = round(($correctas / $totalEvaluables) * 100, 2);
 
             // Marcar como completada
             $Con5 = new Conexiones();
@@ -432,18 +461,19 @@ class EvaluacionesPostulante extends Conexiones
                                  WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion", []);
 
             return json_encode([
-                "Resultado"    => true,
-                "Siguiente"    => true,
-                "ConMsg"       => true,
-                "Msg"          => "¡Evaluación completada con éxito!",
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "¡Evaluación completada con éxito!",
                 "Calificacion" => $calificacion
             ]);
         } catch (\Exception $e) {
             error_log("Error en finalizarEvaluacionPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
-                "Msg"       => "Error al finalizar la evaluación."
+                "Msg" => "Error al finalizar la evaluación."
             ]);
         }
     }

@@ -14,6 +14,8 @@
 
     <!-- Styles adicionales -->
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
+    <link href="plugins/tabulator/dist/css/tabulator.css" rel="stylesheet">
+    <link href="plugins/tabulator/dist/css/tabulator_modern.min.css" rel="stylesheet">
     <style>
         .status-badge {
             font-size: 0.85rem;
@@ -1260,6 +1262,14 @@
                                                         style="font-size:18px;">people</span> Postulantes
                                                 </button>
                                             </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="tab-comparativo-btn" data-bs-toggle="tab"
+                                                    data-bs-target="#tabComparativo" type="button" role="tab"
+                                                    onclick="updateUrlTab('comparativo')">
+                                                    <span class="material-symbols-outlined align-middle me-1"
+                                                        style="font-size:18px;">bar_chart</span> Comparativo
+                                                </button>
+                                            </li>
                                         </ul>
                                     </div>
                                     <div class="card-body tab-content" id="vacanteTabsContent">
@@ -1817,7 +1827,7 @@
                                                                 Historial de Procesos
                                                             </h6>
                                                             <button type="button" class="btn btn-ghost btn-sm"
-                                                                onclick="mostrarFormAgregarTelefono()">
+                                                                onclick="showAddHistorialForm()">
                                                                 <span
                                                                     class="material-symbols-outlined align-middle">add</span>
                                                             </button>
@@ -1900,6 +1910,105 @@
                                                 </div>
                                             </div>
 
+                                        </div>
+
+                                        <!-- TAB COMPARATIVO -->
+                                        <div class="tab-pane fade" id="tabComparativo" role="tabpanel">
+                                            <!-- <div class="vacante-header-card mb-3">
+                                                <div
+                                                    class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                                                    <div>
+                                                        <h6 class="section-title-v2 border-0 pb-0 mb-2">
+                                                            <span class="material-symbols-outlined">bar_chart</span>
+                                                            Comparativo de Resultados
+                                                        </h6>
+                                                        <p class="text-muted mb-2">
+                                                            Consulta por evaluación cómo se comparan los postulantes de
+                                                            la vacante seleccionada mediante gráfica de barras, gráfica
+                                                            de araña y tablas por competencia.
+                                                        </p>
+                                                        <div class="small text-muted">
+                                                            Vacante activa: <strong id="comparativoVacanteNombre">Sin
+                                                                vacante seleccionada</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                                            <div class="empty-state-card" id="comparativoEmptyState">
+                                                <span class="material-symbols-outlined">monitoring</span>
+                                                <p class="mb-2">Selecciona una vacante con evaluaciones finalizadas para
+                                                    consultar su comparativo.</p>
+                                                <p class="small text-muted mb-0">Aquí podrás comparar postulantes por
+                                                    evaluación, score general y competencias sin salir de la ficha de la
+                                                    vacante.</p>
+                                            </div>
+                                            <div class="empty-state-card d-none" id="comparativoLoadingState">
+                                                <div class="spinner-border text-warning mb-3" role="status">
+                                                    <span class="visually-hidden">Cargando...</span>
+                                                </div>
+                                                <p class="mb-0">Cargando comparativo de la vacante...</p>
+                                            </div>
+                                            <div id="comparativoContent" class="d-none">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Seleccione Evaluación:</label>
+                                                        <select id="selComparativoEvaluaciones" class="form-select"
+                                                            onchange="loadComparativoCandidatos()"></select>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label class="form-label fw-bold">Seleccione Candidatos a
+                                                            comparar:</label>
+                                                        <select id="selCandidatosComparar" class="form-control"
+                                                            multiple="multiple" style="width: 100%;">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row text-center mb-4">
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="card border-primary shadow-sm h-100 mb-0 bg-white"
+                                                            id="cardChartColumn"
+                                                            onclick="switchComparativoChart('column')"
+                                                            style="cursor: pointer; transition: all 0.2s;">
+                                                            <div class="card-body py-3">
+                                                                <h6 class="mb-0 fw-bold text-primary"
+                                                                    id="textChartColumn">
+                                                                    <span
+                                                                        class="material-symbols-outlined align-middle me-1">bar_chart</span>
+                                                                    Postulantes mejor puntuados
+                                                                </h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="card border-0 shadow-none h-100 mb-0 bg-light"
+                                                            id="cardChartRadar"
+                                                            onclick="switchComparativoChart('radar')"
+                                                            style="cursor: pointer; transition: all 0.2s;">
+                                                            <div class="card-body py-3">
+                                                                <h6 class="mb-0 fw-bold text-muted" id="textChartRadar">
+                                                                    <span
+                                                                        class="material-symbols-outlined align-middle me-1">radar</span>
+                                                                    Postulantes por competencias
+                                                                </h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" id="containerChartColumn">
+                                                    <div class="col-md-12">
+                                                        <div id="chartComparativoVacanteColumn"
+                                                            style="width:100%; height:450px"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row d-none" id="containerChartRadar">
+                                                    <div class="col-md-12">
+                                                        <div id="chartComparativoVacanteRadar"
+                                                            style="width:100%; height:450px"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-4" id="contenedorTablasComparativo"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2012,7 +2121,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-minimal" data-bs-dismiss="modal">
                         <span class="material-symbols-outlined align-middle me-1">close</span>
                         Cancelar
                     </button>
@@ -2190,7 +2299,7 @@
                         Resultados de Evaluación
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-ghost fw-bold"
+                        <button type="button" class="btn btn-sm btn-minimal fw-bold"
                             onclick="abrirEvaluacionRespuestas()">
                             <span class="material-symbols-outlined align-middle"
                                 style="font-size:18px;">visibility</span>
@@ -2220,80 +2329,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost w-100" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Comparativo Resultados -->
-    <div class="modal fade" id="modalComparativoResultados" tabindex="-1"
-        aria-labelledby="modalComparativoResultadosLabel" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalComparativoResultadosLabel">
-                        <span class="material-symbols-outlined align-middle me-2">bar_chart</span>
-                        Comparativo de Resultados por Evaluación
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Seleccione Evaluación:</label>
-                            <select id="selComparativoEvaluaciones" class="form-select"
-                                onchange="loadComparativoCandidatos()"></select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Seleccione Candidatos a comparar:</label>
-                            <select id="selCandidatosComparar" class="form-control" multiple="multiple"
-                                style="width: 100%;">
-                            </select>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row text-center mb-4">
-                        <div class="col-md-6 mb-2">
-                            <div class="card border-primary shadow-sm h-100 mb-0 bg-white" id="cardChartColumn"
-                                onclick="switchComparativoChart('column')"
-                                style="cursor: pointer; transition: all 0.2s;">
-                                <div class="card-body py-3">
-                                    <h6 class="mb-0 fw-bold text-primary" id="textChartColumn">
-                                        <span class="material-symbols-outlined align-middle me-1">bar_chart</span>
-                                        Postulantes mejor puntuados
-                                    </h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <div class="card border-0 shadow-none h-100 mb-0 bg-light" id="cardChartRadar"
-                                onclick="switchComparativoChart('radar')"
-                                style="cursor: pointer; transition: all 0.2s;">
-                                <div class="card-body py-3">
-                                    <h6 class="mb-0 fw-bold text-muted" id="textChartRadar">
-                                        <span class="material-symbols-outlined align-middle me-1">radar</span>
-                                        Postulantes por competencias
-                                    </h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" id="containerChartColumn">
-                        <div class="col-md-12">
-                            <div id="chartComparativoVacanteColumn" style="width:100%; height:450px"></div>
-                        </div>
-                    </div>
-                    <div class="row d-none" id="containerChartRadar">
-                        <div class="col-md-12">
-                            <div id="chartComparativoVacanteRadar" style="width:100%; height:450px"></div>
-                        </div>
-                    </div>
-                    <div class="row mt-4" id="contenedorTablasComparativo"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-minimal w-100" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -2351,6 +2387,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
         integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="plugins/tabulator/dist/js/tabulator.min.js"></script>
     <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>
     <script src="scripts/Vacantes.js?v=<?php echo filemtime('scripts/Vacantes.js'); ?>"></script>
 </body>

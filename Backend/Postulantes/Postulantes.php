@@ -1,14 +1,15 @@
 <?php
+
 if (file_exists("../Conexiones/Conexiones.php")) {
     require_once("../Conexiones/Conexiones.php");
 } else {
     if (file_exists("./Conexiones/Conexiones.php")) {
         require_once("./Conexiones/Conexiones.php");
-    } else if (file_exists("../Conexiones/Conexiones.php")) {
+    } elseif (file_exists("../Conexiones/Conexiones.php")) {
         require_once("../Conexiones/Conexiones.php");
-    } else if (file_exists("../../Conexiones/Conexiones.php")) {
+    } elseif (file_exists("../../Conexiones/Conexiones.php")) {
         require_once("../../Conexiones/Conexiones.php");
-    } else if (file_exists("././Backend/Conexiones/Conexiones.php")) {
+    } elseif (file_exists("././Backend/Conexiones/Conexiones.php")) {
         require_once("././Backend/Conexiones/Conexiones.php");
     }
 }
@@ -22,10 +23,11 @@ class Postulantes extends Conexiones
     /**
      * Obtener todos los postulantes
      */
-    function getAllPostulantes()
+    public function getAllPostulantes()
     {
         $q = "CALL spGetAllPostulantes()";
         $resultado = $this->Procedure($q);
+
         return json_encode([
             "Resultado" => true,
             "Siguiente" => true,
@@ -36,11 +38,12 @@ class Postulantes extends Conexiones
     /**
      * Buscar postulante por correo, CURP o nombre
      */
-    function searchPostulante($busqueda)
+    public function searchPostulante($busqueda)
     {
         $busqueda = $this->sanitize($busqueda);
         $q = "CALL spSearchPostulante('$busqueda')";
         $resultado = $this->Procedure($q);
+
         return json_encode([
             "Resultado" => true,
             "Siguiente" => true,
@@ -51,9 +54,17 @@ class Postulantes extends Conexiones
     /**
      * Agregar nuevo postulante
      */
-    function addPostulante($Nombre, $ApellidoPaterno, $ApellidoMaterno, $CURP, 
-                           $Telefono, $CorreoElectronico, $Direccion, $Estado, $Ciudad)
-    {
+    public function addPostulante(
+        $Nombre,
+        $ApellidoPaterno,
+        $ApellidoMaterno,
+        $CURP,
+        $Telefono,
+        $CorreoElectronico,
+        $Direccion,
+        $Estado,
+        $Ciudad
+    ) {
         try {
             $Nombre = $this->sanitize($Nombre);
             $ApellidoPaterno = $this->sanitize($ApellidoPaterno);
@@ -64,18 +75,18 @@ class Postulantes extends Conexiones
             $Direccion = $this->sanitize($Direccion);
             $Estado = $this->sanitize($Estado);
             $Ciudad = $this->sanitize($Ciudad);
-            
+
             // Convertir valores vacíos a string vacío para el SP
             $ApellidoMaterno = empty($ApellidoMaterno) ? '' : $ApellidoMaterno;
             $CURP = empty($CURP) ? '' : $CURP;
             $Direccion = empty($Direccion) ? '' : $Direccion;
             $Estado = empty($Estado) ? '' : $Estado;
             $Ciudad = empty($Ciudad) ? '' : $Ciudad;
-            
-            $q = "CALL spAddPostulante('$Nombre', '$ApellidoPaterno', '$ApellidoMaterno', 
+
+            $q = "CALL spAddPostulante('$Nombre', '$ApellidoPaterno', '$ApellidoMaterno',
                   '$CURP', '$Telefono', '$CorreoElectronico', '$Direccion', '$Estado', '$Ciudad')";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 $retorno = $resultado[0]["Retorno"];
                 if ($retorno == 1) {
@@ -102,9 +113,11 @@ class Postulantes extends Conexiones
                     "Msg" => "Ha ocurrido un error al registrar el postulante."
                 ];
             }
+
             return json_encode($arrRetorno);
         } catch (\Exception $e) {
             error_log("Error en addPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -117,9 +130,18 @@ class Postulantes extends Conexiones
     /**
      * Actualizar datos de postulante
      */
-    function updatePostulante($IdPostulante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
-                              $CURP, $Telefono, $CorreoElectronico, $Direccion, $Estado, $Ciudad)
-    {
+    public function updatePostulante(
+        $IdPostulante,
+        $Nombre,
+        $ApellidoPaterno,
+        $ApellidoMaterno,
+        $CURP,
+        $Telefono,
+        $CorreoElectronico,
+        $Direccion,
+        $Estado,
+        $Ciudad
+    ) {
         try {
             $IdPostulante = base64_decode($IdPostulante);
             $Nombre = $this->sanitize($Nombre);
@@ -131,12 +153,12 @@ class Postulantes extends Conexiones
             $Direccion = $this->sanitize($Direccion);
             $Estado = $this->sanitize($Estado);
             $Ciudad = $this->sanitize($Ciudad);
-            
-            $q = "CALL spUpdatePostulante('$IdPostulante', '$Nombre', '$ApellidoPaterno', 
-                  '$ApellidoMaterno', '$CURP', '$Telefono', '$CorreoElectronico', 
+
+            $q = "CALL spUpdatePostulante('$IdPostulante', '$Nombre', '$ApellidoPaterno',
+                  '$ApellidoMaterno', '$CURP', '$Telefono', '$CorreoElectronico',
                   '$Direccion', '$Estado', '$Ciudad')";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 $retorno = $resultado[0]["Retorno"];
                 if ($retorno == 1) {
@@ -162,9 +184,11 @@ class Postulantes extends Conexiones
                     "Msg" => "Ha ocurrido un error al actualizar."
                 ];
             }
+
             return json_encode($arrRetorno);
         } catch (\Exception $e) {
             error_log("Error en updatePostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -177,13 +201,13 @@ class Postulantes extends Conexiones
     /**
      * Eliminar postulante
      */
-    function deletePostulante($IdPostulante)
+    public function deletePostulante($IdPostulante)
     {
         try {
             $IdPostulante = base64_decode($IdPostulante);
             $q = "CALL spDeletePostulante('$IdPostulante')";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 $retorno = $resultado[0]["Retorno"];
                 if ($retorno == 1) {
@@ -209,9 +233,11 @@ class Postulantes extends Conexiones
                     "Msg" => "Error al eliminar."
                 ];
             }
+
             return json_encode($arrRetorno);
         } catch (\Exception $e) {
             error_log("Error en deletePostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -228,11 +254,12 @@ class Postulantes extends Conexiones
     /**
      * Obtener postulantes de una vacante específica
      */
-    function getPostulantesByVacante($IdVacante)
+    public function getPostulantesByVacante($IdVacante)
     {
         $IdVacante = base64_decode($IdVacante);
         $q = "CALL spGetPostulantesByVacante('$IdVacante')";
         $resultado = $this->Procedure($q);
+
         return json_encode([
             "Resultado" => true,
             "Siguiente" => true,
@@ -243,12 +270,12 @@ class Postulantes extends Conexiones
     /**
      * Obtener detalle completo de un postulante en una vacante
      */
-    function getPostulanteDetalle($IdPostulanteVacante)
+    public function getPostulanteDetalle($IdPostulanteVacante)
     {
         $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
         $q = "CALL spGetPostulanteDetalle('$IdPostulanteVacante')";
         $resultado = $this->Procedure($q);
-        
+
         if (sizeof($resultado) > 0) {
             return json_encode([
                 "Resultado" => true,
@@ -268,7 +295,7 @@ class Postulantes extends Conexiones
     /**
      * Obtener datos de postulante por IdPostulante
      */
-    function getPostulanteById($IdPostulante)
+    public function getPostulanteById($IdPostulante)
     {
         try {
             $IdPostulante = is_numeric($IdPostulante) ? intval($IdPostulante) : intval(base64_decode($IdPostulante));
@@ -294,6 +321,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteById: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -306,7 +334,7 @@ class Postulantes extends Conexiones
     /**
      * Agregar postulación (postulante a vacante)
      */
-    function addPostulacion($IdVacante, $IdPostulante, $RutaCV, $RutaSolicitudEmpleo, $Observaciones)
+    public function addPostulacion($IdVacante, $IdPostulante, $RutaCV, $RutaSolicitudEmpleo, $Observaciones)
     {
         try {
             $IdVacante = base64_decode($IdVacante);
@@ -314,15 +342,15 @@ class Postulantes extends Conexiones
             $RutaCV = $this->sanitize($RutaCV);
             $RutaSolicitudEmpleo = $this->sanitize($RutaSolicitudEmpleo);
             $Observaciones = $this->sanitize($Observaciones);
-            
+
             // Convertir valores vacíos a NULL
             $RutaCV = empty($RutaCV) ? 'NULL' : "'$RutaCV'";
             $RutaSolicitudEmpleo = empty($RutaSolicitudEmpleo) ? 'NULL' : "'$RutaSolicitudEmpleo'";
             $Observaciones = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
-            
+
             $q = "CALL spAddPostulacion('$IdVacante', '$IdPostulante', $RutaCV, $RutaSolicitudEmpleo, $Observaciones)";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 $retorno = $resultado[0]["Retorno"];
                 if ($retorno == 1) {
@@ -349,9 +377,11 @@ class Postulantes extends Conexiones
                     "Msg" => "Error al registrar la postulación."
                 ];
             }
+
             return json_encode($arrRetorno);
         } catch (\Exception $e) {
             error_log("Error en addPostulacion: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -364,41 +394,61 @@ class Postulantes extends Conexiones
     /**
      * Agregar postulante nuevo y crear postulación en un solo paso
      */
-    function addPostulanteConPostulacion($IdVacante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
-                                          $CURP, $Telefono, $CorreoElectronico, $Direccion, 
-                                          $Estado, $Ciudad, $RutaCV, $RutaSolicitudEmpleo, $Observaciones, $IdEmpleado = null)
-    {
+    public function addPostulanteConPostulacion(
+        $IdVacante,
+        $Nombre,
+        $ApellidoPaterno,
+        $ApellidoMaterno,
+        $CURP,
+        $Telefono,
+        $CorreoElectronico,
+        $Direccion,
+        $Estado,
+        $Ciudad,
+        $RutaCV,
+        $RutaSolicitudEmpleo,
+        $Observaciones,
+        $IdEmpleado = null
+    ) {
         try {
             // Primero verificar si ya existe el postulante por correo o CURP
             $CorreoElectronico = $this->sanitize($CorreoElectronico);
             $CURP = $this->sanitize($CURP);
             $Telefono = $this->normalizarTelefono($Telefono);
-            
+
             $qBuscar = "SELECT IdPostulante, Telefono FROM Postulantes WHERE LOWER(CorreoElectronico) = LOWER('$CorreoElectronico')";
             if (!empty($CURP)) {
                 $qBuscar .= " OR UPPER(CURP) = UPPER('$CURP')";
             }
             $existente = $this->Procedure($qBuscar);
-            
+
             if (sizeof($existente) > 0) {
                 // Si ya existe, usar ese postulante
                 $IdPostulante = $existente[0]["IdPostulante"];
                 $telefonoActual = $existente[0]["Telefono"];
-                
+
                 // Si el teléfono cambió, agregarlo al histórico (NO actualizar el principal)
                 if (!empty($Telefono) && $Telefono != $telefonoActual && $this->validarFormatoTelefono($Telefono)) {
                     $this->ProcedureExec(
-                        "INSERT IGNORE INTO PostulantesTelefonos (IdPostulante, Telefono, Observaciones) 
+                        "INSERT IGNORE INTO PostulantesTelefonos (IdPostulante, Telefono, Observaciones)
                          VALUES ($IdPostulante, '$Telefono', 'Nueva postulación')",
                         []
                     );
                 }
             } else {
                 // Si no existe, crear nuevo postulante
-                $resultAdd = json_decode($this->addPostulante($Nombre, $ApellidoPaterno, $ApellidoMaterno, 
-                                                              $CURP, $Telefono, $CorreoElectronico, 
-                                                              $Direccion, $Estado, $Ciudad), true);
-                
+                $resultAdd = json_decode($this->addPostulante(
+                    $Nombre,
+                    $ApellidoPaterno,
+                    $ApellidoMaterno,
+                    $CURP,
+                    $Telefono,
+                    $CorreoElectronico,
+                    $Direccion,
+                    $Estado,
+                    $Ciudad
+                ), true);
+
                 if (!$resultAdd["Siguiente"]) {
                     return json_encode($resultAdd);
                 }
@@ -410,20 +460,20 @@ class Postulantes extends Conexiones
                 $IdEmpleadoSQL = $this->sanitize($IdEmpleado);
                 $this->ProcedureExec("UPDATE Postulantes SET IdEmpleado = '$IdEmpleadoSQL' WHERE IdPostulante = '$IdPostulante'", []);
             }
-            
+
             // Crear la postulación
             $IdVacanteDecoded = base64_decode($IdVacante);
             $RutaCV = $this->sanitize($RutaCV);
             $RutaSolicitudEmpleo = $this->sanitize($RutaSolicitudEmpleo);
             $Observaciones = $this->sanitize($Observaciones);
-            
+
             $RutaCVSQL = empty($RutaCV) ? 'NULL' : "'$RutaCV'";
             $RutaSolicitudEmpleoSQL = empty($RutaSolicitudEmpleo) ? 'NULL' : "'$RutaSolicitudEmpleo'";
             $ObservacionesSQL = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
-            
+
             $q = "CALL spAddPostulacion('$IdVacanteDecoded', '$IdPostulante', $RutaCVSQL, $RutaSolicitudEmpleoSQL, $ObservacionesSQL)";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 $retorno = $resultado[0]["Retorno"];
                 if ($retorno == 1) {
@@ -444,7 +494,7 @@ class Postulantes extends Conexiones
                     ]);
                 }
             }
-            
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -453,6 +503,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en addPostulanteConPostulacion: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -465,17 +516,17 @@ class Postulantes extends Conexiones
     /**
      * Actualizar estatus de postulación
      */
-    function updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones, $UsuarioRegistro = 0)
+    public function updateEstatusPostulacion($IdPostulanteVacante, $EstatusPostulacion, $Observaciones, $UsuarioRegistro = 0)
     {
         try {
             $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
             $Observaciones = $this->sanitize($Observaciones);
             $ObservacionesSQL = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
             $UsuarioRegistro = intval($UsuarioRegistro);
-            
+
             $q = "CALL spUpdateEstatusPostulacion('$IdPostulanteVacante', '$EstatusPostulacion', $ObservacionesSQL, '$UsuarioRegistro')";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
                 return json_encode([
                     "Resultado" => true,
@@ -484,7 +535,7 @@ class Postulantes extends Conexiones
                     "Msg" => "Estatus actualizado correctamente."
                 ]);
             }
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => false,
@@ -493,6 +544,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en updateEstatusPostulacion: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -505,13 +557,13 @@ class Postulantes extends Conexiones
     /**
      * Eliminar postulación
      */
-    function deletePostulacion($IdPostulanteVacante)
+    public function deletePostulacion($IdPostulanteVacante)
     {
         try {
             $IdPostulanteVacante = base64_decode($IdPostulanteVacante);
             $q = "CALL spDeletePostulacion('$IdPostulanteVacante')";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
                 return json_encode([
                     "Resultado" => true,
@@ -520,7 +572,7 @@ class Postulantes extends Conexiones
                     "Msg" => "Postulación eliminada correctamente."
                 ]);
             }
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => false,
@@ -529,6 +581,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en deletePostulacion: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -541,12 +594,12 @@ class Postulantes extends Conexiones
     /**
      * Obtener estadísticas de postulantes por vacante
      */
-    function getEstadisticasPostulantes($IdVacante)
+    public function getEstadisticasPostulantes($IdVacante)
     {
         $IdVacante = base64_decode($IdVacante);
         $q = "CALL spGetEstadisticasPostulantes('$IdVacante')";
         $resultado = $this->Procedure($q);
-        
+
         if (sizeof($resultado) > 0) {
             return json_encode([
                 "Resultado" => true,
@@ -554,7 +607,7 @@ class Postulantes extends Conexiones
                 "Data" => $resultado[0]
             ]);
         }
-        
+
         return json_encode([
             "Resultado" => true,
             "Siguiente" => true,
@@ -575,7 +628,7 @@ class Postulantes extends Conexiones
     /**
      * Obtener requisitos contestados por un postulante
      */
-    function getPostulanteRequisitos($IdPostulanteVacante)
+    public function getPostulanteRequisitos($IdPostulanteVacante)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
@@ -588,6 +641,7 @@ class Postulantes extends Conexiones
                   WHERE pv.IdPostulanteVacante = $IdPostulanteVacante
                   ORDER BY vr.Orden ASC";
             $resultado = $this->SelectNotClose($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -595,6 +649,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteRequisitos: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -606,17 +661,17 @@ class Postulantes extends Conexiones
     /**
      * Agregar/actualizar respuesta de requisito
      */
-    function addPostulanteRequisito($IdPostulanteVacante, $IdVacanteRequisito, $Respuesta, $Cumple)
+    public function addPostulanteRequisito($IdPostulanteVacante, $IdVacanteRequisito, $Respuesta, $Cumple)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
             $IdVacanteRequisito = intval(base64_decode($IdVacanteRequisito));
             $Respuesta = $this->sanitize($Respuesta);
             $CumpleSQL = ($Cumple === '' || $Cumple === null) ? 'NULL' : intval($Cumple);
-            
+
             $q = "CALL spAddPostulanteRequisito($IdPostulanteVacante, $IdVacanteRequisito, '$Respuesta', $CumpleSQL)";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
                 return json_encode([
                     "Resultado" => true,
@@ -625,7 +680,7 @@ class Postulantes extends Conexiones
                     "Msg" => "Requisito actualizado."
                 ]);
             }
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => false,
@@ -634,6 +689,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en addPostulanteRequisito: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -646,7 +702,7 @@ class Postulantes extends Conexiones
     /**
      * Actualizar evaluación de requisito (Respuesta y Cumple)
      */
-    function updatePostulanteRequisito($IdPostulanteRequisito, $Respuesta, $Cumple)
+    public function updatePostulanteRequisito($IdPostulanteRequisito, $Respuesta, $Cumple)
     {
         try {
             $IdPostulanteRequisito = intval(base64_decode($IdPostulanteRequisito));
@@ -654,7 +710,7 @@ class Postulantes extends Conexiones
             $CumpleSQL = ($Cumple === '' || $Cumple === null) ? 'NULL' : intval($Cumple);
             $q = "CALL spUpdatePostulanteRequisito($IdPostulanteRequisito, '$Respuesta', $CumpleSQL)";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
                 return json_encode([
                     "Resultado" => true,
@@ -663,7 +719,7 @@ class Postulantes extends Conexiones
                     "Msg" => "Evaluación actualizada."
                 ]);
             }
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => false,
@@ -672,6 +728,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en updatePostulanteRequisito: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -688,12 +745,13 @@ class Postulantes extends Conexiones
     /**
      * Obtener historial de un postulante en una vacante
      */
-    function getPostulanteHistorial($IdPostulanteVacante)
+    public function getPostulanteHistorial($IdPostulanteVacante)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
             $q = "CALL spGetPostulanteHistorial($IdPostulanteVacante)";
             $resultado = $this->Procedure($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -701,6 +759,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteHistorial: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -717,25 +776,28 @@ class Postulantes extends Conexiones
     /**
      * Obtener los resultados (por competencia) de las evaluaciones completadas de un postulante.
      */
-    function getPostulanteResultadosEvaluaciones($IdPostulanteVacante)
+    public function getPostulanteResultadosEvaluaciones($IdPostulanteVacante)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
-            $q = "SELECT 
-                    pe.IdPostulanteEvaluacion, 
-                    e.Titulo AS NombreEvaluacion, 
+            $q = "SELECT
+                    pe.IdPostulanteEvaluacion,
+                    e.Titulo AS NombreEvaluacion,
                     pe.Calificacion,
-                    IFNULL(c.Competencia, 'General') AS Competencia, 
+                    IFNULL(c.Competencia, 'General') AS Competencia,
                     -- ScoreCompetencia: AVG solo de preguntas evaluables (con respuesta correcta definida).
                     -- Las preguntas de tipo Rango/texto retornan NULL para que AVG las ignore,
                     -- evitando que bajen el promedio de la competencia a 0.
                     ROUND(AVG(
                         CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.BoolCorreta IS NOT NULL AND (
+                                (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
+                                OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
+                            ) THEN 100
                             WHEN pc.BoolCorreta IS NOT NULL THEN 0
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
-                                CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
-                                OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
+                                LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)))
+                                OR LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(ppr.DescripcionRespuesta USING utf8mb4)))
                             ) THEN 100
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
                             ELSE NULL
@@ -753,8 +815,9 @@ class Postulantes extends Conexiones
                   AND pe.EstatusEvaluacion = 3
                 GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pe.Calificacion, Competencia
                 ORDER BY e.Titulo, Competencia";
-                
+
             $resultado = $this->Select($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -762,6 +825,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteResultadosEvaluaciones: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -774,14 +838,14 @@ class Postulantes extends Conexiones
     /**
      * Obtener el detalle de las respuestas de un postulante en una evaluación específica.
      */
-    function getPostulanteRespuestasDetalle($IdPostulanteVacante, $NombreEvaluacion)
+    public function getPostulanteRespuestasDetalle($IdPostulanteVacante, $NombreEvaluacion)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
             $NombreEvaluacion = $this->sanitize($NombreEvaluacion);
 
-            $q = "SELECT 
-                    peval.IdPostulanteEvaluacion, 
+            $q = "SELECT
+                    peval.IdPostulanteEvaluacion,
                     preg.idPreguntasEvaluacion,
                     preg.Titulo AS TituloPregunta,
                     preg.Descripcion AS Pregunta,
@@ -799,13 +863,13 @@ class Postulantes extends Conexiones
                   WHERE peval.IdPostulanteVacante = $IdPostulanteVacante
                     AND e.Titulo = '$NombreEvaluacion'
                   ORDER BY preg.idPreguntasEvaluacion ASC";
-                  
+
             $resultado = $this->Select($q);
 
             foreach ($resultado as &$row) {
                 $idPregunta = $row['idPreguntasEvaluacion'];
-                $qOpciones = "SELECT idPreguntasPosiblesRespuestas AS IdOpcion, DescripcionRespuesta AS Texto 
-                              FROM PreguntasPosiblesRespuestas 
+                $qOpciones = "SELECT idPreguntasPosiblesRespuestas AS IdOpcion, DescripcionRespuesta AS Texto
+                              FROM PreguntasPosiblesRespuestas
                               WHERE idPreguntasEvaluacion = '$idPregunta'
                               ORDER BY idPreguntasPosiblesRespuestas ASC";
                 $Con2 = new Conexiones();
@@ -819,6 +883,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteRespuestasDetalle: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -832,27 +897,30 @@ class Postulantes extends Conexiones
      * Obtener los resultados globales de todos los postulantes para una vacante
      * para mostrarlos en comparativo.
      */
-    function getComparativoResultadosVacante($IdVacante)
+    public function getComparativoResultadosVacante($IdVacante)
     {
         try {
             $IdVacante = base64_decode($IdVacante);
-            $q = "SELECT 
+            $q = "SELECT
                     e.idEvaluaciones,
                     e.Titulo AS NombreEvaluacion,
                     pe.IdPostulanteEvaluacion,
                     CONCAT(p.Nombre, ' ', p.ApellidoPaterno) AS NombreCandidato,
                     pv.IdPostulanteVacante,
                     pe.Calificacion,
-                    IFNULL(c.Competencia, 'General') AS Competencia, 
+                    IFNULL(c.Competencia, 'General') AS Competencia,
                     -- ScoreCompetencia comparativo: mismo fix, preguntas de rango retornan NULL
                     -- para ser ignoradas por AVG y no bajar el score de la competencia.
                     ROUND(AVG(
                         CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.BoolCorreta AS CHAR) USING utf8mb4) THEN 100
+                            WHEN pc.BoolCorreta IS NOT NULL AND (
+                                (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
+                                OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
+                            ) THEN 100
                             WHEN pc.BoolCorreta IS NOT NULL THEN 0
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
-                                CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)
-                                OR CONVERT(pr.Respuesta USING utf8mb4) = CONVERT(ppr.DescripcionRespuesta USING utf8mb4)
+                                LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)))
+                                OR LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(ppr.DescripcionRespuesta USING utf8mb4)))
                             ) THEN 100
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
                             ELSE NULL
@@ -872,8 +940,9 @@ class Postulantes extends Conexiones
                   AND pe.EstatusEvaluacion = 3
                 GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pv.IdPostulanteVacante, pe.Calificacion, NombreCandidato, Competencia
                 ORDER BY e.Titulo, NombreCandidato, Competencia";
-                
+
             $resultado = $this->Select($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -881,6 +950,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getComparativoResultadosVacante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -893,7 +963,7 @@ class Postulantes extends Conexiones
     /**
      * Agregar registro de historial (avance de proceso)
      */
-    function addPostulanteHistorial($IdPostulanteVacante, $IdProceso, $Observaciones, $Resultado, $UsuarioRegistro)
+    public function addPostulanteHistorial($IdPostulanteVacante, $IdProceso, $Observaciones, $Resultado, $UsuarioRegistro)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
@@ -901,59 +971,59 @@ class Postulantes extends Conexiones
             $Observaciones = $this->sanitize($Observaciones);
             $ResultadoSQL = ($Resultado === '' || $Resultado === null) ? 'NULL' : intval($Resultado);
             $UsuarioRegistro = intval($UsuarioRegistro);
-            
+
             $q = "CALL spAddPostulanteHistorial($IdPostulanteVacante, $IdProceso, '$Observaciones', $ResultadoSQL, $UsuarioRegistro)";
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0 && $resultado[0]["Retorno"] == 1) {
                 // === AUTO-ASIGNAR EVALUACIONES DEL PROCESO ===
                 // Buscar la vacante de este postulante
                 $Con2 = new Conexiones();
                 $qVacante = "SELECT IdVacante FROM PostulantesVacantes WHERE IdPostulanteVacante = $IdPostulanteVacante";
                 $resVacante = $Con2->Select($qVacante);
-                
+
                 if (count($resVacante) > 0) {
                     $IdVacante = $resVacante[0]['IdVacante'];
-                    
+
                     // Buscar evaluaciones amarradas a este proceso en esta vacante
                     $Con3 = new Conexiones();
-                    $qEvals = "SELECT ve.IdVacanteEvaluacion, ve.IdEvaluacion 
+                    $qEvals = "SELECT ve.IdVacanteEvaluacion, ve.IdEvaluacion
                                FROM VacantesEvaluaciones ve
                                INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
-                               WHERE ve.IdVacante = '$IdVacante' 
+                               WHERE ve.IdVacante = '$IdVacante'
                                  AND ve.IdProceso = '$IdProceso'
-                                 AND e.TipoEvaluacion = 2 
+                                 AND e.TipoEvaluacion = 2
                                  AND e.DirigidoA = 2
                                  AND e.Status = 1
                                  AND e.PreguntasAceptadas = 1";
                     $resEvals = $Con3->Select($qEvals);
-                    
+
                     $evaluacionesAsignadas = 0;
                     foreach ($resEvals as $eval) {
                         $IdVacanteEvaluacion = $eval['IdVacanteEvaluacion'];
-                        
+
                         // Verificar que no exista ya asignada
                         $Con4 = new Conexiones();
-                        $qCheck = "SELECT IdPostulanteEvaluacion FROM PostulantesEvaluaciones 
-                                   WHERE IdPostulanteVacante = $IdPostulanteVacante 
+                        $qCheck = "SELECT IdPostulanteEvaluacion FROM PostulantesEvaluaciones
+                                   WHERE IdPostulanteVacante = $IdPostulanteVacante
                                      AND IdVacanteEvaluacion = $IdVacanteEvaluacion";
                         $resCheck = $Con4->Select($qCheck);
-                        
+
                         if (count($resCheck) == 0) {
                             $Con5 = new Conexiones();
-                            $qInsert = "INSERT INTO PostulantesEvaluaciones 
-                                        (IdPostulanteVacante, IdVacanteEvaluacion, EstatusEvaluacion) 
+                            $qInsert = "INSERT INTO PostulantesEvaluaciones
+                                        (IdPostulanteVacante, IdVacanteEvaluacion, EstatusEvaluacion)
                                         VALUES ($IdPostulanteVacante, $IdVacanteEvaluacion, 1)";
                             $Con5->ExecuteQuery($qInsert, array());
                             $evaluacionesAsignadas++;
                         }
                     }
-                    
-                    $msgExtra = $evaluacionesAsignadas > 0 
-                        ? " Se asignaron $evaluacionesAsignadas evaluación(es) al postulante." 
+
+                    $msgExtra = $evaluacionesAsignadas > 0
+                        ? " Se asignaron $evaluacionesAsignadas evaluación(es) al postulante."
                         : "";
                 }
-                
+
                 return json_encode([
                     "Resultado" => true,
                     "Siguiente" => true,
@@ -963,7 +1033,7 @@ class Postulantes extends Conexiones
                     "EvaluacionesAsignadas" => $evaluacionesAsignadas ?? 0
                 ]);
             }
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => false,
@@ -972,6 +1042,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en addPostulanteHistorial: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -988,11 +1059,12 @@ class Postulantes extends Conexiones
     /**
      * Obtener todos los postulantes con información resumida para la vista general
      */
-    function getAllPostulantesGeneral()
+    public function getAllPostulantesGeneral()
     {
         try {
             $q = "CALL spGetAllPostulantesGeneral()";
             $resultado = $this->Procedure($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1000,6 +1072,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getAllPostulantesGeneral: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -1012,12 +1085,13 @@ class Postulantes extends Conexiones
     /**
      * Obtener historial completo de postulaciones de un postulante (todas las vacantes)
      */
-    function getPostulanteHistorialCompleto($IdPostulante)
+    public function getPostulanteHistorialCompleto($IdPostulante)
     {
         try {
             $IdPostulante = intval(base64_decode($IdPostulante));
             $q = "CALL spGetPostulanteHistorialCompleto($IdPostulante)";
             $resultado = $this->Procedure($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1025,6 +1099,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulanteHistorialCompleto: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -1037,11 +1112,11 @@ class Postulantes extends Conexiones
     /**
      * Obtener procesos (historial) de una postulación específica
      */
-    function getProcesosPostulacion($IdPostulanteVacante)
+    public function getProcesosPostulacion($IdPostulanteVacante)
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
-            $q = "SELECT 
+            $q = "SELECT
                     ph.IdPostulanteHistorial,
                     ph.IdPostulanteVacante,
                     ph.IdProceso,
@@ -1052,9 +1127,9 @@ class Postulantes extends Conexiones
                     pv.NombreProceso,
                     IFNULL(
                         e.Nombre,
-                        CASE WHEN ph.UsuarioRegistro IS NOT NULL AND ph.UsuarioRegistro > 0 
-                             THEN CONCAT('Usuario #', ph.UsuarioRegistro) 
-                             ELSE NULL 
+                        CASE WHEN ph.UsuarioRegistro IS NOT NULL AND ph.UsuarioRegistro > 0
+                             THEN CONCAT('Usuario #', ph.UsuarioRegistro)
+                             ELSE NULL
                         END
                     ) AS NombreUsuario
                   FROM PostulantesHistorial ph
@@ -1063,6 +1138,7 @@ class Postulantes extends Conexiones
                   WHERE ph.IdPostulanteVacante = $IdPostulanteVacante
                   ORDER BY ph.Fecha ASC";
             $resultado = $this->Procedure($q);
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1070,6 +1146,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getProcesosPostulacion: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Siguiente" => false,
@@ -1092,7 +1169,7 @@ class Postulantes extends Conexiones
         try {
             $curp = $this->sanitize($curp);
             $telefono = $this->normalizarTelefono($telefono);
-            
+
             // Validar formato
             if (!$this->validarFormatoTelefono($telefono)) {
                 return json_encode([
@@ -1100,18 +1177,18 @@ class Postulantes extends Conexiones
                     "Msg" => "El teléfono debe tener exactamente 10 dígitos numéricos."
                 ]);
             }
-            
+
             // Buscar en tabla principal Y en histórico
-            $q = "SELECT p.IdPostulante, p.Nombre, p.ApellidoPaterno, p.ApellidoMaterno, 
+            $q = "SELECT p.IdPostulante, p.Nombre, p.ApellidoPaterno, p.ApellidoMaterno,
                          p.CURP, p.CorreoElectronico, p.Telefono
                   FROM Postulantes p
                   LEFT JOIN PostulantesTelefonos pt ON pt.IdPostulante = p.IdPostulante AND pt.Activo = 1
-                  WHERE UPPER(p.CURP) = UPPER('$curp') 
+                  WHERE UPPER(p.CURP) = UPPER('$curp')
                   AND (p.Telefono = '$telefono' OR pt.Telefono = '$telefono')
                   LIMIT 1";
-            
+
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 return json_encode([
                     "Resultado" => true,
@@ -1125,6 +1202,7 @@ class Postulantes extends Conexiones
             }
         } catch (\Exception $e) {
             error_log("Error en validarCandidato: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error interno al validar."
@@ -1139,15 +1217,15 @@ class Postulantes extends Conexiones
     {
         try {
             $curp = $this->sanitize($curp);
-            
-            $q = "SELECT 
+
+            $q = "SELECT
                     pv.IdPostulanteVacante,
                     pv.IdVacante,
                     v.NombreVacante,
                     a.NombreArea,
                     s.Sucursal,
                     pv.FechaPostulacion,
-                    pv.EstatusPostulacion 
+                    pv.EstatusPostulacion
                   FROM PostulantesVacantes pv
                   INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
                   INNER JOIN Vacantes v ON v.IdVacante = pv.IdVacante
@@ -1155,15 +1233,16 @@ class Postulantes extends Conexiones
                   LEFT JOIN SucursalDepto s ON s.IdSucursal = v.IdSucursal
                   WHERE UPPER(p.CURP) = UPPER('$curp')
                   ORDER BY pv.FechaPostulacion DESC";
-                  
+
             $resultado = $this->Procedure($q);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPostulacionesByCurp: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Data" => [],
@@ -1180,16 +1259,16 @@ class Postulantes extends Conexiones
         try {
             $curp = $this->sanitize($curp);
             $idVacanteSQL = is_numeric($idVacante) ? intval($idVacante) : intval(base64_decode($idVacante));
-            
+
             $q = "SELECT pv.IdPostulanteVacante
                   FROM PostulantesVacantes pv
                   INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
                   WHERE UPPER(p.CURP) = UPPER('$curp')
                   AND pv.IdVacante = $idVacanteSQL
                   LIMIT 1";
-                  
+
             $resultado = $this->Procedure($q);
-            
+
             if (sizeof($resultado) > 0) {
                 return json_encode([
                     "Resultado" => true,
@@ -1203,6 +1282,7 @@ class Postulantes extends Conexiones
             }
         } catch (\Exception $e) {
             error_log("Error en checkPostulacionDuplicada: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al comprobar duplicidad."
@@ -1221,8 +1301,8 @@ class Postulantes extends Conexiones
     {
         try {
             $IdPostulante = is_numeric($IdPostulante) ? intval($IdPostulante) : intval(base64_decode($IdPostulante));
-            
-            $q = "SELECT 
+
+            $q = "SELECT
                     pt.IdTelefonoHistorico,
                     pt.IdPostulante,
                     pt.Telefono,
@@ -1237,15 +1317,16 @@ class Postulantes extends Conexiones
                   INNER JOIN Postulantes p ON p.IdPostulante = pt.IdPostulante
                   WHERE pt.IdPostulante = $IdPostulante
                   ORDER BY pt.FechaRegistro DESC";
-            
+
             $resultado = $this->Procedure($q);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             error_log("Error en getTelefonosHistoricoByPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Data" => [],
@@ -1265,41 +1346,41 @@ class Postulantes extends Conexiones
             $nuevoTelefono = $this->normalizarTelefono($nuevoTelefono);
             $UsuarioRH = intval($UsuarioRH);
             $Observaciones = $this->sanitize($Observaciones);
-            
+
             if (!$this->validarFormatoTelefono($nuevoTelefono)) {
                 return json_encode([
                     "Resultado" => false,
                     "Msg" => "Formato de teléfono inválido. Debe tener 10 dígitos."
                 ]);
             }
-            
+
             // Verificar que el teléfono no esté usado por otro postulante como teléfono principal
-            $qCheck = "SELECT IdPostulante, CONCAT(Nombre, ' ', ApellidoPaterno) AS NombreCompleto 
-                       FROM Postulantes 
-                       WHERE Telefono = '$nuevoTelefono' AND IdPostulante != $IdPostulante 
+            $qCheck = "SELECT IdPostulante, CONCAT(Nombre, ' ', ApellidoPaterno) AS NombreCompleto
+                       FROM Postulantes
+                       WHERE Telefono = '$nuevoTelefono' AND IdPostulante != $IdPostulante
                        LIMIT 1";
             $existe = $this->Procedure($qCheck);
-            
+
             if (sizeof($existe) > 0) {
                 return json_encode([
                     "Resultado" => false,
                     "Msg" => "Este teléfono ya está registrado como principal de: " . $existe[0]['NombreCompleto']
                 ]);
             }
-            
+
             // Actualizar teléfono principal
-            $qUpdate = "UPDATE Postulantes 
-                        SET Telefono = '$nuevoTelefono' 
+            $qUpdate = "UPDATE Postulantes
+                        SET Telefono = '$nuevoTelefono'
                         WHERE IdPostulante = $IdPostulante";
             $this->ProcedureExec($qUpdate, []);
-            
+
             // Agregar al histórico con observaciones
             $ObsSQL = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
-            $qHistorico = "INSERT IGNORE INTO PostulantesTelefonos 
-                           (IdPostulante, Telefono, UsuarioModifico, Observaciones) 
+            $qHistorico = "INSERT IGNORE INTO PostulantesTelefonos
+                           (IdPostulante, Telefono, UsuarioModifico, Observaciones)
                            VALUES ($IdPostulante, '$nuevoTelefono', $UsuarioRH, $ObsSQL)";
             $this->ProcedureExec($qHistorico, []);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1307,6 +1388,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en actualizarTelefonoPostulante: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al actualizar: " . $e->getMessage()
@@ -1324,21 +1406,21 @@ class Postulantes extends Conexiones
             $telefono = $this->normalizarTelefono($telefono);
             $UsuarioRH = $UsuarioRH ? intval($UsuarioRH) : 'NULL';
             $Observaciones = $this->sanitize($Observaciones);
-            
+
             if (!$this->validarFormatoTelefono($telefono)) {
                 return json_encode([
                     "Resultado" => false,
                     "Msg" => "Formato de teléfono inválido."
                 ]);
             }
-            
+
             $ObsSQL = empty($Observaciones) ? 'NULL' : "'$Observaciones'";
-            $qInsert = "INSERT IGNORE INTO PostulantesTelefonos 
-                        (IdPostulante, Telefono, UsuarioModifico, Observaciones) 
+            $qInsert = "INSERT IGNORE INTO PostulantesTelefonos
+                        (IdPostulante, Telefono, UsuarioModifico, Observaciones)
                         VALUES ($IdPostulante, '$telefono', $UsuarioRH, $ObsSQL)";
-            
+
             $this->ProcedureExec($qInsert, []);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1346,6 +1428,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en agregarTelefonoSecundario: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al agregar teléfono."
@@ -1361,12 +1444,12 @@ class Postulantes extends Conexiones
         try {
             $IdTelefonoHistorico = intval($IdTelefonoHistorico);
             $UsuarioRH = intval($UsuarioRH);
-            
-            $qUpdate = "UPDATE PostulantesTelefonos 
-                        SET Activo = 0, UsuarioModifico = $UsuarioRH 
+
+            $qUpdate = "UPDATE PostulantesTelefonos
+                        SET Activo = 0, UsuarioModifico = $UsuarioRH
                         WHERE IdTelefonoHistorico = $IdTelefonoHistorico";
             $this->ProcedureExec($qUpdate, []);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1374,6 +1457,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en desactivarTelefono: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al desactivar."
@@ -1389,12 +1473,12 @@ class Postulantes extends Conexiones
         try {
             $IdTelefonoHistorico = intval($IdTelefonoHistorico);
             $UsuarioRH = intval($UsuarioRH);
-            
-            $qUpdate = "UPDATE PostulantesTelefonos 
-                        SET Activo = 1, UsuarioModifico = $UsuarioRH 
+
+            $qUpdate = "UPDATE PostulantesTelefonos
+                        SET Activo = 1, UsuarioModifico = $UsuarioRH
                         WHERE IdTelefonoHistorico = $IdTelefonoHistorico";
             $this->ProcedureExec($qUpdate, []);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1402,6 +1486,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en reactivarTelefono: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al reactivar."
@@ -1416,11 +1501,11 @@ class Postulantes extends Conexiones
     {
         try {
             $IdTelefonoHistorico = intval($IdTelefonoHistorico);
-            
-            $qDelete = "DELETE FROM PostulantesTelefonos 
+
+            $qDelete = "DELETE FROM PostulantesTelefonos
                         WHERE IdTelefonoHistorico = $IdTelefonoHistorico";
             $this->ProcedureExec($qDelete, []);
-            
+
             return json_encode([
                 "Resultado" => true,
                 "Siguiente" => true,
@@ -1428,6 +1513,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en eliminarTelefono: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al eliminar."
@@ -1475,6 +1561,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en verificarCurpExistente: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al verificar CURP."
@@ -1519,6 +1606,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en getDatosPostulantePorCurp: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error al obtener datos."
@@ -1535,21 +1623,23 @@ class Postulantes extends Conexiones
      */
     private function normalizarTelefono($telefono)
     {
-        if (empty($telefono)) return '';
-        
+        if (empty($telefono)) {
+            return '';
+        }
+
         // Eliminar todo excepto dígitos
         $telefono = preg_replace('/[^0-9]/', '', $telefono);
-        
+
         // Remover código de país si existe (+52 al inicio)
         if (strlen($telefono) == 12 && substr($telefono, 0, 2) == '52') {
             $telefono = substr($telefono, 2);
         }
-        
+
         // Remover lada 01 si existe
         if (strlen($telefono) == 12 && substr($telefono, 0, 2) == '01') {
             $telefono = substr($telefono, 2);
         }
-        
+
         return $telefono;
     }
 
@@ -1566,11 +1656,14 @@ class Postulantes extends Conexiones
      */
     private function sanitize($str)
     {
-        if ($str === null) return '';
+        if ($str === null) {
+            return '';
+        }
         $str = trim($str);
         $str = stripslashes($str);
         $str = htmlspecialchars($str);
         $str = str_replace("'", "''", $str);
+
         return $str;
     }
 
@@ -1581,13 +1674,23 @@ class Postulantes extends Conexiones
      * - Contacto (correo, teléfono)
      * - Dirección completa (dirección, estado, ciudad/municipio, colonia)
      */
-    function actualizarPostulanteCompleto($IdPostulante, $Nombre, $ApellidoPaterno, $ApellidoMaterno, 
-                                         $CURP, $Telefono, $CorreoElectronico, $Direccion, $CodigoPostal,
-                                         $Estado, $Ciudad, $Colonia = '')
-    {
+    public function actualizarPostulanteCompleto(
+        $IdPostulante,
+        $Nombre,
+        $ApellidoPaterno,
+        $ApellidoMaterno,
+        $CURP,
+        $Telefono,
+        $CorreoElectronico,
+        $Direccion,
+        $CodigoPostal,
+        $Estado,
+        $Ciudad,
+        $Colonia = ''
+    ) {
         try {
             $IdPostulante = is_numeric($IdPostulante) ? intval($IdPostulante) : intval(base64_decode($IdPostulante));
-            
+
             // Sanitizar todos los campos
             $Nombre = $this->sanitize($Nombre);
             $ApellidoPaterno = $this->sanitize($ApellidoPaterno);
@@ -1599,7 +1702,7 @@ class Postulantes extends Conexiones
             $Estado = $this->sanitize($Estado);
             $Ciudad = $this->sanitize($Ciudad);
             $Colonia = $this->sanitize($Colonia);
-            
+
             // Guardar dirección en formato estructurado (evita ambigüedad al rehidratar UI)
             $DireccionBase = $this->sanitize($Direccion);
             $DireccionCompleta = $DireccionBase;
@@ -1609,7 +1712,7 @@ class Postulantes extends Conexiones
             if (!empty($Colonia)) {
                 $DireccionCompleta .= " | COL:" . $Colonia;
             }
-            
+
             // Validar teléfono
             if (!empty($Telefono) && !$this->validarFormatoTelefono($Telefono)) {
                 return json_encode([
@@ -1617,7 +1720,7 @@ class Postulantes extends Conexiones
                     "Msg" => "El teléfono debe tener 10 dígitos."
                 ]);
             }
-            
+
             // Validar campos obligatorios
             if (empty($Nombre) || empty($ApellidoPaterno) || empty($CorreoElectronico)) {
                 return json_encode([
@@ -1625,12 +1728,12 @@ class Postulantes extends Conexiones
                     "Msg" => "Nombre, Apellido Paterno y Correo son obligatorios."
                 ]);
             }
-            
+
             // Verificar si el teléfono cambió para actualizar histórico
             $qGetTelActual = "SELECT Telefono FROM Postulantes WHERE IdPostulante = $IdPostulante";
             $telActual = $this->Procedure($qGetTelActual);
             $telefonoAnterior = !empty($telActual) ? $telActual[0]['Telefono'] : '';
-            
+
             // Actualizar directo para evitar incompatibilidad de SP legado (RFC vs CURP)
             $qUpdate = "UPDATE Postulantes
                         SET Nombre = '$Nombre',
@@ -1663,6 +1766,7 @@ class Postulantes extends Conexiones
             ]);
         } catch (\Exception $e) {
             error_log("Error en actualizarPostulanteCompleto: " . $e->getMessage());
+
             return json_encode([
                 "Resultado" => false,
                 "Msg" => "Error interno al actualizar: " . $e->getMessage()
