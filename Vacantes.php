@@ -247,6 +247,349 @@
             margin-bottom: 12px;
         }
 
+        /* COMPARATIVO - Podium */
+        .podium-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+            border: 1px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+
+        .podium-label {
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #6c757d;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .podium-label .material-symbols-outlined {
+            font-size: 17px;
+            color: #ffc407;
+        }
+
+        .podium-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 14px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .22s ease;
+            height: 100%;
+        }
+
+        .podium-card:hover {
+            box-shadow: 0 4px 16px rgba(255, 196, 7, .18);
+            border-color: #ffc407;
+            transform: translateY(-2px);
+        }
+
+        .podium-card.active-podium {
+            border-color: #ffc407;
+            background: #fff9e6;
+            box-shadow: 0 2px 10px rgba(255, 196, 7, .2);
+        }
+
+        .podium-card.gold {
+            border-top: 4px solid #ffc407;
+        }
+
+        .podium-card.silver {
+            border-top: 4px solid #adb5bd;
+        }
+
+        .podium-card.bronze {
+            border-top: 4px solid #cd7f32;
+        }
+
+        .podium-medal {
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .podium-card-name {
+            font-size: .82rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .score-ring-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto 6px;
+        }
+
+        .score-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            background: conic-gradient(#ffc407 var(--pct), #f0f0f0 0deg);
+            position: relative;
+        }
+
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .score-ring-val {
+            position: relative;
+            z-index: 1;
+            font-size: .88rem;
+            font-weight: 800;
+        }
+
+        .podium-card.silver .score-ring {
+            background: conic-gradient(#adb5bd var(--pct), #f0f0f0 0deg);
+        }
+
+        .podium-card.bronze .score-ring {
+            background: conic-gradient(#cd7f32 var(--pct), #f0f0f0 0deg);
+        }
+
+        .podium-rank-badge {
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* COMPARATIVO - Toggle */
+        .comparativo-chart-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .comparativo-chart-toggle .btn-group .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: 6px 14px;
+        }
+
+        .comparativo-chart-toggle .btn-group .btn .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        /* COMPARATIVO - Candidate Cards */
+        .comparativo-candidate-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+            overflow: hidden;
+            height: 100%;
+            transition: box-shadow .2s;
+        }
+
+        .comparativo-candidate-card:hover {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+        }
+
+        .comparativo-candidate-card .cand-header {
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .comparativo-candidate-card .cand-header-name {
+            font-weight: 700;
+            font-size: .88rem;
+            color: #1a1a2e;
+            line-height: 1.3;
+        }
+
+        .score-badge-overall {
+            font-size: .78rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .score-badge-overall.high {
+            background: #d1f2d9;
+            color: #198754;
+        }
+
+        .score-badge-overall.mid {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .score-badge-overall.low {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .cand-body {
+            padding: 0;
+        }
+
+        .comp-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-bottom: 1px solid #f2f3f5;
+            transition: background .15s;
+        }
+
+        .comp-row:last-child {
+            border-bottom: none;
+        }
+
+        .comp-row:hover {
+            background: #fffbf0;
+        }
+
+        .comp-row.general-row {
+            background: #fff9e6;
+            border-bottom: 2px solid #ffe082;
+            font-weight: 700;
+        }
+
+        .comp-row.general-row:hover {
+            background: #fff3cd;
+        }
+
+        .comp-name {
+            font-size: .80rem;
+            color: #495057;
+            flex: 1 1 110px;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .comp-row.general-row .comp-name {
+            color: #1a1a2e;
+            font-weight: 700;
+        }
+
+        .comp-bar-wrap {
+            flex: 2 1 80px;
+            min-width: 50px;
+        }
+
+        .comp-bar-track {
+            height: 7px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .comp-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width .5s ease;
+        }
+
+        .comp-bar-fill.high {
+            background: #198754;
+        }
+
+        .comp-bar-fill.mid {
+            background: #ffc107;
+        }
+
+        .comp-bar-fill.low {
+            background: #dc3545;
+        }
+
+        .comp-score-val {
+            font-size: .80rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            min-width: 38px;
+            text-align: right;
+        }
+
+        /* COMPARATIVO - Controls Bar */
+        .comparativo-controls-bar {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            padding: 16px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            margin-bottom: 16px;
+        }
+
+        /* RESULTADOS POSTULANTE MODAL */
+        .resultados-modal-top {
+            padding: 20px 24px 16px;
+            background: #fff;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .resultados-modal-chart {
+            padding: 16px 20px 8px;
+            background: #f8f9fa;
+        }
+
+        .resultados-modal-header-custom .btn-close {
+            filter: invert(1) grayscale(1);
+        }
+
+        .resultados-modal-header-custom .btn-ver-eval {
+            color: #ffc407;
+            border-color: #ffc407;
+            font-size: .78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+        }
+
+        .resultados-modal-header-custom .btn-ver-eval:hover {
+            background: #ffc407;
+            color: #1a1a2e;
+        }
+
+        .score-ring-lg {
+            width: 80px;
+            height: 80px;
+        }
+
+        .score-ring-lg::before {
+            width: 62px;
+            height: 62px;
+        }
+
+        .score-ring-lg .score-ring-val {
+            font-size: 1rem;
+        }
+
         /* KPIs rediseñados */
         .stats-row {
             display: flex;
@@ -1949,65 +2292,77 @@
                                                 <p class="mb-0">Cargando comparativo de la vacante...</p>
                                             </div>
                                             <div id="comparativoContent" class="d-none">
-                                                <div class="row mb-3">
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label fw-bold">Seleccione Evaluación:</label>
-                                                        <select id="selComparativoEvaluaciones" class="form-select"
-                                                            onchange="loadComparativoCandidatos()"></select>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <label class="form-label fw-bold">Seleccione Candidatos a
-                                                            comparar:</label>
-                                                        <select id="selCandidatosComparar" class="form-control"
-                                                            multiple="multiple" style="width: 100%;">
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="row text-center mb-4">
-                                                    <div class="col-md-6 mb-2">
-                                                        <div class="card border-primary shadow-sm h-100 mb-0 bg-white"
-                                                            id="cardChartColumn"
-                                                            onclick="switchComparativoChart('column')"
-                                                            style="cursor: pointer; transition: all 0.2s;">
-                                                            <div class="card-body py-3">
-                                                                <h6 class="mb-0 fw-bold text-primary"
-                                                                    id="textChartColumn">
-                                                                    <span
-                                                                        class="material-symbols-outlined align-middle me-1">bar_chart</span>
-                                                                    Postulantes mejor puntuados
-                                                                </h6>
-                                                            </div>
+
+                                                <!-- Controls Bar -->
+                                                <div class="comparativo-controls-bar">
+                                                    <div class="row g-3 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label fw-bold small mb-1">
+                                                                <span
+                                                                    class="material-symbols-outlined align-middle me-1"
+                                                                    style="font-size:15px;color:#ffc407;">assignment</span>
+                                                                Evaluación
+                                                            </label>
+                                                            <select id="selComparativoEvaluaciones"
+                                                                class="form-select form-select-sm"
+                                                                onchange="loadComparativoCandidatos()"></select>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6 mb-2">
-                                                        <div class="card border-0 shadow-none h-100 mb-0 bg-light"
-                                                            id="cardChartRadar"
-                                                            onclick="switchComparativoChart('radar')"
-                                                            style="cursor: pointer; transition: all 0.2s;">
-                                                            <div class="card-body py-3">
-                                                                <h6 class="mb-0 fw-bold text-muted" id="textChartRadar">
-                                                                    <span
-                                                                        class="material-symbols-outlined align-middle me-1">radar</span>
-                                                                    Postulantes por competencias
-                                                                </h6>
-                                                            </div>
+                                                        <div class="col-md-7">
+                                                            <label class="form-label fw-bold small mb-1">
+                                                                <span
+                                                                    class="material-symbols-outlined align-middle me-1"
+                                                                    style="font-size:15px;color:#ffc407;">group</span>
+                                                                Candidatos a comparar
+                                                            </label>
+                                                            <select id="selCandidatosComparar"
+                                                                class="form-control form-control-sm" multiple="multiple"
+                                                                style="width: 100%;"></select>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row" id="containerChartColumn">
-                                                    <div class="col-md-12">
+
+                                                <!-- Podium -->
+                                                <div class="podium-section d-none" id="comparativoPodiumSection">
+                                                    <div class="podium-label">
+                                                        <span class="material-symbols-outlined">workspace_premium</span>
+                                                        Ranking de Candidatos
+                                                    </div>
+                                                    <div class="row g-3" id="comparativoPodiumCards"></div>
+                                                </div>
+
+                                                <!-- Chart area -->
+                                                <div class="comparativo-controls-bar">
+                                                    <div class="comparativo-chart-toggle">
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button"
+                                                                class="btn btn-warning btn-comparativo-chart active"
+                                                                id="btnChartColumn"
+                                                                onclick="switchComparativoChart('column')">
+                                                                <span class="material-symbols-outlined">bar_chart</span>
+                                                                Barras
+                                                            </button>
+                                                            <button type="button"
+                                                                class="btn btn-outline-warning btn-comparativo-chart"
+                                                                id="btnChartRadar"
+                                                                onclick="switchComparativoChart('radar')">
+                                                                <span class="material-symbols-outlined">radar</span>
+                                                                Radar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="containerChartColumn">
                                                         <div id="chartComparativoVacanteColumn"
                                                             style="width:100%; height:450px"></div>
                                                     </div>
-                                                </div>
-                                                <div class="row d-none" id="containerChartRadar">
-                                                    <div class="col-md-12">
+                                                    <div class="d-none" id="containerChartRadar">
                                                         <div id="chartComparativoVacanteRadar"
                                                             style="width:100%; height:450px"></div>
                                                     </div>
                                                 </div>
-                                                <div class="row mt-4" id="contenedorTablasComparativo"></div>
+
+                                                <!-- Candidate detail cards -->
+                                                <div class="row mt-2 g-3" id="contenedorTablasComparativo"></div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -2292,44 +2647,50 @@
         aria-labelledby="modalResultadosPostulanteLabel" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal-content overflow-hidden">
+                <div class="modal-header resultados-modal-header-custom border-0">
                     <h5 class="modal-title" id="modalResultadosPostulanteLabel">
                         <span class="material-symbols-outlined align-middle me-2">analytics</span>
                         Resultados de Evaluación
                     </h5>
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-minimal fw-bold"
-                            onclick="abrirEvaluacionRespuestas()">
+                        <button type="button" class="btn btn-sm btn-minimal" onclick="abrirEvaluacionRespuestas()">
                             <span class="material-symbols-outlined align-middle"
-                                style="font-size:18px;">visibility</span>
+                                style="font-size:15px;">visibility</span>
                             Ver Evaluación
                         </button>
-                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"
+                        <button type="button" class="btn-close ms-1" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Evaluación:</label>
-                            <select id="selResultadosPostulante" class="form-select"
-                                onchange="drawResultadosPostulante()"></select>
-                        </div>
-                        <div class="col-md-8 text-center"
-                            style="display:flex; justify-content:center; flex-direction:column; align-items:center;">
-                            <h4 id="lblScoreGeneralPostulante"></h4>
+                <div class="modal-body p-0">
+                    <!-- Top: selector + score -->
+                    <div class="resultados-modal-top">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">
+                                    <span class="material-symbols-outlined align-middle me-1"
+                                        style="font-size:15px;color:#ffc407;">assignment</span>
+                                    Evaluación
+                                </label>
+                                <select id="selResultadosPostulante" class="form-select form-select-sm"
+                                    onchange="drawResultadosPostulante()"></select>
+                            </div>
+                            <div class="col-md-8">
+                                <div id="lblScoreGeneralPostulante"></div>
+                            </div>
                         </div>
                     </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-12 d-flex justify-content-center">
-                            <div id="chartPostulanteGeneral" style="width:100%; height:500px"></div>
-                        </div>
+                    <!-- Chart -->
+                    <div class="resultados-modal-chart">
+                        <div id="chartPostulanteGeneral" style="width:100%; height:460px"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-minimal w-100" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer border-top bg-white py-2">
+                    <button type="button" class="btn btn-minimal btn-sm px-4" data-bs-dismiss="modal">
+                        <span class="material-symbols-outlined align-middle me-1" style="font-size:15px;">close</span>
+                        Cerrar
+                    </button>
                 </div>
             </div>
         </div>

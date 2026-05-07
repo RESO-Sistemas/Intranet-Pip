@@ -200,6 +200,8 @@ function resetComparativoInlineState() {
     $selEvaluaciones.html('');
     $selCandidatos.empty();
     $('#contenedorTablasComparativo').html('');
+    $('#comparativoPodiumSection').addClass('d-none');
+    $('#comparativoPodiumCards').html('');
     $('#comparativoContent').addClass('d-none');
     $('#comparativoLoadingState').addClass('d-none');
     renderComparativoEmptyState(
@@ -207,6 +209,63 @@ function resetComparativoInlineState() {
         'Aquí podrás comparar postulantes por evaluación, score general y competencias sin salir de la ficha de la vacante.'
     );
     switchComparativoChart('column');
+}
+
+function renderComparativoPodium(candidatosUnicosInfo) {
+    if (!candidatosUnicosInfo || candidatosUnicosInfo.length === 0) {
+        $('#comparativoPodiumSection').addClass('d-none');
+        return;
+    }
+    const medals = [
+        { cls: 'gold',   symbol: '🥇' },
+        { cls: 'silver', symbol: '🥈' },
+        { cls: 'bronze', symbol: '🥉' }
+    ];
+    const top3 = candidatosUnicosInfo.slice(0, 3);
+    let cols = '';
+    top3.forEach((c, i) => {
+        const medal = medals[i];
+        const score = parseFloat(c.Calificacion) || 0;
+        const pct = Math.round(score) + '%';
+        const badgeCls = score >= 80 ? 'high' : score >= 60 ? 'mid' : 'low';
+        const badgeLabel = score >= 80 ? 'Excelente' : score >= 60 ? 'Regular' : 'Bajo';
+        const safeName = c.Nombre.replace(/'/g, "\\'");
+        cols += `
+        <div class="col-md-4 col-sm-12">
+            <div class="podium-card ${medal.cls}" onclick="togglePodiumCandidate('${safeName}')">
+                <div class="podium-medal">${medal.symbol}</div>
+                <div class="podium-card-name">${c.Nombre}</div>
+                <div class="score-ring-wrap">
+                    <div class="score-ring" style="--pct:${pct}">
+                        <span class="score-ring-val">${score.toFixed(1)}</span>
+                    </div>
+                </div>
+                <span class="podium-rank-badge score-badge-overall ${badgeCls}">${badgeLabel}</span>
+            </div>
+        </div>`;
+    });
+    $('#comparativoPodiumCards').html(cols);
+    $('#comparativoPodiumSection').removeClass('d-none');
+    updatePodiumActiveState();
+}
+
+function togglePodiumCandidate(nombre) {
+    const $sel = $('#selCandidatosComparar');
+    let current = $sel.val() || [];
+    if (current.includes(nombre)) {
+        current = current.filter(n => n !== nombre);
+    } else {
+        current.push(nombre);
+    }
+    $sel.val(current).trigger('change');
+}
+
+function updatePodiumActiveState() {
+    const current = $('#selCandidatosComparar').val() || [];
+    $('#comparativoPodiumCards .podium-card').each(function () {
+        const name = $(this).find('.podium-card-name').text().trim();
+        $(this).toggleClass('active-podium', current.includes(name));
+    });
 }
 
 async function loadComparativoResultadosTab() {
@@ -2069,7 +2128,22 @@ function drawResultadosPostulante() {
     let calificacionGeneral = 0;
     const datosFiltrados = rawResultadosPostulante.filter(i => i.NombreEvaluacion === seleccion);
     if (datosFiltrados.length > 0 && datosFiltrados[0].Calificacion !== null) calificacionGeneral = datosFiltrados[0].Calificacion;
-    $('#lblScoreGeneralPostulante').html(`Calificación Promedio General<br><b style="font-size:2rem;color:#0d6efd;">${calificacionGeneral}</b>`);
+    const _score = parseFloat(calificacionGeneral) || 0;
+    const _scoreCls = _score >= 80 ? 'high' : _score >= 60 ? 'mid' : 'low';
+    const _scoreLabel = _score >= 80 ? 'Excelente' : _score >= 60 ? 'Regular' : 'Bajo';
+    const _ringColor = _score >= 80 ? '#198754' : _score >= 60 ? '#ffc407' : '#dc3545';
+    $('#lblScoreGeneralPostulante').html(`
+        <div class="d-flex align-items-center gap-3">
+            <div class="score-ring score-ring-lg flex-shrink-0" style="background:conic-gradient(${_ringColor} ${Math.round(_score)}%, #f0f0f0 0deg);">
+                <span class="score-ring-val">${_score.toFixed(1)}</span>
+            </div>
+            <div>
+                <div style="font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#6c757d;">Calificación General</div>
+                <div style="font-size:1.8rem; font-weight:800; line-height:1.1; color:#1a1a2e;">${_score.toFixed(1)}<span style="font-size:.85rem; font-weight:400; color:#6c757d;">/100</span></div>
+                <span class="score-badge-overall ${_scoreCls} mt-1 d-inline-block">${_scoreLabel}</span>
+            </div>
+        </div>
+    `);
     const chartData = datosFiltrados.map(item => ({ competencia: item.Competencia || 'Sin Competencia', score: parseFloat(item.ScoreCompetencia) }));
     if (chartPostulanteGeneral) chartPostulanteGeneral.destroy();
     chartPostulanteGeneral = new ej.charts.Chart({
@@ -2114,8 +2188,10 @@ function loadComparativoCandidatos() {
     });
     const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
     $sel.val(primerosCinco);
-    $sel.select2({ dropdownParent: $('#tabComparativo'), placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' }).on('change', function () { drawComparativoResultados(); });
+    $sel.select2({ dropdownParent: $('#tabComparativo'), placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' })
+        .on('change', function () { drawComparativoResultados(); updatePodiumActiveState(); });
     drawComparativoResultados();
+    renderComparativoPodium(candidatosUnicosInfo);
 }
 
 function drawComparativoResultados() {
@@ -2166,30 +2242,53 @@ function drawComparativoResultados() {
     });
     chartComparativoVacanteRadar.appendTo('#chartComparativoVacanteRadar');
 
-    let htmlContenedorTablas = '';
-    candidatosSeleccionados.forEach((candidato, idx) => {
-        htmlContenedorTablas += `<div class="col-md-4 col-sm-6 mb-4"><div class="card shadow-sm h-100"><div class="card-header bg-light text-center fw-bold text-dark">${candidato}</div><div class="card-body p-0"><div id="tabla_comparativo_${idx}"></div></div></div></div>`;
-    });
-    $('#contenedorTablasComparativo').html(htmlContenedorTablas);
-    candidatosSeleccionados.forEach((candidato, idx) => {
+    $('#contenedorTablasComparativo').html('');
+    if (candidatosSeleccionados.length === 0) return;
+    const colCls = candidatosSeleccionados.length >= 3 ? 'col-md-4 col-sm-6'
+                 : candidatosSeleccionados.length === 2 ? 'col-md-6'
+                 : 'col-md-8 offset-md-2';
+    let htmlCards = '';
+    candidatosSeleccionados.forEach((candidato) => {
         let datosCandidato = datosFiltrados.filter(i => i.NombreCandidato === candidato);
-        let tableData = datosCandidato.map(d => ({ Competencia: d.Competencia || 'Sin Competencia', Calificacion: parseFloat(d.ScoreCompetencia).toFixed(2) }));
-        renderComparativoTable(`#tabla_comparativo_${idx}`, tableData);
+        const overall = datosCandidato.length > 0 ? parseFloat(datosCandidato[0].Calificacion || 0) : 0;
+        const overallCls = overall >= 80 ? 'high' : overall >= 60 ? 'mid' : 'low';
+        let rowsHtml = '';
+        datosCandidato.forEach(d => {
+            const score = parseFloat(d.ScoreCompetencia || 0);
+            const barCls = score >= 80 ? 'high' : score >= 60 ? 'mid' : 'low';
+            const isGeneral = (d.Competencia === 'General' || !d.Competencia);
+            rowsHtml += `
+            <div class="comp-row ${isGeneral ? 'general-row' : ''}">
+                <span class="comp-name" title="${d.Competencia || 'General'}">${d.Competencia || 'General'}</span>
+                <div class="comp-bar-wrap"><div class="comp-bar-track"><div class="comp-bar-fill ${barCls}" style="width:${score}%"></div></div></div>
+                <span class="comp-score-val">${score.toFixed(1)}</span>
+            </div>`;
+        });
+        htmlCards += `
+        <div class="${colCls} mb-3">
+            <div class="comparativo-candidate-card">
+                <div class="cand-header">
+                    <span class="cand-header-name">${candidato}</span>
+                    <span class="score-badge-overall ${overallCls}">${overall.toFixed(1)}</span>
+                </div>
+                <div class="cand-body">${rowsHtml}</div>
+            </div>
+        </div>`;
     });
+    $('#contenedorTablasComparativo').html(htmlCards);
 }
 
 function switchComparativoChart(type) {
-    $('#cardChartColumn, #cardChartRadar').removeClass('border-primary shadow-sm bg-white').addClass('border-0 shadow-none bg-light');
-    $('#textChartColumn, #textChartRadar').removeClass('text-primary').addClass('text-muted');
+    $('#btnChartColumn, #btnChartRadar')
+        .removeClass('btn-warning active')
+        .addClass('btn-outline-warning');
     $('#containerChartColumn, #containerChartRadar').addClass('d-none');
     if (type === 'column') {
-        $('#cardChartColumn').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
-        $('#textChartColumn').removeClass('text-muted').addClass('text-primary');
+        $('#btnChartColumn').removeClass('btn-outline-warning').addClass('btn-warning active');
         $('#containerChartColumn').removeClass('d-none');
         if (chartComparativoVacanteColumn) chartComparativoVacanteColumn.refresh();
     } else {
-        $('#cardChartRadar').removeClass('border-0 shadow-none bg-light').addClass('border-primary shadow-sm bg-white');
-        $('#textChartRadar').removeClass('text-muted').addClass('text-primary');
+        $('#btnChartRadar').removeClass('btn-outline-warning').addClass('btn-warning active');
         $('#containerChartRadar').removeClass('d-none');
         if (chartComparativoVacanteRadar) chartComparativoVacanteRadar.refresh();
     }
