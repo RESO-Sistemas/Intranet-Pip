@@ -2,6 +2,20 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-08 14:37:01] ✨ feat: Rediseño pestaña preguntas evaluaciones
+
+- ✨ **Accordion Editor:** Cada pregunta se convierte en tarjeta colapsable con header limpio (número circular, título, tipo, competencia). Acciones de guardar/eliminar visibles solo en hover.
+- ✨ **Pills Horizontales:** Reemplazo de dropdown `<select>` por pills redondeados para seleccionar la respuesta correcta en opción múltiple, mucho más compacto e intuitivo.
+- ✨ **Select2 Inline Competencia:** Eliminación del modal de edición de competencia; ahora es un Select2 directamente en el body de la tarjeta, actualizando el badge del header en tiempo real.
+- ✨ **Toggle V/F Custom:** Reemplazo del switch nativo por botones toggle animados "Falso / Verdadero" integrados.
+- ✨ **Opciones Estilizadas:** Filas de opciones con label circular, input limpio e icono de eliminar sutil (gris → rojo en hover).
+- ✨ **Niveles Esperados como Chips:** Reemplazo visual del grid pesado de SyncFusion por chips compactos con color distintivo para respuestas nuevas.
+- ✨ **Sticky Bar:** Barra superior fija con contador de preguntas configuradas y sin guardar, actualizado en tiempo real.
+- ✨ **Empty State Ilustrado:** Mensaje visual cuando no hay preguntas configuradas.
+- 🐛 **Fix Empty State:** Se elimina correctamente el empty state al agregar la primera pregunta nueva.
+- 🐛 **Fix Accordion:** Las preguntas nuevas ahora respetan el modo accordion (solo una expandida a la vez).
+- ♻️ **Paleta Coherente:** Uso de la paleta ámbar/dorado `#F59E0B` existente del wizard de evaluaciones para mantener consistencia visual.
+
 ## [2026-05-08 11:09:07] ♻️ refactor: wizard modal creación evaluaciones
 
 - ♻️ **Modal Wizard 4 Pasos:** Nueva interfaz de creación de evaluaciones integrada en ListadoEvaluaciones.php como modal con wizard de 4 pasos (Tipo, Participantes, Fechas, Resumen), reemplazando la página独立的 add-evaluation.php.

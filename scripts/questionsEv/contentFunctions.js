@@ -91,509 +91,197 @@ async function getQuestionsPerEvaluation(){
 
 
 async function printActualQuestions() {
-
   console.log("printActualQuestions - Iniciando con", _dataQuestionsSaved.length, "preguntas");
-
-  
-
-  // Limpiar el contenedor antes de agregar preguntas
-
   $("#contentQuestions").empty();
 
-  
-
   if (_dataQuestionsSaved.length > 0) {
-
     let arrNumPositions = Array.from({ length: _dataQuestionsSaved.length }, (_, i) => i);
-
     for (let position of arrNumPositions) {
-
       try {
-
         let resultF = await printQuestionEsp(position);
-
         $("#contentQuestions").append(resultF.contentHTML);
-
         if (resultF.type == 2) {
-
           await printTableLvlsSavedSV(resultF.number);
-
-        // await printTableLvlsSaved(resultF.number);
-
         } else if (resultF.type == 4) {
-
           printOptionSelectAnswerSV(resultF.number);
-
         }
-
       } catch (error) {
-
         console.error("Error al renderizar pregunta en posición", position, ":", error);
-
       }
-
     }
-
   } else {
-
     console.log("printActualQuestions - No hay preguntas guardadas para mostrar");
-
-    $("#contentQuestions").html('<div class="alert alert-info text-center">No hay preguntas configuradas para esta evaluación.</div>');
-
+    $("#contentQuestions").html(`
+      <div class="evq-empty">
+        <span class="material-symbols-outlined" style="font-size:48px;color:#E2E8F0;margin-bottom:12px;display:block;">quiz</span>
+        <h5>Sin preguntas configuradas</h5>
+        <p>No hay preguntas para esta evaluación. Haz clic en "Nueva Pregunta" para comenzar.</p>
+      </div>`);
   }
 
+  if (typeof evqUpdateMetaBar === 'function') {
+    evqUpdateMetaBar();
+  }
 }
 
 
 
 function printQuestionEsp(i) {
-
   return new Promise((resolve, reject) => {
-
     let dataQuestion = _dataQuestionsSaved[i];
+    let decodeType = atob(dataQuestion.typeQuestion);
+    let typeBadgeClass = `badge-type-${decodeType}`;
 
     let contentPlusHTML = "";
-
     let contentRight = "";
-
-    let decodeType = atob(dataQuestion.typeQuestion);
-
     let contentAnswers = "";
 
-    let optionAn = "";
-
-    let btnDeleteAnswer = "";
-
     switch (decodeType) {
-
       case "1":
-
-      let checked = "";
-
-      if (dataQuestion.expectedValue) {
-
-        checked = "checked";
-
-      }
-
-      contentRight = `
-
-<div class="row">
-
-  <div class="col text-center">
-
-     <labe class="form-label"l>Seleccione la respuesta correcta a la pregunta</label>
-
-    <div class="d-flex justify-content-center align-items-center">
-
-      <label class="form-check-label ms-2">Falso/Verdadero</label>
-
-    </div>
-
-    <div class="form-check form-switch d-flex justify-content-center">
-
-      <input class="form-check-input changeTrue-False True-FalseSV" 
-
-             type="checkbox" 
-
-             ${checked}
-
-             data-question="${i}"
-
-             style="width: 3em; height: 1.5em;">
-
-    </div>
-
-  </div>
-
-</div>`;
-
+        let activeF = !dataQuestion.expectedValue ? 'active' : '';
+        let activeV = dataQuestion.expectedValue ? 'active' : '';
+        contentRight = `
+          <div class="evq-field">
+            <label>Respuesta correcta</label>
+            <div class="evq-toggle-wrap">
+              <button type="button" class="evq-toggle-btn ${activeF} True-FalseSV" data-question="${i}" data-value="false">Falso</button>
+              <button type="button" class="evq-toggle-btn ${activeV} True-FalseSV" data-question="${i}" data-value="true">Verdadero</button>
+            </div>
+          </div>`;
         break;
 
       case "2":
-
-        dataQuestion.answers.forEach( (answer, indexAn) => {
-
-          if (dataQuestion.answers.length > 2) {
-
-            btnDeleteAnswer = `<button class="btn btn-danger" onclick="verifyRemoveAnswerSV('${answer.idAnswer}','${dataQuestion.IdQuestion}','${i + 1}')"><span class="material-symbols-outlined">close_small</span></button>`;
-
-          }
-
-          optionAn = contentOptions[indexAn];
-
+        dataQuestion.answers.forEach((answer, indexAn) => {
+          let btnDelete = dataQuestion.answers.length > 2
+            ? `<button type="button" class="evq-opt-remove" onclick="verifyRemoveAnswerSV('${answer.idAnswer}','${dataQuestion.IdQuestion}','${i + 1}')" title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>`
+            : '';
+          let optLabel = contentOptions[indexAn];
           contentAnswers += `
-
-                    <div class="col-12 mb-2" id="answerSV${answer.idAnswer}-${dataQuestion.IdQuestion}">
-
-                      <div class="d-flex align-items-center gap-2">
-
-                        <span class="fw-bold">${optionAn})</span>
-
-                        <input placeholder="Ingrese la descripción de la respuesta" value="${answer.DescAnswer}" data-answersv="${answer.idAnswer}" data-question="${i}" class="form-control form-control-solid-bordered  contentAnswerSVOld" />
-
-                        ${btnDeleteAnswer}
-
-                      </div>
-
-                    </div>
-
-          `;
-
+            <div class="evq-option-row" id="answerSV${answer.idAnswer}-${dataQuestion.IdQuestion}">
+              <span class="evq-opt-label">${optLabel}</span>
+              <input type="text" class="evq-opt-input contentAnswerSVOld" placeholder="Descripción de la respuesta" value="${answer.DescAnswer}" data-answersv="${answer.idAnswer}" data-question="${i}">
+              ${btnDelete}
+            </div>`;
         });
-
         contentPlusHTML = `
-
-          <div class="col-12">
-
-            <div class="row">
-
-              <div class="col-12 d-flex justify-content-between align-items-center">
-
-            	<label class="form-label mb-0">Respuestas:</label>
-
-                <button class="addanswerSV btn btn-primary" onclick="addAnswerQuestionSV('${i}')"><span class="material-symbols-outlined">add</span></button>
-
-            </div>
-
-            <hr>
-
-            <div class="row" id="containerAnswersSV${dataQuestion.IdQuestion}">
-
-              ${contentAnswers}
-
-            </div>
-
+          <div class="evq-field">
+            <label>Opciones de respuesta</label>
+            <div id="containerAnswersSV${dataQuestion.IdQuestion}">${contentAnswers}</div>
+            <button type="button" class="evq-add-opt addanswerSV" onclick="addAnswerQuestionSV('${i}')"><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
           </div>`;
-
         contentRight = `
-
-<div class="row">
-
-  <div class="col-12">
-
-    <button class="btn btn-warning btn-warning" onclick="seeExpectedResponseSV('${i}')">Agregar respuesta esperada</button>
-
-    <hr>
-
-  </div>
-
-  <div class="col-12" id="contentTableLvlsQuestionSV${i}"></div>
-
-</div>`;
-
+          <div class="evq-field">
+            <div class="evq-levels-box">
+              <div class="evq-levels-header">
+                <span class="evq-levels-title">Respuestas esperadas por nivel</span>
+                <button type="button" class="evq-btn evq-btn-primary" style="padding:0.35rem 0.7rem;font-size:12px;" onclick="seeExpectedResponseSV('${i}')"><span class="material-symbols-outlined" style="font-size:14px">add</span> Agregar</button>
+              </div>
+              <div id="contentTableLvlsQuestionSV${i}"></div>
+            </div>
+          </div>`;
         break;
 
       case "3":
-
-      contentRight = `
-
-<div class="row">
-
-  <div class="col-12">
-
-    <label class="form-label mb-0">Ingrese los rangos disponibles para la pregunta</label>
-
-    <hr>
-
-  </div>
-
-  <div class="col-12">
-
-    <div class="row">
-
-      <div class="col-12 mb-2">
-
-        <label class="form-label">Rango Inicial:</label>
-
-        <input type="number" class="form-control form-control-solid-bordered changeRangeSV" 
-
-               value="${dataQuestion.rangeInitial}" 
-
-               data-question='${i}' 
-
-               data-typenum="initial"/>
-
-      </div>
-
-      <div class="col-12 ">
-
-        <label class="form-label">Rango Final:</label>
-
-        <input type="number" class="form-control form-control-solid-bordered changeRangeSV" 
-
-               value="${dataQuestion.rangeEnd}" 
-
-               data-question='${i}' 
-
-               data-typenum="end"/>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>`;
-
+        contentRight = `
+          <div class="evq-field">
+            <label>Rango permitido para la respuesta</label>
+            <div class="evq-range-row">
+              <div class="evq-field">
+                <label>Rango mínimo <span class="req">*</span></label>
+                <input type="number" class="form-control changeRangeSV" value="${dataQuestion.rangeInitial}" data-question="${i}" data-typenum="initial" placeholder="0">
+              </div>
+              <div class="evq-field">
+                <label>Rango máximo <span class="req">*</span></label>
+                <input type="number" class="form-control changeRangeSV" value="${dataQuestion.rangeEnd}" data-question="${i}" data-typenum="end" placeholder="100">
+              </div>
+            </div>
+          </div>`;
         break;
 
       case "4":
-
-      dataQuestion.answers.forEach( (answer, indexAn) => {
-
-        if (dataQuestion.answers.length > 2) {
-
-          btnDeleteAnswer = `<button class="btn btn-danger" onclick="verifyRemoveAnswerSV('${answer.idAnswer}','${dataQuestion.IdQuestion}','${i + 1}')"><span class="material-symbols-outlined">close_small</span></button>`;
-
-        }
-
-        optionAn = contentOptions[indexAn];
-
-        contentAnswers += `
-
-<div class="col-12 mb-2" id="answerSV${answer.idAnswer}-${dataQuestion.IdQuestion}">
-
-  <div class="d-flex align-items-center gap-2 mb-3">
-
-    <span class="fw-bold me-2">${optionAn})</span>
-
-    <input placeholder="Ingrese la descripción de la respuesta" 
-
-           value="${answer.DescAnswer}" 
-
-           data-answersv="${answer.idAnswer}" 
-
-           data-question="${i}" 
-
-           class="form-control form-control-solid-bordered contentAnswerSVOld" />
-
-    ${btnDeleteAnswer}
-
-  </div>
-
-</div>`;
-
-      });
-
-      contentPlusHTML = `
-
-<div class="col-12">
-
-  <div class="row">
-
-    <div class="col-12 d-flex justify-content-between align-items-center">
-
-      <label class="form-label mb-0">Respuestas:</label>
-
-      <button class="addanswerSV btn btn-primary" onclick="addAnswerQuestionSV('${i}')">
-
-        <span class="material-symbols-outlined">add</span>
-
-      </button>
-
-    </div>
-
-  </div>
-
-  <hr>
-
-  <div class="row" id="containerAnswersSV${dataQuestion.IdQuestion}">
-
-    ${contentAnswers}
-
-  </div>
-
-</div>`;
-
-      contentRight = `
-
-<div class="row">
-
-  <div class="col-12">
-
-    <label class="form-label">Seleccione la respuesta correcta de la pregunta:</label>
-
-  </div>
-
-  <div class="col-12">
-
-    <select id="selectAnswersSV${i}" data-question='${i}' class="form-select selectPerQuestionSV" style="width:100%;"></select>
-
-  </div>
-
-</div>`;
-
+        dataQuestion.answers.forEach((answer, indexAn) => {
+          let btnDelete = dataQuestion.answers.length > 2
+            ? `<button type="button" class="evq-opt-remove" onclick="verifyRemoveAnswerSV('${answer.idAnswer}','${dataQuestion.IdQuestion}','${i + 1}')" title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>`
+            : '';
+          let optLabel = contentOptions[indexAn];
+          contentAnswers += `
+            <div class="evq-option-row" id="answerSV${answer.idAnswer}-${dataQuestion.IdQuestion}">
+              <span class="evq-opt-label">${optLabel}</span>
+              <input type="text" class="evq-opt-input contentAnswerSVOld" placeholder="Descripción de la respuesta" value="${answer.DescAnswer}" data-answersv="${answer.idAnswer}" data-question="${i}">
+              ${btnDelete}
+            </div>`;
+        });
+        contentPlusHTML = `
+          <div class="evq-field">
+            <label>Opciones de respuesta</label>
+            <div id="containerAnswersSV${dataQuestion.IdQuestion}">${contentAnswers}</div>
+            <button type="button" class="evq-add-opt addanswerSV" onclick="addAnswerQuestionSV('${i}')"><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
+          </div>`;
+        contentRight = `
+          <div class="evq-field">
+            <label>Respuesta correcta</label>
+            <div id="containerSelectAnswersSV${i}"></div>
+          </div>`;
         break;
 
       default:
-
-        // Agrega tu lógica para el tipo por defecto si es necesario
-
+        break;
     }
 
-
+    let titleDisplay = dataQuestion.titleQuestion || `Pregunta ${i + 1}`;
+    let competenceDisplay = dataQuestion.descCompetence || 'Sin competencia';
 
     let contentFinalHTML = `
-
-<div class="col-12 dvContentSV" id="dvContentSV${dataQuestion.IdQuestion}">
-
-  <div class="card">
-
-    <div class="card-body">
-
-      <div class="row">
-
-        <div class="col-6 d-flex align-items-center">
-
-          <label id="txQuest${i}" class="card-title mb-0 titleQuestionOld">${i + 1}.- Pregunta</label>
-
-        </div>
-
-        <div class="col-6 d-flex justify-content-end">
-
-          <button class="btn btn-success me-2" onclick="saveNewDataOldQuestion('${dataQuestion.IdQuestion}','${i}')">
-
-            <span class="material-symbols-outlined">save</span> Guardar
-
-          </button>
-
-          <button class="btn btn-danger deleteNoSaved" onclick="deleteQuestionSaved('${dataQuestion.IdQuestion}','${i}')" data-typequestion="old">
-
-            <span class="material-symbols-outlined">delete</span> Eliminar
-
-          </button>
-
-        </div>
-
+<div class="evq-card collapsed dvContentSV" id="dvContentSV${dataQuestion.IdQuestion}">
+  <div class="evq-card-header" onclick="evqToggleCard(this)">
+    <div class="evq-num">${String(i + 1).padStart(2, '0')}</div>
+    <div class="evq-info">
+      <div class="evq-title-text" id="txQuest${i}">${titleDisplay}</div>
+      <div class="evq-meta-line">
+        <span class="badge ${typeBadgeClass}">${dataQuestion.descTypeQuestion}</span>
+        <span class="badge badge-comp">${competenceDisplay}</span>
       </div>
-
-
-
-      <div class="row d-flex justify-content-center align-items-center w-100 mt-3">
-
-        <div class="col-12 text-center">
-
-          <label class="form-label">Tipo: </label>
-
-          <span class="badge badge-style-bordered badge-success mb-4">${dataQuestion.descTypeQuestion}</span>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="row d-flex justify-content-center align-items-center w-100">
-
-        <div class="col-12 text-center">
-
-          <label class="form-label">Competencia seleccionada:</label>
-
-          <label style="cursor: pointer;" class="badge badge-style-bordered badge-success mb-4 changeCompetenceSV" 
-
-                data-question="${i}" 
-
-                data-typequestionsv="old" 
-
-                id="txCompetence${i}">
-
-            ${dataQuestion.descCompetence}
-
-          </label>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="col-12">
-
-        <div class="row">
-
-          <div class="col-12">
-
-            <label class="form-label">Título</label>
-
-            <input type="text" 
-
-                   class="form-control form-control-solid-bordered updatePrincipalInfoOld" 
-
-                   id="titleQuestionSV${dataQuestion.IdQuestion}" 
-
-                   value="${dataQuestion.titleQuestion}" 
-
-                   data-typeinp="title" 
-
-                   data-question="${i}" 
-
-                   required 
-
-                   placeholder="Ingrese el título de la pregunta"/>
-
-            <p for="titleQuestionSV${dataQuestion.IdQuestion}" data-msg="El título es obligatorio"></p>
-
-          </div>
-
-          <div class="col-12">
-
-            <label class="form-label">Pregunta</label>
-
-            <input type="text" 
-
-                   class="form-control form-control-solid-bordered updatePrincipalInfoOld" 
-
-                   id="descriptionQuestionSV${dataQuestion.IdQuestion}" 
-
-                   value="${dataQuestion.descriptionQuestion}" 
-
-                   data-typeinp="txQuestion" 
-
-                   data-question="${i}" 
-
-                   required 
-
-                   placeholder="Ingrese la pregunta"/>
-
-            <p for="descriptionQuestionSV${dataQuestion.IdQuestion}" data-msg="La descripción es obligatoria"></p>
-
-          </div>
-
-          ${contentPlusHTML}
-
-        </div>
-
-      </div>
-
-      <hr class="mt-2">
-
-      <div class="col-12">
-
-        ${contentRight}
-
-      </div>
-
     </div>
-
+    <div class="evq-header-actions">
+      <button type="button" class="evq-icon-btn save" onclick="event.stopPropagation();saveNewDataOldQuestion('${dataQuestion.IdQuestion}','${i}')" title="Guardar cambios"><span class="material-symbols-outlined" style="font-size:18px">save</span></button>
+      <button type="button" class="evq-icon-btn delete deleteNoSaved" onclick="event.stopPropagation();deleteQuestionSaved('${dataQuestion.IdQuestion}','${i}')" data-typequestion="old" title="Eliminar pregunta"><span class="material-symbols-outlined" style="font-size:18px">delete</span></button>
+      <button type="button" class="evq-icon-btn chevron" title="Expandir/Colapsar"><span class="material-symbols-outlined" style="font-size:18px">expand_more</span></button>
+    </div>
   </div>
-
+  <div class="evq-card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="evq-field">
+          <label>Título <span class="req">*</span></label>
+          <input type="text" class="form-control updatePrincipalInfoOld" id="titleQuestionSV${dataQuestion.IdQuestion}" value="${dataQuestion.titleQuestion}" data-typeinp="title" data-question="${i}" placeholder="Ingrese el título de la pregunta">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="evq-field">
+          <label>Competencia <span class="req">*</span></label>
+          <select class="form-select sel-competence-inline" id="selCompetenceSV${i}" data-question="${i}" data-typequestionsv="old" style="width:100%;">
+            ${_allCompetences.map(c => `<option value="${c.idCompetencias}" ${c.idCompetencias == dataQuestion.competence ? 'selected' : ''}>${c.Competencia}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="evq-field">
+          <label>Pregunta / Descripción <span class="req">*</span></label>
+          <input type="text" class="form-control updatePrincipalInfoOld" id="descriptionQuestionSV${dataQuestion.IdQuestion}" value="${dataQuestion.descriptionQuestion}" data-typeinp="txQuestion" data-question="${i}" placeholder="Ingrese la pregunta">
+        </div>
+      </div>
+      ${contentPlusHTML}
+    </div>
+    ${contentRight}
+  </div>
 </div>`;
 
-
-
     resolve({
-
       contentHTML: contentFinalHTML,
-
       type: decodeType,
-
       number: i
-
     });
-
   });
-
 }
 
 
@@ -608,66 +296,29 @@ async function newAnswerQuestionSV(question){
 
 
 
-async function addAnswerQuestionSV(question){
-
-  if (_dataQuestionsSaved[question].newAnswers === undefined){
-
+async function addAnswerQuestionSV(question) {
+  if (_dataQuestionsSaved[question].newAnswers === undefined) {
     _dataQuestionsSaved[question].newAnswers = [];
-
   }
-
   const idQuestion = _dataQuestionsSaved[question].IdQuestion;
-
   const typeQuestion = _dataQuestionsSaved[question].typeQuestion;
-
   _dataQuestionsSaved[question].newAnswers.push('');
 
   let countBeforeInsert = ((_dataQuestionsSaved[question].answers.length + _dataQuestionsSaved[question].newAnswers.length) - 1);
-
   let cantNew = (_dataQuestionsSaved[question].newAnswers.length - 1);
+  let optionAn = contentOptions[countBeforeInsert];
 
-  $(`#containerAnswersSV${question}`).empty();
-
-  let newContentHTML = "";
-
-  let optionAn = "";
-
-  optionAn = contentOptions[countBeforeInsert];
-
-  newContentHTML += `
-
-<div class="col-12 mb-2" id="answerSVNew${cantNew}-${idQuestion}">
-
-    <div class="d-flex align-items-center gap-2">
-
-        <span class="fw-bold">${optionAn})</span>
-
-        <input class="form-control form-control-solid-bordered contentAnswerSVNew" 
-
-               placeholder="Ingrese la descripción de la respuesta" 
-
-               data-answersvnew="${cantNew}" 
-
-               data-question="${question}"/>
-
-        <button class="btn btn-danger" onclick="removeAnswerQSVNew('${cantNew}','${idQuestion}','${question}')">
-
-            <span class="material-symbols-outlined">close_small</span>
-
-        </button>
-
-    </div>
-
-</div>`;
+  let newContentHTML = `
+    <div class="evq-option-row" id="answerSVNew${cantNew}-${idQuestion}">
+      <span class="evq-opt-label">${optionAn}</span>
+      <input type="text" class="evq-opt-input contentAnswerSVNew" placeholder="Descripción de la respuesta" data-answersvnew="${cantNew}" data-question="${question}">
+      <button type="button" class="evq-opt-remove" onclick="removeAnswerQSVNew('${cantNew}','${idQuestion}','${question}')" title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+    </div>`;
 
   $(`#containerAnswersSV${idQuestion}`).append(newContentHTML);
-
-  if (atob(typeQuestion) == 4){
-
+  if (atob(typeQuestion) == 4) {
     printOptionSelectAnswerSV(question);
-
   }
-
 }
 
 
@@ -934,112 +585,47 @@ async function verifyRemoveAnswerSV(answer, question, indexPlus){
 
 
 
-function rePrintAnswersSV(question, answer, index, type, typeQuestion){
-
-  if ( type === "old" ) {
-
-    _dataQuestionsSaved[index].answers = _dataQuestionsSaved[index].answers.filter( answerData => Number(answerData.idAnswer) != Number(answer));
-
+function rePrintAnswersSV(question, answer, index, type, typeQuestion) {
+  if (type === "old") {
+    _dataQuestionsSaved[index].answers = _dataQuestionsSaved[index].answers.filter(answerData => Number(answerData.idAnswer) != Number(answer));
   } else {
-
     _dataQuestionsSaved[index].newAnswers.splice(answer, 1);
-
   }
 
   $(`#containerAnswersSV${question}`).empty();
-
-
-
   let newContentHTML = "";
-
-  let optionAn = "";
-
   let cantOldAnswers = _dataQuestionsSaved[index].answers.length;
-
   let cantNewAnswers = _dataQuestionsSaved[index].newAnswers.length;
 
-  _dataQuestionsSaved[index].answers.forEach((answerFE , i) => {
-
-    let btnDeleteAnswer = "";
-
-    if ((cantOldAnswers + cantNewAnswers) > 2){
-
-      btnDeleteAnswer = `    <button class="btn btn-danger" onclick="verifyRemoveAnswerSV('${answerFE.idAnswer}','${question}','${i + 1}')"><span class="material-symbols-outlined">close_small</span></button>`;
-
-    }
-
-    optionAn = contentOptions[i];
-
+  _dataQuestionsSaved[index].answers.forEach((answerFE, i) => {
+    let btnDeleteAnswer = (cantOldAnswers + cantNewAnswers) > 2
+      ? `<button type="button" class="evq-opt-remove" onclick="verifyRemoveAnswerSV('${answerFE.idAnswer}','${question}','${i + 1}')" title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>`
+      : '';
+    let optionAn = contentOptions[i];
     newContentHTML += `
-
-<div class="col-12 mb-2" id="answerSV${answer.idAnswer}-${question}">
-
-  <div class="d-flex align-items-center gap-2">
-
-    <span class="fw-bold">${optionAn})</span>
-
-    <input class="form-control form-control-solid-bordered contentAnswerSV"
-
-           placeholder="Ingrese la descripción de la respuesta"
-
-           value="${answerFE.DescAnswer}"
-
-           data-answersv="${answerFE.idAnswer}" />
-
-    ${btnDeleteAnswer}
-
-  </div>
-
-</div>`;
-
+      <div class="evq-option-row" id="answerSV${answerFE.idAnswer}-${question}">
+        <span class="evq-opt-label">${optionAn}</span>
+        <input type="text" class="evq-opt-input contentAnswerSV" placeholder="Descripción de la respuesta" value="${answerFE.DescAnswer}" data-answersv="${answerFE.idAnswer}">
+        ${btnDeleteAnswer}
+      </div>`;
   });
 
   _dataQuestionsSaved[index].newAnswers.forEach((newAnswerI, i) => {
-
-    optionAn = contentOptions[(cantOldAnswers + (i))];
-
+    let optionAn = contentOptions[(cantOldAnswers + i)];
     newContentHTML += `
-
-<div class="col-12 mb-2" id="answerSVNew${i}-${question}">
-
-  <div class="d-flex align-items-center gap-2">
-
-    <span class="fw-bold">${optionAn})</span>
-
-    <input class="form-control form-control-solid-bordered contentAnswerSVNew"
-
-           placeholder="Ingrese la descripción de la respuesta"
-
-           value="${newAnswerI}"
-
-           data-answersvnew="${i}"
-
-           data-question="${index}" />
-
-    <button class="btn btn-danger" onclick="removeAnswerQSVNew('${i}','${question}','${index}')">
-
-      <span class="material-symbols-outlined">close_small</span>
-
-    </button>
-
-  </div>
-
-</div>`;
-
+      <div class="evq-option-row" id="answerSVNew${i}-${question}">
+        <span class="evq-opt-label">${optionAn}</span>
+        <input type="text" class="evq-opt-input contentAnswerSVNew" placeholder="Descripción de la respuesta" value="${newAnswerI}" data-answersvnew="${i}" data-question="${index}">
+        <button type="button" class="evq-opt-remove" onclick="removeAnswerQSVNew('${i}','${question}','${index}')" title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+      </div>`;
   });
 
   $(`#containerAnswersSV${question}`).append(newContentHTML);
-
   if (typeQuestion == 2) {
-
     printTableLvlsSavedSV(index);
-
   } else {
-
     printOptionSelectAnswerSV(index);
-
   }
-
 }
 
 
@@ -1259,452 +845,200 @@ function printCompetencesActive(data){
 
 
 
-function addQuestion(type,competence){
-
+function addQuestion(type, competence) {
   let decodeType = atob(type);
-
-  let dataTypeQ = _typeQuestions.filter( typeQ => typeQ.idTipoPregunta == type);
-
-  let dataCompetence = _allCompetences.filter( comp => comp.idCompetencias == competence);
-
+  let dataTypeQ = _typeQuestions.filter(typeQ => typeQ.idTipoPregunta == type);
+  let dataCompetence = _allCompetences.filter(comp => comp.idCompetencias == competence);
   let newNumber = (_dataQuestions.length + 1);
-
   let contentPlusHTML = "";
-
   let contentRight = "";
+  let typeBadgeClass = `badge-type-${decodeType}`;
 
   switch (decodeType) {
-
     case '1':
-
       contentRight = `
-
-<div class="row">
-
-  <div class="col text-center">
-
-    <labe class="form-label"l>Seleccione la respuesta correcta a la pregunta</label>
-
-    <div class="d-flex justify-content-center align-items-center"> 
-
-      <label class="form-check-label ms-2">Falso/Verdadero</label>
-
-    </div>
-
-    <div class="form-check form-switch d-flex justify-content-center">
-
-      <input class="form-check-input changeTrue-False True-FalseSV" 
-
-             type="checkbox" 
-
-             data-question="${(newNumber - 1)}"
-
-             style="width: 3em; height: 1.5em;">
-
-    </div>
-
-  </div>
-
-</div>`;
-
-        _dataQuestions.push({
-
-          typeQuestion: type,
-
-          descTypeQuestion: dataTypeQ[0]["Descripcion"],
-
-          competence: competence,
-
-          descCompetence: dataCompetence[0]["Competencia"],
-
-          titleQuestion: "",
-
-          descriptionQuestion: "",
-
-          expectedValue: false,
-
-          saveInBdd: false,
-
-          edited: false
-
-        });
-
+        <div class="evq-field">
+          <label>Respuesta correcta</label>
+          <div class="evq-toggle-wrap">
+            <button type="button" class="evq-toggle-btn active changeTrue-False" data-question="${(newNumber - 1)}" data-value="false">Falso</button>
+            <button type="button" class="evq-toggle-btn changeTrue-False" data-question="${(newNumber - 1)}" data-value="true">Verdadero</button>
+          </div>
+        </div>`;
+      _dataQuestions.push({
+        typeQuestion: type,
+        descTypeQuestion: dataTypeQ[0]["Descripcion"],
+        competence: competence,
+        descCompetence: dataCompetence[0]["Competencia"],
+        titleQuestion: "",
+        descriptionQuestion: "",
+        expectedValue: false,
+        saveInBdd: false,
+        edited: false
+      });
       break;
 
     case '2':
-
-    contentPlusHTML = `
-
-      <div class="col-12">
-
-        <div class="row">
-
-          <div class="col-12 d-flex justify-content-between align-items-center">
-
-            <label class="form-label mb-0">Respuestas:</label>
-
-            <button class="addanswer btn btn-primary" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">add</span></button>
-
+      contentPlusHTML = `
+        <div class="evq-field">
+          <label>Opciones de respuesta</label>
+          <div id="contentAnswers${(newNumber - 1)}">
+            <div class="evq-option-row" id="answer${(newNumber - 1)}-0">
+              <span class="evq-opt-label">a</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="0" data-question="${(newNumber - 1)}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${0}" data-question='${(newNumber - 1)}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
+            <div class="evq-option-row" id="answer${(newNumber - 1)}-1">
+              <span class="evq-opt-label">b</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="1" data-question="${(newNumber - 1)}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${1}" data-question='${(newNumber - 1)}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
           </div>
-
-        </div>
-
-        <hr>
-
-        <div class="row" id="contentAnswers${(newNumber - 1)}">
-
-          <div class="col-12 mb-2" id="answer${(newNumber - 1)}-0">
-
-              <div class="d-flex align-items-center gap-2">
-
-                <span class="fw-bold">a)</span>
-
-                <input class="form-control form-control-solid-bordered  answerInp" placeholder="Ingrese la descripción de la respuesta" data-answer="0" data-question="${(newNumber - 1)}"/>
-
-                <button class="btn btn-danger removeAnswer" data-removeanswer="${0}" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">close_small</span></button>
-
-              </div>
-
-          </div>
-
-          <div class="col-12 mb-2" id="answer${(newNumber - 1)}-1">
-
-              <div class="d-flex align-items-center gap-2">
-
-                <span class="fw-bold">b)</span>
-
-                <input class="form-control form-control-solid-bordered answerInp" placeholder="Ingrese la descripción de la respuesta" data-answer="1" data-question="${(newNumber - 1)}"/>
-
-                <button class="btn btn-danger removeAnswer" data-removeanswer="${1}" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">close_small</span></button>
-
-              </div>
-
-          </div>
-
-        </div>
-
-      </div>`;
-
-      contentRight = `
-
-        <div class="row">
-
-          <div class="col-12">
-
-            <button class="btn btn-warning" onclick="seeExpectedResponse('${(newNumber - 1)}','new')"> Agregar respuesta esperada </button>
-
-            <hr>
-
-          </div>
-
-          <div class="col-12" id="contentTableLvlsQuestion${newNumber - 1}"></div>
-
+          <button type="button" class="evq-add-opt addanswer" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
         </div>`;
-
+      contentRight = `
+        <div class="evq-field">
+          <div class="evq-levels-box">
+            <div class="evq-levels-header">
+              <span class="evq-levels-title">Respuestas esperadas por nivel</span>
+              <button type="button" class="evq-btn evq-btn-primary" style="padding:0.35rem 0.7rem;font-size:12px;" onclick="seeExpectedResponse('${(newNumber - 1)}','new')"><span class="material-symbols-outlined" style="font-size:14px">add</span> Agregar</button>
+            </div>
+            <div id="contentTableLvlsQuestion${newNumber - 1}"></div>
+          </div>
+        </div>`;
       _dataQuestions.push({
-
         typeQuestion: type,
-
         descTypeQuestion: dataTypeQ[0]["Descripcion"],
-
         competence: competence,
-
         descCompetence: dataCompetence[0]["Competencia"],
-
         titleQuestion: "",
-
         descriptionQuestion: "",
-
-        answers: [
-
-          "",""
-
-        ],
-
+        answers: ["", ""],
         expectedValue: [],
-
         saveInBdd: false,
-
         edited: false
-
       });
-
       break;
 
     case '3':
-
-    contentRight = `
-
-      <div class="row">
-
-        <div class="col-12">
-
-          <label class="form-label mb-0">Ingrese los rangos disponibles para la pregunta</label>
-
-          <hr>
-
-        </div>
-
-        <div class="col-12">
-
-          <div class="row">
-
-            <div class="col-12 mb-2">
-
-              <label class="form-label">Rango Inicial:</label>
-
-              <input type="number" class="form-control form-control-solid-bordered  changeRange" value="0" data-question='${(newNumber - 1)}' data-typenum="initial" />
-
+      contentRight = `
+        <div class="evq-field">
+          <label>Rango permitido para la respuesta</label>
+          <div class="evq-range-row">
+            <div class="evq-field">
+              <label>Rango mínimo <span class="req">*</span></label>
+              <input type="number" class="form-control changeRange" value="0" data-question='${(newNumber - 1)}' data-typenum="initial" placeholder="0">
             </div>
-
-            <div class="col-12">
-
-              <label class="form-label">Rango Final:</label>
-
-              <input type="number" class="form-control form-control-solid-bordered  changeRange" value="100" data-question='${(newNumber - 1)}' data-typenum="end" />
-
+            <div class="evq-field">
+              <label>Rango máximo <span class="req">*</span></label>
+              <input type="number" class="form-control changeRange" value="100" data-question='${(newNumber - 1)}' data-typenum="end" placeholder="100">
             </div>
-
           </div>
-
-        </div>
-
-      </div>`;
-
+        </div>`;
       _dataQuestions.push({
-
         typeQuestion: type,
-
         descTypeQuestion: dataTypeQ[0]["Descripcion"],
-
         competence: competence,
-
         descCompetence: dataCompetence[0]["Competencia"],
-
         titleQuestion: "",
-
         descriptionQuestion: "",
-
         rangeInitial: 0,
-
         rangeEnd: 100,
-
         saveInBdd: false,
-
         edited: false
-
       });
-
       break;
 
     case '4':
-
-    contentPlusHTML = `
-
-      <div class="col-12">
-
-        <div class="row">
-
-          <div class="col-12 d-flex justify-content-between align-items-center">
-
-            <label class="form-label mb-0">Respuestas:</label>
-
-            <button class="addanswer btn btn-primary" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">add</span></button>
-
-          </div>
-
-        </div>
-
-        <hr>
-
-        <div class="row" id="contentAnswers${(newNumber - 1)}">
-
-          <div class="col-12 mb-2" id="answer${(newNumber - 1)}-0">
-
-            <div class="d-flex align-items-center gap-2">
-
-              <span class="fw-bold">a)</span>
-
-              <input class="form-control form-control-solid-bordered answerInp" placeholder="Ingrese la descripción de la respuesta" data-answer="0" data-question="${(newNumber - 1)}"/>
-
-              <button  class="btn btn-danger removeAnswer" data-removeanswer="${0}" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">close_small</span></button>
-
+      contentPlusHTML = `
+        <div class="evq-field">
+          <label>Opciones de respuesta</label>
+          <div id="contentAnswers${(newNumber - 1)}">
+            <div class="evq-option-row" id="answer${(newNumber - 1)}-0">
+              <span class="evq-opt-label">a</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="0" data-question="${(newNumber - 1)}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${0}" data-question='${(newNumber - 1)}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
             </div>
-
-          </div>
-
-          <div class="col-12 mb-2" id="answer${(newNumber - 1)}-1">
-
-            <div class="d-flex align-items-center gap-2">
-
-                <span class="fw-bold">b)</span>
-
-                <input class="form-control form-control-solid-bordered answerInp" placeholder="Ingrese la descripción de la respuesta" data-answer="1" data-question="${(newNumber - 1)}"/>
-
-                <button class="btn btn-danger removeAnswer" data-removeanswer="${1}" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined">close_small</span></button>
-
+            <div class="evq-option-row" id="answer${(newNumber - 1)}-1">
+              <span class="evq-opt-label">b</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="1" data-question="${(newNumber - 1)}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${1}" data-question='${(newNumber - 1)}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
             </div>
-
           </div>
-
-        </div>
-
-      </div>`;
-
-      contentRight = `
-
-        <div class="row">
-
-          <div class="col-12">
-
-            <label class="form-label">Seleccione la respuesta correcta de la pregunta:</label>
-
-          </div>
-
-          <div class="col-12">
-
-            <select id="selectAnswers${(newNumber - 1)}" data-question='${(newNumber - 1)}' class="from-select selectPerQuestion" style="width:100%;"></select>
-
-          </div>
-
+          <button type="button" class="evq-add-opt addanswer" data-question='${(newNumber - 1)}'><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
         </div>`;
-
+      contentRight = `
+        <div class="evq-field">
+          <label>Respuesta correcta</label>
+          <div id="containerSelectAnswers${(newNumber - 1)}"></div>
+        </div>`;
       _dataQuestions.push({
-
         typeQuestion: type,
-
         descTypeQuestion: dataTypeQ[0]["Descripcion"],
-
         competence: competence,
-
         descCompetence: dataCompetence[0]["Competencia"],
-
         titleQuestion: "",
-
         descriptionQuestion: "",
-
-        answers: [
-
-          "",""
-
-        ],
-
+        answers: ["", ""],
         expectedValue: 0,
-
         saveInBdd: false,
-
         edited: false
-
       });
-
       break;
 
     default:
-
-
-
+      break;
   }
 
+  let displayNum = _dataQuestionsSaved.length + newNumber;
   let contentFinalHTML = `
-
-    <div class="col-12 dvContentQuestion" id="dvQuestion${newNumber - 1}">
-
-      <div class="card">
-
-        <div class="card-body">
-
-            <div class="row">
-
-              <div class="col-6 d-flex align-items-center"><label id="txQuest${newNumber - 1}" class="card-title mb-0  titleNewQuestion">${(_dataQuestionsSaved.length + (newNumber))}.- Pregunta (Nueva)</label></div>
-
-              <div class="col-6 d-flex justify-content-end" ><button class="btn btn-danger deleteNoSaved" data-question="${newNumber - 1}" data-typequestion="new"><span class="material-symbols-outlined">delete</span></button></div>
-
-            </div>
-
-          <div class="row">
-
-            <div class="row d-flex justify-content-center align-items-center w-100">
-
-              <div class="col-12 text-center">
-
-                <label class="form-label">Tipo: </label>
-
-                <span class="badge badge-style-bordered badge-success mb-4">${dataTypeQ[0]["Descripcion"]}</span>
-
-              </div>
-
-            </div>
-
-            <div class="row d-flex justify-content-center align-items-center w-100">
-
-              <div class="col-12 text-center">
-
-                <label class="form-label">Competencia seleccionada:</label>
-
-                <label style="cursor: pointer;" class="badge badge-style-bordered badge-success mb-4 changeCompetenceSV" data-question="${newNumber - 1}" data-typequestionsv="new" id="txCompetenceNew${newNumber - 1}">${dataCompetence[0]["Competencia"]}</label>
-
-              </div>
-
-            </div>
-
-
-
-            <div class="col-12">
-
-              <div class="row">
-
-                <div class="col-12">
-
-                  <label class="form-label">Título</label>
-
-                  <input type="text" class="form-control form-control-solid-bordered updatePrincipalInfo" id="title${newNumber - 1}" data-typeinp="title" data-question="${(newNumber - 1)}" required placeholder="Ingrese el título de la pregunta"/>
-
-                  <p for="title${newNumber - 1}" data-msg="El título es obligatorio"></p>
-
-                </div>
-
-                <div class="col-12">
-
-                  <label class="form-label">Pregunta</label>
-
-                  <input type="text" class="form-control form-control-solid-bordered updatePrincipalInfo" id="desc${newNumber - 1}" data-typeinp="txQuestion" data-question="${(newNumber - 1)}" required placeholder="Ingrese la pregunta"/>
-
-                  <p for="desc${newNumber - 1}" data-msg="La descripción es obligatoria"></p>
-
-                </div>
-
-                ${contentPlusHTML}
-
-              </div>
-
-            </div>
-
-            <hr class="mt-2">
-
-            <div class="col-12">
-
-              ${contentRight}
-
-            </div>
-
+    <div class="evq-card collapsed dvContentQuestion" id="dvQuestion${newNumber - 1}">
+      <div class="evq-card-header" onclick="evqToggleCard(this)">
+        <div class="evq-num">${String(displayNum).padStart(2, '0')}</div>
+        <div class="evq-info">
+          <div class="evq-title-text titleNewQuestion" id="txQuest${newNumber - 1}">${displayNum}.- Pregunta (Nueva)</div>
+          <div class="evq-meta-line">
+            <span class="badge ${typeBadgeClass}">${dataTypeQ[0]["Descripcion"]}</span>
+            <span class="badge badge-comp">${dataCompetence[0]["Competencia"]}</span>
           </div>
-
         </div>
-
+        <div class="evq-header-actions">
+          <button type="button" class="evq-icon-btn delete deleteNoSaved" data-question="${newNumber - 1}" data-typequestion="new" onclick="event.stopPropagation();" title="Eliminar pregunta"><span class="material-symbols-outlined" style="font-size:18px">delete</span></button>
+          <button type="button" class="evq-icon-btn chevron" title="Expandir/Colapsar"><span class="material-symbols-outlined" style="font-size:18px">expand_more</span></button>
+        </div>
       </div>
-
+      <div class="evq-card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="evq-field">
+              <label>Título <span class="req">*</span></label>
+              <input type="text" class="form-control updatePrincipalInfo" id="title${newNumber - 1}" data-typeinp="title" data-question="${(newNumber - 1)}" placeholder="Ingrese el título de la pregunta">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="evq-field">
+              <label>Competencia <span class="req">*</span></label>
+              <select class="form-select sel-competence-inline" id="selCompetenceNew${newNumber - 1}" data-question="${newNumber - 1}" data-typequestionsv="new" style="width:100%;">
+                ${_allCompetences.map(c => `<option value="${c.idCompetencias}" ${c.idCompetencias == competence ? 'selected' : ''}>${c.Competencia}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="evq-field">
+              <label>Pregunta / Descripción <span class="req">*</span></label>
+              <input type="text" class="form-control updatePrincipalInfo" id="desc${newNumber - 1}" data-typeinp="txQuestion" data-question="${(newNumber - 1)}" placeholder="Ingrese la pregunta">
+            </div>
+          </div>
+          ${contentPlusHTML}
+        </div>
+        ${contentRight}
+      </div>
     </div>`;
 
   return {
-
     contentHTML: contentFinalHTML,
-
     type: decodeType,
-
     number: newNumber - 1
-
   };
-
 }
 
 
@@ -1729,15 +1063,12 @@ function changeexpectedValueTFSV(question, newVal){
 
 
 
-function addAnswerQuestion(question){
-  // Validar que la pregunta existe en _dataQuestions
+function addAnswerQuestion(question) {
   if (!_dataQuestions[question]) {
     console.error(`Error: La pregunta ${question} no existe en _dataQuestions`);
     toastr.error('No se pudo agregar la respuesta. La pregunta no existe.', 'Error');
     return;
   }
-  
-  // Validar que la pregunta tiene el array de respuestas
   if (!_dataQuestions[question].answers || !Array.isArray(_dataQuestions[question].answers)) {
     console.error(`Error: La pregunta ${question} no tiene un array de respuestas válido`);
     toastr.error('No se pudo agregar la respuesta. Estructura de datos inválida.', 'Error');
@@ -1745,37 +1076,22 @@ function addAnswerQuestion(question){
   }
 
   let newOption = contentOptions[_dataQuestions[question].answers.length];
-
-  const cantAnswers = (_dataQuestions[question].answers.length);
-
+  const cantAnswers = _dataQuestions[question].answers.length;
   _dataQuestions[question].answers.push('');
 
   let contentHTML = `
-
-    <div class="col-12 mb-2" id="answer${question}-${cantAnswers}">
-
-        <div class="d-flex align-items-center gap-2">
-
-          <span class="fw-bold">${newOption})</span>
-
-          <input class="form-control form-control-solid-bordered answerInp" placeholder="${newOption} Ingrese la descripción de la respuesta" data-answer="${cantAnswers}" data-question="${question}"/>
-
-          <button  class="btn btn-danger removeAnswer" data-removeanswer="${cantAnswers}" data-question='${question}'><span class="material-symbols-outlined">close_small</span></button>
-
-        </div>
-
+    <div class="evq-option-row" id="answer${question}-${cantAnswers}">
+      <span class="evq-opt-label">${newOption}</span>
+      <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="${cantAnswers}" data-question="${question}">
+      <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${cantAnswers}" data-question='${question}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
     </div>`;
 
-    $(`#contentAnswers${question}`).append(contentHTML);
+  $(`#contentAnswers${question}`).append(contentHTML);
+  _dataQuestions[question].edited = true;
 
-    _dataQuestions[question].edited = true;
-
-    if (atob(_dataQuestions[question].typeQuestion) == 4) {
-
-      printOptionSelectAnswer(question);
-
-    }
-
+  if (atob(_dataQuestions[question].typeQuestion) == 4) {
+    printOptionSelectAnswer(question);
+  }
 }
 
 
@@ -1808,96 +1124,44 @@ async function removeAnswerQ(question, answer){
 
 
 
-function rePrintAnswers(question, typeQ, answer = ''){
-
+function rePrintAnswers(question, typeQ, answer = '') {
   const dv = document.getElementById(`answer${question}-${answer}`);
-
   _dataQuestions[question].answers.splice(answer, 1);
-
-  dv.remove();
+  if (dv) dv.remove();
 
   $(`#contentAnswers${question}`).empty();
-
   let newContentHTML = "";
-
-  let newOption = "";
-
-  _dataQuestions[question].answers.forEach((answerFE , i) => {
-
-    newOption = contentOptions[i];
-
+  _dataQuestions[question].answers.forEach((answerFE, i) => {
+    let newOption = contentOptions[i];
     newContentHTML += `
-
-    <div class="col-12 mb-2" id="answer${question}-${i}">
-
-        <div class="d-flex align-items-center gap-2">
-
-          <span class="fw-bold">${newOption})</span>
-
-          <input class="form-control form-control-solid-bordered answerInp" value="${answerFE}" placeholder="${newOption} Ingrese la descripción de la respuesta" data-answer="${i}" data-question="${question}"/>
-
-           <button class="btn btn-danger removeAnswer" data-removeanswer="${i}" data-question='${question}'><span class="material-symbols-outlined">close_small</span></button>
-
-        </div>
-
-    </div>`;
-
+      <div class="evq-option-row" id="answer${question}-${i}">
+        <span class="evq-opt-label">${newOption}</span>
+        <input type="text" class="evq-opt-input answerInp" value="${answerFE}" placeholder="Descripción de la respuesta" data-answer="${i}" data-question="${question}">
+        <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="${i}" data-question='${question}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+      </div>`;
   });
-
   $(`#contentAnswers${question}`).append(newContentHTML);
 
   if (typeQ == 2) {
-
-    let newArrExpectedValue =  [];
-
-    _dataQuestions[question].expectedValue.forEach( expected => {
-
-      if (expected.answer != answer){
-
-        if (expected.answer > answer){
-
-          newArrExpectedValue.push({
-
-            answer: Number(expected.answer) - 1,
-
-            lvl: expected.lvl
-
-          });
-
+    let newArrExpectedValue = [];
+    _dataQuestions[question].expectedValue.forEach(expected => {
+      if (expected.answer != answer) {
+        if (expected.answer > answer) {
+          newArrExpectedValue.push({ answer: Number(expected.answer) - 1, lvl: expected.lvl });
         } else {
-
-          newArrExpectedValue.push({
-
-            answer: expected.answer,
-
-            lvl: expected.lvl
-
-          });
-
+          newArrExpectedValue.push({ answer: expected.answer, lvl: expected.lvl });
         }
-
       }
-
     });
-
-     _dataQuestions[question].expectedValue = newArrExpectedValue;
-
-     printTableLvls(question);
-
+    _dataQuestions[question].expectedValue = newArrExpectedValue;
+    printTableLvls(question);
   } else {
-
     if (_dataQuestions[question].expectedValue > answer) {
-
       _dataQuestions[question].expectedValue = (Number(_dataQuestions[question].expectedValue) - 1);
-
     }
-
     printOptionSelectAnswer(question);
-
   }
-
   _dataQuestions[question].edited = true;
-
 }
 
 
@@ -2058,304 +1322,109 @@ async function verifyAnswerInResultExpected(question, answer) {
 
 
 
-function printTableLvls(question){
-
-  $(`#contentTableLvlsQuestion${question}`).empty();
-
-  $(`#contentTableLvlsQuestion${question}`).append(`<div id="tableLvlsQuestion${question}"></div>`);
-
+function printTableLvls(question) {
+  let container = $(`#contentTableLvlsQuestion${question}`);
+  container.empty();
   let data = _dataQuestions[question].expectedValue;
-
-  for (var i = 0; i < data.length; i++) {
-
-    let option = contentOptions[data[i].answer];
-
-    data[i].question = question;
-
-    data[i].textAnswer = option;
-
+  if (!data || data.length === 0) {
+    container.append(`<div style="font-size:12px;color:var(--ev-text-muted);padding:0.5rem 0;">Sin respuestas esperadas configuradas.</div>`);
+    return;
   }
-
-  let tableLvl;
-
-  if(tableLvl){
-
-    tableLvl.destroy();
-
-  }
-
-  tableLvl = new ej.grids.Grid({
-
-    dataSource: data,
-
-    allowFiltering: true,
-
-    filterSettings: { type:'Menu' },
-
-    columns: [
-
-      { field: "lvl", headerText: "Nivel", width: 50, textAlign: 'Center', allowFiltering: false },
-
-      { field: "textAnswer", headerText: "Respuesta Esperada", width: 100, textAlign: 'Center', allowFiltering: false },
-
-      { field: "", headerText: "Eliminar", width: 50, textAlign: 'Center', allowFiltering: false , template: "#deleteResExpectedTemplate"},
-
-    ],
-
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  data.forEach(item => {
+    let option = contentOptions[item.answer];
+    html += `
+      <div class="evq-level-chip lvl">
+        Nivel ${item.lvl} → ${option}
+        <button type="button" class="evq-chip-remove" onclick="deleteResultExpected('${item.lvl}','${item.answer}','${question}')" title="Eliminar"><span class="material-symbols-outlined" style="font-size:10px">close</span></button>
+      </div>`;
   });
-
-  tableLvl.appendTo(`#tableLvlsQuestion${question}`);
-
+  html += '</div>';
+  container.append(html);
 }
 
-
-
-function printTableLvlsSavedSV(question){
-
-  $(`#contentTableLvlsQuestionSV${question}`).empty();
-
-  $(`#contentTableLvlsQuestionSV${question}`).append(`<div class="row">
-
-      <div class="col-12">
-
-        <label class="card-title">Respuestas guardadas</label>
-
-      </div>
-
-      <div class="col-12">
-
-        <div id="tableLvlsQuestionSV${question}"></div>
-
-        <hr>
-
-      </div>
-
-    </div>`);
-
+function printTableLvlsSavedSV(question) {
+  let container = $(`#contentTableLvlsQuestionSV${question}`);
+  container.empty();
   let data = _dataQuestionsSaved[question].expectedValue;
-
   let dataAnswers = _dataQuestionsSaved[question].answers;
 
-  for (var i = 0; i < data.length; i++) {
-
-    const posicion = dataAnswers.findIndex(elemento => elemento.idAnswer == data[i].answerExpected);
-
-    let option = contentOptions[posicion];
-
-    data[i].question = question;
-
-    data[i].textAnswer = option;
-
-  }
-
-  let tableLvl;
-
-  if(tableLvl){
-
-    tableLvl.destroy();
-
-  }
-
-  tableLvl = new ej.grids.Grid({
-
-    dataSource: data,
-
-    allowFiltering: true,
-
-    filterSettings: { type:'Menu' },
-
-    columns: [
-
-      { field: "lvl", headerText: "Nivel", width: 50, textAlign: 'Center', allowFiltering: false },
-
-      { field: "textAnswer", headerText: "Respuesta Esperada", width: 100, textAlign: 'Center', allowFiltering: false },
-
-      { field: "", headerText: "Eliminar", width: 50, textAlign: 'Center', allowFiltering: false , template: "#deleteResExpectedSVTemplate"},
-
-    ],
-
-  });
-
-  tableLvl.appendTo(`#tableLvlsQuestionSV${question}`);
-
-
-
-  let dataNew = [];
-
-  if(_dataQuestionsSaved[question].expectedValueNew !== undefined) {
-
-    $(`#contentTableLvlsQuestionSV${question}`).append(`<div class="row">
-
-      <div class="col-12">
-
-        <label class="card-title">Respuestas guardadas</label>
-
-      </div>
-
-      <div class="col-12">
-
-        <div id="tableLvlsQuestionSVNew${question}"></div>
-
-      </div>
-
-    </div>`);
-
-    dataNew = _dataQuestionsSaved[question].expectedValueNew;
-
-    dataNew.forEach((answerNewm, i) => {
-
-      let posicion = ((_dataQuestionsSaved[question].answers.length + answerNewm.answer));
-
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+  if (data && data.length > 0) {
+    data.forEach(item => {
+      const posicion = dataAnswers.findIndex(elemento => elemento.idAnswer == item.answerExpected);
       let option = contentOptions[posicion];
-
-      dataNew[i].question = question;
-
-      dataNew[i].textAnswer = option;
-
+      html += `
+        <div class="evq-level-chip lvl">
+          Nivel ${item.lvl} → ${option}
+          <button type="button" class="evq-chip-remove" onclick="deleteResultExpectedSV('${item.lvl}','${item.answerExpected}','${item.IdQuestion}')" title="Eliminar"><span class="material-symbols-outlined" style="font-size:10px">close</span></button>
+        </div>`;
     });
-
-    tableLvlNew = new ej.grids.Grid({
-
-      dataSource: dataNew,
-
-      allowFiltering: true,
-
-      filterSettings: { type:'Menu' },
-
-      columns: [
-
-        { field: "lvl", headerText: "Nivel", width: 50, textAlign: 'Center', allowFiltering: false },
-
-        { field: "textAnswer", headerText: "Respuesta Esperada", width: 100, textAlign: 'Center', allowFiltering: false },
-
-        { field: "", headerText: "Eliminar", width: 50, textAlign: 'Center', allowFiltering: false, template: "#deleteResExpectedSVNewTemplate"},
-
-      ],
-
-    });
-
-    tableLvlNew.appendTo(`#tableLvlsQuestionSVNew${question}`);
-
   }
-
+  if (_dataQuestionsSaved[question].expectedValueNew && _dataQuestionsSaved[question].expectedValueNew.length > 0) {
+    _dataQuestionsSaved[question].expectedValueNew.forEach(item => {
+      let posicion = _dataQuestionsSaved[question].answers.length + item.answer;
+      let option = contentOptions[posicion];
+      html += `
+        <div class="evq-level-chip lvl" style="background:#FFEDD5;color:#9A3412;border-color:#FDBA74;">
+          Nivel ${item.lvl} → ${option} (nueva)
+          <button type="button" class="evq-chip-remove" onclick="deleteResultExpectedSVNew('${item.lvl}','${item.answer}','${question}')" title="Eliminar"><span class="material-symbols-outlined" style="font-size:10px">close</span></button>
+        </div>`;
+    });
+  }
+  if ((!data || data.length === 0) && (!_dataQuestionsSaved[question].expectedValueNew || _dataQuestionsSaved[question].expectedValueNew.length === 0)) {
+    html += `<div style="font-size:12px;color:var(--ev-text-muted);padding:0.5rem 0;">Sin respuestas esperadas configuradas.</div>`;
+  }
+  html += '</div>';
+  container.append(html);
 }
 
 
 
-async function verifySaveNewQuestions(){
-
-  $("#contentAdv").empty();
-
-  let newQuestions = _dataQuestions.filter( question => question.saveInBdd == false);
-
+async function verifySaveNewQuestions() {
+  let newQuestions = _dataQuestions.filter(question => question.saveInBdd == false);
   if (newQuestions.length > 0) {
-
-    let advertences = "";
-
-    _dataQuestions.forEach((question , i) => {
-
+    let advertences = [];
+    _dataQuestions.forEach((question, i) => {
       if (question.titleQuestion.length < 1) {
-
-        advertences += `<li><b>Pregunta ${i + 1}: </b>La pregunta no cuenta con algún título especificado.</li>`;
-
+        advertences.push(`<b>Pregunta ${i + 1}:</b> Falta el título.`);
       }
-
       if (question.descriptionQuestion.length < 1) {
-
-        advertences += `<li><b>Pregunta ${i + 1}: </b>La pregunta no cuenta con alguna descripción especificada.</li>`;
-
+        advertences.push(`<b>Pregunta ${i + 1}:</b> Falta la descripción.`);
       }
-
-      if (atob(question.typeQuestion) == 1) {
-
-
-
-      } else if (atob(question.typeQuestion) == 2) {
-
+      let qType = atob(question.typeQuestion);
+      if (qType == 2) {
         if (question.expectedValue.length < 1) {
-
-          advertences += `<li><b>Pregunta ${i + 1}: </b>La pregunta no cuenta con al menos un resultado esperado.</li>`;
-
+          advertences.push(`<b>Pregunta ${i + 1}:</b> Agrega al menos una respuesta esperada por nivel.`);
         }
-
-      } else if (atob(question.typeQuestion) == 3) {
-
+      } else if (qType == 3) {
         if (Number(question.rangeInitial) < 0) {
-
-          advertences += `<li><b>Pregunta ${i + 1}: </b>El rango inicial no puede ser menor a 0.</li>`;
-
-        } else {
-
-          if (Number(question.rangeInitial) > Number(question.rangeEnd)) {
-
-            advertences += `<li><b>Pregunta ${i + 1}: </b>El rango inicial no puede ser mayor al rango final.</li>`;
-
-          }
-
+          advertences.push(`<b>Pregunta ${i + 1}:</b> El rango mínimo no puede ser menor a 0.`);
+        } else if (Number(question.rangeInitial) > Number(question.rangeEnd)) {
+          advertences.push(`<b>Pregunta ${i + 1}:</b> El rango mínimo no puede ser mayor al máximo.`);
         }
-
-      } else if (atob(question.typeQuestion) == 4) {
-
-        question.answers.forEach((answer,j) => {
-
-          let optionL = contentOptions[j];
-
-          if (answer == ""){
-
-            advertences += `<li><b>Pregunta ${i + 1}: </b>La respuesta ${optionL}) no cuenta con alguna descripción especificada.</li>`;
-
+      } else if (qType == 4) {
+        question.answers.forEach((answer, j) => {
+          if (answer == "") {
+            advertences.push(`<b>Pregunta ${i + 1}:</b> La opción ${contentOptions[j]}) está vacía.`);
           }
-
         });
-
       }
-
     });
 
     if (advertences.length > 0) {
-
-      // toastr.info("Verifique las advertencias, ya que faltan preguntas sin configurar");
-
-        const messageContent = `
-
-        <div class="alert-content">
-
-             <span class="alert-title">Información!</span>
-
-              <span class="alert-text">Verifique las advertencias, ya que faltan preguntas sin configurar.</span>
-
-        </div>`;
-
-      showBootstrapAlert(messageContent, "top-right", 5000);
-
-      $("#contentAdv").append(advertences);
-
+      const msg = `<div class="alert-content"><span class="alert-title">Atención!</span><span class="alert-text">Verifica las advertencias antes de guardar.</span></div>`;
+      showBootstrapAlertWar(msg, "top-right", 5000);
+      $('#evqAlertBanner').removeClass('warning error').addClass('error').show();
+      $('#evqAlertText').html(advertences.join('<br>'));
     } else {
-
-      $("#contentAdv").append("<li>Sin advertencias</li>");
-
+      $('#evqAlertBanner').hide();
       await saveQuestionsConfig();
-
     }
-
   } else {
-
-    // toastr.info("No existen preguntas nuevas por guardar");
-
-        const messageContent = `
-
-        <div class="alert-content">
-
-             <span class="alert-title">Información!</span>
-
-              <span class="alert-text">No existen preguntas nuevas por guardar.</span>
-
-        </div>`;
-
-      showBootstrapAlert(messageContent, "top-right", 5000);
-
+    const messageContent = `<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">No existen preguntas nuevas por guardar.</span></div>`;
+    showBootstrapAlert(messageContent, "top-right", 5000);
   }
-
 }
 
 
@@ -2723,7 +1792,8 @@ function seeExpectedResponseSV(question){
 
       $("#content_answersMOld").append(contentFinalHTML);
 
-      openMMinNoMaximizable('Agregar nueva respuesta esperada','dv_OldResponseExpected',false);
+      const modalOld = new bootstrap.Modal(document.getElementById('dv_OldResponseExpected'));
+      modalOld.show();
 
     }
 
@@ -3211,114 +2281,101 @@ function addaddResponseExpectedQuestion(){
 
 
 
-function resultAfterInsertQuestion(typeQuestion,question){
-
-  if(typeQuestion == 2){
-
+function resultAfterInsertQuestion(typeQuestion, question) {
+  if (typeQuestion == 2) {
     printTableLvls(question);
-
-  } else if(typeQuestion == 4) {
-
+  } else if (typeQuestion == 4) {
     printOptionSelectAnswer(question);
-
   }
-
-  // alertify.confirm().closeOthers();
-
-    $('.modal').modal('hide');
-
+  $('.modal').modal('hide');
+  // Colapsar todas las demás tarjetas (accordion)
+  document.querySelectorAll('.evq-card.expanded').forEach(c => {
+    c.classList.remove('expanded');
+    c.classList.add('collapsed');
+  });
+  // Expandir la tarjeta recién creada
+  const newCard = document.getElementById(`dvQuestion${question}`);
+  if (newCard) {
+    newCard.classList.remove('collapsed');
+    newCard.classList.add('expanded');
+    newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Inicializar Select2 en competencia
+    const $compSelect = $(newCard).find('.sel-competence-inline:not(.select2-hidden-accessible)');
+    if ($compSelect.length) {
+      $compSelect.select2({
+        width: '100%',
+        dropdownParent: $('body'),
+        minimumResultsForSearch: 5
+      });
+    }
+  }
+  if (typeof evqUpdateMetaBar === 'function') {
+    evqUpdateMetaBar();
+  }
 }
 
 
 
-function printOptionSelectAnswer(question){
-
-  $(`#selectAnswers${question}`).empty();
-
-  let contentHTML = "";
-
-  if(_dataQuestions[question].answers.length > 0 ) {
-
-    let newOption = "";
-
+function printOptionSelectAnswer(question) {
+  let container = $(`#containerSelectAnswers${question}`);
+  container.empty();
+  let contentHTML = '<div class="evq-pills-wrap">';
+  if (_dataQuestions[question].answers.length > 0) {
     _dataQuestions[question].answers.forEach((data, i) => {
-
-       newOption = contentOptions[i];
-
-       contentHTML += `
-
-         <option value="${i}">${newOption})</option>
-
-       `;
-
+      let newOption = contentOptions[i];
+      let checked = (_dataQuestions[question].expectedValue == i) ? 'checked' : '';
+      let activeClass = checked ? 'active' : '';
+      contentHTML += `
+        <label class="evq-pill ${activeClass}">
+          <input type="radio" class="evq-pill-radio selectPerQuestion" name="correctAnswer${question}" value="${i}" data-question="${question}" ${checked}>
+          <span class="evq-pill-label">${newOption}</span>
+          <span style="font-size:12px;">${data || 'Opción ' + newOption}</span>
+        </label>`;
     });
-
   }
-
-  $(`#selectAnswers${question}`).append(contentHTML);
-
-  $(`#selectAnswers${question}`).val(_dataQuestions[question].expectedValue);
-
-  $(`#selectAnswers${question}`).select2({
-    width: "100%",
-  });
-
+  contentHTML += '</div>';
+  container.append(contentHTML);
 }
 
+function printOptionSelectAnswerSV(question) {
+  let container = $(`#containerSelectAnswersSV${question}`);
+  container.empty();
+  let contentHTML = '<div class="evq-pills-wrap">';
+  let currentExpected = _dataQuestionsSaved[question].expectedValue;
 
-
-function printOptionSelectAnswerSV(question){
-
-  $(`#selectAnswersSV${question}`).empty();
-
-  let contentHTML = "";
-
-  let newOption = "";
-
-  if(_dataQuestionsSaved[question].answers.length > 0 ) {
-
+  if (_dataQuestionsSaved[question].answers.length > 0) {
     _dataQuestionsSaved[question].answers.forEach((data, i) => {
-
-       newOption = contentOptions[i];
-
-       contentHTML += `
-
-         <option value="${data.idAnswer}" data-typeexpected="old">${newOption})</option>
-
-       `;
-
-    });
-
-  }
-
-  if (_dataQuestionsSaved[question].newAnswers.length > 0 ) {
-
-    _dataQuestionsSaved[question].newAnswers.forEach((data, i) => {
-
-      newOption = contentOptions[(_dataQuestionsSaved[question].answers.length + (i))];
-
+      let newOption = contentOptions[i];
+      let checked = (currentExpected && currentExpected.IdAnswerExpected == data.idAnswer) ? 'checked' : '';
+      let activeClass = checked ? 'active' : '';
       contentHTML += `
-
-        <option value="${question}-${i}" data-typeexpected="new">${newOption})</option>
-
-      `;
-
+        <label class="evq-pill ${activeClass}">
+          <input type="radio" class="evq-pill-radio selectPerQuestionSV" name="correctAnswerSV${question}" value="${data.idAnswer}" data-question="${question}" data-typeexpected="old" ${checked}>
+          <span class="evq-pill-label">${newOption}</span>
+          <span style="font-size:12px;">${data.DescAnswer || 'Opción ' + newOption}</span>
+        </label>`;
     });
-
   }
-
-  $(`#selectAnswersSV${question}`).append(contentHTML);
-
-  $(`#selectAnswersSV${question}`).val(_dataQuestionsSaved[question].expectedValue.IdAnswerExpected);
-
-  $(`#selectAnswersSV${question}`).select2({
-    width: "100%",
-  });
-
-  _dataQuestionsSaved[question].expectedValue.edited = false;
-
-  _dataQuestionsSaved[question].expectedValue.typeExpectedValue = "old";
-
+  if (_dataQuestionsSaved[question].newAnswers && _dataQuestionsSaved[question].newAnswers.length > 0) {
+    _dataQuestionsSaved[question].newAnswers.forEach((data, i) => {
+      let newOption = contentOptions[(_dataQuestionsSaved[question].answers.length + i)];
+      let val = `${question}-${i}`;
+      let checked = (currentExpected && currentExpected.typeExpectedValue === 'new' && currentExpected.expectedNew === i) ? 'checked' : '';
+      let activeClass = checked ? 'active' : '';
+      contentHTML += `
+        <label class="evq-pill ${activeClass}">
+          <input type="radio" class="evq-pill-radio selectPerQuestionSV" name="correctAnswerSV${question}" value="${val}" data-question="${question}" data-typeexpected="new" ${checked}>
+          <span class="evq-pill-label">${newOption}</span>
+          <span style="font-size:12px;">${data || 'Opción ' + newOption}</span>
+        </label>`;
+    });
+  }
+  contentHTML += '</div>';
+  container.append(contentHTML);
+  if (currentExpected) {
+    _dataQuestionsSaved[question].expectedValue.edited = false;
+    _dataQuestionsSaved[question].expectedValue.typeExpectedValue = "old";
+  }
 }
 
 
@@ -3507,38 +2564,35 @@ async function saveNewDataOldQuestion(idQuestion, position){
 
 
 
-function updateCompetenceQuestion(){
+function updateCompetenceQuestion(question, typeSV, competenceId) {
+  // Fallback para compatibilidad con modal antiguo
+  if (question === undefined) question = $("#updateComp_question").val();
+  if (typeSV === undefined) typeSV = $("#updateComp_typeSave").val();
+  if (competenceId === undefined) competenceId = $("#sel_CompetencesUpdateOld").val();
 
-  let question = $("#updateComp_question").val();
-
-  let typeSV = $("#updateComp_typeSave").val();
-
-  const posicion = _allCompetences.findIndex(elemento => elemento.idCompetencias == $("#sel_CompetencesUpdateOld").val());
+  const posicion = _allCompetences.findIndex(elemento => elemento.idCompetencias == competenceId);
+  if (posicion < 0) return;
+  let newCompetence = _allCompetences[posicion].Competencia;
 
   if (typeSV == "old") {
-
     _dataQuestionsSaved[question].competence = _allCompetences[posicion].idCompetencias;
-
-    _dataQuestionsSaved[question].descCompetence = _allCompetences[posicion].Competencia;
-
+    _dataQuestionsSaved[question].descCompetence = newCompetence;
     _dataQuestionsSaved[question].edited = true;
-
-    $(`#txCompetence${question}`).html(_allCompetences[posicion].Competencia);
-
+    // Actualizar badge en header de tarjeta
+    const card = document.getElementById(`dvContentSV${_dataQuestionsSaved[question].IdQuestion}`);
+    if (card) {
+      const compBadge = card.querySelector('.badge-comp');
+      if (compBadge) compBadge.textContent = newCompetence;
+    }
   } else if (typeSV == "new") {
-
     _dataQuestions[question].competence = _allCompetences[posicion].idCompetencias;
-
-    _dataQuestions[question].descCompetence = _allCompetences[posicion].Competencia;
-
-    $(`#txCompetenceNew${question}`).html(_allCompetences[posicion].Competencia);
-
+    _dataQuestions[question].descCompetence = newCompetence;
+    const card = document.getElementById(`dvQuestion${question}`);
+    if (card) {
+      const compBadge = card.querySelector('.badge-comp');
+      if (compBadge) compBadge.textContent = newCompetence;
+    }
   }
-
-  // alertify.confirm().closeOthers();
-
-    $('.modal').modal('hide');
-
 }
 
 

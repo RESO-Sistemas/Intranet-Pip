@@ -104,15 +104,12 @@ $(document).on("click", "#btn_acceptType", async function () {
   if (resultV) {
 
     const content = addQuestion(
-
       $("#sel_typeQuestion").val(),
-
       $("#sel_competenceQuestion").val()
-
     );
-
+    // Eliminar empty state si existe
+    $("#contentQuestions .evq-empty").remove();
     $("#contentQuestions").append(content.contentHTML);
-
     resultAfterInsertQuestion(content.type, content.number);
 
 
@@ -175,30 +172,26 @@ $(document).on("blur", ".answerInp", function (element) {
 
 
 
-$(document).on("change", ".changeTrue-False", function (element) {
-
-  changeexpectedValueTF(
-
-    element.target.dataset.question,
-
-    element.target.checked
-
-  );
-
+// Toggle Falso/Verdadero para preguntas NUEVAS
+$(document).on("click", ".changeTrue-False", function () {
+  const $btn = $(this);
+  const question = $btn.data("question");
+  const value = $btn.data("value") === true || $btn.data("value") === "true";
+  const $wrap = $btn.closest(".evq-toggle-wrap");
+  $wrap.find(".changeTrue-False").removeClass("active");
+  $btn.addClass("active");
+  changeexpectedValueTF(question, value);
 });
 
-
-
-$(document).on("change", ".True-FalseSV", function (element) {
-
-  changeexpectedValueTFSV(
-
-    element.target.dataset.question,
-
-    element.target.checked
-
-  );
-
+// Toggle Falso/Verdadero para preguntas GUARDADAS
+$(document).on("click", ".True-FalseSV", function () {
+  const $btn = $(this);
+  const question = $btn.data("question");
+  const value = $btn.data("value") === true || $btn.data("value") === "true";
+  const $wrap = $btn.closest(".evq-toggle-wrap");
+  $wrap.find(".True-FalseSV").removeClass("active");
+  $btn.addClass("active");
+  changeexpectedValueTFSV(question, value);
 });
 
 
@@ -212,33 +205,43 @@ $(document).on("click", "#btnSaveQuestions", async function () {
 
 
 $(document).on("blur", ".updatePrincipalInfo", async function (element) {
-
   changePrincipalInfoQuestion(
-
     element.target.dataset.question,
-
     $(this).val(),
-
     element.target.dataset.typeinp
-
   );
-
 });
 
-
+$(document).on("input", ".updatePrincipalInfo", async function (element) {
+  const question = element.target.dataset.question;
+  const typeinp = element.target.dataset.typeinp;
+  if (typeinp === 'title') {
+    const card = document.getElementById(`dvQuestion${question}`);
+    if (card) {
+      const titleText = card.querySelector('.evq-title-text');
+      if (titleText) titleText.textContent = $(this).val() || `Pregunta ${parseInt(question) + 1}`;
+    }
+  }
+});
 
 $(document).on("blur", ".updatePrincipalInfoOld", async function (element) {
-
   changePrincipalInfoQuestionOld(
-
     element.target.dataset.question,
-
     $(this).val(),
-
     element.target.dataset.typeinp
-
   );
+});
 
+$(document).on("input", ".updatePrincipalInfoOld", async function (element) {
+  const question = element.target.dataset.question;
+  const typeinp = element.target.dataset.typeinp;
+  if (typeinp === 'title') {
+    const card = document.getElementById(`dvContentSV${_dataQuestionsSaved[question].IdQuestion}`);
+    if (card) {
+      const titleText = card.querySelector('.evq-title-text');
+      if (titleText) titleText.textContent = $(this).val() || `Pregunta ${parseInt(question) + 1}`;
+    }
+  }
 });
 
 
@@ -286,33 +289,27 @@ $(document).on("click", "#btn_addResponseExpectedOld", async function () {
 
 
 $(document).on("change", ".selectPerQuestion", function (element) {
-
+  const $radio = $(this);
+  const $wrap = $radio.closest('.evq-pills-wrap');
+  $wrap.find('.evq-pill').removeClass('active');
+  $radio.closest('.evq-pill').addClass('active');
   changeAnExpectedResponse(
-
     element.target.dataset.question,
-
     element.target.value
-
   );
-
 });
 
-
-
 $(document).on("change", ".selectPerQuestionSV", function (element) {
-
-  let dataTypeValue = $(this).find(":selected").data("typeexpected");
-
+  const $radio = $(this);
+  const $wrap = $radio.closest('.evq-pills-wrap');
+  $wrap.find('.evq-pill').removeClass('active');
+  $radio.closest('.evq-pill').addClass('active');
+  let dataTypeValue = $(this).data("typeexpected");
   changeAnExpectedResponseSV(
-
     element.target.dataset.question,
-
     element.target.value,
-
     dataTypeValue
-
   );
-
 });
 
 
@@ -350,65 +347,39 @@ $(document).on("blur", ".changeRangeSV", function (element) {
 
 
 $(document).on("click", ".deleteNoSaved", function (element) {
-
   const button = element.target.closest('.deleteNoSaved');
-  
   if (button && button.dataset.question !== undefined) {
-
     if (button.dataset.typequestion == "new") {
-
       const dv = parseInt(button.dataset.question);
-
       _dataQuestions.splice(dv, 1);
-
       let allVisibleQuestions = document.querySelectorAll(".dvContentSV");
-
       $(`#dvQuestion${dv}`).remove();
-
       const allDvQuestionsNoS = document.querySelectorAll(".dvContentQuestion");
-
       allDvQuestionsNoS.forEach((dvQuest, index) => {
-
         dvQuest.id = `dvQuestion${index}`;
-
         let allDataQuestion = dvQuest.querySelectorAll("[data-question]");
-
-        let allchangeCompetenceSV = dvQuest.querySelectorAll(
-
-          ".changeCompetenceSV"
-
-        );
-
+        let allCompSelects = dvQuest.querySelectorAll(".sel-competence-inline");
         let allTitles = dvQuest.querySelectorAll(".titleNewQuestion");
-
+        let allNums = dvQuest.querySelectorAll(".evq-num");
         allDataQuestion.forEach((inp) => {
-
           inp.dataset.question = index;
-
         });
-
-        allchangeCompetenceSV.forEach((tx) => {
-
-          tx.id = `txCompetenceNew${index}`;
-
+        allCompSelects.forEach((sel) => {
+          sel.id = `selCompetenceNew${index}`;
+          sel.dataset.question = index;
         });
-
         allTitles.forEach((title) => {
-
-          title.textContent = `${
-
-            allVisibleQuestions.length + (index + 1)
-
-          }.- Pregunta (Nueva)`;
-
+          title.textContent = `${allVisibleQuestions.length + (index + 1)}.- Pregunta (Nueva)`;
         });
-
+        allNums.forEach((num) => {
+          num.textContent = String(allVisibleQuestions.length + (index + 1)).padStart(2, '0');
+        });
       });
-
+      if (typeof evqUpdateMetaBar === 'function') {
+        evqUpdateMetaBar();
+      }
     }
-
   }
-
 });
 
 
@@ -445,143 +416,49 @@ $(document).on("blur", ".contentAnswerSVOld", function (element) {
 
 
 
-// $(document).on("click", ".changeCompetenceSV", function (element) {
-
-//   console.log(element.target.dataset.question);
-
-//   $("#txQuestionPerUpdateCompetence").html(
-
-//     `<h6><b>Pregunta seleccionada:</b>�${
-
-//       Number(element.target.dataset.question) + 1
-
-//     }</h6>`
-
-//   );
-
-//   cleanVerifyInputs("dv_UpdateCompetence");
-
-//   $("#sel_CompetencesUpdateOld").select2({
-
-//     dropdownParent: $("#dv_UpdateCompetence"),
-
-//   });
-
-//   $("#updateComp_question").val(element.target.dataset.question);
-
-//   $("#updateComp_typeSave").val(element.target.dataset.typequestionsv);
-
-//   openMMinNoMaximizable(
-
-//     "Actualizaci�n de la competencia seleccionada para la pregunta",
-
-//     "dv_UpdateCompetence",
-
-//     false
-
-//   );
-
-// });
-
-
-
-// $(document).on("click", "#btn_updateCompetenceOld", async function () {
-
-//   const verifyI = await verifyInputs("dv_UpdateCompetence");
-
-//   if (verifyI) {
-
-//     updateCompetenceQuestion();
-
-//   }
-
-// });
-
-$(document).on("click", ".changeCompetenceSV", function (element) {
-
-  console.log(element.target.dataset.question);
-
-
-
-  // Mostrar el n�mero de la pregunta
-
-  $("#txQuestionPerUpdateCompetence").html(
-
-    `<h6><b>Pregunta seleccionada:</b> ${
-
-      Number(element.target.dataset.question) + 1
-
-    }</h6>`
-
-  );
-
-
-
-  // Limpiar inputs
-
-  cleanVerifyInputs("modalUpdateCompetence");
-
-
-
-  // Aplicar select2
-
-  $("#sel_CompetencesUpdateOld").select2({
-
-    placeholder: "Listado de competencias",
-
-    dropdownParent: $("#modalUpdateCompetence .modal-body"),
-
-    width: "100%",
-
-  });
-
-
-
-  // Guardar valores ocultos
-
-  $("#updateComp_question").val(element.target.dataset.question);
-
-  $("#updateComp_typeSave").val(element.target.dataset.typequestionsv);
-
-
-
-  // Mostrar modal Bootstrap 5
-
-  const modal = new bootstrap.Modal(
-
-    document.getElementById("modalUpdateCompetence")
-
-  );
-
-  modal.show();
-
+// Cambio inline de competencia (Select2)
+$(document).on("change", ".sel-competence-inline", function () {
+  const question = $(this).data("question");
+  const typeSV = $(this).data("typequestionsv");
+  const competenceId = $(this).val();
+  updateCompetenceQuestion(question, typeSV, competenceId);
 });
 
-
-
-// Bot�n actualizar
-
-$(document).on("click", "#btn_updateCompetenceOld", async function () {
-
-  const verifyI = await verifyInputs("modalUpdateCompetence");
-
-  if (verifyI) {
-
-    updateCompetenceQuestion();
-
-    // Cerrar modal manualmente
-
-    const modalElement = document.getElementById("modalUpdateCompetence");
-
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-    if (modalInstance) {
-
-      modalInstance.hide();
-
+// Toggle de tarjetas accordion
+window.evqToggleCard = function (header) {
+  const card = header.closest('.evq-card');
+  if (!card) return;
+  const isCollapsed = card.classList.contains('collapsed');
+  // Cerrar todas las demás tarjetas (modo accordion)
+  document.querySelectorAll('.evq-card.expanded').forEach(c => {
+    if (c !== card) {
+      c.classList.remove('expanded');
+      c.classList.add('collapsed');
     }
-
+  });
+  if (isCollapsed) {
+    card.classList.remove('collapsed');
+    card.classList.add('expanded');
+    // Inicializar Select2 en competencia si no lo está
+    const $compSelect = $(card).find('.sel-competence-inline:not(.select2-hidden-accessible)');
+    if ($compSelect.length) {
+      $compSelect.select2({
+        width: '100%',
+        dropdownParent: $('body'),
+        minimumResultsForSearch: 5
+      });
+    }
+  } else {
+    card.classList.remove('expanded');
+    card.classList.add('collapsed');
   }
+};
 
-});
+// Actualizar contador del sticky bar
+window.evqUpdateMetaBar = function () {
+  const saved = _dataQuestionsSaved ? _dataQuestionsSaved.length : 0;
+  const newQ = _dataQuestions ? _dataQuestions.filter(q => !q.saveInBdd).length : 0;
+  const text = `${saved + newQ} preguntas configuradas${newQ > 0 ? ` • ${newQ} sin guardar` : ''}`;
+  $('#evqMetaBar').text(text);
+};
 
