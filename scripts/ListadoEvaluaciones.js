@@ -161,6 +161,10 @@ function getEvaluaciones() {
         evDataMap[row.idEvaluaciones] = row;
         let TextStatus = row.Status == 1 ? "Activo" : "Inactivo";
 
+        const esEvergreen = String(row.TipoEvaluacion) === "2" && String(row.DirigidoA) === "2";
+        const fechaInicioDisplay = row.FechaInicio || (esEvergreen ? "Siempre disponible" : "-");
+        const fechaFinDisplay    = row.FechaFin    || (esEvergreen ? "Siempre disponible" : "-");
+
         let Acciones = `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
             <button type="button" class="btn btn-primary btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><i class="fas fa-eye"></i></button>
             <button type="button" class="btn btn-secondary btn-update-status" data-status="${row.Status}" data-id="${row.idEvaluaciones}" title="Actualizar Status"><i class="fas fa-sync-alt"></i></button>
@@ -168,6 +172,8 @@ function getEvaluaciones() {
 
         return {
           ...row,
+          FechaInicio: fechaInicioDisplay,
+          FechaFin: fechaFinDisplay,
           TextStatus: TextStatus,
           Acciones: Acciones
         };
@@ -325,4 +331,453 @@ $(document).on("click", "#btn_open_new", function () {
   const dv = "FormInsertaEvaluacion";
   cleanContenedorInp(dv);
   $("#NuevaEvaluacionModal").modal("open");
+});
+
+// ============================================================
+// WIZARD NUEVA EVALUACIÓN (MODAL)
+// ============================================================
+
+let _evWizardStep = 1;
+let _optPostulantesEv = null;
+
+function _evWizardGetSteps() {
+  return $('#dirigidoA').val() === '2' ? [1, 3, 4] : [1, 2, 3, 4];
+}
+
+function _evWizardGoTo(step) {
+  [1, 2, 3, 4].forEach(s => {
+    const pane = document.getElementById(`ev-pane-${s}`);
+    if (pane) pane.classList.remove('active');
+
+    const node = document.getElementById(`ev-wi-${s}`);
+    if (node) {
+      node.classList.remove('active', 'completed');
+      if (s < step)       node.classList.add('completed');
+      else if (s === step) node.classList.add('active');
+    }
+
+    const conn = document.getElementById(`ev-wc-${s}`);
+    if (conn) conn.classList.toggle('done', s < step);
+  });
+
+  const paneEl = document.getElementById(`ev-pane-${step}`);
+  if (paneEl) paneEl.classList.add('active');
+
+  _evWizardStep = step;
+
+  if (step === 4) _evWizardPopulateSummary();
+
+  const modalBody = document.querySelector('.ev-modal-body');
+  if (modalBody) modalBody.scrollTop = 0;
+}
+
+async function evWizardNext() {
+  const valid = await _evWizardValidateStep(_evWizardStep);
+  if (!valid) return;
+  const steps = _evWizardGetSteps();
+  const idx = steps.indexOf(_evWizardStep);
+  if (idx < steps.length - 1) _evWizardGoTo(steps[idx + 1]);
+}
+
+function evWizardPrev() {
+  const steps = _evWizardGetSteps();
+  const idx = steps.indexOf(_evWizardStep);
+  if (idx > 0) _evWizardGoTo(steps[idx - 1]);
+}
+
+async function _evWizardValidateStep(step) {
+  if (step === 1) {
+    if (!$('#tipoEvaluacion').val()) {
+      toastr.error('Selecciona un tipo de cuestionario', 'Validación');
+      return false;
+    }
+    if (!$('#dirigidoA').val()) {
+      toastr.error('Especifica a quién va dirigido', 'Validación');
+      return false;
+    }
+    if (!$('#title_c').val().trim()) {
+      toastr.error('El título del cuestionario es obligatorio', 'Validación');
+      return false;
+    }
+    if ($('#tipoEvaluacion').val() === '2' && !_evIsEvergreen() && !$('#periodicidad').val()) {
+      toastr.error('Selecciona una periodicidad para la encuesta normal', 'Validación');
+      return false;
+    }
+    return true;
+  }
+  if (step === 2) {
+    const empleados = $('#slctEmpleados').val();
+    if (!empleados || empleados.length === 0) {
+      toastr.error('Selecciona al menos un empleado participante', 'Validación');
+      return false;
+    }
+    return true;
+  }
+  if (step === 3) {
+    if (!_evIsEvergreen()) {
+      if (!$('#inpFechaInicio').val()) {
+        toastr.error('La fecha de inicio es obligatoria', 'Validación');
+        return false;
+      }
+      if (!$('#inpFechaFin').val()) {
+        toastr.error('La fecha final es obligatoria', 'Validación');
+        return false;
+      }
+    }
+    if ($('#tipoEvaluacion').val() === '1') {
+      if (!$('#inpRetroIni').val() || !$('#inpRetroFin').val()) {
+        toastr.error('Las fechas de retroalimentación son obligatorias', 'Validación');
+        return false;
+      }
+      if (!$('#inpPlanAIni').val() || !$('#inpPlanAFin').val()) {
+        toastr.error('Las fechas del plan de acción son obligatorias', 'Validación');
+        return false;
+      }
+    }
+    return _evValidateDates();
+  }
+  return true;
+}
+
+function _evWizardPopulateSummary() {
+  const tipo      = $('#tipoEvaluacion option:selected').text();
+  const dirigido  = $('#dirigidoA option:selected').text();
+  const titulo    = $('#title_c').val() || '—';
+  const periText  = $('#periodicidad').val() ? $('#periodicidad option:selected').text() : null;
+  const isPost    = $('#dirigidoA').val() === '2';
+  const is360     = $('#tipoEvaluacion').val() === '1';
+  const evergreen = _evIsEvergreen();
+
+  let empleadosHtml;
+  if (isPost) {
+    empleadosHtml = '<span class="ev-sbadge teal">Todos los Postulantes</span>';
+  } else {
+    const sel = $('#slctEmpleados').select2('data');
+    const n = sel ? sel.length : 0;
+    empleadosHtml = n > 0
+      ? `<span class="ev-sbadge" style="background:#FEF3C7;color:#92400E;">${n} empleado${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}</span>`
+      : '<span class="text-muted">—</span>';
+  }
+
+  let fechasHtml;
+  if (evergreen) {
+    fechasHtml = '<span class="ev-sbadge green">Siempre disponible</span>';
+  } else {
+    const fi = $('#inpFechaInicio').val() || '—';
+    const ff = $('#inpFechaFin').val() || '—';
+    fechasHtml = `${fi} <i class="fas fa-arrow-right text-muted mx-2" style="font-size:10px"></i> ${ff}`;
+  }
+
+  let retroRows = '';
+  if (is360) {
+    const ri = $('#inpRetroIni').val() || '—', rf = $('#inpRetroFin').val() || '—';
+    const pi = $('#inpPlanAIni').val() || '—', pf = $('#inpPlanAFin').val() || '—';
+    retroRows = `
+      <div class="ev-summary-row">
+        <span class="ev-summary-label"><i class="fas fa-comments" style="color:#8B5CF6"></i> Retroalimentación</span>
+        <span class="ev-summary-value">${ri} <i class="fas fa-arrow-right text-muted mx-1" style="font-size:10px"></i> ${rf}</span>
+      </div>
+      <div class="ev-summary-row">
+        <span class="ev-summary-label"><i class="fas fa-tasks" style="color:#F59E0B"></i> Plan de Acción</span>
+        <span class="ev-summary-value">${pi} <i class="fas fa-arrow-right text-muted mx-1" style="font-size:10px"></i> ${pf}</span>
+      </div>`;
+  }
+
+  const periodRow = periText ? `
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-sync-alt" style="color:#F59E0B"></i> Periodicidad</span>
+      <span class="ev-summary-value">${periText}</span>
+    </div>` : '';
+
+  document.getElementById('ev-summary-content').innerHTML = `
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-clipboard-list" style="color:#4F46E5"></i> Tipo</span>
+      <span class="ev-summary-value">${tipo}</span>
+    </div>
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-user-tag" style="color:#14B8A6"></i> Dirigido a</span>
+      <span class="ev-summary-value">${dirigido}</span>
+    </div>
+    ${periodRow}
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-tag" style="color:#64748B"></i> Título</span>
+      <span class="ev-summary-value fw-semibold">${titulo}</span>
+    </div>
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-users" style="color:#10B981"></i> Participantes</span>
+      <span class="ev-summary-value">${empleadosHtml}</span>
+    </div>
+    <div class="ev-summary-row">
+      <span class="ev-summary-label"><i class="fas fa-calendar" style="color:#EF4444"></i> Evaluación</span>
+      <span class="ev-summary-value d-flex align-items-center flex-wrap gap-1">${fechasHtml}</span>
+    </div>
+    ${retroRows}`;
+}
+
+function _evWizardReset() {
+  _evWizardGoTo(1);
+  $('#tipoEvaluacion').val('');
+  $('#periodicidad').val('');
+  $('#dirigidoA').val('');
+  $('#title_c').val('');
+  $('#inpFechaInicio, #inpFechaFin, #inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('');
+  $('#divPeriodicidad').hide();
+  $('#seccionRetroYPlan').hide();
+  $('#dv_DateFields').show();
+  $('#divParticipantes').show();
+  $('#slctDivision, #slctSucursal, #slctPuesto').val('');
+  if ($('#slctEmpleados').hasClass('select2-hidden-accessible')) {
+    $('#slctEmpleados').val(null).trigger('change');
+  }
+  if (_optPostulantesEv && !$('#dirigidoA option[value="2"]').length) {
+    $('#dirigidoA').append(_optPostulantesEv);
+    _optPostulantesEv = null;
+  }
+}
+
+// ---- LÓGICA DE FORMULARIO ----
+
+function _evIsEvergreen() {
+  return $('#tipoEvaluacion').val() === '2' && $('#dirigidoA').val() === '2';
+}
+
+function _evUpdateDateVisibility() {
+  if (_evIsEvergreen()) {
+    $('#dv_DateFields').hide();
+    $('#inpFechaInicio, #inpFechaFin').val('').removeAttr('required');
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+  } else if ($('#tipoEvaluacion').val() === '2') {
+    $('#dv_DateFields').show();
+    $('#inpFechaInicio, #inpFechaFin').attr('required', 'required');
+    $('#divPeriodicidad').show();
+    $('#periodicidad').attr('required', 'required');
+  }
+}
+
+function _evValidateDates() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const maxDate = new Date(); maxDate.setFullYear(today.getFullYear() + 2);
+  const tipo = $('#tipoEvaluacion').val();
+
+  const fi = $('#inpFechaInicio').val() ? new Date($('#inpFechaInicio').val() + 'T00:00:00') : null;
+  const ff = $('#inpFechaFin').val()    ? new Date($('#inpFechaFin').val()    + 'T00:00:00') : null;
+
+  if (fi && fi < today) {
+    toastr.error('La fecha de inicio no puede ser anterior a hoy', 'Validación');
+    return false;
+  }
+  if ((fi && fi > maxDate) || (ff && ff > maxDate)) {
+    toastr.error('Las fechas no pueden superar 2 años en el futuro', 'Validación');
+    return false;
+  }
+  if (fi && ff && ff <= fi) {
+    toastr.error('La fecha final debe ser posterior a la fecha de inicio', 'Validación');
+    return false;
+  }
+  if (fi && ff && (ff - fi) / 86400000 < 1) {
+    toastr.error('Debe haber al menos 1 día entre inicio y fin de evaluación', 'Validación');
+    return false;
+  }
+
+  if (tipo === '1') {
+    const ri = $('#inpRetroIni').val() ? new Date($('#inpRetroIni').val() + 'T00:00:00') : null;
+    const rf = $('#inpRetroFin').val() ? new Date($('#inpRetroFin').val() + 'T00:00:00') : null;
+    const pi = $('#inpPlanAIni').val() ? new Date($('#inpPlanAIni').val() + 'T00:00:00') : null;
+    const pf = $('#inpPlanAFin').val() ? new Date($('#inpPlanAFin').val() + 'T00:00:00') : null;
+
+    if (ff && ri && ri < ff) {
+      toastr.error('La retroalimentación debe iniciar después de que termine la evaluación', 'Validación');
+      return false;
+    }
+    if (ri && rf && rf <= ri) {
+      toastr.error('La fecha final de retroalimentación debe ser posterior al inicio', 'Validación');
+      return false;
+    }
+    if (rf && pi && pi < rf) {
+      toastr.error('El plan de acción debe iniciar después de que termine la retroalimentación', 'Validación');
+      return false;
+    }
+    if (pi && pf && pf <= pi) {
+      toastr.error('La fecha final del plan de acción debe ser posterior al inicio', 'Validación');
+      return false;
+    }
+  }
+  return true;
+}
+
+// ---- CAMBIOS DE TIPO Y DIRIGIDO ----
+
+$(document).on('change', '#tipoEvaluacion', function () {
+  const tipo = $(this).val();
+  if (tipo === '1') {
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+    $('#seccionRetroYPlan').show();
+    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').attr('required', 'required');
+    $('#dirigidoA').val('1');
+    if ($('#dirigidoA option[value="2"]').length) {
+      _optPostulantesEv = $('#dirigidoA option[value="2"]').detach();
+    }
+  } else if (tipo === '2') {
+    $('#divPeriodicidad').show();
+    $('#periodicidad').attr('required', 'required');
+    $('#seccionRetroYPlan').hide();
+    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('').removeAttr('required');
+    if (_optPostulantesEv && !$('#dirigidoA option[value="2"]').length) {
+      $('#dirigidoA').append(_optPostulantesEv);
+      _optPostulantesEv = null;
+    }
+    _evUpdateDateVisibility();
+  } else {
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').removeAttr('required');
+    $('#seccionRetroYPlan').hide();
+    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('').removeAttr('required');
+    if (_optPostulantesEv && !$('#dirigidoA option[value="2"]').length) {
+      $('#dirigidoA').append(_optPostulantesEv);
+      _optPostulantesEv = null;
+    }
+    $('#dv_DateFields').show();
+  }
+});
+
+$(document).on('change', '#dirigidoA', function () {
+  const dirigido = $(this).val();
+  const tipo = $('#tipoEvaluacion').val();
+  if (tipo === '1' && dirigido !== '1') {
+    $(this).val('1');
+    toastr.info('La Evaluación 360° solo puede ir dirigida a Empleados', 'Información');
+    return;
+  }
+  if (dirigido === '2') {
+    $('#divParticipantes').hide();
+  } else {
+    $('#divParticipantes').show();
+  }
+  if (tipo === '2') _evUpdateDateVisibility();
+});
+
+// ---- GUARDAR ----
+
+$(document).on('click', '#btn_SaveData', async function () {
+  const tipo    = $('#tipoEvaluacion').val();
+  const dirigido = $('#dirigidoA').val();
+  const titulo  = $('#title_c').val().trim();
+
+  if (!tipo || !dirigido || !titulo) {
+    toastr.error('Faltan datos requeridos', 'Error');
+    return;
+  }
+  if (!_evValidateDates()) return;
+
+  const empleados = $('#slctEmpleados').val();
+  if (dirigido !== '2' && (!empleados || empleados.length === 0)) {
+    toastr.error('Debe seleccionar al menos un empleado participante', 'Error');
+    return;
+  }
+
+  const dataSend = {
+    op:                 'saveEvaluationNoE',
+    inpTitulo:          quitarEspaciosExtras(titulo),
+    tipoEvaluacion:     tipo,
+    dirigidoA:          dirigido,
+    periodicidad:       tipo === '2' && !_evIsEvergreen() ? $('#periodicidad').val() : null,
+    inpFechaInicio:     _evIsEvergreen() ? null : $('#inpFechaInicio').val(),
+    inpFechaFin:        _evIsEvergreen() ? null : $('#inpFechaFin').val(),
+    inpRetroFechaIni:   tipo === '1' ? $('#inpRetroIni').val() : null,
+    inpRetroFechaFin:   tipo === '1' ? $('#inpRetroFin').val() : null,
+    inpPlanAFechaIni:   tipo === '1' ? $('#inpPlanAIni').val() : null,
+    inpPlanAFechaFin:   tipo === '1' ? $('#inpPlanAFin').val() : null,
+    empleadosParticipantes: empleados ? empleados.join(',') : '',
+  };
+
+  const ajaxR = await pAjaxAsync('Backend/Evaluaciones/App.php', dataSend, 1);
+  if (ajaxR !== undefined) {
+    const modalEl = document.getElementById('modalNuevaEvaluacion');
+    const bsModal = bootstrap.Modal.getInstance(modalEl);
+    if (bsModal) bsModal.hide();
+    setTimeout(() => { getEvaluaciones(); _evWizardReset(); }, 400);
+  }
+});
+
+// ---- PARTICIPANTES ----
+
+async function getDivisionesEvaluacion() {
+  try {
+    const res = await $.ajax({ type: 'POST', url: 'Backend/Evaluaciones/App.php', data: { op: 'getDivisionesEvaluacion' } });
+    const r = JSON.parse(res.trim());
+    if (r.Resultado && r.Data) {
+      $('#slctDivision').html('<option value="">Todas las Divisiones</option>');
+      r.Data.forEach(d => $('#slctDivision').append(`<option value="${d.IdDivision}">${d.Division}</option>`));
+    }
+  } catch(e) { console.error('getDivisionesEvaluacion:', e); }
+}
+
+async function getSucursalesXDivisionEvaluacion(IdDivision) {
+  try {
+    const res = await $.ajax({ type: 'POST', url: 'Backend/Evaluaciones/App.php', data: { op: 'getSucursalesXDivisionEvaluacion', IdDivision } });
+    const r = JSON.parse(res.trim());
+    if (r.Resultado && r.Data) {
+      $('#slctSucursal').html('<option value="">Todas las Sucursales</option>');
+      r.Data.forEach(s => $('#slctSucursal').append(`<option value="${s.IdSucursal}">${s.Sucursal}</option>`));
+    }
+  } catch(e) { console.error('getSucursalesXDivisionEvaluacion:', e); }
+}
+
+async function getPuestosEvaluacion() {
+  try {
+    const res = await $.ajax({ type: 'POST', url: 'Backend/Evaluaciones/App.php', data: { op: 'getPuestosEvaluacion' } });
+    const r = JSON.parse(res.trim());
+    if (r.Resultado && r.Data) {
+      $('#slctPuesto').html('<option value="">Todos los Puestos</option>');
+      r.Data.forEach(p => $('#slctPuesto').append(`<option value="${p.IdPuesto}">${p.Puesto}</option>`));
+    }
+  } catch(e) { console.error('getPuestosEvaluacion:', e); }
+}
+
+async function getEmpleadosParaEvaluacion() {
+  try {
+    const res = await $.ajax({
+      type: 'POST', url: 'Backend/Evaluaciones/App.php',
+      data: { op: 'getEmpleadosParaEvaluacion', IdDivision: $('#slctDivision').val() || '', IdSucursal: $('#slctSucursal').val() || '', IdPuesto: $('#slctPuesto').val() || '' }
+    });
+    const r = JSON.parse(res.trim());
+    if (r.Resultado && r.Data) {
+      const current = $('#slctEmpleados').val() || [];
+      $('#slctEmpleados').html('');
+      r.Data.forEach(emp => {
+        const sel = current.includes(emp.NoEmpleado.toString()) ? 'selected' : '';
+        $('#slctEmpleados').append(`<option value="${emp.NoEmpleado}" ${sel}>${emp.Nombre} - ${emp.Puesto} (${emp.Sucursal})</option>`);
+      });
+      $('#slctEmpleados').trigger('change');
+    }
+  } catch(e) { console.error('getEmpleadosParaEvaluacion:', e); }
+}
+
+$(document).on('change', '#slctDivision', function () {
+  getSucursalesXDivisionEvaluacion($(this).val());
+  getEmpleadosParaEvaluacion();
+});
+$(document).on('change', '#slctSucursal', getEmpleadosParaEvaluacion);
+$(document).on('change', '#slctPuesto',   getEmpleadosParaEvaluacion);
+
+// ---- MODAL EVENTS ----
+
+$('#modalNuevaEvaluacion').on('shown.bs.modal', function () {
+  if (!$('#slctEmpleados').hasClass('select2-hidden-accessible')) {
+    $('#slctEmpleados').select2({
+      placeholder: 'Seleccione los empleados participantes',
+      allowClear: true,
+      width: '100%',
+      dropdownParent: $('#modalNuevaEvaluacion')
+    });
+  }
+  getDivisionesEvaluacion();
+  getPuestosEvaluacion();
+  getEmpleadosParaEvaluacion();
+});
+
+$('#modalNuevaEvaluacion').on('hidden.bs.modal', function () {
+  _evWizardReset();
 });

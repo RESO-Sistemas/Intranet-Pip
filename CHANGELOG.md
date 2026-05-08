@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-08 11:09:07] ♻️ refactor: wizard modal creación evaluaciones
+
+- ♻️ **Modal Wizard 4 Pasos:** Nueva interfaz de creación de evaluaciones integrada en ListadoEvaluaciones.php como modal con wizard de 4 pasos (Tipo, Participantes, Fechas, Resumen), reemplazando la página独立的 add-evaluation.php.
+- ✨ **UI Modernizada:** Barra de progreso visual con steppers, selectores estilizados con Select2, diseño responsive con DM Sans font y paleta amber/indigo.
+- ♻️ **Fechas Opcionales:** Backend actualizado para aceptar fechas null en evaluaciones dirigidas a postulantes. Construcción dinámica de query en Evaluaciones.php.
+- 🐛 **Fix Filtro Query:** Query de evaluaciones activas ahora incluye filtro `DirigidoA = 1` para mostrar solo evaluaciones de empleados.
+- 📝 **Deprecación:** add-evaluation.php ahora serve como página de fallback pero su contenido fue migrado al modal wizard de ListadoEvaluaciones.php.
+
 ## [2026-05-05 10:00:00] 🐛 fix: filtros y búsqueda en postulantes
 
 - 🐛 **Filtros de Estatus:** Se corrigió bug donde los botones de filtro (En Proceso, Aceptados, Rechazados, Finalizados) no filtraban correctamente. jQuery .data() convertía valores numéricos de data-filter a Number, rompiendo la comparación === con los String de data-estatus de las cards.

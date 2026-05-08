@@ -311,8 +311,8 @@
       $tipoEvaluacion = $_POST["tipoEvaluacion"];
       $dirigidoA = $_POST["dirigidoA"];
       $periodicidad = isset($_POST["periodicidad"]) && $_POST["periodicidad"] !== 'null' ? $_POST["periodicidad"] : null;
-      $inpFechaInicio = $_POST["inpFechaInicio"];
-      $inpFechaFin = $_POST["inpFechaFin"];
+      $inpFechaInicio = !empty($_POST["inpFechaInicio"]) && $_POST["inpFechaInicio"] !== 'null' ? $_POST["inpFechaInicio"] : null;
+      $inpFechaFin    = !empty($_POST["inpFechaFin"])    && $_POST["inpFechaFin"]    !== 'null' ? $_POST["inpFechaFin"]    : null;
       $inpRetroFechaIni = isset($_POST["inpRetroFechaIni"]) && $_POST["inpRetroFechaIni"] !== 'null' ? $_POST["inpRetroFechaIni"] : null;
       $inpRetroFechaFin = isset($_POST["inpRetroFechaFin"]) && $_POST["inpRetroFechaFin"] !== 'null' ? $_POST["inpRetroFechaFin"] : null;
       $inpPlanAFechaIni = isset($_POST["inpPlanAFechaIni"]) && $_POST["inpPlanAFechaIni"] !== 'null' ? $_POST["inpPlanAFechaIni"] : null;

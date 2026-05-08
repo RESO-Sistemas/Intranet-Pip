@@ -27,7 +27,7 @@ class Evaluaciones extends Conexiones
         try {
             $q = "SELECT TO_BASE64(idEvaluaciones) AS idEvaluaciones,Titulo,FechaInicio,FechaFin
               FROM Evaluaciones
-              WHERE DATE_FORMAT(NOW(),'%Y-%m-%d') BETWEEN FechaInicio AND FechaFin AND  Status = 1 AND Activado = 1 ;";
+              WHERE DATE_FORMAT(NOW(),'%Y-%m-%d') BETWEEN FechaInicio AND FechaFin AND  Status = 1 AND Activado = 1 AND DirigidoA = 1 ;";
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrDatos = [];
@@ -1838,8 +1838,18 @@ class Evaluaciones extends Conexiones
             $period = $periodicidad ? "'$periodicidad'" : "NULL";
 
             // Construir query dinámicamente - solo incluir columnas de retro/plan si tienen valor
-            $columns = "Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, EmpleadosParticipantes, DirigidoA";
-            $values = "'$inpTitulo', '$tipoEvaluacion', $period, '$inpFechaInicio', '$inpFechaFin', '$empleadosParticipantes', '$dirigidoA'";
+            $columns = "Titulo, TipoEvaluacion, Periodicidad, EmpleadosParticipantes, DirigidoA";
+            $values = "'$inpTitulo', '$tipoEvaluacion', $period, '$empleadosParticipantes', '$dirigidoA'";
+
+            // Incluir fechas solo si fueron proporcionadas (evaluaciones para postulantes no las requieren)
+            if ($inpFechaInicio && $inpFechaInicio !== 'null') {
+                $columns .= ", FechaInicio";
+                $values .= ", '$inpFechaInicio'";
+            }
+            if ($inpFechaFin && $inpFechaFin !== 'null') {
+                $columns .= ", FechaFin";
+                $values .= ", '$inpFechaFin'";
+            }
 
             // Solo agregar fechas de retro y plan si son proporcionadas (Evaluación 360)
             if ($inpRetroFechaIni && $inpRetroFechaIni !== 'null') {
