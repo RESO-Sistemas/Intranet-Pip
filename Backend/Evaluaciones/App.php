@@ -48,6 +48,11 @@
     echo trim($Evaluaciones->updateStatusEvaluacion($Status,$idEvaluaciones));
   }
 
+  if ($op == "deleteEvaluacion") {
+    $idEvaluaciones = $_POST["idEvaluaciones"];
+    echo trim($Evaluaciones->deleteEvaluacion($idEvaluaciones));
+  }
+
   if ($op == "addEvaluacion") {
     $Titulo = $_POST["inpTitulo"];
     $FechaInicio = $_POST["inpFechaInicio"];

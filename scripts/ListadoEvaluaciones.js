@@ -164,9 +164,14 @@ function getEvaluaciones() {
         const fechaInicioDisplay = row.FechaInicio || (esEvergreen ? "Siempre disponible" : "-");
         const fechaFinDisplay    = row.FechaFin    || (esEvergreen ? "Siempre disponible" : "-");
 
-        let Acciones = `<div class="d-flex flex-nowrap gap-1 justify-content-center align-items-center">
-            <button type="button" class="btn btn-primary btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><i class="fas fa-eye"></i></button>
-            <button type="button" class="btn btn-secondary btn-update-status" data-status="${row.Status}" data-id="${row.idEvaluaciones}" title="Actualizar Status"><i class="fas fa-sync-alt"></i></button>
+        const toggleBtn = row.Status == 1
+          ? `<button type="button" class="btn btn-secondary btn-accion btn-toggle-activo" data-status="1" data-id="${row.idEvaluaciones}" title="Desactivar evaluación"><span class="material-symbols-outlined">visibility_off</span></button>`
+          : `<button type="button" class="btn btn-success btn-accion btn-toggle-activo" data-status="0" data-id="${row.idEvaluaciones}" title="Activar evaluación"><span class="material-symbols-outlined">check_circle</span></button>`;
+
+        let Acciones = `<div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-primary btn-accion btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><span class="material-symbols-outlined">visibility</span></button>
+            ${toggleBtn}
+            <button type="button" class="btn btn-danger btn-accion btn-eliminar-ev" data-id="${row.idEvaluaciones}" title="Eliminar evaluación"><span class="material-symbols-outlined">delete</span></button>
           </div>`;
 
         return {
@@ -229,12 +234,19 @@ function getEvaluaciones() {
                 return;
             }
 
-            const btnStatus = clickedElement.closest(".btn-update-status");
-            if (btnStatus) {
-                const status = btnStatus.getAttribute("data-status");
-                const id = btnStatus.getAttribute("data-id");
+            const btnToggle = clickedElement.closest(".btn-toggle-activo");
+            if (btnToggle) {
+                const status = btnToggle.getAttribute("data-status");
+                const id = btnToggle.getAttribute("data-id");
                 const idEncoded = btoa(id);
                 updateStatusEvaluacion(status, idEncoded);
+                return;
+            }
+
+            const btnEliminar = clickedElement.closest(".btn-eliminar-ev");
+            if (btnEliminar) {
+                const id = btnEliminar.getAttribute("data-id");
+                eliminarEvaluacion(btoa(id));
             }
         },
         created: function () {
@@ -252,6 +264,49 @@ function getEvaluaciones() {
       gridEvaluaciones.appendTo("#table_Ev");
     }
   });
+}
+
+async function eliminarEvaluacion(idEncoded) {
+  const result = await Swal.fire({
+    title: 'Confirmación de acción',
+    html: `<div style="text-align:center">
+      <p>Al eliminar la evaluación se perderán todos sus datos.</p>
+      <p style="margin-top:15px;"><strong>¿Desea continuar?</strong></p>
+    </div>`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ffc407',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  if (!result.isConfirmed) {
+    const msg = `<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">La acción fue cancelada.</span></div>`;
+    showBootstrapAlert(msg, 'top-right', 5000);
+    return;
+  }
+
+  try {
+    const respuesta = await $.ajax({
+      type: 'post',
+      url: 'Backend/Evaluaciones/App.php',
+      data: { op: 'deleteEvaluacion', idEvaluaciones: idEncoded },
+    });
+
+    if (respuesta.trim() === '1') {
+      const msg = `<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Evaluación eliminada con éxito.</span></div>`;
+      showBootstrapAlertSuc(msg, 'top-right', 5000);
+      getEvaluaciones();
+    } else {
+      const msg = `<div class="alert-content"><span class="alert-title">Error!</span><span class="alert-text">No se pudo eliminar: ${respuesta}</span></div>`;
+      showBootstrapAlertWar(msg, 'top-right', 5000);
+    }
+  } catch (e) {
+    console.error(e);
+    const msg = `<div class="alert-content"><span class="alert-title">Error!</span><span class="alert-text">Error al eliminar. Ver consola.</span></div>`;
+    showBootstrapAlertWar(msg, 'top-right', 5000);
+  }
 }
 
 function updateStatusEvaluacion(accion, evaluacion) {

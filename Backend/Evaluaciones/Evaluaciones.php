@@ -167,6 +167,18 @@ class Evaluaciones extends Conexiones
         return json_encode($this->Select($q, array()));
     }
 
+    public function deleteEvaluacion($idEvaluaciones)
+    {
+        try {
+            $idEvaluaciones = base64_decode($idEvaluaciones);
+            $q = "DELETE FROM Evaluaciones WHERE idEvaluaciones = '$idEvaluaciones';";
+            $this->ExecuteQuery($q, array());
+            return "1";
+        } catch (\Exception $e) {
+            return "0";
+        }
+    }
+
     public function updateStatusEvaluacion($Status, $idEvaluaciones)
     {
         try {
