@@ -826,10 +826,8 @@
     </div>
 
     <?php include("neptune_js.php"); ?>
-    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
     <script>
         const NO_EMPLEADO = <?php echo isset($_SESSION['NoEmpleado']) ? intval($_SESSION['NoEmpleado']) : 0; ?>;
-        ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
     </script>
     <script src="scripts/PostulanteEditor.js?v=6"></script>
     <script src="scripts/PostulantesGeneral.js?v=3"></script>

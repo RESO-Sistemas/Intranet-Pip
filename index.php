@@ -1852,7 +1852,6 @@ $MenuP = $Conf->getMenusPadre();
   <!-- Script: abrir/cerrar formulario inline de publicación -->
   <script>
     // Registering Syncfusion license key
-    ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
     function openComposeForm() {
       // Ocultar trigger row / acciones

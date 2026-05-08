@@ -20,7 +20,6 @@ include("AutorizaPagina.php"); ?>
 
     <!-- Styles adicionales -->
     <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-    <link href="https://cdn.syncfusion.com/ej2/20.3.56/css/tailwind.css" rel="stylesheet">
     <!-- Select2 para selectores mejorados -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <style>
@@ -940,7 +939,6 @@ include("AutorizaPagina.php"); ?>
     <!-- Neptune Javascripts -->
     <?php include("neptune_js.php"); ?>
 
-    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="scripts/PostulanteEditor.js?v=<?php echo filemtime('scripts/PostulanteEditor.js'); ?>"></script>

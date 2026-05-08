@@ -1,7 +1,6 @@
 // DetalleEvaluacion/ex.js
 // Detail view for a single evaluation
 
-ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
 let t_unfinished_employees;
 let currentEvaluation = null;

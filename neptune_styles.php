@@ -71,9 +71,6 @@
   }
 </style>
 
-<script src="./assets/syncfusion/Packages/ej2/dist/ej2.min.js"></script>
-<script src="./scripts/syncfusion-config.js?v=<?= time() ?>"></script>
-
 <!-- Toastr -->
 <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 

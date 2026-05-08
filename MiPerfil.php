@@ -512,7 +512,6 @@ $MenuP = $Conf->getMenusPadre();
 
   <script src="plugins/tingle-master/dist/tingle.min.js" charset="utf-8"></script>
 
-  <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 

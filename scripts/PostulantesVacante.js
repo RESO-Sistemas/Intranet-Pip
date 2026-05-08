@@ -1135,7 +1135,6 @@ function openDocumentosPostulante(idNumerico, nombrePostulante) {
 // =====================================
 
 // Registrar licencia de Syncfusion para evitar el banner rojo de trial
-ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
 let rawResultadosPostulante = [];
 let chartPostulanteGeneral = null;

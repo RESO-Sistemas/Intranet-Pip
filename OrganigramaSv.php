@@ -22,8 +22,6 @@
     <!-- <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet"> -->
     <!-- <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet"> -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
-    <link href="https://cdn.syncfusion.com/ej2/20.3.56/material.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- <style media="screen">
         [data-l-id] path {

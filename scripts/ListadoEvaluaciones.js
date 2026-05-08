@@ -1,4 +1,3 @@
-ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
 
 const inpTitulo = document.querySelector("#inpTitulo");
 const inpFechaInicio = document.querySelector("#inpFechaInicio");

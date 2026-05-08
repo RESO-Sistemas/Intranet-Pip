@@ -1,4 +1,7 @@
 function initSyncfusion() {
+  if (ej.base.registerLicense) {
+    ej.base.registerLicense('ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=');
+  }
   ej.base.L10n.load({
   'es': {
     'grid': {

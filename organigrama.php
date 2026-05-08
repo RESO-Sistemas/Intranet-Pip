@@ -18,8 +18,6 @@
     <!-- <link href="dist/css/style.css" rel="stylesheet"> -->
     <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
     <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
-    <script src="https://cdn.syncfusion.com/ej2/20.3.56/dist/ej2.min.js" type="text/javascript"></script>
-    <link href="https://cdn.syncfusion.com/ej2/20.3.56/material.css" rel="stylesheet">
     <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"> -->
 
     <style media="screen">
