@@ -158,11 +158,31 @@ function getEvaluaciones() {
       evDataMap = {};
       let mappedData = response.map(row => {
         evDataMap[row.idEvaluaciones] = row;
-        let TextStatus = row.Status == 1 ? "Activo" : "Inactivo";
 
-        const esEvergreen = String(row.TipoEvaluacion) === "2" && String(row.DirigidoA) === "2";
-        const fechaInicioDisplay = row.FechaInicio || (esEvergreen ? "Siempre disponible" : "-");
-        const fechaFinDisplay    = row.FechaFin    || (esEvergreen ? "Siempre disponible" : "-");
+        // Badge: Status activo/inactivo
+        const badgeStatus = row.Status == 1
+          ? `<span class="ev-sbadge green"><span class="material-symbols-outlined">check_circle</span>Activo</span>`
+          : `<span class="ev-sbadge red"><span class="material-symbols-outlined">cancel</span>Inactivo</span>`;
+
+        // Badge: Publicada (Activado) o Borrador
+        const badgePublicada = row.Activado == 1
+          ? `<span class="ev-sbadge blue"><span class="material-symbols-outlined">public</span>Publicada</span>`
+          : `<span class="ev-sbadge gray"><span class="material-symbols-outlined">draft</span>Borrador</span>`;
+
+        // Badge: Tipo de evaluación
+        const badgeTipo = String(row.TipoEvaluacion) === "1"
+          ? `<span class="ev-sbadge purple">360°</span>`
+          : `<span class="ev-sbadge gray">Normal</span>`;
+
+        // Badge: Dirigido A
+        const badgeDirigido = String(row.DirigidoA) === "1"
+          ? `<span class="ev-sbadge emerald"><span class="material-symbols-outlined">badge</span>Empleados</span>`
+          : `<span class="ev-sbadge amber"><span class="material-symbols-outlined">person_search</span>Postulantes</span>`;
+
+        // Progreso: respondidas / evaluadores
+        const cantEv  = parseInt(row.CantEvaluadores  ?? 0);
+        const cantRes = parseInt(row.CantRespondidas   ?? 0);
+        const progressCell = `<div class="ev-progress-cell"><span class="material-symbols-outlined">groups</span>${cantRes} / ${cantEv}</div>`;
 
         const toggleBtn = row.Status == 1
           ? `<button type="button" class="btn btn-secondary btn-accion btn-toggle-activo" data-status="1" data-id="${row.idEvaluaciones}" title="Desactivar evaluación"><span class="material-symbols-outlined">visibility_off</span></button>`
@@ -176,10 +196,12 @@ function getEvaluaciones() {
 
         return {
           ...row,
-          FechaInicio: fechaInicioDisplay,
-          FechaFin: fechaFinDisplay,
-          TextStatus: TextStatus,
-          Acciones: Acciones
+          BadgeStatus:    badgeStatus,
+          BadgePublicada: badgePublicada,
+          BadgeTipo:      badgeTipo,
+          BadgeDirigido:  badgeDirigido,
+          ProgressCell:   progressCell,
+          Acciones:       Acciones
         };
       });
 
@@ -196,12 +218,13 @@ function getEvaluaciones() {
             <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">No hay evaluaciones registradas en el sistema.</p>
           </div>`,
         columns: [
-          { field: "Titulo", headerText: "TÍTULO", width: 200 },
-          { field: "FechaInicio", headerText: "FECHA INICIO", width: 120 },
-          { field: "FechaFin", headerText: "FECHA FIN", width: 120 },
-          { field: "TxTipoEvaluacion", headerText: "TIPO", width: 100 },
-          { field: "TextStatus", headerText: "STATUS", width: 100 },
-          { field: "Acciones", headerText: "ACCIONES", width: 150, textAlign: "Center", disableHtmlEncode: false }
+          { field: "Titulo",        headerText: "TÍTULO",      width: 200 },
+          { field: "BadgePublicada",headerText: "PUBLICACIÓN", width: 130, textAlign: "Center", disableHtmlEncode: false },
+          { field: "BadgeTipo",     headerText: "TIPO",        width: 110, textAlign: "Center", disableHtmlEncode: false },
+          { field: "BadgeDirigido", headerText: "DIRIGIDO A",  width: 140, textAlign: "Center", disableHtmlEncode: false },
+          { field: "ProgressCell",  headerText: "PROGRESO",    width: 110, textAlign: "Center", disableHtmlEncode: false },
+          { field: "BadgeStatus",   headerText: "STATUS",      width: 110, textAlign: "Center", disableHtmlEncode: false },
+          { field: "Acciones",      headerText: "ACCIONES",    width: 150, textAlign: "Center", disableHtmlEncode: false }
         ],
         dataBound: function () {
             const gridElement = this.element;

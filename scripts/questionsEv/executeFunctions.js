@@ -49,9 +49,22 @@ $(window).on('load', function() {
 
 let modalInstance;
 
+// Limpiar el modo "cambio de tipo" si el usuario cierra el modal sin confirmar
+document.addEventListener('DOMContentLoaded', function () {
+  const modalEl = document.getElementById("modalTypesQuestion");
+  if (modalEl) {
+    modalEl.addEventListener('hidden.bs.modal', function () {
+      _changingQuestionIndex = null;
+    });
+  }
+});
+
 
 
 $(document).on("click", "#btnAddQuestion", function () {
+
+  // Modo nueva pregunta (no cambio de tipo)
+  _changingQuestionIndex = null;
 
   // Limpiar validaciones previas
 
@@ -103,26 +116,27 @@ $(document).on("click", "#btn_acceptType", async function () {
 
   if (resultV) {
 
-    const content = addQuestion(
-      $("#sel_typeQuestion").val(),
-      $("#sel_competenceQuestion").val()
-    );
-    // Eliminar empty state si existe
-    $("#contentQuestions .evq-empty").remove();
-    $("#contentQuestions").append(content.contentHTML);
-    resultAfterInsertQuestion(content.type, content.number);
-
-
+    const selectedType = $("#sel_typeQuestion").val();
+    const selectedCompetence = $("#sel_competenceQuestion").val();
 
     // Cerrar el modal
-
     const modal = bootstrap.Modal.getInstance(
-
       document.getElementById("modalTypesQuestion")
-
     );
-
     modal.hide();
+
+    if (_changingQuestionIndex !== null) {
+      // Modo cambio de tipo: reemplazar tarjeta existente
+      changeQuestionType(_changingQuestionIndex, selectedType, selectedCompetence);
+      _changingQuestionIndex = null;
+    } else {
+      // Modo nueva pregunta
+      const content = addQuestion(selectedType, selectedCompetence);
+      // Eliminar empty state si existe
+      $("#contentQuestions .evq-empty").remove();
+      $("#contentQuestions").append(content.contentHTML);
+      resultAfterInsertQuestion(content.type, content.number);
+    }
 
   }
 
@@ -346,38 +360,94 @@ $(document).on("blur", ".changeRangeSV", function (element) {
 
 
 
+$(document).on("click", ".changeTypeQuestion", function (element) {
+  element.stopPropagation(); // Evitar que el clic llegue al header del accordion
+  const button = element.currentTarget;
+  const index = parseInt(button.dataset.question);
+  _changingQuestionIndex = index;
+
+  // Pre-seleccionar el tipo y competencia actuales en el modal
+  const currentData = _dataQuestions[index];
+  if (currentData) {
+    $("#sel_typeQuestion").val(currentData.typeQuestion).trigger('change');
+    $("#sel_competenceQuestion").val(currentData.competence).trigger('change');
+  }
+
+  cleanVerifyInputs("dv_typesQuestion");
+
+  const modalEl = document.getElementById("modalTypesQuestion");
+  let modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+
+  $("#sel_typeQuestion").select2({
+    placeholder: "Listado de tipos de pregunta",
+    dropdownParent: $("#modalTypesQuestion"),
+    width: "100%",
+  });
+
+  $("#sel_competenceQuestion").select2({
+    placeholder: "Listado de competencias",
+    dropdownParent: $("#modalTypesQuestion"),
+    width: "100%",
+  });
+
+  // Reasignar valores tras reinicializar Select2
+  if (currentData) {
+    $("#sel_typeQuestion").val(currentData.typeQuestion).trigger('change');
+    $("#sel_competenceQuestion").val(currentData.competence).trigger('change');
+  }
+
+  modalInstance.show();
+});
+
 $(document).on("click", ".deleteNoSaved", function (element) {
+  element.stopPropagation(); // Evitar que el clic llegue al header y dispare el accordion
   const button = element.target.closest('.deleteNoSaved');
   if (button && button.dataset.question !== undefined) {
     if (button.dataset.typequestion == "new") {
       const dv = parseInt(button.dataset.question);
-      _dataQuestions.splice(dv, 1);
-      let allVisibleQuestions = document.querySelectorAll(".dvContentSV");
-      $(`#dvQuestion${dv}`).remove();
-      const allDvQuestionsNoS = document.querySelectorAll(".dvContentQuestion");
-      allDvQuestionsNoS.forEach((dvQuest, index) => {
-        dvQuest.id = `dvQuestion${index}`;
-        let allDataQuestion = dvQuest.querySelectorAll("[data-question]");
-        let allCompSelects = dvQuest.querySelectorAll(".sel-competence-inline");
-        let allTitles = dvQuest.querySelectorAll(".titleNewQuestion");
-        let allNums = dvQuest.querySelectorAll(".evq-num");
-        allDataQuestion.forEach((inp) => {
-          inp.dataset.question = index;
-        });
-        allCompSelects.forEach((sel) => {
-          sel.id = `selCompetenceNew${index}`;
-          sel.dataset.question = index;
-        });
-        allTitles.forEach((title) => {
-          title.textContent = `${allVisibleQuestions.length + (index + 1)}.- Pregunta (Nueva)`;
-        });
-        allNums.forEach((num) => {
-          num.textContent = String(allVisibleQuestions.length + (index + 1)).padStart(2, '0');
-        });
+
+      // Confirmar eliminación antes de proceder
+      Swal.fire({
+        title: '¿Eliminar pregunta?',
+        text: 'Esta pregunta aún no ha sido guardada. Se eliminará de la lista.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          _dataQuestions.splice(dv, 1);
+          let allVisibleQuestions = document.querySelectorAll(".dvContentSV");
+          $(`#dvQuestion${dv}`).remove();
+          const allDvQuestionsNoS = document.querySelectorAll(".dvContentQuestion");
+          allDvQuestionsNoS.forEach((dvQuest, index) => {
+            dvQuest.id = `dvQuestion${index}`;
+            let allDataQuestion = dvQuest.querySelectorAll("[data-question]");
+            let allCompSelects = dvQuest.querySelectorAll(".sel-competence-inline");
+            let allTitles = dvQuest.querySelectorAll(".titleNewQuestion");
+            let allNums = dvQuest.querySelectorAll(".evq-num");
+            allDataQuestion.forEach((inp) => {
+              inp.dataset.question = index;
+            });
+            allCompSelects.forEach((sel) => {
+              sel.id = `selCompetenceNew${index}`;
+              sel.dataset.question = index;
+            });
+            allTitles.forEach((title) => {
+              title.textContent = `${allVisibleQuestions.length + (index + 1)}.- Pregunta (Nueva)`;
+            });
+            allNums.forEach((num) => {
+              num.textContent = String(allVisibleQuestions.length + (index + 1)).padStart(2, '0');
+            });
+          });
+          if (typeof evqUpdateMetaBar === 'function') {
+            evqUpdateMetaBar();
+          }
+        }
       });
-      if (typeof evqUpdateMetaBar === 'function') {
-        evqUpdateMetaBar();
-      }
     }
   }
 });

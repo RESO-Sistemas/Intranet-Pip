@@ -15,6 +15,9 @@ let _dataQuestions = [],
 
     _allCompetences = [];
 
+// Índice de la pregunta cuyo tipo se está cambiando (null = creando nueva)
+let _changingQuestionIndex = null;
+
 let contentOptions = "abcdefghijklmnopqrstuvwxyz";
 
 const sel_lvlOld = document.getElementById('sel_lvlOld');
@@ -48,8 +51,32 @@ async function getCurrentEvaluation() {
 
   if (ajaxR !== undefined && ajaxR.Resultado === true) {
     _currentEvaluation = ajaxR.Data;
+    // Aplicar modo bloqueado si la evaluación ya fue publicada
+    applyReadOnlyModeIfPublished(_currentEvaluation);
   }
 
+}
+
+/**
+ * Activa el modo solo lectura si la evaluación está publicada (Activado == 1).
+ * Muestra un banner informativo, oculta botones de edición y deshabilita inputs.
+ */
+function applyReadOnlyModeIfPublished(evaluation) {
+  if (!evaluation) return;
+  const isPublished = String(evaluation.Activado) === "1";
+  if (!isPublished) return;
+
+  // Agregar clase al body para que el CSS bloquee la UI
+  document.body.classList.add('evq-locked');
+
+  // Mostrar banner informativo
+  const banner = document.getElementById('evqAlertBanner');
+  const bannerText = document.getElementById('evqAlertText');
+  if (banner && bannerText) {
+    banner.className = 'evq-alert-banner locked';
+    bannerText.innerHTML = '<strong>Evaluación publicada.</strong> Esta evaluación ya está activa para los usuarios. Las preguntas no se pueden modificar para mantener la integridad de los resultados.';
+    banner.style.display = 'flex';
+  }
 }
 
 
@@ -1002,7 +1029,8 @@ function addQuestion(type, competence) {
           </div>
         </div>
         <div class="evq-header-actions">
-          <button type="button" class="evq-icon-btn delete deleteNoSaved" data-question="${newNumber - 1}" data-typequestion="new" onclick="event.stopPropagation();" title="Eliminar pregunta"><span class="material-symbols-outlined" style="font-size:18px">delete</span></button>
+          <button type="button" class="evq-icon-btn changeTypeQuestion" data-question="${newNumber - 1}" title="Cambiar tipo de pregunta"><span class="material-symbols-outlined" style="font-size:18px">swap_horiz</span></button>
+          <button type="button" class="evq-icon-btn delete deleteNoSaved" data-question="${newNumber - 1}" data-typequestion="new" title="Eliminar pregunta"><span class="material-symbols-outlined" style="font-size:18px">delete</span></button>
           <button type="button" class="evq-icon-btn chevron" title="Expandir/Colapsar"><span class="material-symbols-outlined" style="font-size:18px">expand_more</span></button>
         </div>
       </div>
@@ -2281,13 +2309,15 @@ function addaddResponseExpectedQuestion(){
 
 
 
-function resultAfterInsertQuestion(typeQuestion, question) {
+function resultAfterInsertQuestion(typeQuestion, question, skipModalHide = false) {
   if (typeQuestion == 2) {
     printTableLvls(question);
   } else if (typeQuestion == 4) {
     printOptionSelectAnswer(question);
   }
-  $('.modal').modal('hide');
+  if (!skipModalHide) {
+    $('.modal').modal('hide');
+  }
   // Colapsar todas las demás tarjetas (accordion)
   document.querySelectorAll('.evq-card.expanded').forEach(c => {
     c.classList.remove('expanded');
@@ -2397,6 +2427,21 @@ function changeRangeValues(question,newValue, typeRange){
 
 
 async function deleteQuestionSaved(idQuestion, position){
+
+  // Confirmar eliminación antes de llamar al servidor
+  const confirm = await Swal.fire({
+    title: '¿Eliminar pregunta?',
+    text: 'Esta acción eliminará la pregunta de forma permanente y no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#EF4444',
+    cancelButtonColor: '#6B7280',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  });
+
+  if (!confirm.isConfirmed) return;
 
   const dataSend = {
 
@@ -2707,5 +2752,193 @@ window.deleteResExpectedSVNewSF = function(e){
 
   return div.outerHTML;
 
+}
+
+
+
+/**
+ * Cambia el tipo de una pregunta nueva ya existente sin eliminarla.
+ * Actualiza _dataQuestions[index] y regenera el cuerpo de la tarjeta.
+ */
+function changeQuestionType(index, newType, newCompetence) {
+  let decodeType = atob(newType);
+  let dataTypeQ = _typeQuestions.filter(typeQ => typeQ.idTipoPregunta == newType);
+  let dataCompetence = _allCompetences.filter(comp => comp.idCompetencias == newCompetence);
+
+  if (!dataTypeQ.length || !dataCompetence.length) return;
+
+  // Construir el nuevo objeto de datos según tipo
+  let newData = {
+    typeQuestion: newType,
+    descTypeQuestion: dataTypeQ[0]["Descripcion"],
+    competence: newCompetence,
+    descCompetence: dataCompetence[0]["Competencia"],
+    titleQuestion: _dataQuestions[index].titleQuestion,
+    descriptionQuestion: _dataQuestions[index].descriptionQuestion,
+    saveInBdd: false,
+    edited: false
+  };
+
+  switch (decodeType) {
+    case '1':
+      newData.expectedValue = false;
+      break;
+    case '2':
+      newData.answers = ["", ""];
+      newData.expectedValue = [];
+      break;
+    case '3':
+      newData.rangeInitial = 0;
+      newData.rangeEnd = 100;
+      break;
+    case '4':
+      newData.answers = ["", ""];
+      newData.expectedValue = 0;
+      break;
+  }
+  _dataQuestions[index] = newData;
+
+  // Construir nuevo cuerpo según tipo
+  let typeBadgeClass = `badge-type-${decodeType}`;
+  let contentPlusHTML = "";
+  let contentRight = "";
+
+  switch (decodeType) {
+    case '1':
+      contentRight = `
+        <div class="evq-field">
+          <label>Respuesta correcta</label>
+          <div class="evq-toggle-wrap">
+            <button type="button" class="evq-toggle-btn active changeTrue-False" data-question="${index}" data-value="false">Falso</button>
+            <button type="button" class="evq-toggle-btn changeTrue-False" data-question="${index}" data-value="true">Verdadero</button>
+          </div>
+        </div>`;
+      break;
+    case '2':
+      contentPlusHTML = `
+        <div class="evq-field">
+          <label>Opciones de respuesta</label>
+          <div id="contentAnswers${index}">
+            <div class="evq-option-row" id="answer${index}-0">
+              <span class="evq-opt-label">a</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="0" data-question="${index}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="0" data-question='${index}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
+            <div class="evq-option-row" id="answer${index}-1">
+              <span class="evq-opt-label">b</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="1" data-question="${index}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="1" data-question='${index}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
+          </div>
+          <button type="button" class="evq-add-opt addanswer" data-question='${index}'><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
+        </div>`;
+      contentRight = `
+        <div class="evq-field">
+          <div class="evq-levels-box">
+            <div class="evq-levels-header">
+              <span class="evq-levels-title">Respuestas esperadas por nivel</span>
+              <button type="button" class="evq-btn evq-btn-primary" style="padding:0.35rem 0.7rem;font-size:12px;" onclick="seeExpectedResponse('${index}','new')"><span class="material-symbols-outlined" style="font-size:14px">add</span> Agregar</button>
+            </div>
+            <div id="contentTableLvlsQuestion${index}"></div>
+          </div>
+        </div>`;
+      break;
+    case '3':
+      contentRight = `
+        <div class="evq-field">
+          <label>Rango permitido para la respuesta</label>
+          <div class="evq-range-row">
+            <div class="evq-field">
+              <label>Rango mínimo <span class="req">*</span></label>
+              <input type="number" class="form-control changeRange" value="0" data-question='${index}' data-typenum="initial" placeholder="0">
+            </div>
+            <div class="evq-field">
+              <label>Rango máximo <span class="req">*</span></label>
+              <input type="number" class="form-control changeRange" value="100" data-question='${index}' data-typenum="end" placeholder="100">
+            </div>
+          </div>
+        </div>`;
+      break;
+    case '4':
+      contentPlusHTML = `
+        <div class="evq-field">
+          <label>Opciones de respuesta</label>
+          <div id="contentAnswers${index}">
+            <div class="evq-option-row" id="answer${index}-0">
+              <span class="evq-opt-label">a</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="0" data-question="${index}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="0" data-question='${index}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
+            <div class="evq-option-row" id="answer${index}-1">
+              <span class="evq-opt-label">b</span>
+              <input type="text" class="evq-opt-input answerInp" placeholder="Descripción de la respuesta" data-answer="1" data-question="${index}">
+              <button type="button" class="evq-opt-remove removeAnswer" data-removeanswer="1" data-question='${index}' title="Eliminar respuesta"><span class="material-symbols-outlined" style="font-size:14px">close_small</span></button>
+            </div>
+          </div>
+          <button type="button" class="evq-add-opt addanswer" data-question='${index}'><span class="material-symbols-outlined" style="font-size:16px">add</span> Agregar opción</button>
+        </div>`;
+      contentRight = `
+        <div class="evq-field">
+          <label>Respuesta correcta</label>
+          <div id="containerSelectAnswers${index}"></div>
+        </div>`;
+      break;
+  }
+
+  // Reconstruir el cuerpo de la tarjeta
+  let displayNum = _dataQuestionsSaved.length + (index + 1);
+  let newBodyHTML = `
+    <div class="evq-card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="evq-field">
+            <label>Título <span class="req">*</span></label>
+            <input type="text" class="form-control updatePrincipalInfo" id="title${index}" data-typeinp="title" data-question="${index}" placeholder="Ingrese el título de la pregunta" value="${_dataQuestions[index].titleQuestion || ''}">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="evq-field">
+            <label>Competencia <span class="req">*</span></label>
+            <select class="form-select sel-competence-inline" id="selCompetenceNew${index}" data-question="${index}" data-typequestionsv="new" style="width:100%;">
+              ${_allCompetences.map(c => `<option value="${c.idCompetencias}" ${c.idCompetencias == newCompetence ? 'selected' : ''}>${c.Competencia}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="evq-field">
+            <label>Pregunta / Descripción <span class="req">*</span></label>
+            <input type="text" class="form-control updatePrincipalInfo" id="desc${index}" data-typeinp="txQuestion" data-question="${index}" placeholder="Ingrese la pregunta" value="${_dataQuestions[index].descriptionQuestion || ''}">
+          </div>
+        </div>
+        ${contentPlusHTML}
+      </div>
+      ${contentRight}
+    </div>`;
+
+  const card = document.getElementById(`dvQuestion${index}`);
+  if (!card) return;
+
+  // Actualizar badge de tipo en el header
+  card.querySelector('.evq-meta-line').innerHTML = `
+    <span class="badge ${typeBadgeClass}">${dataTypeQ[0]["Descripcion"]}</span>
+    <span class="badge badge-comp">${dataCompetence[0]["Competencia"]}</span>`;
+
+  // Reemplazar cuerpo
+  const oldBody = card.querySelector('.evq-card-body');
+  if (oldBody) oldBody.remove();
+  card.insertAdjacentHTML('beforeend', newBodyHTML);
+
+  // Re-inicializar Select2 en el nuevo select de competencia
+  const $compSelect = $(`#selCompetenceNew${index}`);
+  if ($compSelect.length && !$compSelect.hasClass('select2-hidden-accessible')) {
+    $compSelect.select2({
+      width: '100%',
+      dropdownParent: $('body'),
+      minimumResultsForSearch: 5
+    });
+  }
+
+  // Inicializar contenido extra si aplica (pills de tipo 4, chips de tipo 2)
+  resultAfterInsertQuestion(parseInt(decodeType), index, true);
 }
 

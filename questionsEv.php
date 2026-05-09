@@ -151,6 +151,25 @@
         background: #FEF2F2;
       }
 
+      /* ===== MODO BLOQUEADO (evaluación publicada) ===== */
+      .evq-alert-banner.locked {
+        border-left-color: #3B82F6;
+        background: #EFF6FF;
+        color: #1E40AF;
+      }
+
+      /* Cuando la evaluación está bloqueada, ocultar acciones de edición */
+      body.evq-locked .evq-actions { display: none !important; }
+      body.evq-locked .evq-icon-btn.deleteNoSaved,
+      body.evq-locked .evq-icon-btn.delete,
+      body.evq-locked .evq-icon-btn.changeTypeQuestion { display: none !important; }
+      body.evq-locked input,
+      body.evq-locked textarea,
+      body.evq-locked select { pointer-events: none; opacity: 0.75; }
+      body.evq-locked .evq-pill { pointer-events: none; opacity: 0.75; }
+      body.evq-locked .evq-add-option-btn,
+      body.evq-locked .evq-remove-option-btn { display: none !important; }
+
       /* ===== QUESTION CARD ===== */
       .evq-card {
         background: var(--ev-surface);
@@ -295,6 +314,11 @@
       .evq-icon-btn.delete:hover {
         background: var(--ev-danger-light);
         color: var(--ev-danger);
+      }
+
+      .evq-icon-btn.changeTypeQuestion:hover {
+        background: #fef3c7;
+        color: #d97706;
       }
 
       .evq-icon-btn.chevron {

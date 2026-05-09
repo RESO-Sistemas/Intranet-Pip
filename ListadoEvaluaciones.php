@@ -289,9 +289,36 @@
       font-weight: 600;
     }
 
-    .ev-sbadge.indigo { background: #FEF3C7; color: #92400E; }
-    .ev-sbadge.teal   { background: #F0FDFA; color: #14B8A6; }
-    .ev-sbadge.green  { background: #ECFDF5; color: #10B981; }
+    .ev-sbadge.indigo  { background: #FEF3C7; color: #92400E; }
+    .ev-sbadge.teal    { background: #F0FDFA; color: #14B8A6; }
+    .ev-sbadge.green   { background: #ECFDF5; color: #10B981; }
+    .ev-sbadge.red     { background: #FEF2F2; color: #DC2626; }
+    .ev-sbadge.blue    { background: #EFF6FF; color: #2563EB; }
+    .ev-sbadge.gray    { background: #F1F5F9; color: #64748B; }
+    .ev-sbadge.amber   { background: #FFFBEB; color: #92400E; }
+    .ev-sbadge.purple  { background: #F5F3FF; color: #7C3AED; }
+    .ev-sbadge.emerald { background: #ECFDF5; color: #059669; }
+
+    /* Badge con ícono de material */
+    .ev-sbadge .material-symbols-outlined {
+      font-size: 13px;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+
+    /* Columna de progreso */
+    .ev-progress-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #1E293B;
+    }
+    .ev-progress-cell .material-symbols-outlined {
+      font-size: 15px;
+      color: #94A3B8;
+    }
 
     /* --- FORM POLISH --- */
     .ev-modal-content .form-label { font-weight: 600; font-size: 12.5px; color: #374151; margin-bottom: 4px; }
