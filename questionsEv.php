@@ -162,13 +162,23 @@
       body.evq-locked .evq-actions { display: none !important; }
       body.evq-locked .evq-icon-btn.deleteNoSaved,
       body.evq-locked .evq-icon-btn.delete,
-      body.evq-locked .evq-icon-btn.changeTypeQuestion { display: none !important; }
+      body.evq-locked .evq-icon-btn.changeTypeQuestion,
+      body.evq-locked .evq-icon-btn.save { display: none !important; }
       body.evq-locked input,
       body.evq-locked textarea,
-      body.evq-locked select { pointer-events: none; opacity: 0.75; }
-      body.evq-locked .evq-pill { pointer-events: none; opacity: 0.75; }
+      body.evq-locked select { pointer-events: none !important; opacity: 0.75 !important; }
+      body.evq-locked .evq-pill,
+      body.evq-locked .evq-toggle-btn { pointer-events: none !important; opacity: 0.75 !important; }
       body.evq-locked .evq-add-option-btn,
-      body.evq-locked .evq-remove-option-btn { display: none !important; }
+      body.evq-locked .evq-remove-option-btn,
+      body.evq-locked .evq-add-opt { display: none !important; }
+
+      /* Ocultar también botones en la vista no-embed */
+      body.evq-locked #btnSaveQuestions,
+      body.evq-locked #btnAddQuestion { display: none !important; }
+
+      /* Select2 deshabilitado visualmente */
+      body.evq-locked .select2-container--default .select2-selection--single { pointer-events: none !important; opacity: 0.75 !important; }
 
       /* ===== QUESTION CARD ===== */
       .evq-card {

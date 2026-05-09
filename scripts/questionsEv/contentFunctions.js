@@ -77,6 +77,36 @@ function applyReadOnlyModeIfPublished(evaluation) {
     bannerText.innerHTML = '<strong>Evaluación publicada.</strong> Esta evaluación ya está activa para los usuarios. Las preguntas no se pueden modificar para mantener la integridad de los resultados.';
     banner.style.display = 'flex';
   }
+
+  // Aplicar deshabilitación a elementos ya renderizados
+  disableAllQuestionInputs();
+}
+
+/**
+ * Deshabilita todos los inputs, selects y textareas dentro del contenedor de preguntas.
+ * Se llama después de renderizar preguntas y al detectar modo publicado.
+ */
+function disableAllQuestionInputs() {
+  if (!document.body.classList.contains('evq-locked')) return;
+
+  const allInputs = document.querySelectorAll('#contentQuestions input, #contentQuestions textarea, #contentQuestions select');
+  allInputs.forEach(el => {
+    el.disabled = true;
+    el.setAttribute('readonly', 'readonly');
+  });
+
+  // Deshabilitar Select2 (competencias inline)
+  if (typeof $ !== 'undefined') {
+    $('.sel-competence-inline').prop('disabled', true);
+    try {
+      $('.sel-competence-inline').select2('destroy');
+    } catch (e) { /* Select2 podría no estar inicializado */ }
+  }
+
+  // Ocultar botones de guardar individuales en tarjetas
+  document.querySelectorAll('.evq-icon-btn.save').forEach(btn => {
+    btn.style.display = 'none';
+  });
 }
 
 
@@ -149,6 +179,9 @@ async function printActualQuestions() {
   if (typeof evqUpdateMetaBar === 'function') {
     evqUpdateMetaBar();
   }
+
+  // Si la evaluación está publicada, deshabilitar los inputs recién renderizados
+  disableAllQuestionInputs();
 }
 
 
@@ -2342,6 +2375,9 @@ function resultAfterInsertQuestion(typeQuestion, question, skipModalHide = false
   if (typeof evqUpdateMetaBar === 'function') {
     evqUpdateMetaBar();
   }
+
+  // Medida defensiva: si la evaluación está publicada, deshabilitar la nueva tarjeta también
+  disableAllQuestionInputs();
 }
 
 
