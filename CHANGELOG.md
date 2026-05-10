@@ -2,6 +2,40 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-09] ✨ feat: Rediseño completo módulo Organigramas
+
+### ControlOrganigrama.php / ControlOrganigrama.js
+- ✨ **Cards Grid:** Reemplazo de tabla Syncfusion por grid de tarjetas Bootstrap con badge de estado (Activo/Inactivo).
+- ✨ **Filtro en vivo:** Input de búsqueda con empty state "Sin resultados" (`search_off`) cuando ninguna card coincide.
+- ✨ **Icono amarillo:** Ícono de árbol en color amarillo `#ffc107` (identidad PIP) en lugar de azul.
+- ✨ **Renombrar inline:** Click en "Renombrar" convierte el título en `<input>` editable con botón ✓ amarillo; Enter guarda, Escape cancela. Sin SweetAlert.
+- 🐛 **Fix color botones Editar/Ver:** `!important` en `a.org-card-btn` para anular estilos Bootstrap/Neptune.
+
+### OrganigramaSv.php / OrganigramaSv.js (editor)
+- ✨ **Layout full-screen:** Editor tipo aplicación con toolbar, panel izquierdo colapsable (árbol + buscador), canvas Syncfusion, panel derecho de propiedades.
+- ✨ **Buscador arriba:** Sección de búsqueda de empleados movida encima del árbol jerárquico para mayor accesibilidad.
+- ✨ **Auto-layout + fitToPage:** `fitToPage` al cargar y tras auto-layout; los nodos nunca quedan fuera del viewport.
+- ✨ **Nodos 240×100px:** Tamaño fijo con avatar de iniciales (40px), nombre, puesto y badge de tipo (Principal/Empleado/Otro).
+- ✨ **`pointer-events: none`** en wrapper HTML: clicks pasan al SVG layer de Syncfusion correctamente.
+- ✨ **Export PNG con preview:** `html2canvas` (scale 2×) + modal de previsualización antes de descargar. Nombre `organigrama-[título].png`.
+- 🐛 **Fix resize al colapsar panel:** `diagram.refresh()` tras 220ms de transición CSS elimina área gris sin cuadricular.
+- ♻️ **Elimina `location.reload()`:** Todas las operaciones (agregar/editar/eliminar) actualizan el diagrama en caliente con `refreshDiagram()`.
+
+### organigrama.php / organigrama.js (vista pública)
+- ✨ **Tabs por organigrama:** Reemplazo de acordeón por tabs horizontales con underline amarillo; render lazy al activar cada tab.
+- ✨ **Canvas `calc(100vh - 220px)`:** Aprovecha toda la altura disponible de pantalla.
+- ✨ **Modal de detalle:** Click en nodo abre modal centrado (480px) con: iniciales, nombre, puesto, tipo, nivel, email, División, Sucursal y contador de colaboradores directos.
+- ✨ **Read-only real:** `NodeConstraints.PointerEvents | InConnect | OutConnect` — sin handles de resize/drag, conectores visibles, clicks funcionan.
+- ✨ **Export PNG con preview:** Mismo flujo que editor. `lastDiagram` actualizado por tab activo.
+- 🐛 **Fix conectores invisibles:** `ConnectorConstraints.None` (era `PointerEvents` inválido en ConnectorConstraints → `undefined`).
+- 🐛 **Fix colaboradores directos:** `countDirectReports` usaba `node.id` (Syncfusion interno); corregido a `data.id` que coincide con `n.manager` en `orgDataMap`.
+
+### Backend
+- ✨ **`getDatosOrganigramas`:** Agrega `División` y `Sucursal` via LEFT JOIN a `Divisiones` y `SucursalDepto`.
+- ✨ **`getTituloOrganigrama`:** Nueva operación para cargar título del organigrama en el editor.
+
+---
+
 ## [2026-05-08 14:37:01] ✨ feat: Rediseño pestaña preguntas evaluaciones
 
 - ✨ **Accordion Editor:** Cada pregunta se convierte en tarjeta colapsable con header limpio (número circular, título, tipo, competencia). Acciones de guardar/eliminar visibles solo en hover.

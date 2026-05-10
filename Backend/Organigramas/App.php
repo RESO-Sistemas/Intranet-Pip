@@ -17,12 +17,24 @@
     echo trim($Organigramas->getSucursalDeptoOrg());
   }
   if ($op == "getEmpleadosOrg") {
-    $IdDivision = $_POST["IdDivision"];
-    $IdSucursal = $_POST["IdSucursal"];
-    $IdPuesto = $_POST["IdPuesto"];
-    $Nivel = $_POST["Nivel"];
-    $Organigrama = $_POST["Organigrama"];
-    echo trim($Organigramas->getEmpleadosOrg($IdDivision,$IdSucursal,$IdPuesto,$Nivel,$Organigrama));
+    $IdDivision = $_POST["IdDivision"] ?? "";
+    $IdSucursal = $_POST["IdSucursal"] ?? "";
+    $IdPuesto = $_POST["IdPuesto"] ?? "";
+    $Nivel = $_POST["Nivel"] ?? "";
+    $Organigrama = $_POST["Organigrama"] ?? "";
+    $q = $_POST["q"] ?? "";
+    echo trim($Organigramas->getEmpleadosOrg($IdDivision,$IdSucursal,$IdPuesto,$Nivel,$Organigrama,$q));
+  }
+
+  if ($op == "getEmpleadosNoEnOrganigrama") {
+    $idOrganigramas = $_POST["idOrganigramas"];
+    $q = $_POST["q"] ?? "";
+    echo trim($Organigramas->getEmpleadosNoEnOrganigrama($idOrganigramas, $q));
+  }
+
+  if ($op == "getTituloOrganigrama") {
+    $idOrganigramas = $_POST["idOrganigramas"];
+    echo trim($Organigramas->getTituloOrganigrama($idOrganigramas));
   }
 
   if ($op == "addEmpleadoOrganigrama") {

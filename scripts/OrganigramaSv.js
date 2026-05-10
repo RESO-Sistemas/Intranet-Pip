@@ -1,900 +1,817 @@
-  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
-);
+/* ================================================================
+   OrganigramaSv.js — Editor full-screen de organigramas
+   ================================================================ */
 
-$(document).ready(function () {
-  // selectServicioCategoria();
-  // $('.js-example-basic-single').select2();
-});
+const Organigrama = new URLSearchParams(window.location.search).get("Org");
 
-// Ocultar preloader cuando todo esté listo
-$(window).on('load', function() {
-  $(".preloader").fadeOut();
-});
+let datosOrg  = [];   // datos formateados para Syncfusion
+let rawOrg    = [];   // datos crudos de getDetalleOrganigrama
+let diagram   = null;
+let selectedNodeRawId = null; // idDetalleOrganigrama del nodo seleccionado
 
-const myKeysValues = window.location.search;
-const urlParams = new URLSearchParams(myKeysValues);
-const Organigrama = urlParams.get("Org");
-let datosOrg = [];
+/* ── Init ──────────────────────────────────────────────────── */
+(async function init() {
+    await loadTitulo();
+    await loadOrganigrama();
+    printDiagram();
+    diagram.appendTo("#element");
+    checkEmptyState();
+    buildTreePanel();
+    initLeftPanelSearch();
+    initTipoRadios("add");
+    initTipoRadios("edit");
+    initTitleEditable();
+    bindToolbarButtons();
+    bindPropertyPanelButtons();
+    bindOffcanvasEvents();
 
-// google.charts.load('current', {packages:["orgchart"]});
-// google.charts.setOnLoadCallback(loadOrganigrama);
-loadOrg();
-async function loadOrg() {
-  await loadOrganigrama();
-  await printDiagram();
-  diagram.appendTo("#element");
+    // Auto-layout cuando los nodos no tienen posición guardada (todos en 0,0)
+    if (needsAutoLayout()) {
+        setTimeout(() => doAutoLayout(true), 300);
+    } else if (datosOrg.length > 0) {
+        setTimeout(() => diagram.fitToPage({ mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } }), 150);
+    }
+})();
+
+function needsAutoLayout() {
+    if (datosOrg.length < 2) return false;
+    const noPos = datosOrg.filter(d => !d.offsetX && !d.offsetY).length;
+    return noPos > datosOrg.length / 2;
 }
+
+/* ── Título organigrama ────────────────────────────────────── */
+async function loadTitulo() {
+    try {
+        const resp = await $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "getTituloOrganigrama", idOrganigramas: Organigrama },
+            dataType: "json"
+        });
+        const titulo = resp.Titulo || "Organigrama";
+        document.getElementById("orgTitulo").textContent = titulo;
+        document.title = titulo + " · PIP";
+    } catch(e) { console.error(e); }
+}
+
+function initTitleEditable() {
+    const el = document.getElementById("orgTitulo");
+    const btn = document.getElementById("btnSaveTitle");
+
+    const saveTitle = async () => {
+        const val = el.textContent.trim();
+        if (!val) { el.textContent = "Sin título"; return; }
+        try {
+            await $.ajax({
+                type: "post", url: "Backend/Organigramas/App.php",
+                data: { op: "updateOrganigramaTitulo", idOrganigramas: Organigrama, Titulo: val }
+            });
+        } catch(e) { console.error(e); }
+        el.blur();
+    };
+
+    el.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); saveTitle(); } });
+    btn.addEventListener("click", saveTitle);
+}
+
+/* ── Cargar datos organigrama ──────────────────────────────── */
 async function loadOrganigrama() {
-  let datos = await {
-    op: "getDetalleOrganigrama",
-    idOrganigramas: Organigrama,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    // console.log(respuesta); // Comentado - array de organigrama
-    if (respuesta.length > 0) {
-      respuesta.forEach((d) => {
-        if (d.idDetalleOrganigramaPadre == 0) {
-          datosOrg.push({
-            id: `'${d.idDetalleOrganigrama}'`,
-            name: `${d.Nombre}`,
-            role: `${d.Puesto}`,
-            offsetY: Number(d.CoordenadaY),
-            offsetX: Number(d.CoordenadaX),
-            imageUrl: `${d.Imagen}`,
-            Width: Number(d.Ancho),
-            Height: Number(d.Altura),
-            color: "#71AF17",
-            // constraints: ConnectorConstraints.Default & ~ConnectorConstraints.Select
-          });
-        } else {
-          datosOrg.push({
-            id: `'${d.idDetalleOrganigrama}'`,
-            name: `${d.Nombre}`,
-            role: `${d.Puesto}`,
-            offsetY: Number(d.CoordenadaY),
-            offsetX: Number(d.CoordenadaX),
-            imageUrl: `${d.Imagen}`,
-            manager: `'${d.idDetalleOrganigramaPadre}'`,
-            Width: Number(d.Ancho),
-            Height: Number(d.Altura),
-            color: "#ffc107",
-            // constraints: ConnectorConstraints.Default & ~ConnectorConstraints.Select
-          });
-        }
-      });
-    }
-  }
+    datosOrg = [];
+    rawOrg   = [];
+    try {
+        const respuesta = await $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "getDetalleOrganigrama", idOrganigramas: Organigrama },
+            dataType: "json"
+        });
+        (respuesta || []).forEach(d => {
+            rawOrg.push(d);
+            const base = {
+                id:       `node_${d.idDetalleOrganigrama}`,
+                name:     d.Nombre,
+                role:     d.Puesto,
+                offsetY:  Number(d.CoordenadaY),
+                offsetX:  Number(d.CoordenadaX),
+                imageUrl: d.Imagen,
+                Width:    Number(d.Ancho)  || 210,
+                Height:   Number(d.Altura) || 72,
+                rawId:    d.idDetalleOrganigrama,
+                tipo:     d.Tipo,
+                noEmp:    d.NoEmpleadoHijo
+            };
+            if (d.idDetalleOrganigramaPadre != 0) {
+                base.manager = `node_${d.idDetalleOrganigramaPadre}`;
+            }
+            datosOrg.push(base);
+        });
+    } catch(e) { console.error(e); }
 }
 
-let diagram;
-let items;
+/* ── Diagram Syncfusion ────────────────────────────────────── */
 function printDiagram() {
-  items = new ej.data.DataManager(datosOrg);
-
-  diagram = new ej.diagrams.Diagram({
-    width: "100%",
-    height: "600px",
-    dataSourceSettings: {
-      // set the unique field from data source
-      id: "id",
-      // set the field which is used to identify the reporting person
-      parentId: "manager",
-      // define the employee data
-      dataManager: items,
-      doBinding: function (node, data) {
-        // You will get the employee information in data argument and bind that value directly to node's built-in properties.
-        node.annotations = [{ content: "" }];
-        node.style = { fill: data.color, strokeColor: data.color, strokeWidth: 2 };
-      },
-    },
-    getNodeDefaults: nodeDefaults,
-    getConnectorDefaults: connectorDefaults,
-    setNodeTemplate: setNodeTemplate,
-    positionChange: positionChange,
-    sizeChange: sizeChange,
-    doubleClick: clickElement,
-    // hide the gridlines in the diagram
-  });
-}
-
-function clickElement(args) {
-  if (args.name == "doubleClick") {
-    let det = args.source.data.id;
-    let detFormat = det.replace("'", "");
-    let detformatF = btoa(Number(detFormat.replace("'", "")));
-    Swal.fire({
-      title: "¿Qué acción deseas realizar?",
-      icon: "question",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonColor: "#ffc407",
-      denyButtonColor: "#d33",
-      confirmButtonText: "Editar",
-      denyButtonText: `Eliminar`,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        opcionesSelectedEditar(detformatF);
-      } else if (result.isDenied) {
-        opcionesSelectedEliminar(detformatF);
-      }
+    const items = new ej.data.DataManager(datosOrg);
+    diagram = new ej.diagrams.Diagram({
+        width: "100%",
+        height: "100%",
+        dataSourceSettings: {
+            id: "id",
+            parentId: "manager",
+            dataManager: items,
+            doBinding: function(node, data) {
+                node.annotations = [];
+                node.style = { fill: "transparent", strokeColor: "transparent" };
+                node.shape = {
+                    type: "HTML",
+                    content: buildNodeHTML(data)
+                };
+            }
+        },
+        getNodeDefaults:    nodeDefaults,
+        getConnectorDefaults: connectorDefaults,
+        positionChange:     onPositionChange,
+        sizeChange:         onSizeChange,
+        selectionChange:    onSelectionChange
     });
-  }
 }
 
-async function sizeChange(args) {
-  if (args.state === "Completed") {
-    let x = args.newValue.offsetX;
-    let y = args.newValue.offsetY;
-    let height = args.newValue.height;
-    let width = args.newValue.width;
-    let det = args.source.nodes[0].data.id;
-    let detFormat = det.replace("'", "");
-    let detformatF = btoa(Number(detFormat.replace("'", "")));
+function buildNodeHTML(data) {
+    const esc = s => (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    const name     = esc(data.name || "");
+    const role     = esc(data.role || "");
+    const initials = (data.name || "?").split(" ").filter(Boolean).slice(0, 2)
+        .map(w => w.charAt(0).toUpperCase()).join("");
+    const tipoMap  = { PRINCIPAL: ["#111","#ffc107","Principal"], EMPLEADO: ["#1e40af","#dbeafe","Empleado"], OTROS: ["#374151","#f3f4f6","Otro"] };
+    const [tc, bg, lbl] = tipoMap[data.tipo] || ["#374151","#f3f4f6","—"];
+    const tipoBadge = `<span style="display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:${bg};color:${tc};letter-spacing:.04em;text-transform:uppercase;">${lbl}</span>`;
 
-    await sizeChangeNodeOrganigrama(y, x, width, height, detformatF);
-  }
+    return `<div style="width:100%;height:100%;background:#fff;border:1.5px solid #e5e7eb;border-top:4px solid #ffc107;border-radius:8px;overflow:hidden;box-sizing:border-box;padding:0 14px;pointer-events:none;">
+        <table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed;"><tr>
+            <td style="width:46px;vertical-align:middle;padding:0;">
+                <span style="display:flex;width:40px;height:40px;border-radius:50%;background:#ffc107;color:#111;font-size:13px;font-weight:800;align-items:center;justify-content:center;letter-spacing:-0.5px;">${initials}</span>
+            </td>
+            <td style="vertical-align:middle;padding:0 0 0 12px;overflow:hidden;">
+                <div style="font-size:12px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;">${name}</div>
+                <div style="font-size:10px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">${role}</div>
+                ${tipoBadge}
+            </td>
+        </tr></table>
+    </div>`;
 }
 
-async function sizeChangeNodeOrganigrama(y, x, w, a, id) {
-  let datos = {
-    op: "sizeChangeNodeOrganigrama",
-    y: y,
-    x: x,
-    w: w,
-    a: a,
-    do: id,
-  };
-  const ajaxResponse = await pAjaxAsync(url_m_Organigrama, datos, 1);
-  if (ajaxResponse !== undefined) {
-    // await loadOrganigrama();
-    // await printDiagram();
-    // diagram.appendTo('#element');
-    // diagram.refresh();
-  }
-}
-
-async function positionChange(args) {
-  if (args.state === "Completed") {
-    let x = args.newValue.offsetX;
-    let y = args.newValue.offsetY;
-    let det;
-    let valida = args.source.data?.id;
-    if (valida !== undefined) {
-      det = args.source.data.id;
-    } else {
-      det = args.source.nodes[0].data.id;
-    }
-    let detFormat = det.replace("'", "");
-    let detformatF = btoa(Number(detFormat.replace("'", "")));
-    await changePositionNodeOrganigrama(y, x, detformatF);
-  }
-}
-
-async function changePositionNodeOrganigrama(y, x, id) {
-  let datos = {
-    op: "changePositionNodeOrganigrama",
-    y: y,
-    x: x,
-    do: id,
-  };
-  const ajaxResponse = await pAjaxAsync(url_m_Organigrama, datos, 1);
-  if (ajaxResponse !== undefined) {
-    // await loadOrganigrama();
-    // await printDiagram();
-    // diagram.refresh();
-  }
-}
 function nodeDefaults(node) {
-  node.annotations[0].style.color = "white";
-  node.offsetX = node.data.offsetX;
-  node.offsetY = node.data.offsetY;
-  node.width = node.data.Width;
-  node.height = node.data.Height;
-  return node;
+    node.offsetX = node.data.offsetX || 200;
+    node.offsetY = node.data.offsetY || 200;
+    node.width   = 240;
+    node.height  = 100;
+    return node;
 }
 
 function connectorDefaults(connector) {
-  connector.type = "Orthogonal";
-  connector.targetDecorator = { shape: "None" };
-  connector.style = { strokeColor: "#ffc107", strokeWidth: 2 };
-  return connector;
-}
-//Funtion to add the Template of the Node.
-function setNodeTemplate(obj, diagram) {
-  // create the stack panel
-  var content = new ej.diagrams.StackPanel();
-  content.id = obj.id + "_outerstack";
-  content.orientation = "Horizontal";
-  content.style.strokeColor = "#ffc107";
-  content.padding = { left: 10, right: 10, top: 20, bottom: 5 };
-
-  // create the image element to map the image data from the data source
-  var image = new ej.diagrams.ImageElement();
-  image.id = obj.id + "_pic";
-  image.width = 50;
-  image.height = 50;
-  image.style.strokeColor = "none";
-  image.source = obj.data.imageUrl;
-
-  // create the stack panel to append the text elements.
-  var innerStack = new ej.diagrams.StackPanel();
-  innerStack.style.strokeColor = "none";
-  innerStack.margin = { left: 5, right: 0, top: 0, bottom: 0 };
-  innerStack.id = obj.id + "_innerstack";
-
-  // create the text element to map the Name data from the data source
-  var text = new ej.diagrams.TextElement();
-  text.style.bold = true;
-  text.id = obj.id + "_name";
-  text.content = obj.data.name;
-
-  // create the text element to map the designation data from the data source
-  var desigText = new ej.diagrams.TextElement();
-  desigText.id = obj.id + "_desig";
-  desigText.content = obj.data.role;
-
-  // append the text elements
-  innerStack.children = [text, desigText];
-
-  // append the image and inner stack elements
-  content.children = [image, innerStack];
-  return content;
+    connector.type = "Orthogonal";
+    connector.targetDecorator = { shape: "None" };
+    connector.style = { strokeColor: "#212121", strokeWidth: 1.5 };
+    return connector;
 }
 
-$("#slctTipoPrincipal").change(async function () {
-  let tipoEmp = await Number($("#slctTipoPrincipal").val());
-  if (tipoEmp == 1) {
-    $("#divPuesto").fadeIn();
-    $("#divDivicion").fadeIn();
-    $("#divSucursal").fadeIn();
-    $("#divEmpleado").fadeIn();
-    $("#divNivel").fadeIn();
-    $("#divEmpleadoPadre").fadeOut();
-    $("#divOtros").fadeOut();
-    $("#txtOtros").val("");
-  } else if (tipoEmp == 2) {
-    $("#divPuesto").fadeIn();
-    $("#divDivicion").fadeIn();
-    $("#divSucursal").fadeIn();
-    $("#divEmpleado").fadeIn();
-    $("#divNivel").fadeIn();
-    $("#divEmpleadoPadre").fadeIn();
-    $("#divOtros").fadeOut();
-    $("#txtOtros").val("");
-  } else if (tipoEmp == 3) {
-    $("#divPuesto").fadeOut();
-    $("#divDivicion").fadeOut();
-    $("#divSucursal").fadeOut();
-    $("#divEmpleado").fadeOut();
-    $("#divNivel").fadeOut();
-    $("#divEmpleadoPadre").fadeIn();
-    $("#slctEmpleadoPrincipal").val("");
-    $("#slctEmpleadoPadrePrincipal").val("");
-    $("#divOtros").fadeIn();
-  } else if (tipoEmp == 4) {
-    $("#divPuesto").fadeOut();
-    $("#divDivicion").fadeOut();
-    $("#divSucursal").fadeOut();
-    $("#divEmpleado").fadeOut();
-    $("#divNivel").fadeOut();
-    $("#divEmpleadoPadre").fadeIn();
-    $("#slctEmpleadoPrincipal").val("");
-  }
-});
-
-$("#slctTipoModal").change(async function () {
-  let tipoEmp = await Number($("#slctTipoModal").val());
-  if (tipoEmp == 1) {
-    $("#divPuestoModal").fadeIn();
-    $("#divDivicionModal").fadeIn();
-    $("#divSucursalModal").fadeIn();
-    $("#divEmpleadoModal").fadeIn();
-    $("#divNivelModal").fadeIn();
-    $("#divEmpleadoPadreModal").fadeOut();
-    $("#divOtrosModal").fadeOut();
-    $("#txtOtrosModal").val("");
-  } else if (tipoEmp == 2) {
-    $("#divPuestoModal").fadeIn();
-    $("#divDivicionModal").fadeIn();
-    $("#divSucursalModal").fadeIn();
-    $("#divEmpleadoModal").fadeIn();
-    $("#divNivelModal").fadeIn();
-    $("#divEmpleadoPadreModal").fadeIn();
-    $("#divOtrosModal").fadeOut();
-    $("#txtOtrosModal").val("");
-  } else if (tipoEmp == 3) {
-    $("#divPuestoModal").fadeOut();
-    $("#divDivicionModal").fadeOut();
-    $("#divSucursalModal").fadeOut();
-    $("#divEmpleadoModal").fadeOut();
-    $("#divNivelModal").fadeOut();
-    $("#divEmpleadoPadreModal").fadeIn();
-    $("#divOtrosModal").fadeIn();
-  }
-});
-
-//getPuestosOrg();
-getDivicionOrg();
-getSucursalDeptoOrg();
-getEmpleadosOrg();
-getEmpleadosPadreOrganigrama();
-
-//getPuestosOrgEditar();
-getDivicionOrgEditar();
-getSucursalDeptoOrgEditar();
-getEmpleadosOrgEditar();
-
-async function onchangeDivision() {
-  getPuestosOrg();
-  getEmpleadosOrg();
+/* ── Position / size persistence ──────────────────────────── */
+async function onPositionChange(args) {
+    if (args.state !== "Completed") return;
+    const x = args.newValue.offsetX;
+    const y = args.newValue.offsetY;
+    const rawId = args.source.data ? args.source.data.rawId
+                                   : args.source.nodes?.[0]?.data?.rawId;
+    if (!rawId) return;
+    await $.ajax({
+        type: "post", url: "Backend/Organigramas/App.php",
+        data: { op: "changePositionNodeOrganigrama", y, x, do: btoa(Number(rawId)) }
+    });
 }
 
-async function onchangeDivisionEditar() {
-  getPuestosOrgEditar();
-  getEmpleadosOrg();
+async function onSizeChange(args) {
+    if (args.state !== "Completed") return;
+    const { offsetX: x, offsetY: y, height, width } = args.newValue;
+    const rawId = args.source.nodes?.[0]?.data?.rawId;
+    if (!rawId) return;
+    await $.ajax({
+        type: "post", url: "Backend/Organigramas/App.php",
+        data: { op: "sizeChangeNodeOrganigrama", y, x, w: width, a: height, do: btoa(Number(rawId)) }
+    });
 }
 
-async function getPuestosOrg() {
-  $("#slctPuestoPrincipal").html("");
-  let IdDivision = $("#slcDivicionPrincipal").val();
-  let datos = await {
-    op: "getPuestosXDivision",
-    IdDivision: IdDivision,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Puestos/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slctPuestoPrincipal").append(`
-        <option value="" selected > Listado de Puestos</option>
-    `);
-    respuesta.forEach((registro) => {
-      $("#slctPuestoPrincipal").append(`
-        <option value="${registro.IdPuesto}">${registro.Puesto}</option>
-    `);
-    });
-  }
-}
-
-async function getDivicionOrg() {
-  const datos = {
-    op: "getDivicionOrg",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slcDivicionPrincipal").append(`
-        <option value="" selected > Listado de Divisiones</option>
-        `);
-    respuesta.forEach((registro) => {
-      $("#slcDivicionPrincipal").append(`
-            <option value="${registro.IdDivision}">${registro.Division}</option>
-        `);
-    });
-  }
-}
-
-async function getSucursalDeptoOrg() {
-  const datos = {
-    op: "getSucursalDeptoOrg",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slctSucursalPrincipal").append(`
-        <option value="" selected > Listado de Sucursales / Departamentos</option>
-        `);
-    respuesta.forEach((registro) => {
-      $("#slctSucursalPrincipal").append(`
-            <option value="${registro.IdSucursal}">${registro.Sucursal}</option>
-        `);
-    });
-  }
-}
-
-async function getEmpleadosOrg() {
-  $("#slctEmpleadoPrincipal").html("");
-  let IdDivision = await $("#slcDivicionPrincipal").val();
-  let IdSucursal = await $("#slctSucursalPrincipal").val();
-  let IdPuesto = await $("#slctPuestoPrincipal").val();
-  let Nivel = await $("#slctNivelPrincipal").val();
-  let datos = await {
-    op: "getEmpleadosOrg",
-    IdDivision: IdDivision,
-    IdSucursal: IdSucursal,
-    IdPuesto: IdPuesto,
-    Nivel: Nivel,
-    Organigrama: Organigrama,
-  };
-  respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    $("#slctEmpleadoPrincipal").append(`
-            <option value="" selected disabled> Listado de Empleados</option>
-        `);
-    respuesta.forEach((empleado) => {
-      $("#slctEmpleadoPrincipal").append(`
-            <option value="${empleado.NoEmpleado}">${empleado.Nombre}</option>
-          `);
-    });
-  }
-}
-
-async function getEmpleadosPadreOrganigrama() {
-  $("#slctEmpleadoPadrePrincipal").html("");
-  let datos = await {
-    op: "getEmpleadosPadreOrganigrama",
-    idOrganigramas: Organigrama,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    $("#slctEmpleadoPadrePrincipal").append(`
-            <option value="" selected>Listado Jefes Disponibles</option>
-        `);
-    respuesta.forEach((empleado) => {
-      $("#slctEmpleadoPadrePrincipal").append(`
-            <option value="${empleado.idDetalleOrganigrama}">${empleado.Nombre}</option>
-        `);
-    });
-  }
-}
-
-async function addEmpleadoOrganigrama() {
-  let idOrganigramas = await Organigrama;
-  let idDetalleOrganigramaPadre = await $("#slctEmpleadoPadrePrincipal").val();
-  let NoEmpleadoHijo = await $("#slctEmpleadoPrincipal").val();
-  let Otros = $("#txtOtros").val();
-  let Tipo = await $("#slctTipoPrincipal").val();
-  // let NivelP = await $("#slctNivelP").val();
-  // if (NivelP == "") {
-  //   toastr.info("Es obligatorio seleccionar un nivel a registrar.");
-  // } else
-  // {
-  let datos = await {
-    op: "addEmpleadoOrganigrama",
-    idOrganigramas: idOrganigramas,
-    idDetalleOrganigramaPadre: idDetalleOrganigramaPadre,
-    NoEmpleadoHijo: NoEmpleadoHijo,
-    Tipo: Tipo,
-    Otros: Otros,
-    // Nivel: NivelP
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    if (respuesta == 1) {
-      // toastr.success("Empleado agregado al organigrama");
-      const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Empleado agregado al organigrama.</span>
-          </div>`;
-      showBootstrapAlertSuc(messageContent, "top-right", 5000);
-      // limiparYCargarDatos();
-      setTimeout(() => {
-        location.reload();
-      }, 1500);
+/* ── Selection → properties panel ─────────────────────────── */
+function onSelectionChange(args) {
+    if (args.state !== "Completed") return;
+    if (args.newValue && args.newValue.length > 0 && args.newValue[0].data) {
+        showPropsPanel(args.newValue[0]);
     } else {
-      // toastr.info(respuesta);
-      const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">${respuesta}</span>
-        </div>`;
-      showBootstrapAlert(messageContent, "top-right", 5000);
+        closePropsPanel();
     }
-  }
-  // }
-}
-function limiparYCargarDatos() {
-  $("#slctEmpleadoPadrePrincipal").val("");
-  $("#slctEmpleadoPrincipal").val("");
-  $("#slctNivelPrincipal").val("");
-  $("#slctPuestoPrincipal").val("");
-  $("#slcDivicionPrincipal").val("");
-  $("#slctSucursalPrincipal").val("");
-  $("#txtOtros").val("");
-  $("#slctNivelP").val("");
-
-  $("#slctEmpleadoPadreModal").val("");
-  $("#slctEmpleadoModal").val("");
-  $("#slctNivelModal").val("");
-  $("#slctPuestoModal").val("");
-  $("#slcDivicionModal").val("");
-  $("#txtOtrosModal").val("");
-  $("#slctTipoModal").val("");
-  $("#slctNivelUpdate").val("");
-  $("#idElementoPorEditar").val("");
-  getEmpleadosOrg();
-  getEmpleadosPadreOrganigrama();
-  loadOrganigrama();
-}
-$("#RegistraPrin").click(function () {
-  addEmpleadoOrganigrama();
-});
-
-async function opcionesSelectedEliminar(val) {
-  let noB64 = atob(val);
-  deleteElementoOrganigrama(noB64);
 }
 
-async function opcionesSelectedEditar(val) {
-  let noB64 = atob(val);
-  await getEmpleadosPadreOrganigramaEditar(noB64);
-  await getDetalleElementoPorEditar(noB64);
+function showPropsPanel(node) {
+    const d = node.data;
+    selectedNodeRawId = d.rawId;
+
+    document.getElementById("propNodeRawId").value = d.rawId;
+    const ini = (d.name || "?").split(" ").filter(Boolean).slice(0,2).map(w=>w.charAt(0).toUpperCase()).join("");
+    const iniEl = document.getElementById("propEmpInitials");
+    if (iniEl) iniEl.textContent = ini;
+    document.getElementById("propEmpName").textContent  = d.name;
+    document.getElementById("propEmpRole").textContent  = d.role || "—";
+
+    const tipoEl = document.getElementById("propEmpTipo");
+    const tipoMap = { PRINCIPAL: ["principal","Principal"], EMPLEADO: ["empleado","Empleado"], OTROS: ["otros","Otros"] };
+    const [cls, lbl] = tipoMap[d.tipo] || ["empleado","—"];
+    tipoEl.className = `org-prop-tipo ${cls}`;
+    tipoEl.textContent = lbl;
+
+    document.getElementById("orgRightPanel").classList.add("open");
 }
 
-async function getDetalleElementoPorEditar(val) {
-  $("#idElementoPorEditar").val(val);
-  let datos = await {
-    op: "getDetalleElementoPorEditar",
-    registro: val,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
+function closePropsPanel() {
+    document.getElementById("orgRightPanel").classList.remove("open");
+    selectedNodeRawId = null;
+}
+
+/* ── Refresh diagram (sin page reload) ─────────────────────── */
+async function refreshDiagram() {
+    await loadOrganigrama();
+    if (diagram) {
+        diagram.dataSourceSettings.dataManager = new ej.data.DataManager(datosOrg);
+        diagram.dataBind();
+    }
+    checkEmptyState();
+    buildTreePanel();
+    closePropsPanel();
+}
+
+function checkEmptyState() {
+    const overlay = document.getElementById("orgEmptyOverlay");
+    if (overlay) overlay.style.display = datosOrg.length === 0 ? "flex" : "none";
+}
+
+/* ── Tree panel ────────────────────────────────────────────── */
+function buildTreePanel() {
+    const container = document.getElementById("orgTreeContent");
+    if (!rawOrg || rawOrg.length === 0) {
+        container.innerHTML = `
+            <div style="padding:20px 10px;text-align:center;">
+                <span class="material-symbols-outlined" style="font-size:32px;color:#e2e8f0">account_tree</span>
+                <div style="font-size:12px;color:#94a3b8;margin-top:6px;">Sin nodos</div>
+            </div>`;
+        return;
+    }
+
+    const map = {};
+    const roots = [];
+    rawOrg.forEach(d => {
+        map[d.idDetalleOrganigrama] = { ...d, children: [] };
     });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    respuesta.forEach((registro) => {
-      if (registro.Tipo === "PRINCIPAL") {
-        $("#slctTipoModal").val("1");
-        $("#slctTipoModal option:eq(2)").attr("disabled", true);
-        $("#slctTipoModal option:eq(3)").attr("disabled", true);
-        $("#divPuestoModal").fadeIn();
-        $("#divDivicionModal").fadeIn();
-        $("#divSucursalModal").fadeIn();
-        $("#divEmpleadoModal").fadeIn();
-        $("#divNivelModal").fadeIn();
-        $("#divEmpleadoPadreModal").fadeOut();
-        $("#divOtrosModal").fadeOut();
-        $("#txtOtrosModal").val("");
-        $("#slctEmpleadoModal").val(`${registro.NoEmpleadoHijo}`);
-      } else if (registro.Tipo === "EMPLEADO") {
-        $("#slctTipoModal").val("2");
-        $("#slctTipoModal option:eq(2)").attr("disabled", false);
-        $("#slctTipoModal option:eq(3)").attr("disabled", false);
-        $("#divPuestoModal").fadeIn();
-        $("#divDivicionModal").fadeIn();
-        $("#divSucursalModal").fadeIn();
-        $("#divEmpleadoModal").fadeIn();
-        $("#divNivelModal").fadeIn();
-        $("#divEmpleadoPadreModal").fadeIn();
-        $("#divOtrosModal").fadeOut();
-        $("#txtOtrosModal").val("");
-        $("#slctEmpleadoModal").val(registro.NoEmpleadoHijo);
-        $("#slctEmpleadoPadreModal").val(registro.idDetalleOrganigramaPadre);
-      } else if (registro.Tipo === "OTROS") {
-        $("#slctTipoModal").val("3");
-        $("#slctTipoModal option:eq(1)").attr("disabled", true);
-        $("#slctTipoModal option:eq(2)").attr("disabled", false);
-        $("#slctTipoModal option:eq(3)").attr("disabled", false);
-        $("#divPuestoModal").fadeOut();
-        $("#divDivicionModal").fadeOut();
-        $("#divSucursalModal").fadeOut();
-        $("#divEmpleadoModal").fadeOut();
-        $("#divNivelModal").fadeOut();
-        $("#divEmpleadoPadreModal").fadeIn();
-        $("#divOtrosModal").fadeIn();
-        $("#txtOtrosModal").val(registro.Otros);
-        $("#slctEmpleadoPadreModal").val(registro.idDetalleOrganigramaPadre);
-      }
+    rawOrg.forEach(d => {
+        if (d.idDetalleOrganigramaPadre != 0 && map[d.idDetalleOrganigramaPadre]) {
+            map[d.idDetalleOrganigramaPadre].children.push(map[d.idDetalleOrganigrama]);
+        } else {
+            roots.push(map[d.idDetalleOrganigrama]);
+        }
     });
-    // $("#slctNivelUpdate").val(respuesta[0]["NivelSelected"]);
-    // $(".lvlSelectedUpdate").select2();
-    // $('.emPadreUpdate').select2();
-    // $('.empleadosUpdate').select2();
-    // $("#modeallEditarElemento").modal('open');
-    let modalEditar = new bootstrap.Modal(
-      document.getElementById("modeallEditarElemento")
-    );
-    modalEditar.show();
-  }
+
+    function renderNode(n) {
+        const has = n.children.length > 0;
+        const tipoClass = { PRINCIPAL: "principal", EMPLEADO: "empleado", OTROS: "otros" }[n.Tipo] || "empleado";
+        return `
+        <li>
+            <div class="org-tree-node" data-rawid="${n.idDetalleOrganigrama}">
+                <button class="org-tree-toggle" ${has ? "" : 'style="visibility:hidden"'}>
+                    <span class="material-symbols-outlined">${has ? "expand_more" : "remove"}</span>
+                </button>
+                <span class="tipo-dot ${tipoClass}"></span>
+                <img src="${n.Imagen || "assets/images/logo-pip.png"}" alt="" onerror="this.src='assets/images/logo-pip.png'">
+                <span class="org-tree-name">${escHtml(n.Nombre)}</span>
+                <button class="org-tree-delete" data-rawid="${n.idDetalleOrganigrama}" title="Eliminar">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            ${has ? `<ul class="org-tree-children">${n.children.map(renderNode).join("")}</ul>` : ""}
+        </li>`;
+    }
+
+    container.innerHTML = `<ul class="org-tree-root">${roots.map(renderNode).join("")}</ul>`;
+
+    container.querySelectorAll(".org-tree-toggle").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const li = btn.closest("li");
+            const ul = li.querySelector(".org-tree-children");
+            if (!ul) return;
+            const collapsed = ul.style.display === "none";
+            ul.style.display = collapsed ? "" : "none";
+            btn.querySelector(".material-symbols-outlined").textContent = collapsed ? "expand_more" : "chevron_right";
+        });
+    });
+
+    container.querySelectorAll(".org-tree-node").forEach(node => {
+        node.addEventListener("click", e => {
+            if (e.target.closest(".org-tree-delete") || e.target.closest(".org-tree-toggle")) return;
+            const rawId = node.dataset.rawid;
+            highlightNodeInDiagram(rawId);
+        });
+    });
+
+    container.querySelectorAll(".org-tree-delete").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            confirmarEliminar(btn.dataset.rawid);
+        });
+    });
 }
-async function deleteElementoOrganigrama(val) {
-  let datos = await {
-    op: "deleteElementoOrganigrama",
-    idDetalleOrganigrama: val,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
+
+function highlightNodeInDiagram(rawId) {
+    if (!diagram) return;
+    const node = diagram.nodes.find(n => String(n.data?.rawId) === String(rawId));
+    if (node) {
+        diagram.clearSelection();
+        diagram.select([node]);
+    }
+}
+
+/* ── Left panel search ─────────────────────────────────────── */
+function initLeftPanelSearch() {
+    const input = document.getElementById("orgEmpSearchInput");
+    let debounce;
+    input.addEventListener("input", function() {
+        clearTimeout(debounce);
+        const q = this.value.trim();
+        if (q.length < 1) {
+            document.getElementById("orgSearchResults").innerHTML = "";
+            return;
+        }
+        debounce = setTimeout(() => searchEmployeesPanel(q), 300);
     });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    if (respuesta == 1) {
-      // toastr.success("Elemento eliminado con exito");
-      const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Elemento eliminado con exito.</span>
-          </div>`;
-      showBootstrapAlertSuc(messageContent, "top-right", 5000);
-      setTimeout(() => {
-        location.reload();
-      }, 1500);
+}
+
+async function searchEmployeesPanel(q) {
+    const container = document.getElementById("orgSearchResults");
+    container.innerHTML = `<div style="padding:8px;font-size:12px;color:#94a3b8;">Buscando…</div>`;
+    try {
+        const resp = await $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "getEmpleadosNoEnOrganigrama", idOrganigramas: Organigrama, q },
+            dataType: "json"
+        });
+        if (!resp || resp.length === 0) {
+            container.innerHTML = `<div style="padding:8px;font-size:12px;color:#94a3b8;">Sin resultados</div>`;
+            return;
+        }
+        container.innerHTML = resp.map(emp => `
+            <div class="org-search-result">
+                <img src="${escAttr(emp.Imagen)}" alt="" onerror="this.src='assets/images/logo-pip.png'">
+                <span class="org-search-result-name">${escHtml(emp.Nombre)}</span>
+                <button class="org-search-add-btn" data-no="${emp.NoEmpleado}" data-nombre="${escAttr(emp.Nombre)}" title="Agregar">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
+            </div>`).join("");
+
+        container.querySelectorAll(".org-search-add-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                openAddOffcanvas(null, btn.dataset.no, btn.dataset.nombre);
+            });
+        });
+    } catch(e) {
+        container.innerHTML = `<div style="padding:8px;font-size:12px;color:#ef4444;">Error al buscar.</div>`;
+    }
+}
+
+/* ── Tipo radio pills ──────────────────────────────────────── */
+function initTipoRadios(prefix) {
+    const pillMap = {
+        "1": `${prefix}PillPrincipal`,
+        "2": `${prefix}PillEmpleado`,
+        "3": `${prefix}PillOtros`
+    };
+    const activeCls = { "1": "active-1", "2": "active-2", "3": "active-3" };
+
+    function updatePills(val) {
+        Object.entries(pillMap).forEach(([v, id]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove("active-1","active-2","active-3");
+            if (v === val) el.classList.add(activeCls[v]);
+        });
+        const isOtros = val === "3";
+        const empSec  = document.getElementById(`${prefix}EmpSection`);
+        const otrSec  = document.getElementById(`${prefix}OtrosSection`);
+        const padSec  = document.getElementById(`${prefix}PadreSection`);
+        if (empSec)  empSec.style.display  = isOtros ? "none" : "";
+        if (otrSec)  otrSec.style.display  = isOtros ? "" : "none";
+        if (padSec)  padSec.style.display  = val === "1" ? "none" : "";
+    }
+
+    // Default state
+    const defaultVal = prefix === "add" ? "2" : null;
+    if (defaultVal) updatePills(defaultVal);
+
+    Object.entries(pillMap).forEach(([val, id]) => {
+        const label = document.getElementById(id);
+        if (!label) return;
+        label.addEventListener("click", () => {
+            label.querySelector("input").checked = true;
+            updatePills(val);
+        });
+    });
+}
+
+/* ── Add offcanvas ─────────────────────────────────────────── */
+async function openAddOffcanvas(parentRawId = null, preselectedNoEmp = null, preselectedNombre = null) {
+    // Reset tipo to empleado
+    const radioEmpleado = document.querySelector('input[name="tipoEmpAdd"][value="2"]');
+    if (radioEmpleado) { radioEmpleado.checked = true; initTipoRadios("add"); }
+
+    document.getElementById("addOtrosInput").value = "";
+    document.getElementById("orgEmpSearchInput").value = "";
+    document.getElementById("orgSearchResults").innerHTML = "";
+
+    // Cargar padres
+    await loadPadreOptions("addPadreSelect", parentRawId);
+
+    // Init Select2 empleados
+    initEmpSelect2("addEmpSelect", Organigrama, preselectedNoEmp, preselectedNombre);
+
+    getOrCreateOffcanvas(document.getElementById("offcanvasAgregar")).show();
+}
+
+function initEmpSelect2(selectId, orgId, preselectedId, preselectedText) {
+    const $sel = $(`#${selectId}`);
+
+    if ($sel.hasClass("select2-hidden-accessible")) {
+        $sel.select2("destroy");
+    }
+    $sel.empty();
+
+    if (preselectedId) {
+        $sel.append(new Option(preselectedText || preselectedId, preselectedId, true, true));
     } else {
-      // toastr.info(respuesta);
-      const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">${respuesta}</span>
-        </div>`;
-      showBootstrapAlert(messageContent, "top-right", 5000);
+        $sel.append(new Option("Escriba para buscar…", "", true, false));
     }
-  }
+
+    $sel.select2({
+        dropdownParent: $sel.closest(".offcanvas"),
+        width: "100%",
+        minimumInputLength: 0,
+        placeholder: "Buscar empleado…",
+        language: { noResults: () => "Sin resultados" },
+        ajax: {
+            url: "Backend/Organigramas/App.php",
+            type: "POST",
+            dataType: "json",
+            delay: 300,
+            data: params => ({
+                op: "getEmpleadosOrg",
+                q: params.term || "",
+                IdDivision: "", IdSucursal: "", IdPuesto: "", Nivel: "",
+                Organigrama: orgId
+            }),
+            processResults: data => ({
+                results: (data || []).map(e => ({ id: e.NoEmpleado, text: e.Nombre, img: e.Imagen || "" }))
+            }),
+            cache: true
+        },
+        templateResult: formatEmpOption,
+        templateSelection: r => r.text || r.id
+    });
+
+    if (preselectedId) $sel.trigger("change");
 }
 
-async function getPuestosOrgEditar() {
-  $("#slctPuestoModal").html("");
-  let IdDivision = $("#slcDivicionModal").val();
-  const datos = {
-    op: "getPuestosXDivision",
-    IdDivision: IdDivision,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Puestos/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slctPuestoModal").append(`
-          <option value="" selected > Listado de Puestos</option>
-      `);
-    respuesta.forEach((registro) => {
-      $("#slctPuestoModal").append(`
-          <option value="${registro.IdPuesto}">${registro.Puesto}</option>
-      `);
-    });
-  }
+function formatEmpOption(emp) {
+    if (!emp.id) return emp.text;
+    return $(`<div class="select2-emp-option">
+        <img src="${escAttr(emp.img || "assets/images/logo-pip.png")}" onerror="this.src='assets/images/logo-pip.png'">
+        <span>${escHtml(emp.text)}</span>
+    </div>`);
 }
 
-async function getDivicionOrgEditar() {
-  const datos = {
-    op: "getDivicionOrg",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slcDivicionModal").append(`
-          <option value="" selected > Listado de Divisiones</option>
-          `);
-    respuesta.forEach((registro) => {
-      $("#slcDivicionModal").append(`
-              <option value="${registro.IdDivision}">${registro.Division}</option>
-          `);
-    });
-  }
+async function loadPadreOptions(selectId, preselectedRawId = null) {
+    const sel = document.getElementById(selectId);
+    sel.innerHTML = '<option value="">Sin jefe (nodo raíz)</option>';
+    try {
+        const resp = await $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "getEmpleadosPadreOrganigrama", idOrganigramas: Organigrama },
+            dataType: "json"
+        });
+        (resp || []).forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.idDetalleOrganigrama;
+            opt.textContent = p.Nombre;
+            if (String(p.idDetalleOrganigrama) === String(preselectedRawId)) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch(e) { console.error(e); }
 }
 
-async function getSucursalDeptoOrgEditar() {
-  const datos = {
-    op: "getSucursalDeptoOrg",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    $("#slctSucursalModal").append(`
-          <option value="" selected > Listado de Sucursales / Departamentos</option>
-          `);
-    respuesta.forEach((registro) => {
-      $("#slctSucursalModal").append(`
-              <option value="${registro.IdSucursal}">${registro.Sucursal}</option>
-          `);
-    });
-  }
+async function loadPadreOptionsExcluding(selectId, excludeRawId, preselectedRawId = null) {
+    const sel = document.getElementById(selectId);
+    sel.innerHTML = '<option value="">Sin jefe (nodo raíz)</option>';
+    try {
+        const resp = await $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "getEmpleadosSelectedPadreOrganigrama", idOrganigramas: Organigrama, idDetalleOrganigrama: excludeRawId },
+            dataType: "json"
+        });
+        (resp || []).forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.idDetalleOrganigrama;
+            opt.textContent = p.Nombre;
+            if (String(p.idDetalleOrganigrama) === String(preselectedRawId)) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch(e) { console.error(e); }
 }
 
-async function getEmpleadosOrgEditar() {
-  $("#slctEmpleadoModal").html("");
-  let IdDivision = await $("#slcDivicionModal").val();
-  let IdSucursal = await $("#slctSucursalModal").val();
-  let IdPuesto = await $("#slctPuestoModal").val();
-  let Nivel = await $("#slctNivelModal").val();
-  let datos = await {
-    op: "getEmpleadosOrg",
-    IdDivision: IdDivision,
-    IdSucursal: IdSucursal,
-    IdPuesto: IdPuesto,
-    Nivel: Nivel,
-  };
-  respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    $("#slctEmpleadoModal").append(`
-              <option value="" selected disabled> Listado de Empleados</option>
-          `);
-    respuesta.forEach((empleado) => {
-      $("#slctEmpleadoModal").append(`
-              <option value="${empleado.NoEmpleado}">${empleado.Nombre}</option>
-            `);
-    });
-  }
+function bindOffcanvasEvents() {
+    document.getElementById("btnConfirmarAdd").addEventListener("click", doAddEmpleado);
+    document.getElementById("btnConfirmarEdit").addEventListener("click", doEditEmpleado);
 }
 
-async function getEmpleadosPadreOrganigramaEditar(val) {
-  $("#slctEmpleadoPadreModal").html("");
-  let datos = await {
-    op: "getEmpleadosSelectedPadreOrganigrama",
-    idOrganigramas: Organigrama,
-    idDetalleOrganigrama: val,
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    $("#slctEmpleadoPadreModal").append(`
-              <option value="" selected>Listado Jefes Disponibles</option>
-          `);
-    respuesta.forEach((empleado) => {
-      $("#slctEmpleadoPadreModal").append(`
-              <option value="${empleado.idDetalleOrganigrama}">${empleado.Nombre}</option>
-          `);
-    });
-  }
-}
+async function doAddEmpleado() {
+    const tipo   = document.querySelector('input[name="tipoEmpAdd"]:checked')?.value || "";
+    const empId  = $("#addEmpSelect").val() || "";
+    const padreId = document.getElementById("addPadreSelect").value || "0";
+    const otros  = document.getElementById("addOtrosInput").value.trim();
 
-async function EditarEmpleadoOrganigrama() {
-  let idDetalleOrganigramaPadre = await $("#slctEmpleadoPadreModal").val();
-  let NoEmpleadoHijo = await $("#slctEmpleadoModal").val();
-  let Otros = await $("#txtOtrosModal").val();
-  let Tipo = await $("#slctTipoModal").val();
-  let idElementoPorEditar = await $("#idElementoPorEditar").val();
-  // let Nivel = await $("#slctNivelUpdate").val();
-  // if (Nivel == "") {
-  //   toastr.info("Es obligatorio seleccionar un nivel a registrar.");
-  // }
-  let datos = await {
-    op: "EditarElementoOrganigrama",
-    idDetalleOrganigramaPadre: idDetalleOrganigramaPadre,
-    NoEmpleadoHijo: NoEmpleadoHijo,
-    Tipo: Tipo,
-    Otros: Otros,
-    idElementoPorEditar: idElementoPorEditar,
-    Organigrama: Organigrama,
-    // Nivel:Nivel
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Organigramas/App.php",
-      data: datos,
+    const resp = await $.ajax({
+        type: "post", url: "Backend/Organigramas/App.php",
+        data: {
+            op: "addEmpleadoOrganigrama",
+            idOrganigramas: Organigrama,
+            idDetalleOrganigramaPadre: padreId === "" ? "0" : padreId,
+            NoEmpleadoHijo: empId || "0",
+            Tipo: tipo,
+            Otros: otros
+        }
     });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    if (respuesta == 1) {
-      // toastr.success("Organigrama actualizado con éxito.");
-      const messageContent = `
-          <div class="alert-content">
-             <span class="alert-title">Completado!</span>
-              <span class="alert-text">Organigrama actualizado con éxito.</span>
-          </div>`;
-      showBootstrapAlertSuc(messageContent, "top-right", 5000);
-      setTimeout(() => {
-        location.reload();
-      }, 1500);
-      // $("#modeallEditarElemento").modal('close');
-      let modalEditar = bootstrap.Modal.getInstance(
-        document.getElementById("modeallEditarElemento")
-      );
-      modalEditar.hide();
+
+    if (resp == "1") {
+        bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasAgregar"))?.hide();
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Empleado agregado al organigrama.</span></div>`, "top-right", 5000);
+        await refreshDiagram();
     } else {
-      // toastr.info(respuesta);
-      const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">${respuesta}</span>
-        </div>`;
-      showBootstrapAlert(messageContent, "top-right", 5000);
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
     }
-  }
 }
 
-/*       async function editarElementoOrganigrama () {
+/* ── Edit offcanvas ────────────────────────────────────────── */
+async function openEditOffcanvas(rawId) {
+    const node = rawOrg.find(n => String(n.idDetalleOrganigrama) === String(rawId));
+    if (!node) return;
 
-      }  */
+    document.getElementById("editNodeId").value = rawId;
+
+    // Set tipo radio
+    const tipoValMap = { PRINCIPAL: "1", EMPLEADO: "2", OTROS: "3" };
+    const tipoVal = tipoValMap[node.Tipo] || "2";
+    const radio = document.querySelector(`input[name="tipoEmpEdit"][value="${tipoVal}"]`);
+    if (radio) {
+        radio.checked = true;
+        // Trigger pill update
+        ["1","2","3"].forEach(v => {
+            const id = { "1": "editPillPrincipal", "2": "editPillEmpleado", "3": "editPillOtros" }[v];
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove("active-1","active-2","active-3");
+            if (v === tipoVal) el.classList.add(`active-${v}`);
+        });
+        const isOtros = tipoVal === "3";
+        document.getElementById("editEmpSection").style.display   = isOtros ? "none" : "";
+        document.getElementById("editOtrosSection").style.display  = isOtros ? "" : "none";
+        document.getElementById("editPadreSection").style.display  = tipoVal === "1" ? "none" : "";
+    }
+
+    // Set otros input
+    document.getElementById("editOtrosInput").value = node.Otros || "";
+
+    // Init Select2 with current employee
+    if (node.Tipo !== "OTROS" && node.NoEmpleadoHijo) {
+        const nombre = node.Nombre || "";
+        initEmpSelect2Edit("editEmpSelect", node.NoEmpleadoHijo, nombre);
+    } else {
+        const $sel = $("#editEmpSelect");
+        if ($sel.hasClass("select2-hidden-accessible")) $sel.select2("destroy");
+        $sel.empty().append(new Option("Escriba para buscar…","",true,false));
+        initEmpSelect2Edit("editEmpSelect", null, null);
+    }
+
+    // Load padres excluding self
+    await loadPadreOptionsExcluding("editPadreSelect", rawId, node.idDetalleOrganigramaPadre);
+
+    getOrCreateOffcanvas(document.getElementById("offcanvasEditar")).show();
+}
+
+function initEmpSelect2Edit(selectId, currentNoEmp, currentNombre) {
+    const $sel = $(`#${selectId}`);
+    if ($sel.hasClass("select2-hidden-accessible")) $sel.select2("destroy");
+    $sel.empty();
+
+    if (currentNoEmp) {
+        $sel.append(new Option(currentNombre || currentNoEmp, currentNoEmp, true, true));
+    } else {
+        $sel.append(new Option("Escriba para buscar…","",true,false));
+    }
+
+    $sel.select2({
+        dropdownParent: $sel.closest(".offcanvas"),
+        width: "100%",
+        minimumInputLength: 0,
+        placeholder: "Buscar empleado…",
+        language: { noResults: () => "Sin resultados" },
+        ajax: {
+            url: "Backend/Organigramas/App.php",
+            type: "POST",
+            dataType: "json",
+            delay: 300,
+            data: params => ({
+                op: "getEmpleadosOrg",
+                q: params.term || "",
+                IdDivision: "", IdSucursal: "", IdPuesto: "", Nivel: "",
+                Organigrama: Organigrama
+            }),
+            processResults: data => ({
+                results: (data || []).map(e => ({ id: e.NoEmpleado, text: e.Nombre, img: e.Imagen || "" }))
+            }),
+            cache: true
+        },
+        templateResult: formatEmpOption,
+        templateSelection: r => r.text || r.id
+    });
+
+    if (currentNoEmp) $sel.trigger("change");
+}
+
+async function doEditEmpleado() {
+    const tipo    = document.querySelector('input[name="tipoEmpEdit"]:checked')?.value || "";
+    const empId   = $("#editEmpSelect").val() || "";
+    const padreId = document.getElementById("editPadreSelect").value || "0";
+    const otros   = document.getElementById("editOtrosInput").value.trim();
+    const nodeId  = document.getElementById("editNodeId").value;
+
+    const resp = await $.ajax({
+        type: "post", url: "Backend/Organigramas/App.php",
+        data: {
+            op: "EditarElementoOrganigrama",
+            idDetalleOrganigramaPadre: padreId === "" ? "0" : padreId,
+            NoEmpleadoHijo: empId || "0",
+            Otros: otros,
+            idElementoPorEditar: nodeId,
+            Tipo: tipo,
+            Organigrama: Organigrama
+        }
+    });
+
+    if (resp == "1") {
+        bootstrap.Offcanvas.getInstance(document.getElementById("offcanvasEditar"))?.hide();
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Nodo actualizado.</span></div>`, "top-right", 5000);
+        await refreshDiagram();
+    } else {
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
+    }
+}
+
+/* ── Delete ────────────────────────────────────────────────── */
+async function confirmarEliminar(rawId) {
+    const result = await Swal.fire({
+        title: "Eliminar nodo",
+        text: "Se eliminará este nodo del organigrama.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#e11d48"
+    });
+    if (!result.isConfirmed) return;
+
+    const resp = await $.ajax({
+        type: "post", url: "Backend/Organigramas/App.php",
+        data: { op: "deleteElementoOrganigrama", idDetalleOrganigrama: rawId }
+    });
+
+    if (resp == "1") {
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Nodo eliminado.</span></div>`, "top-right", 5000);
+        await refreshDiagram();
+    } else {
+        showBootstrapAlert(`<div class="alert-content"><span class="alert-title">Información!</span><span class="alert-text">${resp}</span></div>`, "top-right", 5000);
+    }
+}
+
+/* ── Properties panel buttons ──────────────────────────────── */
+function bindPropertyPanelButtons() {
+    document.getElementById("btnCloseProps").addEventListener("click", closePropsPanel);
+
+    document.getElementById("propBtnAgregar").addEventListener("click", () => {
+        if (!selectedNodeRawId) return;
+        openAddOffcanvas(selectedNodeRawId);
+    });
+
+    document.getElementById("propBtnEditar").addEventListener("click", () => {
+        if (!selectedNodeRawId) return;
+        openEditOffcanvas(selectedNodeRawId);
+    });
+
+    document.getElementById("propBtnEliminar").addEventListener("click", () => {
+        if (!selectedNodeRawId) return;
+        confirmarEliminar(selectedNodeRawId);
+    });
+}
+
+/* ── Toolbar buttons ───────────────────────────────────────── */
+function bindToolbarButtons() {
+    document.getElementById("btnToggleLeftPanel").addEventListener("click", toggleLeftPanel);
+    document.getElementById("btnTogglePanelCanvas").addEventListener("click", toggleLeftPanel);
+    document.getElementById("btnAutoLayout").addEventListener("click", doAutoLayout);
+    document.getElementById("btnExportar").addEventListener("click", () => {
+        const el = document.getElementById("element");
+        if (!el) return;
+        const nombre = (document.getElementById("orgTitulo")?.textContent?.trim() || "organigrama")
+            .replace(/[^a-z0-9áéíóúüñA-ZÁÉÍÓÚÜÑ\s\-_]/gi, "").trim() || "organigrama";
+        const filename = `organigrama-${nombre}.png`;
+        html2canvas(el, { backgroundColor: "#f0f4f8", scale: 2, useCORS: true, logging: false })
+            .then(canvas => {
+                const imgSrc = canvas.toDataURL("image/png");
+                document.getElementById("previewExportImg").src = imgSrc;
+                document.getElementById("btnConfirmarExport").onclick = () => {
+                    const a = document.createElement("a");
+                    a.download = filename;
+                    a.href = imgSrc;
+                    a.click();
+                };
+                new bootstrap.Modal(document.getElementById("modalExportPreview")).show();
+            });
+    });
+
+    // Botones de agregar (todos pasan por openAddOffcanvas para inicializar Select2)
+    document.getElementById("btnAddEmpleadoMain").addEventListener("click", () => openAddOffcanvas());
+    const emptyBtn = document.getElementById("btnAddEmpleadoEmpty");
+    if (emptyBtn) emptyBtn.addEventListener("click", () => openAddOffcanvas());
+}
+
+function toggleLeftPanel() {
+    const panel = document.getElementById("orgLeftPanel");
+    const icon  = document.getElementById("togglePanelIcon");
+    const collapsed = panel.classList.toggle("collapsed");
+    if (icon) icon.textContent = collapsed ? "chevron_right" : "chevron_left";
+    // Espera que termine la transición CSS (200ms) y fuerza resize del diagrama
+    setTimeout(() => { if (diagram) diagram.refresh(); }, 220);
+}
+
+async function doAutoLayout(silent = false) {
+    if (!diagram || datosOrg.length === 0) return;
+    const btn = document.getElementById("btnAutoLayout");
+    if (btn) { btn.disabled = true; btn.textContent = "…"; }
+
+    diagram.layout = {
+        type: "OrganizationalChart",
+        margin: { top: 40, left: 40, right: 40, bottom: 40 },
+        horizontalSpacing: 50,
+        verticalSpacing: 60,
+        orientation: "TopToBottom"
+    };
+    diagram.dataBind();
+
+    await new Promise(r => setTimeout(r, 400));
+
+    // Save all positions
+    const saves = diagram.nodes.map(node => {
+        if (!node.data || !node.data.rawId) return null;
+        return $.ajax({
+            type: "post", url: "Backend/Organigramas/App.php",
+            data: { op: "changePositionNodeOrganigrama", y: node.offsetY, x: node.offsetX, do: btoa(Number(node.data.rawId)) }
+        });
+    }).filter(Boolean);
+
+    await Promise.all(saves);
+
+    diagram.layout = { type: "None" };
+    diagram.dataBind();
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span class="material-symbols-outlined">auto_awesome_mosaic</span> Auto-layout'; }
+    if (!silent) {
+        showBootstrapAlertSuc(`<div class="alert-content"><span class="alert-title">Completado!</span><span class="alert-text">Organigrama reorganizado.</span></div>`, "top-right", 4000);
+    }
+    await refreshDiagram();
+    // Centrar vista sobre todos los nodos tras el reordenamiento
+    if (diagram) diagram.fitToPage({ mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } });
+}
+
+/* ── Hover "+" button ──────────────────────────────────────── */
+// Handled via selection panel instead — simpler and more reliable.
+function hideNodeAddBtn() { /* reserved */ }
+
+/* ── Utilities ─────────────────────────────────────────────── */
+function getOrCreateOffcanvas(el) {
+    return bootstrap.Offcanvas.getInstance(el) || new bootstrap.Offcanvas(el);
+}
+
+function escHtml(s) {
+    return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function escAttr(s) {
+    return (s || "").replace(/"/g,"&quot;");
+}

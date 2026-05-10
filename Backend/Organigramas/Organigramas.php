@@ -68,7 +68,7 @@ class Organigramas extends Conexiones
         return json_encode($this->Select($q, array()));
     }
 
-    function getEmpleadosOrg($IdDivision, $IdSucursal, $IdPuesto, $Nivel, $Organigrama)
+    function getEmpleadosOrg($IdDivision, $IdSucursal, $IdPuesto, $Nivel, $Organigrama, $q = "")
     {
         $Organigrama = base64_decode($Organigrama);
         $contenidoWhere = "";
@@ -105,9 +105,50 @@ class Organigramas extends Conexiones
         } elseif ($IdDivision != "" && $IdSucursal != "" && $IdPuesto != "" && $Nivel != "") {
             $contenidoWhere = "AND IdDivision = '$IdDivision' AND IdSucursal = '$IdSucursal' AND IdPuesto = '$IdPuesto' AND Nivel = '$Nivel'";
         }
-        $q = "SELECT NoEmpleado,Nombre from Empleados WHERE Status = 1 $contenidoWhere AND NoEmpleado NOT IN (SELECT NoEmpleadoHijo FROM DetalleOrganigrama
-        WHERE idOrganigramas = '$Organigrama')";
-        return json_encode($this->Select($q, array()));
+        $qSearch = "";
+        if ($q !== "") {
+            $qSafe = preg_replace('/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s.\-]/u', '', $q);
+            $qSearch = "AND Nombre LIKE '%$qSafe%'";
+        }
+        $query = "SELECT NoEmpleado, Nombre,
+            if(Imagen is null or Imagen = '', 'assets/images/logo-pip.png',
+              concat('https://klynet.mx/Archivos/ImgEmpleados/',NoEmpleado,'/',Imagen)) as Imagen
+            FROM Empleados WHERE Status = 1 $contenidoWhere $qSearch AND NoEmpleado NOT IN (SELECT NoEmpleadoHijo FROM DetalleOrganigrama
+            WHERE idOrganigramas = '$Organigrama' AND NoEmpleadoHijo != 0)
+            ORDER BY Nombre ASC LIMIT 50";
+        return json_encode($this->Select($query, array()));
+    }
+
+    function getEmpleadosNoEnOrganigrama($idOrganigramas, $q = "")
+    {
+        $idOrganigramas = base64_decode($idOrganigramas);
+        $qSearch = "";
+        if ($q !== "") {
+            $qSafe = preg_replace('/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ0-9\s.\-]/u', '', $q);
+            $qSearch = "AND Nombre LIKE '%$qSafe%'";
+        }
+        $query = "SELECT NoEmpleado, Nombre,
+            if(Imagen is null or Imagen = '', 'assets/images/logo-pip.png',
+              concat('https://klynet.mx/Archivos/ImgEmpleados/',NoEmpleado,'/',Imagen)) as Imagen
+            FROM Empleados
+            WHERE Status = 1 $qSearch
+            AND NoEmpleado NOT IN (
+                SELECT NoEmpleadoHijo FROM DetalleOrganigrama
+                WHERE idOrganigramas = '$idOrganigramas' AND NoEmpleadoHijo != 0
+            )
+            LIMIT 30";
+        return json_encode($this->Select($query, array()));
+    }
+
+    function getTituloOrganigrama($idOrganigramas)
+    {
+        $idOrganigramas = base64_decode($idOrganigramas);
+        $query = "SELECT Titulo, Status FROM Organigramas WHERE idOrganigramas = '$idOrganigramas'";
+        $result = $this->Select($query, array());
+        if (isset($result[0])) {
+            return json_encode($result[0]);
+        }
+        return json_encode(["Titulo" => "", "Status" => 0]);
     }
 
     function addEmpleadoOrganigrama($idOrganigramas, $idDetalleOrganigramaPadre, $NoEmpleadoHijo, $Tipo, $Otros, $Nivel = 0)
@@ -360,6 +401,8 @@ class Organigramas extends Conexiones
         IF(DO.Tipo = 'OTROS',DO.Otros,E.Nombre) AS Nombre,
         IF(DO.Tipo = 'OTROS','',P.Puesto) AS Puesto,
         IF(DO.Tipo = 'OTROS','',IF(E.Email IS NULL OR E.Email = '','Sin Email',E.Email)) AS Email,
+        IF(DO.Tipo = 'OTROS','',COALESCE(D.Division,'')) AS Division,
+        IF(DO.Tipo = 'OTROS','',COALESCE(SD.Sucursal,'')) AS Sucursal,
         DO.Otros,DO.Nivel,
         if(E.Imagen is null or E.Imagen = '','assets/images/logo-pip.png',
           concat('https://klynet.mx/Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) as Imagen,
@@ -369,6 +412,8 @@ class Organigramas extends Conexiones
                 FROM DetalleOrganigrama AS DO
                 left JOIN Empleados as E ON E.NoEmpleado = DO.NoEmpleadoHijo
                 left JOIN Puestos as P ON P.IdPuesto = E.IdPuesto
+                left JOIN Divisiones as D ON D.IdDivision = E.IdDivision
+                left JOIN SucursalDepto as SD ON SD.IdSucursal = E.IdSucursal
                 where DO.Status = 1;";
         $cons2 = $Conexiones2->Select($q2,array());
         $Datos = [
