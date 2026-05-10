@@ -66,7 +66,6 @@ $MenuP = $Conf->getMenusPadre();
 	<style>
 		/* === DASHBOARD SAAS MINIMAL LIGHT — Mi Perfil === */
 		.profile-bg {
-			background-color: #F8F9FC !important;
 			min-height: 100vh;
 		}
 
@@ -350,6 +349,10 @@ $MenuP = $Conf->getMenusPadre();
 		.nav-tabs-pip .nav-link:hover {
 			color: #636e72;
 		}
+
+		[hidden] {
+			display: none !important;
+		}
 	</style>
 </head>
 
@@ -367,21 +370,21 @@ $MenuP = $Conf->getMenusPadre();
 
 		<!-- <div class="preloader">
 
-      <div class="loader">
+	  <div class="loader">
 
-        <div class="loader__figure"></div>
+		<div class="loader__figure"></div>
 
-        <p class="loader__label">PIP</p>
+		<p class="loader__label">PIP</p>
 
-      </div>
+	  </div>
 
-    </div> -->
+	</div> -->
 
 		<div id="Menu">
 
 			<?php
 
-      include("menus.php");
+            include("menus.php");
 
 ?>
 
@@ -391,7 +394,7 @@ $MenuP = $Conf->getMenusPadre();
 
 			<?php include("includes/_Header.php"); ?>
 
-			<div class="app-content profile-bg">
+			<div class="app-content">
 
 				<div class="content-wrapper">
 
@@ -439,19 +442,24 @@ $MenuP = $Conf->getMenusPadre();
 												data-bs-target="#account" type="button" role="tab"
 												aria-controls="account" aria-selected="true">Cuenta</button>
 										</li>
-										<li class="nav-item" role="presentation">
-											<button class="nav-link" id="integrations-tab" data-bs-toggle="tab"
-												data-bs-target="#integrations" type="button" role="tab"
-												aria-controls="integrations"
-												aria-selected="false">Colaboradores</button>
-										</li>
-									</ul>
+									<li class="nav-item" role="presentation">
+										<button class="nav-link" id="integrations-tab" data-bs-toggle="tab"
+											data-bs-target="#integrations" type="button" role="tab"
+											aria-controls="integrations"
+											aria-selected="false">Colaboradores</button>
+									</li>
+									<li class="nav-item" role="presentation">
+										<button class="nav-link" id="salud-tab" data-bs-toggle="tab"
+											data-bs-target="#salud" type="button" role="tab"
+											aria-controls="salud"
+											aria-selected="false">Salud</button>
+									</li>
+								</ul>
 								</div>
 							</div>
 						</div>
 
 					<!-- INFORMACION PERSONAL / COLABORADORES -->
-					<div class="profile-loading-shell">
 						<div id="profileLoadingOverlay" class="profile-loading-overlay">
 							<div class="profile-loading-card">
 								<div class="spinner-border" role="status">
@@ -460,94 +468,100 @@ $MenuP = $Conf->getMenusPadre();
 								<div class="profile-loading-text">Cargando perfil...</div>
 							</div>
 						</div>
-					<div class="tab-content" id="myTabContent">
+						<div class="tab-content" id="myTabContent">
 
-							<!-- TAB CUENTA -->
-							<div class="tab-pane fade show active" id="account" role="tabpanel"
-								aria-labelledby="account-tab">
+								<!-- TAB CUENTA -->
+								<div class="tab-pane fade show active" id="account" role="tabpanel"
+									aria-labelledby="account-tab">
 
-								<!-- STATS ROW -->
-								<div class="row g-3 mb-4">
-									<div class="col-6 col-md-4 col-lg">
-										<div class="card stat-card">
-											<div class="card-body text-center py-3">
-							<div class="stat-icon"><i class="fas fa-cake-candles"></i></div>
-												<div class="stat-label">Nacimiento</div>
-												<div class="stat-value" id="statFecNac">—</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-6 col-md-4 col-lg">
-										<div class="card stat-card">
-											<div class="card-body text-center py-3">
-							<div class="stat-icon"><i class="fas fa-id-badge"></i></div>
-												<div class="stat-label">No. Empleado</div>
-												<div class="stat-value" id="statNoEmp">—</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-6 col-md-4 col-lg">
-										<div class="card stat-card">
-											<div class="card-body text-center py-3">
-							<div class="stat-icon"><i class="fas fa-briefcase"></i></div>
-												<div class="stat-label">Puesto</div>
-												<div class="stat-value" id="statPuesto">—</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-6 col-md-4 col-lg">
-										<div class="card stat-card">
-											<div class="card-body text-center py-3">
-							<div class="stat-icon"><i class="fas fa-building"></i></div>
-												<div class="stat-label">Sucursal</div>
-												<div class="stat-value" id="statSucursal">—</div>
-											</div>
-										</div>
-									</div>
-									<div class="col-6 col-md-4 col-lg">
-										<div class="card stat-card">
-											<div class="card-body text-center py-3">
-							<div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-												<div class="stat-label">Antigüedad</div>
-												<div class="stat-value" id="statAntiguedad">—</div>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- MAIN GRID -->
-								<div class="row g-4">
-
-									<!-- LEFT: Identity + Personal Data -->
-									<div class="col-lg-7">
-										<div class="card profile-card h-100">
-											<div class="card-body p-4 p-lg-5">
-
-												<!-- Avatar -->
-												<div class="text-center mb-4">
-													<div class="avatar-wrapper mb-3">
-									<img class="avatar-img" id="ImgEmpleadoPerfil"
-										src="assets/images/logo-pip.png" alt="Imagen empleado">
-														<div class="avatar-ring"></div>
-														<div class="avatar-camera" id="btnFotoEmp"><i
-																class="fas fa-camera"></i></div>
-													</div>
-													<form id="FrmFotoEmp" action="Backend/Empleados/App.php"
-														method="post">
-														<input type="text" name="op" value="updateFotoEmpleado"
-															style="display:none;">
-														<input type="file" accept="image/*" name="fotoEmp" id="fotoEmp"
-															value="" style="display:none;"
-															onchange="updateFotoEmpleado()">
-													</form>
-													<h4 class="fw-bold mb-1" style="color:#2d3436;" id="displayName">—
-													</h4>
-													<p class="text-muted mb-0" id="displayPosition">—</p>
+									<!-- STATS ROW -->
+									<div class="row g-3 mb-4">
+										<div class="col-6 col-md-4 col-lg">
+											<div class="card stat-card">
+												<div class="card-body text-center py-3">
+													<div class="stat-icon"><i class="fas fa-cake-candles"></i></div>
+													<div class="stat-label">Nacimiento</div>
+													<div class="stat-value" id="statFecNac">—</div>
 												</div>
+											</div>
+										</div>
+										<div class="col-6 col-md-4 col-lg">
+											<div class="card stat-card">
+												<div class="card-body text-center py-3">
+													<div class="stat-icon"><i class="fas fa-id-badge"></i></div>
+													<div class="stat-label">No. Empleado</div>
+													<div class="stat-value" id="statNoEmp">—</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-6 col-md-4 col-lg">
+											<div class="card stat-card">
+												<div class="card-body text-center py-3">
+													<div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+													<div class="stat-label">Puesto</div>
+													<div class="stat-value" id="statPuesto">—</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-6 col-md-4 col-lg">
+											<div class="card stat-card">
+												<div class="card-body text-center py-3">
+													<div class="stat-icon"><i class="fas fa-building"></i></div>
+													<div class="stat-label">Sucursal</div>
+													<div class="stat-value" id="statSucursal">—</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-6 col-md-4 col-lg">
+											<div class="card stat-card">
+												<div class="card-body text-center py-3">
+													<div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+													<div class="stat-label">Antigüedad</div>
+													<div class="stat-value" id="statAntiguedad">—</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- MAIN GRID -->
+									<div class="row g-4">
+
+										<!-- LEFT: Identity + Personal Data -->
+										<div class="col-lg-7">
+											<div class="card profile-card h-100">
+												<div class="card-body p-4 p-lg-5">
+
+													<!-- Avatar -->
+													<div class="text-center mb-4">
+														<div class="avatar-wrapper mb-3">
+															<img class="avatar-img" id="ImgEmpleadoPerfil"
+																src="assets/images/logo-pip.png" alt="Imagen empleado">
+															<div class="avatar-ring"></div>
+															<div class="avatar-camera" id="btnFotoEmp"><i
+																	class="fas fa-camera"></i></div>
+														</div>
+														<form id="FrmFotoEmp" action="Backend/Empleados/App.php"
+															method="post">
+															<input type="text" name="op" value="updateFotoEmpleado"
+																style="display:none;">
+															<input type="file" accept="image/*" name="fotoEmp"
+																id="fotoEmp" value="" style="display:none;"
+																onchange="updateFotoEmpleado()">
+														</form>
+														<h4 class="fw-bold mb-1" style="color:#2d3436;"
+															id="displayName">—
+														</h4>
+														<p class="text-muted mb-0" id="displayPosition">—</p>
+													</div>
 
 												<!-- Personal Info -->
 												<div class="mb-4">
-													<h6 class="section-title">Información Personal</h6>
+													<div class="d-flex justify-content-between align-items-center mb-3">
+														<h6 class="section-title m-0">Información Personal</h6>
+														<button type="button" class="btn btn-sm btn-outline-warning-pip" id="btnEditarPerfil" onclick="toggleEditMode()" style="padding:4px 14px; font-size:0.75rem; border-radius:8px;">
+															<i class="fas fa-pen me-1"></i> Editar
+														</button>
+													</div>
 													<div class="row g-3">
 														<div class="col-md-6">
 															<label class="info-label">Nombre</label>
@@ -571,108 +585,113 @@ $MenuP = $Conf->getMenusPadre();
 														</div>
 														<div class="col-md-6">
 															<label class="info-label">No. Seguro Social</label>
-															<input class="info-input" id="PerfilNOSEGURO" type="text"
-																value="" disabled>
+															<input class="info-input" id="PerfilNOSEGURO"
+																type="text" value="" disabled>
 														</div>
 														<div class="col-md-6">
 															<label class="info-label">Fecha de Nacimiento</label>
-															<input class="info-input" id="PerfilFecNac" type="text"
+															<input class="info-input" id="PerfilFecNac" type="date"
 																value="" disabled>
 														</div>
 													</div>
+													<div class="mt-3" id="divGuardarPerfil" style="display:none;">
+														<button type="button" class="btn btn-warning-pip w-100" onclick="guardarPerfilPersonal()">
+															<i class="fas fa-save me-2"></i>Guardar Cambios
+														</button>
+													</div>
 												</div>
 
-												<!-- Work Info -->
-												<div>
-													<h6 class="section-title">Información Laboral</h6>
-													<div class="row g-3">
-														<div class="col-md-6">
-															<label class="info-label">Puesto</label>
-															<input class="info-input" id="PerfilPuesto" type="text"
-																value="" disabled>
-														</div>
-														<div class="col-md-6">
-															<label class="info-label">Sucursal</label>
-															<input class="info-input" id="PerfilSucursal" type="text"
-																value="" disabled>
-														</div>
-														<div class="col-md-6">
-															<label class="info-label">Centro de Costo</label>
-															<input class="info-input" id="PerfilCCosto" type="text"
-																value="" disabled>
-														</div>
+													<!-- Work Info -->
+													<div>
+														<h6 class="section-title">Información Laboral</h6>
+														<div class="row g-3">
+															<div class="col-md-6">
+																<label class="info-label">Puesto</label>
+																<input class="info-input" id="PerfilPuesto" type="text"
+																	value="" disabled>
+															</div>
+															<div class="col-md-6">
+																<label class="info-label">Sucursal</label>
+																<input class="info-input" id="PerfilSucursal"
+																	type="text" value="" disabled>
+															</div>
+															<div class="col-md-6">
+																<label class="info-label">Centro de Costo</label>
+																<input class="info-input" id="PerfilCCosto" type="text"
+																	value="" disabled>
+															</div>
 														<div class="col-md-6">
 															<label class="info-label">División</label>
-										<select id="slctDivision" class="form-select" disabled
-											style="border:none; background:#F8F9FC; border-radius:10px; padding:10px 14px; font-weight:600; color:#2d3436; font-size:0.9rem;">
-											<option value="">No disponible</option>
-										</select>
+															<span id="slctDivisionDisplay" class="info-input" style="background:transparent; padding:0;">—</span>
 														</div>
-														<div class="col-md-6">
-															<label class="info-label">Antigüedad</label>
-															<input class="info-input" id="PerfilAntiguedad" type="text"
-																value="" disabled>
+															<div class="col-md-6">
+																<label class="info-label">Antigüedad</label>
+																<input class="info-input" id="PerfilAntiguedad"
+																	type="text" value="" disabled>
+															</div>
 														</div>
 													</div>
+
 												</div>
-
-											</div>
-										</div>
-									</div>
-
-									<!-- RIGHT: Editable + Signature -->
-									<div class="col-lg-5">
-
-										<!-- Contact Card -->
-										<div class="card profile-card mb-4">
-											<div class="card-body p-4 p-lg-5">
-												<h6 class="section-title">Contacto & Seguridad</h6>
-
-												<div class="mb-3">
-													<label class="info-label">Correo Electrónico</label>
-													<input class="form-control" id="Perfilemail" type="email" value=""
-														style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
-												</div>
-
-												<div class="mb-3">
-													<label class="info-label">Teléfono Móvil</label>
-													<input class="form-control" id="Perfilnumber" type="text" value=""
-														onkeypress="return onlynumber(event)" maxlength="10"
-														style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
-												</div>
-
-												<div class="mb-4">
-													<label class="info-label">Contraseña</label>
-													<input class="form-control" id="Perfilpassword" type="password"
-														value=""
-														style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
-												</div>
-
-												<button class="btn btn-warning-pip w-100" type="button"
-													id="UpdateDatosEmp" onclick="updateDatosEmpleado()">
-													<i class="fas fa-save me-2"></i>Actualizar Datos
-												</button>
-
 											</div>
 										</div>
 
-										<!-- Signature Card -->
-										<div class="card profile-card">
-											<div class="card-body p-4 p-lg-5 text-center">
-												<h6 class="section-title">Firma Digital</h6>
-												<div class="signature-box mb-3">
-											<img id="imgFirma" src="" alt="Firma del empleado">
-											<span id="imgFirmaEmpty" class="signature-empty-badge" style="display:none;">No disponible</span>
-										</div>
-												<a href="AddFirma.php" class="btn btn-outline-warning-pip w-100">
-													<i class="fas fa-pen me-2"></i>Actualizar Firma
-												</a>
-											</div>
-										</div>
+										<!-- RIGHT: Editable + Signature -->
+										<div class="col-lg-5">
 
+											<!-- Contact Card -->
+											<div class="card profile-card mb-4">
+												<div class="card-body p-4 p-lg-5">
+													<h6 class="section-title">Contacto & Seguridad</h6>
+
+													<div class="mb-3">
+														<label class="info-label">Correo Electrónico</label>
+														<input class="form-control" id="Perfilemail" type="email"
+															value=""
+															style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
+													</div>
+
+													<div class="mb-3">
+														<label class="info-label">Teléfono Móvil</label>
+														<input class="form-control" id="Perfilnumber" type="text"
+															value="" onkeypress="return onlynumber(event)"
+															maxlength="10"
+															style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
+													</div>
+
+													<div class="mb-4">
+														<label class="info-label">Contraseña</label>
+														<input class="form-control" id="Perfilpassword" type="password"
+															value=""
+															style="border-radius:10px; padding:10px 14px; font-size:0.9rem; border:1px solid #dfe6e9;">
+													</div>
+
+													<button class="btn btn-warning-pip w-100" type="button"
+														id="UpdateDatosEmp" onclick="updateDatosEmpleado()">
+														<i class="fas fa-save me-2"></i>Actualizar Datos
+													</button>
+
+												</div>
+											</div>
+
+											<!-- Signature Card -->
+											<div class="card profile-card">
+												<div class="card-body p-4 p-lg-5 text-center">
+													<h6 class="section-title">Firma Digital</h6>
+													<div class="signature-box mb-3">
+														<img id="imgFirma" src="" alt="Firma del empleado">
+														<span id="imgFirmaEmpty" class="signature-empty-badge"
+															style="display:none;">No disponible</span>
+													</div>
+													<a href="AddFirma.php" class="btn btn-outline-warning-pip w-100">
+														<i class="fas fa-pen me-2"></i>Actualizar Firma
+													</a>
+												</div>
+											</div>
+
+										</div>
 									</div>
 								</div>
-							</div>
 
 							<!-- TAB COLABORADORES -->
 							<div class="tab-pane fade" id="integrations" role="tabpanel"
@@ -708,20 +727,187 @@ $MenuP = $Conf->getMenusPadre();
 								</div>
 							</div>
 
+							<!-- TAB SALUD -->
+							<div class="tab-pane fade" id="salud" role="tabpanel"
+								aria-labelledby="salud-tab">
+
+								<div class="row g-4">
+									<!-- LEFT: Formulario de Evaluación Física -->
+									<div class="col-lg-7">
+										<div class="card profile-card">
+											<div class="card-body p-4 p-lg-5">
+												<form id="FormUpdateDatos" action="Backend/Empleados/App.php" method="post">
+													<input type="hidden" name="op" value="updateDatosSaludEmpleado">
+
+													<div class="d-flex justify-content-between align-items-center mb-3">
+														<h6 class="section-title m-0">Habitus Exterior</h6>
+														<button type="button" class="btn btn-sm btn-outline-warning-pip" id="btnEditarSalud" onclick="toggleSaludEditMode()" style="padding:4px 14px; font-size:0.75rem; border-radius:8px;">
+															<i class="fas fa-pen me-1"></i> Editar
+														</button>
+													</div>
+													<div class="row g-3 mb-4">
+														<div class="col-12">
+															<label class="info-label">Describe si tienes una alergia o enfermedad crónica:</label>
+															<input class="info-input" id="HEDescripcion" name="HEDescripcion" type="text" disabled>
+														</div>
+													</div>
+													<div class="row g-3 mb-4">
+														<div class="col-md-4">
+															<label class="info-label">Peso (Kg)</label>
+															<input class="info-input" id="HEPeso" name="HEPeso" type="text" placeholder="Kg" onkeypress="return onlynumber(event)" disabled>
+														</div>
+														<div class="col-md-4">
+															<label class="info-label">Complexión</label>
+															<input class="info-input" id="HEComp" name="HEComp" type="text" disabled>
+														</div>
+														<div class="col-md-4">
+															<label class="info-label">Talla (Cm)</label>
+															<input class="info-input" id="HETalla" name="HETalla" type="number" placeholder="Cm" disabled>
+														</div>
+													</div>
+
+													<!-- Signos Vitales -->
+													<h6 class="section-title">Signos Vitales</h6>
+													<div class="row g-3 mb-4">
+														<div class="col-md-6">
+															<label class="info-label">Fr. cardíaca</label>
+															<input class="info-input" id="SVFrCard" name="SVFrCard" type="text" disabled>
+														</div>
+														<div class="col-md-6">
+															<label class="info-label">Fr. respiratoria</label>
+															<input class="info-input" id="SVFrResp" name="SVFrResp" type="text" disabled>
+														</div>
+													</div>
+													<div class="row g-3 mb-4">
+														<div class="col-md-6">
+															<label class="info-label">Tensión arterial</label>
+															<input class="info-input" id="SVTensionArt" name="SVTensionArt" type="text" disabled>
+														</div>
+														<div class="col-md-6">
+															<label class="info-label">Temperatura</label>
+															<input class="info-input" id="SVTemperatura" name="SVTemperatura" type="text" onkeypress="return onlynumber(event)" disabled>
+														</div>
+													</div>
+
+												<!-- Información Sanguínea -->
+												<h6 class="section-title">Información Sanguínea</h6>
+												<div class="row g-3 mb-4">
+													<div class="col-md-6">
+														<label class="info-label">Grupo sanguíneo</label>
+														<span id="INFSGrupoDisplay" class="info-input" style="background:transparent; padding:0;">—</span>
+														<div id="INFSGrupoEditWrap" style="display:none;">
+															<select id="INFSGrupo" name="INFSGrupo" class="form-select" style="border:none; background:#F8F9FC; border-radius:10px; padding:10px 14px; font-weight:600; color:#2d3436; font-size:0.9rem;">
+																<option value="">Seleccionar grupo</option>
+																<option value="A">A</option>
+																<option value="B">B</option>
+																<option value="AB">AB</option>
+																<option value="O">O</option>
+															</select>
+														</div>
+													</div>
+													<div class="col-md-6">
+														<label class="info-label">Factor Rh</label>
+														<span id="INFSFactirRhDisplay" class="info-input" style="background:transparent; padding:0;">—</span>
+														<div id="INFSFactirRhEditWrap" style="display:none;">
+															<select id="INFSFactirRh" name="INFSFactirRh" class="form-select" style="border:none; background:#F8F9FC; border-radius:10px; padding:10px 14px; font-weight:600; color:#2d3436; font-size:0.9rem;">
+																<option value="">Seleccionar factor</option>
+																<option value="0">-</option>
+																<option value="1">+</option>
+															</select>
+														</div>
+													</div>
+												</div>
+
+													<!-- Vacunación -->
+													<h6 class="section-title">Vacunación</h6>
+													<div class="row g-3 mb-4">
+														<div class="col-md-6 text-center">
+															<label class="info-label">Cuenta con cartilla de Vacunación</label>
+															<div class="form-check form-switch d-inline-flex justify-content-center align-items-center mt-2">
+																<input type="hidden" name="txtCartilla" id="txtCartilla" value="">
+																<input class="form-check-input" type="checkbox" id="checkCartilla" onclick="checkedCartilla()" style="cursor: pointer;" disabled>
+															</div>
+														</div>
+														<div class="col-md-6 text-center">
+															<label class="info-label">Tiene el esquema completo</label>
+															<div class="form-check form-switch d-inline-flex justify-content-center align-items-center mt-2">
+																<input type="hidden" name="txtEsquema" id="txtEsquema" value="">
+																<input class="form-check-input" type="checkbox" id="checkEsquema" onclick="checkedEsquema()" style="cursor: pointer;" disabled>
+															</div>
+														</div>
+													</div>
+													<div class="row g-3 mb-4">
+														<div class="col-12">
+															<label class="info-label">¿Cuál falta?</label>
+															<input class="info-input" type="text" id="CualFalta" name="CualFalta" disabled>
+														</div>
+													</div>
+
+													<div id="divGuardarSalud" style="display:none;">
+														<button class="btn btn-warning-pip w-100" type="button" id="btnGuardar" onclick="updateEvaluacionFisicaEmpleado(event)">
+															<i class="fas fa-save me-2"></i>Guardar Cambios
+														</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+
+									<!-- RIGHT: Panel resumen -->
+									<div class="col-lg-5">
+										<div class="card profile-card mb-4">
+											<div class="card-body p-4 p-lg-5 text-center">
+												<h6 class="section-title">Resumen de Salud</h6>
+												<div class="row g-3">
+													<div class="col-6">
+														<div class="stat-label">Peso</div>
+														<div class="stat-value" id="resumenPeso">—</div>
+													</div>
+													<div class="col-6">
+														<div class="stat-label">Talla</div>
+														<div class="stat-value" id="resumenTalla">—</div>
+													</div>
+													<div class="col-6">
+														<div class="stat-label">Complexión</div>
+														<div class="stat-value" id="resumenComplexion">—</div>
+													</div>
+													<div class="col-6">
+														<div class="stat-label">Tipo Sangre</div>
+														<div class="stat-value" id="resumenSangre">—</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="card profile-card">
+											<div class="card-body p-4 p-lg-5 text-center">
+												<h6 class="section-title">Firma Digital</h6>
+												<div class="signature-box mb-3">
+													<img id="imgFirmaSalud" src="" alt="Firma del empleado">
+													<span id="imgFirmaSaludEmpty" class="signature-empty-badge" style="display:none;">No disponible</span>
+												</div>
+												<a href="AddFirma.php" class="btn btn-outline-warning-pip w-100">
+													<i class="fas fa-pen me-2"></i>Actualizar Firma
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+							</div>
+
+							<div id="fullscreen-swiper"></div>
+
+							<div id="fullscreen-swiper-backdrop"></div>
+
+							<!-- ULTIMAS NOVENDADES -->
+
+							<!-- ULTIMAS NOVEDADES -->
+
 						</div>
 
-						<div id="fullscreen-swiper"></div>
-
-						<div id="fullscreen-swiper-backdrop"></div>
-
-						<!-- ULTIMAS NOVENDADES -->
-
-						<!-- ULTIMAS NOVEDADES -->
-
 					</div>
-					</div>
-
-				</div>
 
 			</div>
 
@@ -759,6 +945,153 @@ $MenuP = $Conf->getMenusPadre();
 	</script>
 
 	<script src="scripts/MiPerfil.js?v=<?php echo time(); ?>"></script>
+
+	<script src="scripts/global.js" charset="utf-8"></script>
+	<script src="scripts/salud.js" charset="utf-8"></script>
+
+	<script>
+		function checkedCartilla() {
+			if ($("#checkCartilla").is(":checked")) {
+				$("#txtCartilla").val("1");
+			} else {
+				$("#txtCartilla").val("0");
+			}
+		}
+
+		function checkedEsquema() {
+			if ($("#checkEsquema").is(":checked")) {
+				$("#txtEsquema").val("1");
+			} else {
+				$("#txtEsquema").val("0");
+			}
+		}
+
+		const SALUD_EDITABLE_FIELDS = ["#HEDescripcion", "#HEPeso", "#HEComp", "#HETalla", "#SVFrCard", "#SVFrResp", "#SVTensionArt", "#SVTemperatura", "#checkCartilla", "#checkEsquema", "#CualFalta"];
+
+		function setSangreDisplay(selector, value) {
+			var el = $(selector);
+			if (!value || value === "null" || value === "") {
+				el.html('<span class="stat-badge-empty">No disponible</span>');
+			} else {
+				el.text(value);
+			}
+		}
+
+		function toggleSaludEditMode() {
+			var btn = $("#btnEditarSalud");
+			var divGuardar = $("#divGuardarSalud");
+			var isEditing = btn.hasClass("editing");
+
+			if (isEditing) {
+				SALUD_EDITABLE_FIELDS.forEach(function(sel) {
+					$(sel).prop("disabled", true);
+				});
+				$("#INFSGrupoEditWrap").hide();
+				$("#INFSGrupoDisplay").show();
+				$("#INFSFactirRhEditWrap").hide();
+				$("#INFSFactirRhDisplay").show();
+				btn.removeClass("editing").html('<i class="fas fa-pen me-1"></i> Editar');
+				divGuardar.hide();
+				getDatosSaludEmpleado();
+			} else {
+				SALUD_EDITABLE_FIELDS.forEach(function(sel) {
+					$(sel).prop("disabled", false);
+				});
+				$("#INFSGrupoEditWrap").show();
+				$("#INFSGrupoDisplay").hide();
+				$("#INFSFactirRhEditWrap").show();
+				$("#INFSFactirRhDisplay").hide();
+				btn.addClass("editing").html('<i class="fas fa-times me-1"></i> Cancelar');
+				divGuardar.show();
+			}
+		}
+
+		function updateEvaluacionFisicaEmpleado(e) {
+			e.preventDefault();
+			var form = $("#FormUpdateDatos")[0];
+			var data = new FormData(form);
+			$.ajax({
+				type: "POST",
+					url: "Backend/Empleados/App.php",
+					data: data,
+					processData: false,
+					contentType: false,
+					cache: false,
+					timeout: 600000,
+					success: function(response) {
+						response = response.trim();
+						if (response == "1") {
+							Swal.fire('Actualizado', 'Los datos de salud fueron actualizados', 'success');
+							toggleSaludEditMode();
+							setTimeout(function() {
+								getDatosSaludEmpleado();
+							}, 500);
+						} else {
+							Swal.fire('Error', 'Algo salió mal, intente de nuevo', 'error');
+						}
+					},
+					error: function() {
+						Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+					}
+				});
+		}
+
+		function getDatosSaludEmpleado() {
+			$.ajax({
+				type: "post",
+				url: "Backend/Empleados/App.php",
+				data: "op=getDatosSaludEmpleado",
+				success: function(response) {
+					response = JSON.parse(response.trim());
+					for (var i = 0; i < response.length; i++) {
+						$("#HEDescripcion").val(response[i]["HabitusExteriorDescripcion"]);
+						$("#HEPeso").val(response[i]["Peso"]);
+						$("#HEComp").val(response[i]["Complexion"]);
+						$("#HETalla").val(response[i]["Talla"]);
+						$("#SVFrCard").val(response[i]["FrCardiaca"]);
+						$("#SVFrResp").val(response[i]["FrRespiratoria"]);
+						$("#SVTensionArt").val(response[i]["TensionArterial"]);
+						$("#SVTemperatura").val(response[i]["Temperatura"]);
+					$("#INFSGrupo").val(response[i]["GrupoSanguineo"]);
+					$("#INFSFactirRh").val(response[i]["FactorRh"]);
+					setSangreDisplay("#INFSGrupoDisplay", response[i]["GrupoSanguineo"]);
+					var rhText = response[i]["FactorRh"] == "1" ? "+" : response[i]["FactorRh"] == "0" ? "-" : "";
+					setSangreDisplay("#INFSFactirRhDisplay", rhText);
+						$("#txtCartilla").val(response[i]["CartillaVacunacion"]);
+						$("#txtEsquema").val(response[i]["EsquemaCompleto"]);
+
+						if (response[i]["CartillaVacunacion"] == "0") {
+							document.getElementById("checkCartilla").checked = false;
+						} else {
+							document.getElementById("checkCartilla").checked = true;
+						}
+						if (response[i]["EsquemaCompleto"] == "0") {
+							document.getElementById("checkEsquema").checked = false;
+						} else {
+							document.getElementById("checkEsquema").checked = true;
+						}
+						$("#CualFalta").val(response[i]["OtrosComentariosSalud"]);
+
+						// Panel resumen
+						$("#resumenPeso").text(response[i]["Peso"] ? response[i]["Peso"] + " Kg" : "—");
+						$("#resumenTalla").text(response[i]["Talla"] ? response[i]["Talla"] + " Cm" : "—");
+						$("#resumenComplexion").text(response[i]["Complexion"] || "—");
+						var sangre = (response[i]["GrupoSanguineo"] || "") + (response[i]["FactorRh"] == "1" ? "+" : response[i]["FactorRh"] == "0" ? "-" : "");
+						$("#resumenSangre").text(sangre || "—");
+					}
+				},
+				error: function() {
+					Swal.fire('Error', 'No se pudieron cargar los datos de salud', 'error');
+				}
+			});
+		}
+
+		$(document).ready(function() {
+			getDatosSaludEmpleado();
+			checkedCartilla();
+			checkedEsquema();
+		});
+	</script>
 
 </body>
 

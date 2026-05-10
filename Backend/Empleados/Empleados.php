@@ -147,18 +147,29 @@ class Empleados extends Conexiones
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
             // Obtener el password actual de la BD para comparar
-            $qActual = "SELECT Password FROM Empleados WHERE NoEmpleado = '$NoEmpleado';";
-            $consActual = $this->Select($qActual, array());
+            $qActual = "SELECT Password FROM Empleados WHERE NoEmpleado = ?;";
+            $consActual = $this->Select($qActual, array($NoEmpleado));
             $PasswordActualBD = $consActual[0]["Password"];
             
-            // Solo codificar si el password es diferente al que ya est? en la BD
-            // Esto evita la doble codificaci?n cuando el usuario no cambi? su password
+            // Solo codificar si el password es diferente al que ya esta en la BD
             if ($Password !== $PasswordActualBD) {
                 $Password = base64_encode($Password);
             }
             
-            $q = "UPDATE Empleados SET Email = '$Email', Movil = '$Movil', Password = '$Password' WHERE NoEmpleado = '$NoEmpleado';";
-            $this->ExecuteQuery($q, array());
+            $q = "UPDATE Empleados SET Email = ?, Movil = ?, Password = ? WHERE NoEmpleado = ?;";
+            $this->ExecuteQuery($q, array($Email, $Movil, $Password, $NoEmpleado));
+            return "1";
+        } catch (\Exception $e) {
+            return "0";
+        }
+    }
+
+    function updatePerfilPersonalEmpleado($Nombre, $RFC, $CURP, $NoSeguro, $FNacimiento)
+    {
+        $NoEmpleado = (SessionManager::get("NoEmpleado"));
+        try {
+            $q = "UPDATE Empleados SET Nombre = ?, RFC = ?, CURP = ?, NoSeguro = ?, FNacimiento = ? WHERE NoEmpleado = ?;";
+            $this->ExecuteQuery($q, array($Nombre, $RFC, $CURP, $NoSeguro, $FNacimiento, $NoEmpleado));
             return "1";
         } catch (\Exception $e) {
             return "0";
@@ -224,14 +235,14 @@ class Empleados extends Conexiones
     {
         try {
             $NoEmpleado = (SessionManager::get("NoEmpleado"));
-            $q = "UPDATE Empleados SET HabitusExteriorDescripcion = '$HabitusExteriorDescripcion', Peso = '$Peso', Complexion = '$Complexion', Talla = '$Talla', FrCardiaca = '$FrCardiaca',
-              FrRespiratoria = '$FrRespiratoria', TensionArterial = '$TensionArterial', Temperatura = '$Temperatura', GrupoSanguineo = '$GrupoSanguineo', FactorRh = '$FactorRh', CartillaVacunacion = '$CartillaVacunacion',
-              EsquemaCompleto = '$EsquemaCompleto', OtrosComentariosSalud = '$OtrosComentariosSalud'
-              WHERE NoEmpleado = '$NoEmpleado';";
-            $this->ExecuteQuery($q, array());
+            $q = "UPDATE Empleados SET HabitusExteriorDescripcion = ?, Peso = ?, Complexion = ?, Talla = ?, FrCardiaca = ?,
+              FrRespiratoria = ?, TensionArterial = ?, Temperatura = ?, GrupoSanguineo = ?, FactorRh = ?, CartillaVacunacion = ?,
+              EsquemaCompleto = ?, OtrosComentariosSalud = ?
+              WHERE NoEmpleado = ?;";
+            $this->ExecuteQuery($q, array($HabitusExteriorDescripcion, $Peso, $Complexion, $Talla, $FrCardiaca, $FrRespiratoria, $TensionArterial, $Temperatura, $GrupoSanguineo, $FactorRh, $CartillaVacunacion, $EsquemaCompleto, $OtrosComentariosSalud, $NoEmpleado));
             return "1";
         } catch (\Exception $e) {
-            return $e;
+            return "0";
         }
     }
 

@@ -47,6 +47,38 @@ function setFieldValue(selector, value) {
   element.toggleClass("info-input-empty", finalValue === "No disponible");
 }
 
+function setDateFieldValue(selector, value) {
+  const element = $(selector);
+  if (!value || value === "null" || value === "0000-00-00") {
+    element.val("");
+    element.toggleClass("info-input-empty", true);
+    return;
+  }
+  // Intentar convertir a YYYY-MM-DD para input type="date"
+  let dateStr = String(value).trim();
+  // Si ya esta en formato YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    element.val(dateStr);
+  } else {
+    // Intentar parsear otros formatos comunes (DD/MM/YYYY, MM/DD/YYYY, etc.)
+    let parts = dateStr.split(/[\/\-\.]/);
+    if (parts.length === 3) {
+      // Asumir DD/MM/YYYY si el primer valor > 12, sino MM/DD/YYYY
+      let day, month, year;
+      if (parseInt(parts[0]) > 12) {
+        day = parts[0]; month = parts[1]; year = parts[2];
+      } else {
+        month = parts[0]; day = parts[1]; year = parts[2];
+      }
+      if (year.length === 2) year = "20" + year;
+      element.val(`${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
+    } else {
+      element.val(dateStr);
+    }
+  }
+  element.toggleClass("info-input-empty", false);
+}
+
 function setStatValue(selector, value) {
   const element = $(selector);
   const finalValue = getDisplayValue(value);
@@ -102,7 +134,6 @@ async function loadAll() {
     await getDatosEmpleado();
     await getColaboradores();
     await loadFeeds();
-    await llenadoSelectDivision();
   } finally {
     toggleProfileLoading(false);
   }
@@ -154,7 +185,7 @@ async function getDatosEmpleado() {
       setFieldValue("#PerfilRFC", respuesta[i]["RFC"]);
       setFieldValue("#PerfilCURP", respuesta[i]["CURP"]);
       setFieldValue("#PerfilNOSEGURO", respuesta[i]["NoSeguro"]);
-      setFieldValue("#PerfilFecNac", respuesta[i]["FNacimiento"]);
+      setDateFieldValue("#PerfilFecNac", respuesta[i]["FNacimiento"]);
       setFieldValue("#PerfilPuesto", respuesta[i]["Puesto"]);
       setFieldValue("#PerfilSucursal", respuesta[i]["Sucursal"]);
       setFieldValue("#PerfilAntiguedad", respuesta[i]["Antiguedad"]);
@@ -162,7 +193,12 @@ async function getDatosEmpleado() {
       $("#Perfilpassword").val(respuesta[i]["Password"] || "");
       $("#Perfilemail").val(respuesta[i]["Email"] || "");
       $("#Perfilnumber").val(respuesta[i]["Movil"] || "");
-      $("#slctDivision").val(respuesta[i]["IdDivision"] || "");
+      var divisionName = getDisplayValue(respuesta[i]["Division"]);
+      if (divisionName === "No disponible") {
+        $("#slctDivisionDisplay").html('<span class="stat-badge-empty">No disponible</span>');
+      } else {
+        $("#slctDivisionDisplay").text(divisionName);
+      }
       $("#ImgEmpleadoPerfil").attr("src", urlImg);
       $("#mensajeBienvenida").html(respuesta[i]["MensajeBienvenida"]);
       $("#displayName").text(getDisplayValue(respuesta[i]["Nombre"]));
@@ -178,32 +214,25 @@ async function getDatosEmpleado() {
   }
 }
 
-async function llenadoSelectDivision() {
-  let datos = await {
-    op: "getDivisiones",
-  };
-  let respuesta = [];
-  try {
-    respuesta = await $.ajax({
-      type: "post",
-      url: "Backend/Empleados/App.php",
-      data: datos,
-      dataType: "json",
-    });
-  } catch (e) {
-    console.log(e);
-  } finally {
-    for (var i = 0; i < respuesta.length; i++) {
-      let idDivision = respuesta[i]["IdDivision"];
-      let division = respuesta[i]["Division"];
-      $("#slctDivision").append(`
-        <option value="${idDivision}">${division}</option>
-        `);
-    }
-  }
-}
-
 function updateDatosEmpleado() {
+  let pass = ($("#Perfilpassword").val() || "").trim();
+  let email = ($("#Perfilemail").val() || "").trim();
+  let movil = ($("#Perfilnumber").val() || "").trim();
+
+  // Validaciones client-side
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    Swal.fire("Correo inválido", "Ingrese un correo electrónico válido", "warning");
+    return;
+  }
+  if (movil && (movil.length < 10 || movil.length > 15)) {
+    Swal.fire("Teléfono inválido", "El teléfono debe tener entre 10 y 15 dígitos", "warning");
+    return;
+  }
+  if (pass && pass.length < 4) {
+    Swal.fire("Contraseña muy corta", "La contraseña debe tener al menos 4 caracteres", "warning");
+    return;
+  }
+
   Swal.fire({
     title: "¿Desea cambiar los datos de este empleado?",
     text: "",
@@ -215,10 +244,6 @@ function updateDatosEmpleado() {
     confirmButtonText: "Actualizar Datos",
   }).then((result) => {
     if (result.isConfirmed) {
-      let pass = ($("#Perfilpassword").val() || "").trim();
-      let email = ($("#Perfilemail").val() || "").trim();
-      let movil = ($("#Perfilnumber").val() || "").trim();
-
       $.ajax({
         type: "POST",
         url: "Backend/Empleados/App.php",
@@ -229,6 +254,7 @@ function updateDatosEmpleado() {
           movil: movil,
         },
         success: function (response) {
+          response = response.trim();
           if (response == "1") {
             Swal.fire(
               "Actualizado",
@@ -238,18 +264,98 @@ function updateDatosEmpleado() {
             setTimeout(function () {
               getDatosEmpleado();
             }, 1000);
+          } else if (response == "email_invalido") {
+            Swal.fire("Correo inválido", "El formato del correo no es válido", "error");
+          } else if (response == "movil_invalido") {
+            Swal.fire("Teléfono inválido", "El teléfono debe tener entre 10 y 15 dígitos", "error");
+          } else if (response == "password_corto") {
+            Swal.fire("Contraseña muy corta", "Debe tener al menos 4 caracteres", "error");
           } else {
-            // toastr.warning("Algo salio mal, Intente de nuevo");
-            const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Algo salio mal, Intente de nuevo</span>
-            </div>`;
-            showBootstrapAlertWar(messageContent, "top-right", 5000);
+            Swal.fire("Error", "Algo salió mal, intente de nuevo", "error");
           }
         },
-        error: function (e) {
-          alert(e.responseText);
+        error: function () {
+          Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+        },
+      });
+    }
+  });
+}
+
+// Campos que el empleado puede editar en su perfil personal
+const EDITABLE_FIELDS = ["#PerfilNombre", "#PerfilRFC", "#PerfilCURP", "#PerfilNOSEGURO", "#PerfilFecNac"];
+
+function toggleEditMode() {
+  const btn = $("#btnEditarPerfil");
+  const divGuardar = $("#divGuardarPerfil");
+  const isEditing = btn.hasClass("editing");
+
+  if (isEditing) {
+    // Salir de modo edicion — restaurar valores originales
+    EDITABLE_FIELDS.forEach(function (sel) {
+      $(sel).prop("disabled", true);
+    });
+    btn.removeClass("editing").html('<i class="fas fa-pen me-1"></i> Editar');
+    divGuardar.hide();
+    getDatosEmpleado(); // restaurar valores originales
+  } else {
+    // Entrar a modo edicion
+    EDITABLE_FIELDS.forEach(function (sel) {
+      $(sel).prop("disabled", false);
+    });
+    btn.addClass("editing").html('<i class="fas fa-times me-1"></i> Cancelar');
+    divGuardar.show();
+  }
+}
+
+function guardarPerfilPersonal() {
+  let nombre = ($("#PerfilNombre").val() || "").trim();
+  let rfc = ($("#PerfilRFC").val() || "").trim();
+  let curp = ($("#PerfilCURP").val() || "").trim();
+  let noSeguro = ($("#PerfilNOSEGURO").val() || "").trim();
+  let fNacimiento = ($("#PerfilFecNac").val() || "").trim();
+
+  if (!nombre) {
+    Swal.fire("Campo requerido", "El nombre es obligatorio", "warning");
+    return;
+  }
+
+  Swal.fire({
+    title: "¿Guardar cambios?",
+    text: "Se actualizarán los datos de tu perfil",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#ffc407",
+    cancelButtonColor: "#d33",
+    cancelButtonText: "Cancelar",
+    confirmButtonText: "Guardar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "POST",
+        url: "Backend/Empleados/App.php",
+        data: {
+          op: "updatePerfilPersonalEmpleado",
+          Nombre: nombre,
+          RFC: rfc,
+          CURP: curp,
+          NoSeguro: noSeguro,
+          FNacimiento: fNacimiento,
+        },
+        success: function (response) {
+          response = response.trim();
+          if (response == "1") {
+            Swal.fire("Actualizado", "Datos personales actualizados", "success");
+            toggleEditMode(); // salir de modo edicion
+            getDatosEmpleado(); // recargar datos
+          } else if (response == "nombre_requerido") {
+            Swal.fire("Campo requerido", "El nombre es obligatorio", "warning");
+          } else {
+            Swal.fire("Error", "Algo salió mal, intente de nuevo", "error");
+          }
+        },
+        error: function () {
+          Swal.fire("Error", "No se pudo conectar con el servidor", "error");
         },
       });
     }
@@ -285,18 +391,18 @@ function updateFotoEmpleado() {
           showBootstrapAlertWar(messageContent, "top-right", 5000);
         }
       },
-      error: function (e) {
-        alert(e.responseText);
-      },
-    });
-  } else {
-    const messageContent = `
+        error: function () {
+          Swal.fire("Error", "No se pudo conectar con el servidor", "error");
+        },
+      });
+    } else {
+      const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Información!</span>
               <span class="alert-text">Ingrese todos los datos"</span>
         </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-  }
+      showBootstrapAlert(messageContent, "top-right", 5000);
+    }
 }
 
 async function getColaboradores() {

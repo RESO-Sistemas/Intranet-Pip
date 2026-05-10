@@ -29,6 +29,84 @@
     flex-direction: row;
     align-items: center;
   }
+
+  .user-menu-trigger {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 6px !important;
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+    line-height: 1;
+  }
+
+  .user-menu-trigger:hover {
+    background: rgba(255, 215, 0, 0.12);
+  }
+
+  .user-menu-avatar {
+    font-size: 20px;
+    color: #666;
+    width: auto;
+    height: auto;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .user-menu-dropdown {
+    min-width: 280px;
+    padding: 10px;
+    border: 0;
+    border-radius: 20px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  }
+
+  .user-menu-card {
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f7fb 100%);
+    border: 1px solid #eef1f4;
+    margin-bottom: 8px;
+  }
+
+  .user-menu-name {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #2d3436;
+    line-height: 1.2;
+  }
+
+  .user-menu-email {
+    margin: 6px 0 0;
+    font-size: 0.84rem;
+    color: #8a94a6;
+    word-break: break-word;
+  }
+
+  .user-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    font-weight: 600;
+    color: #2d3436;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .user-menu-link:hover {
+    background: #f8f9fc;
+    transform: translateX(1px);
+  }
+
+  .user-menu-link i {
+    color: #bfa200;
+    font-size: 20px;
+  }
 </style>
 
 <div class="app-header">
@@ -77,34 +155,34 @@
           <!-- FOTO DE PERFIL Y MENÚ DE USUARIO - Siempre visible a la derecha -->
           <li class="nav-item d-flex">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle user-menu-trigger"
               id="userDropDown"
               href="javascript:void(0);"
               data-bs-toggle="dropdown">
-              <i class="fa fa-user" aria-hidden="true" id="imgSmallProfile" style="font-size: 20px; color: #666; padding: 5px; background: #f0f0f0; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"></i>
+              <i class="fa fa-user user-menu-avatar" aria-hidden="true" id="imgSmallProfile"></i>
             </a>
             <ul
               id="user_dropdown"
-              class="dropdown-menu dropdown-menu-end"
+              class="dropdown-menu dropdown-menu-end user-menu-dropdown"
               aria-labelledby="userDropDown">
               <li>
-                <div class="dropdown-item" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
+                <div class="dropdown-item user-menu-card" style="cursor: pointer;" onclick="window.location.href='MiPerfil.php'">
                   <div class="u-text">
-                    <h4 id="PerfilNombreEmp"></h4>
-                    <p id="PerfilCorreoEmp"></p>
+                    <h4 id="PerfilNombreEmp" class="user-menu-name"></h4>
+                    <p id="PerfilCorreoEmp" class="user-menu-email"></p>
                   </div>
                 </div>
               </li>
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center"
+                  class="dropdown-item user-menu-link"
                   href="index.php">
                   <i class="material-icons me-2">home</i>Inicio
                 </a>
               </li>
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center"
+                  class="dropdown-item user-menu-link"
                   href="logout.php">
                   <i class="material-icons me-2">exit_to_app</i>Salir
                 </a>

@@ -27,10 +27,51 @@ if ($op == "getDivisiones") {
 }
 
 if ($op == "updateDatosEmpleado") {
-  $Email = $_POST["email"];
-  $Movil = $_POST["movil"];
-  $Password = $_POST["pass"];
+  // Verificar sesion activa
+  if (!SessionManager::isLoggedIn()) {
+    echo "0";
+    exit;
+  }
+
+  $Email = filter_var(trim($_POST["email"] ?? ""), FILTER_SANITIZE_EMAIL);
+  $Movil = preg_replace('/[^0-9]/', '', trim($_POST["movil"] ?? ""));
+  $Password = trim($_POST["pass"] ?? "");
+
+  // Validaciones
+  if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+    echo "email_invalido";
+    exit;
+  }
+  if (strlen($Movil) > 0 && (strlen($Movil) < 10 || strlen($Movil) > 15)) {
+    echo "movil_invalido";
+    exit;
+  }
+  if (strlen($Password) > 0 && strlen($Password) < 4) {
+    echo "password_corto";
+    exit;
+  }
+
   echo trim($Empleados->updateDatosEmpleado($Email, $Movil, $Password));
+}
+
+if ($op == "updatePerfilPersonalEmpleado") {
+  if (!SessionManager::isLoggedIn()) {
+    echo "0";
+    exit;
+  }
+
+  $Nombre = trim($_POST["Nombre"] ?? "");
+  $RFC = trim($_POST["RFC"] ?? "");
+  $CURP = trim($_POST["CURP"] ?? "");
+  $NoSeguro = trim($_POST["NoSeguro"] ?? "");
+  $FNacimiento = trim($_POST["FNacimiento"] ?? "");
+
+  if (empty($Nombre)) {
+    echo "nombre_requerido";
+    exit;
+  }
+
+  echo trim($Empleados->updatePerfilPersonalEmpleado($Nombre, $RFC, $CURP, $NoSeguro, $FNacimiento));
 }
 
 if ($op == "updateFotoEmpleado") {
@@ -69,19 +110,26 @@ if ($op == "getDatosEmpleadosOrganigrama") {
 }
 
 if ($op == "updateDatosSaludEmpleado") {
-  $HabitusExteriorDescripcion = $_POST["HEDescripcion"];
-  $Peso = $_POST["HEPeso"];
-  $Complexion = $_POST["HEComp"];
-  $Talla = $_POST["HETalla"];
-  $FrCardiaca = $_POST["SVFrCard"];
-  $FrRespiratoria = $_POST["SVFrResp"];
-  $TensionArterial = $_POST["SVTensionArt"];
-  $Temperatura = $_POST["SVTemperatura"];
-  $GrupoSanguineo = $_POST["INFSGrupo"];
-  $FactorRh = $_POST["INFSFactirRh"];
-  $CartillaVacunacion = $_POST["txtCartilla"];
-  $EsquemaCompleto = $_POST["txtEsquema"];
-  $OtrosComentariosSalud = $_POST["CualFalta"];
+  // Verificar sesion activa
+  if (!SessionManager::isLoggedIn()) {
+    echo "0";
+    exit;
+  }
+
+  $HabitusExteriorDescripcion = trim($_POST["HEDescripcion"] ?? "");
+  $Peso = is_numeric($_POST["HEPeso"] ?? null) ? $_POST["HEPeso"] : "";
+  $Complexion = trim($_POST["HEComp"] ?? "");
+  $Talla = is_numeric($_POST["HETalla"] ?? null) ? $_POST["HETalla"] : "";
+  $FrCardiaca = trim($_POST["SVFrCard"] ?? "");
+  $FrRespiratoria = trim($_POST["SVFrResp"] ?? "");
+  $TensionArterial = trim($_POST["SVTensionArt"] ?? "");
+  $Temperatura = is_numeric($_POST["SVTemperatura"] ?? null) ? $_POST["SVTemperatura"] : "";
+  $GrupoSanguineo = in_array($_POST["INFSGrupo"] ?? "", ["A", "B", "AB", "O", ""]) ? $_POST["INFSGrupo"] : "";
+  $FactorRh = in_array($_POST["INFSFactirRh"] ?? "", ["0", "1", ""]) ? $_POST["INFSFactirRh"] : "";
+  $CartillaVacunacion = in_array($_POST["txtCartilla"] ?? "", ["0", "1", ""]) ? $_POST["txtCartilla"] : "0";
+  $EsquemaCompleto = in_array($_POST["txtEsquema"] ?? "", ["0", "1", ""]) ? $_POST["txtEsquema"] : "0";
+  $OtrosComentariosSalud = trim($_POST["CualFalta"] ?? "");
+
   echo trim($Empleados->updateDatosSaludEmpleado($HabitusExteriorDescripcion, $Peso, $Complexion, $Talla, $FrCardiaca, $FrRespiratoria, $TensionArterial, $Temperatura, $GrupoSanguineo, $FactorRh, $CartillaVacunacion, $EsquemaCompleto, $OtrosComentariosSalud));
 }
 
