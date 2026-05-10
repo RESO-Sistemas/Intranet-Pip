@@ -18,7 +18,7 @@ if ($op == "loginEmpleado") {
 }
 
 if ($op == "getDatosEmpleado") {
-  $NoEmpleado = $_POST["NoEmpleado"];
+  $NoEmpleado = $_POST["NoEmpleado"] ?? null;
   echo trim($Empleados->getDatosEmpleado($NoEmpleado));
 }
 
@@ -34,67 +34,21 @@ if ($op == "updateDatosEmpleado") {
 }
 
 if ($op == "updateFotoEmpleado") {
-  $Empleados2 = new Empleados();
-  $NoEmpleado = SessionManager::get("NoEmpleado");
-  $resp = $Empleados->getNameFotoEmpleado();
-  $ImgText = $resp[0]["Imagen"];
+  if (isset($_FILES['fotoEmp']['tmp_name']) && $_FILES['fotoEmp']['tmp_name'] != '') {
+    $namefile = $_FILES['fotoEmp']['name'] ?? '';
+    $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
+    $extValida = array("png", "jpeg", "jpg", "webp");
 
-  if ($ImgText == "") {
-    $carpeta = "../../Archivos/ImgEmpleados/$NoEmpleado/";
-
-    if (isset($_FILES['fotoEmp']['name']) && $_FILES['fotoEmp']['name'] != '') {
-      $namefile = $_FILES['fotoEmp']['name'];
-      $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-
-      $extValida = array("png", "jpeg", "jpg");
-      if (in_array($ext, $extValida)) {
-
-        $path = $carpeta . $NoEmpleado . ".$ext";
-        $nameimg = $NoEmpleado . ".$ext";
-        if (!file_exists($carpeta)) {
-          mkdir($carpeta, 0777, true);
-        }
-        if (move_uploaded_file($_FILES['fotoEmp']['tmp_name'], $path)) {
-          $NombreArchivo = $namefile;
-          error_log("subida imagen proceso");
-          $Empleados2->updateFotoEmpleado($nameimg);
-          echo "1";
-
-        }
-      }
+    if (in_array($ext, $extValida)) {
+      $mimeType = mime_content_type($_FILES['fotoEmp']['tmp_name']);
+      $imageContent = base64_encode(file_get_contents($_FILES['fotoEmp']['tmp_name']));
+      $imageDataUri = "data:" . $mimeType . ";base64," . $imageContent;
+      echo trim($Empleados->updateFotoEmpleado($imageDataUri));
+    } else {
+      echo "0";
     }
   } else {
-    $direccion = "../../Archivos/ImgEmpleados/$NoEmpleado/$ImgText";
-    unlink($direccion);
-
-    try {
-      $carpeta = "../../Archivos/ImgEmpleados/$NoEmpleado/";
-
-      if (isset($_FILES['fotoEmp']['name']) && $_FILES['fotoEmp']['name'] != '') {
-        $namefile = $_FILES['fotoEmp']['name'];
-        $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-
-        $extValida = array("png", "jpeg", "jpg");
-
-        if (in_array($ext, $extValida)) {
-
-          $path = $carpeta . $NoEmpleado . ".$ext";
-          $nameimg = $NoEmpleado . ".$ext";
-          if (!file_exists($carpeta)) {
-            mkdir($carpeta, 0777, true);
-          }
-          if (move_uploaded_file($_FILES['fotoEmp']['tmp_name'], $path)) {
-            $NombreArchivo = $namefile;
-            error_log("subida imagen proceso");
-            $Empleados2->updateFotoEmpleado($nameimg);
-          }
-        }
-      }
-
-    } catch (\Exception $e) {
-      error_log("$e");
-    }
-    echo "1";
+    echo "0";
   }
 
 

@@ -103,7 +103,14 @@ class Empleados extends Conexiones
         $Conexiones2 = new Conexiones();
         $q2 = "SELECT MensajeBienvenida FROM ConfiguracionPersonalizacion;";
         $cons2 = $Conexiones2->Select($q2, array());
-        $MensajeBienvenida = $cons2[0]["MensajeBienvenida"];
+        $MensajeBienvenida = "";
+        if (!empty($cons2) && isset($cons2[0]["MensajeBienvenida"])) {
+            $MensajeBienvenida = $cons2[0]["MensajeBienvenida"] ?? "";
+        }
+
+        if (empty($cons)) {
+            return json_encode([]);
+        }
 
         $Datos = [
             "Antiguedad" => $cons[0]["Antiguedad"],
@@ -162,21 +169,13 @@ class Empleados extends Conexiones
     {
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
-            $q = "UPDATE Empleados SET Imagen = '$Imagen' WHERE NoEmpleado = '$NoEmpleado';";
-            $this->ExecuteQuery($q, array());
+            $q = "UPDATE Empleados SET Imagen = ? WHERE NoEmpleado = ?;";
+            $this->ExecuteQuery($q, array($Imagen, $NoEmpleado));
             return "1";
         } catch (\Exception $e) {
             return "0";
         }
 
-    }
-
-    function getNameFotoEmpleado()
-    {
-        $NoEmpleado = (SessionManager::get("NoEmpleado"));
-        $q = "SELECT Imagen FROM Empleados WHERE NoEmpleado = '$NoEmpleado';";
-        $cons = $this->Select($q, array());
-        return $cons;
     }
 
     function getColaboradores()
@@ -888,29 +887,14 @@ class Empleados extends Conexiones
 
     function SubirFirma($imagen64)
     {
-        $random = rand(1000, 9999);
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
-        $carpeta = "../../Archivos/ImgEmpleados/$NoEmpleado/Firma/";
-        $img = str_replace('data:image/png;base64,', '', $imagen64);
-        $img = str_replace(' ', '+', $img);
-        $data = base64_decode($img);
-
-
-        if (!file_exists($carpeta)) {
-            mkdir($carpeta, 0777, true);
+        try {
+            $q = "UPDATE Empleados SET Firma = ? WHERE NoEmpleado = ?;";
+            $this->ExecuteQuery($q, array($imagen64, $NoEmpleado));
+            return "1";
+        } catch (\Exception $e) {
+            return "0";
         }
-        $files = glob("../../Archivos/ImgEmpleados/$NoEmpleado/Firma/*"); //obtenemos todos los nombres de los ficheros
-        foreach ($files as $file) {
-            if (is_file($file))
-                unlink($file); //elimino el fichero
-        }
-        file_put_contents("../../Archivos/ImgEmpleados/$NoEmpleado/Firma/Firma" . $random . $NoEmpleado . ".png", $data);
-
-        $firmaName = "Firma" . $random . $NoEmpleado . ".png";
-
-        $q = "UPDATE Empleados set Firma = '$firmaName' Where NoEmpleado = '$NoEmpleado';";
-        $this->ExecuteQuery($q, array());
-        return "1";
     }
     function getFirmaEmp()
     {
