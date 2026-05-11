@@ -349,6 +349,11 @@
                 </a>
               </li>
               <li>
+                <a class="dropdown-item user-menu-link" href="LineaEticaUs.php">
+                  <i class="material-icons me-2">gavel</i>Línea Ética
+                </a>
+              </li>
+              <li>
                 <a class="dropdown-item user-menu-link" href="logout.php">
                   <i class="material-icons me-2">exit_to_app</i>Salir
                 </a>
@@ -410,6 +415,9 @@
     <!-- Links Mobile -->
     <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="index.php" onclick="closeMobileMenu()">
       <i class="material-icons me-2">home</i> Inicio
+    </a>
+    <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="LineaEticaUs.php" onclick="closeMobileMenu()">
+      <i class="material-icons me-2">gavel</i> Línea Ética
     </a>
     <a class="d-flex align-items-center text-decoration-none text-dark py-2" href="logout.php">
       <i class="material-icons me-2">exit_to_app</i> Salir
