@@ -34,13 +34,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 async function loadAllFunctions() {
+  // Cargar datos del empleado (perfil en el header)
   loadGblDataEmployee();
-  getMensajeVistoLineaEtica();
-  getMsgSolicitudesVacacionesRecibidas();
-  getMsgSolicitudesVacacionesRecibidasFinal();
-  getMensajeCapacitacionGlobal();
-  getCantidadNotificaciones();
-  getMsgLineaEtica();
+
+  // Inicializar el sistema unificado de notificaciones.
+  // Esto reemplaza las 6 llamadas AJAX independientes anteriores:
+  //   getMensajeVistoLineaEtica, getMsgSolicitudesVacacionesRecibidas,
+  //   getMsgSolicitudesVacacionesRecibidasFinal, getMensajeCapacitacionGlobal,
+  //   getCantidadNotificaciones, getMsgLineaEtica
+  if (typeof NotificationManager !== 'undefined') {
+    NotificationManager.init();
+  }
 }
 
 class Empleado {
@@ -226,18 +230,10 @@ function onlynumber(e) {
         getMsgSolicitudesVacacionesRecibidasFinal();
       }, 60000); */
 
-setInterval(() => {
-  if (!navigator.onLine) {
-    console.log("offline");
-  } else if (navigator.onLine) {
-    getMensajeVistoLineaEtica();
-    getMsgSolicitudesVacacionesRecibidas();
-    getMsgSolicitudesVacacionesRecibidasFinal();
-    getMensajeCapacitacionGlobal();
-    getCantidadNotificaciones();
-    getMsgLineaEtica();
-  }
-}, 480000);
+// El polling de notificaciones ahora lo gestiona NotificationManager (ver scripts/notifications.js).
+// El intervalo anterior (8 minutos, 6 peticiones AJAX) ha sido reemplazado por
+// un polling de 5 minutos con 1 sola petición.
+
 
 async function getCantidadNotificaciones() {
   let datos = await {

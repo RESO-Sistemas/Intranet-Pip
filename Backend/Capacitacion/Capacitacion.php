@@ -24,6 +24,11 @@
     require_once("../../Session/SessionManager.php");
   }
 
+  // Cargar módulo de notificaciones centralizadas
+  if (file_exists("../Notifications/Notifications.php")) {
+    require_once("../Notifications/Notifications.php");
+  }
+
   class Capacitacion extends Conexiones {
     function getFechasRango($fechaInicio,$fechaFin){
       $fechaInicio=strtotime($fechaInicio);
@@ -72,6 +77,20 @@
                 $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
                 $result = $ConexionDetalle->ExecuteQuery($q3,array());
                 $insertados++;
+
+                // Notificar al empleado asignado a la capacitación
+                if (class_exists('Notifications')) {
+                    $notifSvc = new Notifications();
+                    $notifSvc->insertNotification(
+                        $emp,
+                        'training',
+                        'Capacitación asignada',
+                        'Se te ha asignado la capacitación: ' . $nDescripcion,
+                        'Capacitacion.php',
+                        (int)$last_id,
+                        'Capacitacion'
+                    );
+                }
               }
             }
             
@@ -99,6 +118,20 @@
             $q3 = "INSERT INTO CapacitacionDetalle (id_capacitacion,NoEmpleado) VALUES ($last_id,'$emp')";
             $result = $ConexionDetalle->ExecuteQuery($q3,array());
             $insertados++;
+
+            // Notificar al empleado asignado a la capacitación
+            if (class_exists('Notifications')) {
+                $notifSvc = new Notifications();
+                $notifSvc->insertNotification(
+                    $emp,
+                    'training',
+                    'Capacitación asignada',
+                    'Se te ha asignado la capacitación: ' . $nDescripcion,
+                    'Capacitacion.php',
+                    (int)$last_id,
+                    'Capacitacion'
+                );
+            }
           }
         }
         

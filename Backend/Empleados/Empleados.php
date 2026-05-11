@@ -22,6 +22,11 @@ if (file_exists("../Session/SessionManager.php")) {
     require_once("../../Session/SessionManager.php");
 }
 
+// Cargar módulo de notificaciones centralizadas
+if (file_exists("../Notifications/Notifications.php")) {
+    require_once("../Notifications/Notifications.php");
+}
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -439,6 +444,23 @@ class Empleados extends Conexiones
               $NewInstEmpleados = new Empleados();
               $NewInstEmpleados->sendPushNotificationToSegment($ArrMsgPush);
             }
+
+            // Notificar al jefe en el sistema de notificaciones centralizado
+            if (class_exists('Notifications') && sizeof($cons) > 0) {
+                $notifService = new Notifications();
+                foreach ($empleadosPadre as $padre) {
+                    $notifService->insertNotification(
+                        $padre['NoEmpleado'],
+                        'vacation',
+                        'Solicitud de vacaciones',
+                        'El empleado ' . $NombreEmp . ' ha solicitado sus vacaciones.',
+                        'SolicitudVacaciones.php',
+                        (int)$idSolicitud,
+                        'SolicitudesVacaciones'
+                    );
+                }
+            }
+
             return "1";
         } else {
             return "errorJefe";
@@ -1111,6 +1133,30 @@ class Empleados extends Conexiones
                         }
 
                     } catch (\Exception $e) {
+                    }
+
+                    // Notificar al empleado solicitante sobre la resolución final de su vacación
+                    if (class_exists('Notifications')) {
+                        $notifSvc  = new Notifications();
+                        $Conexiones_n = new Conexiones();
+                        $q_n = "SELECT NoEmpleado FROM SolicitudesVacaciones WHERE idSolicitudesVacaciones = '$idSolicitudesVacaciones'";
+                        $cons_n = $Conexiones_n->Select($q_n);
+                        if (!empty($cons_n)) {
+                            $empSolicitante = $cons_n[0]['NoEmpleado'];
+                            $msgTitle = ($Status === '1') ? 'Vacaciones aprobadas' : 'Vacaciones rechazadas';
+                            $msgBody  = ($Status === '1')
+                                ? 'Tu solicitud de vacaciones del ' . $FechaInicio . ' al ' . $FechaFin . ' fue aprobada por nómina.'
+                                : 'Tu solicitud de vacaciones del ' . $FechaInicio . ' al ' . $FechaFin . ' fue rechazada por nómina.';
+                            $notifSvc->insertNotification(
+                                $empSolicitante,
+                                'vacation',
+                                $msgTitle,
+                                $msgBody,
+                                'SolicitudVacaciones.php',
+                                (int)$idSolicitudesVacaciones,
+                                'SolicitudesVacaciones'
+                            );
+                        }
                     }
                 }
                 return $Retorno;

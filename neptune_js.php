@@ -16,6 +16,8 @@
 <script src="./neptune/js/custom.js"></script>
 
 <!-- Scripts globales personalizados -->
+<!-- notifications.js debe cargarse ANTES de global.js para que NotificationManager esté disponible -->
+<script src="./scripts/notifications.js?v=<?php echo time(); ?>"></script>
 <script src="./scripts/global.js?v=<?php echo time(); ?>"></script>
 
 <!-- sycnfusion -->
