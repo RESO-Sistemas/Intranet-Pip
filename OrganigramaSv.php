@@ -268,6 +268,38 @@
     }
     .org-search-add-btn .material-symbols-outlined { font-size: 13px; }
 
+    /* ── Zoom controls flotantes ─────────────────────────── */
+    .sv-zoom-controls {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        z-index: 10;
+    }
+    .sv-zoom-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: #fff;
+        color: #475569;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        transition: all .15s;
+        padding: 0;
+    }
+    .sv-zoom-btn:hover {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #111;
+    }
+    .sv-zoom-btn .material-symbols-outlined { font-size: 16px; }
+
     /* ── Canvas ───────────────────────────────────────── */
     .org-canvas-wrapper {
         flex: 1;
@@ -475,6 +507,19 @@
                         </button>
 
                         <div id="element"></div>
+
+                        <!-- Botones zoom flotantes -->
+                        <div class="sv-zoom-controls">
+                            <button class="sv-zoom-btn" onclick="svZoomIn()" title="Acercar">
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
+                            <button class="sv-zoom-btn" onclick="svZoomOut()" title="Alejar">
+                                <span class="material-symbols-outlined">remove</span>
+                            </button>
+                            <button class="sv-zoom-btn" onclick="svFit()" title="Ajustar a pantalla">
+                                <span class="material-symbols-outlined">fit_screen</span>
+                            </button>
+                        </div>
 
                         <div class="org-empty-overlay" id="orgEmptyOverlay" style="display:none;">
                             <span class="material-symbols-outlined">account_tree</span>

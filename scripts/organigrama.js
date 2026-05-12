@@ -140,19 +140,24 @@ function loadOrganigrama(orgId, datos) {
         tool: ej.diagrams.DiagramTools.SingleSelect | ej.diagrams.DiagramTools.ZoomPan,
         getNodeDefaults:      nodeDefaults,
         getConnectorDefaults: connectorDefaults,
-        click: eventClick
+        click: eventClick,
+        scrollSettings: { minZoom: 0.25, maxZoom: 3 }
     });
 
     diagram.appendTo(`#divOrg${orgId}`);
     diagramMap[orgId] = diagram;
     lastDiagram = diagram;
 
+    // Mostrar controles de zoom
+    const zoomCtrl = document.getElementById("orgZoomControls");
+    if (zoomCtrl) zoomCtrl.style.display = "flex";
+
     const fitOpts = { mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } };
     const sin = datos.filter(d => !d.offsetX && !d.offsetY).length;
     if (sin > datos.length / 2) {
         applyAutoLayout(diagram);
     } else {
-        setTimeout(() => diagram.fitToPage(fitOpts), 150);
+        setTimeout(() => safeFitToPage(diagram), 150);
     }
 }
 
@@ -166,8 +171,25 @@ function applyAutoLayout(diagram) {
         }
     };
     diagram.dataBind();
-    setTimeout(() => diagram.fitToPage({ mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } }), 200);
+    setTimeout(() => safeFitToPage(diagram), 200);
 }
+
+/* Ajusta el diagrama a la pantalla sin bajar de minZoom (0.25) */
+function safeFitToPage(diag) {
+    const opts = { mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } };
+    diag.fitToPage(opts);
+    setTimeout(() => {
+        const currentZoom = diag.scrollSettings?.currentZoom ?? 1;
+        if (currentZoom < 0.25) {
+            diag.zoom(0.25 / currentZoom);
+        }
+    }, 50);
+}
+
+/* Funciones globales usadas por los botones flotantes de zoom */
+function orgZoomIn()  { if (lastDiagram) lastDiagram.zoom(1.2); }
+function orgZoomOut() { if (lastDiagram) lastDiagram.zoom(1 / 1.2); }
+function orgFit()     { if (lastDiagram) safeFitToPage(lastDiagram); }
 
 function doBinding(node, data) {
     node.annotations = [];

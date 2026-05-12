@@ -29,7 +29,7 @@ let selectedNodeRawId = null; // idDetalleOrganigrama del nodo seleccionado
     if (needsAutoLayout()) {
         setTimeout(() => doAutoLayout(true), 300);
     } else if (datosOrg.length > 0) {
-        setTimeout(() => diagram.fitToPage({ mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } }), 150);
+        setTimeout(() => svSafeFitToPage(), 150);
     }
 })();
 
@@ -129,7 +129,8 @@ function printDiagram() {
         getConnectorDefaults: connectorDefaults,
         positionChange:     onPositionChange,
         sizeChange:         onSizeChange,
-        selectionChange:    onSelectionChange
+        selectionChange:    onSelectionChange,
+        scrollSettings:     { minZoom: 0.25, maxZoom: 3 }
     });
 }
 
@@ -797,7 +798,7 @@ async function doAutoLayout(silent = false) {
     }
     await refreshDiagram();
     // Centrar vista sobre todos los nodos tras el reordenamiento
-    if (diagram) diagram.fitToPage({ mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } });
+    if (diagram) svSafeFitToPage();
 }
 
 /* ── Hover "+" button ──────────────────────────────────────── */
@@ -808,6 +809,24 @@ function hideNodeAddBtn() { /* reserved */ }
 function getOrCreateOffcanvas(el) {
     return bootstrap.Offcanvas.getInstance(el) || new bootstrap.Offcanvas(el);
 }
+
+/* Ajusta el diagrama a la pantalla sin bajar de minZoom (0.25) */
+function svSafeFitToPage() {
+    if (!diagram) return;
+    const opts = { mode: "Page", region: "Content", margin: { top: 40, left: 40, right: 40, bottom: 40 } };
+    diagram.fitToPage(opts);
+    setTimeout(() => {
+        const currentZoom = diagram.scrollSettings?.currentZoom ?? 1;
+        if (currentZoom < 0.25) {
+            diagram.zoom(0.25 / currentZoom);
+        }
+    }, 50);
+}
+
+/* Funciones globales usadas por los botones flotantes de zoom */
+function svZoomIn()  { if (diagram) diagram.zoom(1.2); }
+function svZoomOut() { if (diagram) diagram.zoom(1 / 1.2); }
+function svFit()     { svSafeFitToPage(); }
 
 function escHtml(s) {
     return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");

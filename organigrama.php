@@ -151,7 +151,42 @@
             border-radius: 0 0 10px 10px;
         }
 
-        /* ─── States ─── */
+        /* ─── Zoom controls flotantes ─── */
+        .org-zoom-controls {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .org-zoom-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            transition: all .15s;
+            padding: 0;
+        }
+
+        .org-zoom-btn:hover {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #111;
+        }
+
+        .org-zoom-btn .material-symbols-outlined {
+            font-size: 16px;
+        }
         .org-loading,
         .org-empty-state {
             display: flex;
@@ -364,7 +399,21 @@
                         </div>
 
                         <!-- Organigramas (tabs + canvas) -->
-                        <div id="contenidoOrganigramas"></div>
+                        <div style="position:relative;">
+                            <div id="contenidoOrganigramas"></div>
+                            <!-- Botones zoom flotantes -->
+                            <div class="org-zoom-controls" id="orgZoomControls" style="display:none;">
+                                <button class="org-zoom-btn" onclick="orgZoomIn()" title="Acercar">
+                                    <span class="material-symbols-outlined">add</span>
+                                </button>
+                                <button class="org-zoom-btn" onclick="orgZoomOut()" title="Alejar">
+                                    <span class="material-symbols-outlined">remove</span>
+                                </button>
+                                <button class="org-zoom-btn" onclick="orgFit()" title="Ajustar a pantalla">
+                                    <span class="material-symbols-outlined">fit_screen</span>
+                                </button>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
