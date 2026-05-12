@@ -63,6 +63,52 @@ $FechaMenosMes = date("Y-m-d", strtotime($hoy . "- 2 month"));
                 </div>
               </div>
             </div>
+            <!-- Stat-cards de resumen para Nómina: se llenan dinámicamente desde SolicitudesVacacionesFinales.js -->
+            <div class="row g-3 mb-4" id="statsNomina">
+              <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
+                  <div class="card-body d-flex align-items-center gap-3 p-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
+                      style="width:48px;height:48px;background:#FFFBEB;">
+                      <span class="material-symbols-outlined" style="color:#D97706;font-size:24px;">pending_actions</span>
+                    </div>
+                    <div>
+                      <div class="text-muted" style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Por Autorizar</div>
+                      <div id="statNominaPorAutorizar" class="fw-bold" style="font-size:22px;line-height:1.1;">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
+                  <div class="card-body d-flex align-items-center gap-3 p-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
+                      style="width:48px;height:48px;background:#ECFDF5;">
+                      <span class="material-symbols-outlined" style="color:#059669;font-size:24px;">task_alt</span>
+                    </div>
+                    <div>
+                      <div class="text-muted" style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Aceptadas (periodo)</div>
+                      <div id="statNominaAceptadas" class="fw-bold" style="font-size:22px;line-height:1.1;">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
+                  <div class="card-body d-flex align-items-center gap-3 p-3">
+                    <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
+                      style="width:48px;height:48px;background:#FEF2F2;">
+                      <span class="material-symbols-outlined" style="color:#DC2626;font-size:24px;">block</span>
+                    </div>
+                    <div>
+                      <div class="text-muted" style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Rechazadas (periodo)</div>
+                      <div id="statNominaRechazadas" class="fw-bold" style="font-size:22px;line-height:1.1;">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="row">
               <div class="col-12">
                 <div class="page-description page-description-tabbed">

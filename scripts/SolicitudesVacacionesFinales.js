@@ -1,14 +1,94 @@
 const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const SV = urlParams.get("SV");
+
 let gridSolicitudesRevision = null;
 let gridHistoricoNomina = null;
 
+// ─── Helpers de UI ────────────────────────────────────────────────────────────
+
+/**
+ * Genera el HTML del template de tabla vacía con ícono de Material Symbols
+ */
+function getEmptyTemplateNomina(title, desc, icon) {
+  return `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5"
+    style="min-height:320px;background-color:#fafbfc;border-radius:12px;border:1px dashed #dee2e6;">
+      <div class="mb-3 d-flex align-items-center justify-content-center"
+        style="width:80px;height:80px;background-color:#f1f3f5;border-radius:50%;">
+          <span class="material-symbols-outlined" style="font-size:40px;color:#adb5bd;">${icon}</span>
+      </div>
+      <h5 class="text-dark mb-2" style="font-weight:600;">${title}</h5>
+      <p class="text-muted mb-0" style="max-width:350px;font-size:14px;">${desc}</p>
+    </div>`;
+}
+
+/**
+ * Handler de dataBound para ocultar/mostrar toolbar, header y paginador
+ * según si el grid tiene datos o no.
+ */
+function dataBoundHandlerNomina() {
+  const gridElement = this.element;
+  const toolbar     = gridElement.querySelector(".e-toolbar");
+  const header      = gridElement.querySelector(".e-gridheader");
+  const pager       = gridElement.querySelector(".e-gridpager");
+  const gridContent = gridElement.querySelector(".e-gridcontent");
+  if (this.currentViewData.length === 0) {
+    if (toolbar)      toolbar.style.display      = "none";
+    if (header)       header.style.display       = "none";
+    if (pager)        pager.style.display        = "none";
+    gridElement.style.border = "none";
+    if (gridContent)  gridContent.style.border   = "none";
+  } else {
+    if (toolbar)      toolbar.style.display      = "";
+    if (header)       header.style.display       = "";
+    if (pager)        pager.style.display        = "";
+    gridElement.style.border = "";
+    if (gridContent)  gridContent.style.border   = "";
+  }
+}
+
+/**
+ * Genera un badge de estado visual (sistema ev-sbadge) según el Status numérico
+ * @param {string|number} status - Valor de Status (1=en revisión, 2=rechazada, 3=aceptada)
+ * @returns {string} HTML del badge
+ */
+function getStatusBadgeNomina(status) {
+  const config = {
+    "1": { cls: "blue",    icon: "manage_accounts",  label: "En revisión"   },
+    "2": { cls: "red",     icon: "cancel",           label: "Rechazada"     },
+    "3": { cls: "emerald", icon: "check_circle",     label: "Aceptada"      },
+  };
+  const c = config[String(status)] || { cls: "gray", icon: "help", label: "Desconocido" };
+  return `<span class="ev-sbadge ${c.cls}">
+    <span class="material-symbols-outlined">${c.icon}</span> ${c.label}
+  </span>`;
+}
+
+/**
+ * Actualiza las stat-cards del dashboard de Nómina.
+ * - "Por Autorizar" se toma del conteo actual del grid de revisión.
+ * - "Aceptadas" y "Rechazadas" se toman del histórico cargado.
+ * @param {number} porAutorizar - Total de solicitudes en revisión
+ * @param {Array}  historicoData - Array del histórico ya mapeado
+ */
+function updateStatCardsNomina(porAutorizar, historicoData) {
+  const aceptadas  = historicoData.filter(d => d.NumStatus == 3).length;
+  const rechazadas = historicoData.filter(d => d.NumStatus == 2).length;
+
+  const elPorAutorizar = document.getElementById("statNominaPorAutorizar");
+  const elAceptadas    = document.getElementById("statNominaAceptadas");
+  const elRechazadas   = document.getElementById("statNominaRechazadas");
+
+  if (elPorAutorizar) elPorAutorizar.textContent = porAutorizar;
+  if (elAceptadas)    elAceptadas.textContent    = aceptadas;
+  if (elRechazadas)   elRechazadas.textContent   = rechazadas;
+}
+
+// ─── Inicialización ───────────────────────────────────────────────────────────
+
 function onlynumber(e) {
   tecla = document.all ? e.keyCode : e.which;
-  if (tecla == 8) {
-    return true;
-  }
+  if (tecla == 8) { return true; }
   patron = /[-0-9]/;
   tecla_final = String.fromCharCode(tecla);
   return patron.test(tecla_final);
@@ -25,6 +105,12 @@ if (document.readyState === "loading") {
   initSolicitudesVacacionesFinales();
 }
 
+// ─── Funciones de carga de datos ─────────────────────────────────────────────
+
+/**
+ * Carga solicitudes aprobadas por jefe (Status=1) que están pendientes de autorización por Nómina.
+ * Actualiza el contador "Por Autorizar" en las stat-cards.
+ */
 function getMisSolicitudesFinales() {
   const tableSolicitudes = document.getElementById("TableSolicitudes");
   if (!tableSolicitudes) {
@@ -32,40 +118,55 @@ function getMisSolicitudesFinales() {
     return;
   }
 
-  let datos = { op: "getMisSolicitudesFinales" };
   if (gridSolicitudesRevision && typeof gridSolicitudesRevision.destroy === "function") {
     gridSolicitudesRevision.destroy();
     gridSolicitudesRevision = null;
   }
-  
+
   $.ajax({
       type: "POST",
       url: "Backend/Empleados/App.php",
-      data: datos,
+      data: { op: "getMisSolicitudesFinales" },
       dataType: "json",
       success: function (response) {
         const normalizedResponse = Array.isArray(response) ? response : [];
+
+        // Actualizar contador "Por Autorizar" en stat-cards
+        const elPorAutorizar = document.getElementById("statNominaPorAutorizar");
+        if (elPorAutorizar) elPorAutorizar.textContent = normalizedResponse.length;
+
         let mappedData = normalizedResponse.map(item => {
-          let btnAcciones = `
-            <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-success btn-accion btn-aceptar-sol" title="Aceptar Solicitud">
-                    <span class="material-symbols-outlined">check</span>
-                </button>
-                <button class="btn btn-danger btn-accion btn-rechazar-sol" title="Rechazar Solicitud">
-                    <span class="material-symbols-outlined">close</span>
+          let btnVerSolicitud = `
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
+                  target="_blank" href="FormatoVacaciones.php?Solicitud=${item.idSolicitudesVacaciones}"
+                  title="Ver formato de solicitud">
+                    <span class="material-symbols-outlined" style="font-size:16px;">visibility</span> Ver
+                </a>
+            </div>`;
+
+          // Botones de acción separados en columnas distintas
+          let btnAceptar = `
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success btn-sm d-inline-flex align-items-center gap-1 btn-aceptar-sol"
+                  title="Aceptar solicitud — descuenta días de vacaciones del empleado">
+                    <span class="material-symbols-outlined" style="font-size:16px;">check</span> Aceptar
                 </button>
             </div>`;
 
-          let btnVerSolicitud = `
+          let btnRechazar = `
             <div class="d-flex justify-content-center">
-                <a class="btn btn-primary btn-accion" target="_blank" href="FormatoVacaciones.php?Solicitud=${item.idSolicitudesVacaciones}" title="Ver Solicitud">
-                    <span class="material-symbols-outlined">visibility</span>
-                </a>
+                <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1 btn-rechazar-sol"
+                  title="Rechazar solicitud">
+                    <span class="material-symbols-outlined" style="font-size:16px;">close</span> Rechazar
+                </button>
             </div>`;
+
           return {
              ...item,
-             BtnVer: btnVerSolicitud,
-             BtnAcciones: btnAcciones
+             BtnVer:     btnVerSolicitud,
+             BtnAceptar: btnAceptar,
+             BtnRechazar: btnRechazar
           };
         });
 
@@ -76,43 +177,23 @@ function getMisSolicitudesFinales() {
             toolbar: ["Search"],
             allowPaging: true,
             pageSettings: { pageSize: 10 },
-            emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height: 320px; background-color: #fafbfc; border-radius: 12px; border: 1px dashed #dee2e6;">
-                <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f1f3f5; border-radius: 50%;">
-                    <span class="material-symbols-outlined" style="font-size: 40px; color: #adb5bd;">beach_access</span>
-                </div>
-                <h5 class="text-dark mb-2" style="font-weight: 600;">Sin solicitudes en revisión</h5>
-                <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">No hay solicitudes de vacaciones pendientes por revisar.</p>
-              </div>`,
+            emptyRecordTemplate: getEmptyTemplateNomina(
+              "Sin solicitudes en revisión",
+              "No hay solicitudes de vacaciones pendientes por revisar.",
+              "beach_access"
+            ),
             columns: [
-              { field: "Nombre", headerText: "EMPLEADO", width: 200 },
-              { field: "Sucursal", headerText: "DEPARTAMENTO", width: 150 },
+              { field: "Nombre",        headerText: "EMPLEADO",         width: 200 },
+              { field: "Sucursal",      headerText: "DEPARTAMENTO",     width: 150 },
               { field: "FechaSolicitud", headerText: "FECHA SOLICITUD", width: 130 },
-              { field: "FechaInicio", headerText: "FECHA INICIO", width: 130 },
-              { field: "FechaFin", headerText: "FECHA FIN", width: 130 },
-              { field: "TotalDias", headerText: "TOTAL DIAS", width: 120 },
-              { field: "BtnVer", headerText: "VER SOLICITUD", width: 150, textAlign: "Center", disableHtmlEncode: false },
-              { field: "BtnAcciones", headerText: "ACCIONES", width: 150, textAlign: "Center", disableHtmlEncode: false }
+              { field: "FechaInicio",   headerText: "FECHA INICIO",     width: 130 },
+              { field: "FechaFin",      headerText: "FECHA FIN",        width: 130 },
+              { field: "TotalDias",     headerText: "DÍAS",             width: 90  },
+              { field: "BtnVer",        headerText: "VER",              width: 110, textAlign: "Center", disableHtmlEncode: false },
+              { field: "BtnAceptar",    headerText: "ACEPTAR",          width: 130, textAlign: "Center", disableHtmlEncode: false },
+              { field: "BtnRechazar",   headerText: "RECHAZAR",         width: 130, textAlign: "Center", disableHtmlEncode: false }
             ],
-            dataBound: function () {
-              const gridElement = this.element;
-              const toolbar = gridElement.querySelector(".e-toolbar");
-              const header = gridElement.querySelector(".e-gridheader");
-              const pager = gridElement.querySelector(".e-gridpager");
-              const gridContent = gridElement.querySelector(".e-gridcontent");
-              if (this.currentViewData.length === 0) {
-                if (toolbar) toolbar.style.display = "none";
-                if (header) header.style.display = "none";
-                if (pager) pager.style.display = "none";
-                gridElement.style.border = "none";
-                if (gridContent) gridContent.style.border = "none";
-              } else {
-                if (toolbar) toolbar.style.display = "";
-                if (header) header.style.display = "";
-                if (pager) pager.style.display = "";
-                gridElement.style.border = "";
-                if (gridContent) gridContent.style.border = "";
-              }
-            },
+            dataBound: dataBoundHandlerNomina,
             recordClick: function(args) {
                 const clickedElement = args.target;
                 if (!clickedElement || typeof clickedElement.closest !== "function") return;
@@ -145,106 +226,67 @@ function getMisSolicitudesFinales() {
   });
 }
 
+/**
+ * Acepta o rechaza definitivamente una solicitud de vacaciones.
+ * Al aceptar, se ejecuta un stored procedure que descuenta los días del empleado.
+ * @param {number} solicitud - ID de la solicitud
+ * @param {number} accion    - 1 = aceptar (Status→3), 0 = rechazar (Status→2)
+ */
 function realizarAccionSolicitud(solicitud, accion) {
-
-  let mensaje = "";
-
-  if (accion == 1) {
-
-    mensaje = "Desea aceptar la solicitud?";
-
-  } else {
-
-    mensaje = "Desea denegar la solicitud?";
-
-  }
+  const esAceptar    = accion == 1;
+  const tituloSwal   = esAceptar ? "¿Aceptar solicitud?" : "¿Rechazar solicitud?";
+  const textoSwal    = esAceptar
+    ? "Se aprobarán las vacaciones y se descontarán los días correspondientes del empleado."
+    : "La solicitud será rechazada y el empleado recibirá una notificación.";
+  const iconSwal     = esAceptar ? "question" : "warning";
 
   Swal.fire({
-
-    title: `${mensaje}`,
-
-    text: "",
-
-    icon: "warning",
-
+    title: tituloSwal,
+    text: textoSwal,
+    icon: iconSwal,
     showCancelButton: true,
-
     confirmButtonColor: "#ffc407",
-
     cancelButtonColor: "#d33",
-
     cancelButtonText: "Cancelar",
-
-    confirmButtonText: "Confirmar",
-
+    confirmButtonText: esAceptar ? "Sí, aceptar" : "Sí, rechazar",
   }).then((result) => {
-
     if (result.isConfirmed) {
-
-      datos = {
-
-        op: "realizarAccionSolicitudFinal",
-
-        idSolicitudesVacaciones: solicitud,
-
-        Status: accion,
-
-      };
-
       $.ajax({
-
         type: "post",
-
         url: "Backend/Empleados/App.php",
-
-        data: datos,
-
+        data: {
+          op: "realizarAccionSolicitudFinal",
+          idSolicitudesVacaciones: solicitud,
+          Status: accion,
+        },
         success: function (response) {
-
           if (response == 1) {
-
-            // toastr.success("Acción realizada con éxito.");
-
             const messageContent = `
-
-          <div class="alert-content">
-
-             <span class="alert-title">Completado!</span>
-
-              <span class="alert-text">Acción realizada con éxito.</span>
-
-          </div>`;
-
+              <div class="alert-content">
+                <span class="alert-title">Completado!</span>
+                <span class="alert-text">Acción realizada con éxito.</span>
+              </div>`;
             showBootstrapAlertSuc(messageContent, "top-right", 5000);
-
             getMisSolicitudesFinales();
-
             getHistoricoSolicitudesNomina();
-
           } else {
-
-            // toastr.info(response);
-
             const messageContent = `
-
-        <div class="alert-content">
-
-             <span class="alert-title">Información!</span>
-
-              <span class="alert-text">S${response}</span>
-
-        </div>`;
-
+              <div class="alert-content">
+                <span class="alert-title">Información!</span>
+                <span class="alert-text">${response}</span>
+              </div>`;
             showBootstrapAlert(messageContent, "top-right", 5000);
-
           }
-
         }
       });
     }
   });
 }
 
+/**
+ * Carga el histórico de solicitudes filtrado por rango de fechas.
+ * Actualiza los contadores "Aceptadas" y "Rechazadas" en las stat-cards.
+ */
 async function getHistoricoSolicitudesNomina() {
   const tableHistorico = document.getElementById("tableHistorico");
   if (!tableHistorico) {
@@ -252,51 +294,70 @@ async function getHistoricoSolicitudesNomina() {
     return;
   }
 
-  let FechaIni = $("#FechaIni").val();
-  let FechaFin = $("#FechaFin").val();
-  let datos = {
-    op: "getHistoricoSolicitudesNomina",
-    FechaIni: FechaIni,
-    FechaFin: FechaFin,
-  };
-  
+  const FechaIni = $("#FechaIni").val();
+  const FechaFin = $("#FechaFin").val();
+
   if (gridHistoricoNomina && typeof gridHistoricoNomina.destroy === "function") {
     gridHistoricoNomina.destroy();
     gridHistoricoNomina = null;
   }
-  
+
   let respuesta = [];
   try {
     respuesta = await $.ajax({
       type: "post",
       url: "Backend/Empleados/App.php",
-      data: datos,
+      data: { op: "getHistoricoSolicitudesNomina", FechaIni, FechaFin },
       dataType: "json",
     });
   } catch (e) {
     console.log(e);
   } finally {
-    let mappedData = respuesta.map((registros) => {
-      const btnClass = registros.NumStatus == 3 ? 'btn-success' : (registros.NumStatus == 2 ? 'btn-danger' : 'btn-warning');
-      const icon = registros.NumStatus == 3 ? 'sentiment_satisfied' : (registros.NumStatus == 2 ? 'sentiment_dissatisfied' : 'sentiment_neutral');
-      let Btn = `
+    const normalizedResponse = Array.isArray(respuesta) ? respuesta : [];
+
+    // Actualizar contadores de aceptadas/rechazadas en stat-cards desde el histórico
+    const elPorAutorizar = document.getElementById("statNominaPorAutorizar");
+    const currentPorAutorizar = elPorAutorizar ? (parseInt(elPorAutorizar.textContent) || 0) : 0;
+    updateStatCardsNomina(currentPorAutorizar, normalizedResponse);
+
+    let mappedData = normalizedResponse.map(registros => {
+      // Badge de estado separado del botón de acción
+      const statusBadge = getStatusBadgeNomina(registros.NumStatus);
+
+      // Botón "Ver" — siempre disponible
+      let BtnVer = `
         <div class="d-flex justify-content-center">
-            <a class="btn ${btnClass} btn-accion" target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}" title="Ver Solicitud">
-                <span class="material-symbols-outlined">${icon}</span>
+            <a class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1"
+              target="_blank" href="FormatoVacaciones.php?Solicitud=${registros.idSolicitudesVacaciones}"
+              title="Ver formato de solicitud">
+                <span class="material-symbols-outlined" style="font-size:16px;">visibility</span> Ver
             </a>
         </div>`;
 
-      const regBtnClass = registros.NumStatus == 1 ? 'btn-danger' : 'btn-warning';
-      let BtnRegresa = `
-        <div class="d-flex justify-content-center">
-            <button class="btn ${regBtnClass} btn-accion btn-regresar-nom" title="Regresar a Pendiente">
-                <span class="material-symbols-outlined">settings_backup_restore</span>
-            </button>
+      // Botón "Revertir" — solo disponible si la solicitud ya fue procesada por Nómina
+      let BtnRegresa = "";
+      if (registros.NumStatus == 1) {
+        // Aún pendiente — no hay nada que revertir desde el histórico
+        BtnRegresa = `<div class="d-flex justify-content-center">
+          <span class="ev-sbadge gray" style="font-size:11px;">
+            <span class="material-symbols-outlined">hourglass_empty</span> Pendiente
+          </span>
         </div>`;
+      } else {
+        BtnRegresa = `
+          <div class="d-flex justify-content-center">
+              <button class="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-1 btn-regresar-nom"
+                title="Revertir — regresa la solicitud a pendiente de autorización">
+                  <span class="material-symbols-outlined" style="font-size:16px;">settings_backup_restore</span> Revertir
+              </button>
+          </div>`;
+      }
+
       return {
           ...registros,
+          StatusBadge:   statusBadge,
           BtnRegresarHTML: BtnRegresa,
-          BtnVerHTML: Btn
+          BtnVerHTML:    BtnVer
       };
     });
 
@@ -307,40 +368,22 @@ async function getHistoricoSolicitudesNomina() {
         toolbar: ["Search"],
         allowPaging: true,
         pageSettings: { pageSize: 10 },
-        emptyRecordTemplate: `<div class="d-flex flex-column align-items-center justify-content-center text-center p-5" style="min-height: 320px; background-color: #fafbfc; border-radius: 12px; border: 1px dashed #dee2e6;">
-            <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #f1f3f5; border-radius: 50%;">
-                <span class="material-symbols-outlined" style="font-size: 40px; color: #adb5bd;">history</span>
-            </div>
-            <h5 class="text-dark mb-2" style="font-weight: 600;">Sin histórico</h5>
-            <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">No hay historial de solicitudes en este rango de fechas.</p>
-          </div>`,
+        emptyRecordTemplate: getEmptyTemplateNomina(
+          "Sin histórico",
+          "No hay historial de solicitudes en este rango de fechas.",
+          "history"
+        ),
         columns: [
-          { field: "Nombre", headerText: "EMPLEADO", width: 200 },
-          { field: "Status", headerText: "ESTADO DE LA SOLICITUD", width: 180 },
-          { field: "FechaSolicitud", headerText: "FECHA SOLICITUD", width: 150 },
-          { field: "BtnRegresarHTML", headerText: "REGRESAR A PENDIENTE", width: 200, textAlign: "Center", disableHtmlEncode: false },
-          { field: "BtnVerHTML", headerText: "VER SOLICITUD", width: 150, textAlign: "Center", disableHtmlEncode: false }
+          { field: "Nombre",          headerText: "EMPLEADO",              width: 190 },
+          { field: "StatusBadge",     headerText: "ESTADO",                width: 190, disableHtmlEncode: false },
+          { field: "FechaSolicitud",   headerText: "FECHA SOLICITUD",       width: 140 },
+          { field: "FechaInicio",     headerText: "INICIO VACACIONES",     width: 140 },
+          { field: "FechaFin",        headerText: "FIN VACACIONES",        width: 140 },
+          { field: "TotalDias",       headerText: "DÍAS",                  width: 80,  textAlign: "Center" },
+          { field: "BtnRegresarHTML", headerText: "REVERTIR",              width: 150, textAlign: "Center", disableHtmlEncode: false },
+          { field: "BtnVerHTML",      headerText: "VER",                   width: 110, textAlign: "Center", disableHtmlEncode: false }
         ],
-        dataBound: function () {
-          const gridElement = this.element;
-          const toolbar = gridElement.querySelector(".e-toolbar");
-          const header = gridElement.querySelector(".e-gridheader");
-          const pager = gridElement.querySelector(".e-gridpager");
-          const gridContent = gridElement.querySelector(".e-gridcontent");
-          if (this.currentViewData.length === 0) {
-            if (toolbar) toolbar.style.display = "none";
-            if (header) header.style.display = "none";
-            if (pager) pager.style.display = "none";
-            gridElement.style.border = "none";
-            if (gridContent) gridContent.style.border = "none";
-          } else {
-            if (toolbar) toolbar.style.display = "";
-            if (header) header.style.display = "";
-            if (pager) pager.style.display = "";
-            gridElement.style.border = "";
-            if (gridContent) gridContent.style.border = "";
-          }
-        },
+        dataBound: dataBoundHandlerNomina,
         recordClick: function(args) {
             const clickedElement = args.target;
             if (!clickedElement || typeof clickedElement.closest !== "function") return;
@@ -366,136 +409,59 @@ async function getHistoricoSolicitudesNomina() {
   }
 }
 
-
+/**
+ * Revierte la decisión de Nómina sobre una solicitud, regresándola a Status=1
+ * para que pueda ser revisada nuevamente.
+ * @param {number} val - ID de la solicitud
+ */
 async function regresarEstadoSolicitudNomina(val) {
-
   const result = await Swal.fire({
-
-    title: "Confirmación de acción",
-
+    title: "¿Revertir decisión?",
     html: `
-
-      <div class="row">
-
-        <div class="col-12 text-center">
-
-          ¿Desea regresar el estado de la solicitud a 
-
-          <strong>"Solicitud pendiente de revisar"</strong>?
-
-        </div>
-
-      </div>
-
+      <p class="text-muted mb-0">
+        La solicitud regresará al estado <strong>"Pendiente de autorización"</strong>
+        y podrá ser revisada nuevamente por Nómina.
+      </p>
     `,
-
     icon: "question",
-
     showCancelButton: true,
-
     confirmButtonColor: "#ffc407",
-
     cancelButtonColor: "#d33",
-
-    confirmButtonText: "Aceptar",
-
+    confirmButtonText: "Sí, revertir",
     cancelButtonText: "Cancelar",
-
   });
 
-
-
   if (result.isConfirmed) {
-
-    let datos = {
-
-      op: "regresarEstadoSolicitudNomina",
-
-      idSolicitudesVacaciones: val,
-
-    };
-
-
-
     let respuesta = "";
-
     try {
-
       respuesta = await $.ajax({
-
         type: "post",
-
         url: "Backend/Empleados/App.php",
-
-        data: datos,
-
+        data: {
+          op: "regresarEstadoSolicitudNomina",
+          idSolicitudesVacaciones: val,
+        },
       });
-
     } catch (e) {
-
       console.log(e);
-
     } finally {
-
       if (respuesta == "1") {
-
-        // Swal.fire({
-
-        //   icon: "success",
-
-        //   title: "Éxito",
-
-        //   text: 'Estado de solicitud regresado a "Solicitud pendiente de revisar".',
-
-        //   timer: 2000,
-
-        //   showConfirmButton: false,
-
-        // });
-
         const messageContent = `
-
           <div class="alert-content">
-
-             <span class="alert-title">Completado!</span>
-
-              <span class="alert-text">Estado de solicitud regresado a "Solicitud pendiente de revisar".</span>
-
+            <span class="alert-title">Completado!</span>
+            <span class="alert-text">Solicitud regresada a "Pendiente de autorización".</span>
           </div>`;
-
         showBootstrapAlertSuc(messageContent, "top-right", 5000);
-
         getMisSolicitudesFinales();
-
         getHistoricoSolicitudesNomina();
-
       } else {
-
-        // Swal.fire({
-
-        //   icon: "error",
-
-        //   title: "ERROR",
-
-        //   text: "Hubo un problema al regresar el estado de la solicitud.",
-
-        // });
-
         const messageContent = `
-
-            <div class="alert-content">
-
-             <span class="alert-title">Alerta!</span>
-
-              <span class="alert-text">Hubo un problema al regresar el estado de la solicitud.</span>
-
-            </div>`;
-
+          <div class="alert-content">
+            <span class="alert-title">Alerta!</span>
+            <span class="alert-text">Hubo un problema al revertir el estado de la solicitud.</span>
+          </div>`;
         showBootstrapAlertWar(messageContent, "top-right", 5000);
-
       }
-
     }
-
   }
 }

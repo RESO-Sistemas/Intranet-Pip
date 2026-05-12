@@ -2387,3 +2387,45 @@ body.dark-mode #modalDetalleVacante .select2-container--default .select2-results
   background-color: #ffc407 !important;
   color: #1a1a2e !important;
 }
+
+/* ─── Sistema de badges de estado (ev-sbadge) ─────────────────────────────────
+   Uso global para mostrar estados de solicitudes, evaluaciones, postulantes, etc.
+   Ejemplo: <span class="ev-sbadge green"><span class="material-symbols-outlined">check_circle</span> Aceptada</span>
+─────────────────────────────────────────────────────────────────────────────── */
+.ev-sbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.ev-sbadge .material-symbols-outlined {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Variantes de color */
+.ev-sbadge.green   { background: #ECFDF5; color: #10B981; }
+.ev-sbadge.emerald { background: #ECFDF5; color: #059669; }
+.ev-sbadge.red     { background: #FEF2F2; color: #DC2626; }
+.ev-sbadge.amber   { background: #FFFBEB; color: #92400E; }
+.ev-sbadge.blue    { background: #EFF6FF; color: #2563EB; }
+.ev-sbadge.gray    { background: #F1F5F9; color: #64748B; }
+.ev-sbadge.purple  { background: #F5F3FF; color: #7C3AED; }
+.ev-sbadge.teal    { background: #F0FDFA; color: #14B8A6; }
+.ev-sbadge.indigo  { background: #FEF3C7; color: #92400E; }
+
+/* Modo oscuro */
+body.dark-mode .ev-sbadge.green   { background: #064e3b; color: #6ee7b7; }
+body.dark-mode .ev-sbadge.emerald { background: #064e3b; color: #34d399; }
+body.dark-mode .ev-sbadge.red     { background: #7f1d1d; color: #fca5a5; }
+body.dark-mode .ev-sbadge.amber   { background: #451a03; color: #fde68a; }
+body.dark-mode .ev-sbadge.blue    { background: #1e3a5f; color: #93c5fd; }
+body.dark-mode .ev-sbadge.gray    { background: #1e293b; color: #94a3b8; }
+body.dark-mode .ev-sbadge.purple  { background: #2e1065; color: #c4b5fd; }
+body.dark-mode .ev-sbadge.teal    { background: #042f2e; color: #5eead4; }
+body.dark-mode .ev-sbadge.indigo  { background: #451a03; color: #fde68a; }

@@ -25,6 +25,8 @@ function cargarDatos() {
           `Dias restantes de Vacaciones: ${response[i]["DiferenciaYears"]}`
         );
       }
+      // Actualizar panel de resumen con los días disponibles recién cargados
+      if (typeof actualizarPanelResumen === "function") actualizarPanelResumen();
     },
   });
 }
@@ -163,10 +165,7 @@ async function enviarSolicitudVacaciones() {
   }
 }
 
-$(document).on("change", "#daysBreak", function () {
-  getDiasSeleccionados();
-  establecerFechaMinima();
-});
+// Escuchar clics en los botones toggle de días de descanso
 
 // Establecer fecha mínima = hoy
 function establecerFechaMinima() {
@@ -213,32 +212,39 @@ function validarFechas() {
   return true;
 }
 
+/**
+ * Lee los días de descanso activos directamente de los botones toggle.
+ * No depende de ningún <select> ni de Select2.
+ */
+function getDaysBreakValues() {
+  return Array.from(document.querySelectorAll(".day-toggle-btn.active"))
+    .map(btn => btn.getAttribute("data-value"));
+}
+
 function getDiasSeleccionados() {
   let diasValidos = [];
   let divicion = [];
   if ($("#FechaInicio").val() == "" || $("#FechaFin").val() == "") {
     return false;
   }
-  if ($("#daysBreak").val().length > 6) {
-    // toastr.info("Días de descanso seleccionados no válidos.");
+  const selectedDays = getDaysBreakValues();
+  if (selectedDays.length > 6) {
     const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Información!</span>
-              <span class="alert-text">Días de descanso seleccionados no válidos..</span>
+              <span class="alert-text">Días de descanso seleccionados no válidos.</span>
         </div>`;
     showBootstrapAlert(messageContent, "top-right", 5000);
-    $("#daysBreak").val([]);
-    $("#daysBreak").select2();
-    $("#DiasSeleccionados").text("Cantidad de dias seleccionados:" + "  " + 0);
-
+    // Limpiar todos los toggles visuales
+    document.querySelectorAll(".day-toggle-btn.active").forEach(b => b.classList.remove("active"));
+    $("#DiasSeleccionados").text("Cantidad de dias seleccionados:  0");
     $("#DiaRegreso").text("Regresando el día: Sin definir.");
   } else {
     let dataSend = {
       op: "getFechasRango",
       fechaInicio: $("#FechaInicio").val(),
       fechaFin: $("#FechaFin").val(),
-      diasDescanso:
-        $("#daysBreak").val().length > 0 ? $("#daysBreak").val() : "",
+      diasDescanso: selectedDays.length > 0 ? selectedDays : "",
     };
     // console.log(dataSend);
     $.ajax({
@@ -254,6 +260,8 @@ function getDiasSeleccionados() {
         );
         $("#DiaRegreso").text("Regresando el día:" + "  " + dataR.DiaRegreso);
         DiaRegreso = dataR.DiaRegreso;
+        // Actualizar panel de resumen con los nuevos valores
+        if (typeof actualizarPanelResumen === "function") actualizarPanelResumen();
       },
       error: function (e) {
         alert(e.responseText);

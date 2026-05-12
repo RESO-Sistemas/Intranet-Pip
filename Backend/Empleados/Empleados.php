@@ -506,7 +506,12 @@ class Empleados extends Conexiones
     function getMisSolicitudesVacaciones()
     {
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
-        $q = "SELECT idSolicitudesVacaciones,ComentariosSolicitud, Status,date_format(Registro ,'%d-%m-%Y') as FechaSolicitud FROM SolicitudesVacaciones WHERE NoEmpleado = '$NoEmpleado';";
+        $q = "SELECT idSolicitudesVacaciones,ComentariosSolicitud, Status,
+                date_format(Registro ,'%d-%m-%Y') as FechaSolicitud,
+                date_format(FechaInicio,'%d-%m-%Y') as FechaInicio,
+                date_format(FechaFin,'%d-%m-%Y') as FechaFin,
+                TotalDias
+              FROM SolicitudesVacaciones WHERE NoEmpleado = '$NoEmpleado';";
         return json_encode($this->Select($q, array()));
     }
 
@@ -977,7 +982,7 @@ class Empleados extends Conexiones
             "FirmaSolicitante" => isset($cons[0]["Firma"]) ? $cons[0]["Firma"] : "",
             "PuestoSolicitante" => isset($cons[0]["Puesto"]) ? $cons[0]["Puesto"] : "",
             "NoEmpleado" => isset($cons[0]["NoEmpleado"]) ? $cons[0]["NoEmpleado"] : "",
-            "Departamento" => isset($cons[0]["IdCentroCosto"]) ? $cons[0]["IdCentroCosto"] : "",
+            "Departamento" => isset($cons[0]["CentrodeCosto"]) ? $cons[0]["CentrodeCosto"] : "",
             "FechaInicio" => isset($cons[0]["FechaInicio"]) ? $cons[0]["FechaInicio"] : "",
             "Antiguedad" => isset($cons[0]["Antiguedad"]) ? $cons[0]["Antiguedad"] : "",
             "FechaRegistroSoli" => isset($cons[0]["Registro"]) ? $cons[0]["Registro"] : "",
@@ -2207,8 +2212,11 @@ class Empleados extends Conexiones
         return "Fecha no V?lida.";
       }else {
         $q = "SELECT E.Nombre,SV.ComentariosSolicitud,
-                IF(SV.Status = 2,'Denegada por N?mina',if(SV.Status = 3,'Aceptada por N?mina','Pendiente de Revisi?n')) as Status,
-                date_format(SV.Registro,'%d-%m-%Y') AS FechaSolicitud,SV.idSolicitudesVacaciones,SV.Status AS NumStatus
+                IF(SV.Status = 2,'Denegada por Nómina',if(SV.Status = 3,'Aceptada por Nómina','Pendiente de Revisión')) as Status,
+                date_format(SV.Registro,'%d-%m-%Y') AS FechaSolicitud,SV.idSolicitudesVacaciones,SV.Status AS NumStatus,
+                date_format(SV.FechaInicio,'%d-%m-%Y') AS FechaInicio,
+                date_format(SV.FechaFin,'%d-%m-%Y') AS FechaFin,
+                SV.TotalDias
                 FROM SolicitudesVacaciones AS SV
                 INNER JOIN Empleados AS E ON E.NoEmpleado = SV.NoEmpleado
                 WHERE SV.JefeInmediatoAutoriza <> '' AND date_format(SV.Registro,'%Y-%m-%d') between '$FechaIni' and '$FechaFin'
