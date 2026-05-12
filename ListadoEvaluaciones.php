@@ -560,9 +560,20 @@
                               </select>
                               <p for="tipoEvaluacion" data-msg="El tipo de cuestionario es obligatorio"></p>
                             </div>
-                            <div class="col-12 col-sm-6" id="divPeriodicidad" style="display: none;">
+                            <div class="col-12 col-sm-6">
+                              <label class="form-label mb-1">* A quién va dirigido:</label>
+                              <select class="form-select form-control-solid-bordered" id="dirigidoA" required disabled>
+                                <option value="">Seleccione el público objetivo</option>
+                                <option value="1">Empleados</option>
+                                <option value="2">Postulantes</option>
+                              </select>
+                              <p for="dirigidoA" data-msg="Debe especificar a quién va dirigido"></p>
+                            </div>
+                          </div>
+                          <div class="row mb-3">
+                            <div class="col-12 col-sm-6 mb-3 mb-sm-0" id="divPeriodicidad" style="display: none;">
                               <label class="form-label mb-1">* Periodicidad:</label>
-                              <select class="form-select form-control-solid-bordered" id="periodicidad">
+                              <select class="form-select form-control-solid-bordered" id="periodicidad" disabled>
                                 <option value="">Seleccione una periodicidad</option>
                                 <option value="1">Diario</option>
                                 <option value="2">Semanal</option>
@@ -570,17 +581,6 @@
                                 <option value="4">Único</option>
                               </select>
                               <p for="periodicidad" data-msg="La periodicidad es obligatoria para encuestas normales"></p>
-                            </div>
-                          </div>
-                          <div class="row mb-3">
-                            <div class="col-12 col-sm-6 mb-3 mb-sm-0">
-                              <label class="form-label mb-1">* A quién va dirigido:</label>
-                              <select class="form-select form-control-solid-bordered" id="dirigidoA" required>
-                                <option value="">Seleccione el público objetivo</option>
-                                <option value="1">Empleados</option>
-                                <option value="2">Postulantes</option>
-                              </select>
-                              <p for="dirigidoA" data-msg="Debe especificar a quién va dirigido"></p>
                             </div>
                             <div class="col-12 col-sm-6">
                               <label class="form-label mb-1">* Título:</label>

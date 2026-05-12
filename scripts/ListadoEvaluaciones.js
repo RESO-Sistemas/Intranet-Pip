@@ -598,10 +598,14 @@ function _evWizardReset() {
   $('#dirigidoA').val('');
   $('#title_c').val('');
   $('#inpFechaInicio, #inpFechaFin, #inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('');
+  $('#periodicidad').removeAttr('required');
+  $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').removeAttr('required');
   $('#divPeriodicidad').hide();
   $('#seccionRetroYPlan').hide();
   $('#dv_DateFields').show();
   $('#divParticipantes').show();
+  $('#dirigidoA').prop('disabled', true);
+  $('#periodicidad').prop('disabled', true);
   $('#slctDivision, #slctSucursal, #slctPuesto').val('');
   if ($('#slctEmpleados').hasClass('select2-hidden-accessible')) {
     $('#slctEmpleados').val(null).trigger('change');
@@ -618,17 +622,45 @@ function _evIsEvergreen() {
   return $('#tipoEvaluacion').val() === '2' && $('#dirigidoA').val() === '2';
 }
 
+function _evResetParticipants() {
+  if ($('#slctEmpleados').hasClass('select2-hidden-accessible')) {
+    $('#slctEmpleados').val(null).trigger('change');
+  } else {
+    $('#slctEmpleados').val([]);
+  }
+}
+
+function _evResetScheduleFields() {
+  $('#periodicidad').val('');
+  $('#inpFechaInicio, #inpFechaFin, #inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('');
+}
+
+function _evUpdateParticipantVisibility() {
+  $('#divParticipantes').toggle($('#dirigidoA').val() !== '2');
+}
+
 function _evUpdateDateVisibility() {
-  if (_evIsEvergreen()) {
+  const tipo = $('#tipoEvaluacion').val();
+  const dirigido = $('#dirigidoA').val();
+
+  if (tipo !== '2' || !dirigido) {
+    $('#divPeriodicidad').hide();
+    $('#periodicidad').val('').prop('disabled', true).removeAttr('required');
+  } else if (_evIsEvergreen()) {
     $('#dv_DateFields').hide();
     $('#inpFechaInicio, #inpFechaFin').val('').removeAttr('required');
     $('#divPeriodicidad').hide();
-    $('#periodicidad').val('').removeAttr('required');
-  } else if ($('#tipoEvaluacion').val() === '2') {
+    $('#periodicidad').val('').prop('disabled', true).removeAttr('required');
+  } else if (tipo === '2') {
     $('#dv_DateFields').show();
     $('#inpFechaInicio, #inpFechaFin').attr('required', 'required');
     $('#divPeriodicidad').show();
-    $('#periodicidad').attr('required', 'required');
+    $('#periodicidad').prop('disabled', false).attr('required', 'required');
+  }
+
+  if (tipo !== '2') {
+    $('#dv_DateFields').show();
+    $('#inpFechaInicio, #inpFechaFin').attr('required', 'required');
   }
 }
 
@@ -687,9 +719,12 @@ function _evValidateDates() {
 
 $(document).on('change', '#tipoEvaluacion', function () {
   const tipo = $(this).val();
+  _evResetScheduleFields();
+  _evResetParticipants();
+
   if (tipo === '1') {
-    $('#divPeriodicidad').hide();
-    $('#periodicidad').val('').removeAttr('required');
+    $('#dirigidoA').prop('disabled', true);
+    $('#periodicidad').prop('disabled', true);
     $('#seccionRetroYPlan').show();
     $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').attr('required', 'required');
     $('#dirigidoA').val('1');
@@ -697,26 +732,27 @@ $(document).on('change', '#tipoEvaluacion', function () {
       _optPostulantesEv = $('#dirigidoA option[value="2"]').detach();
     }
   } else if (tipo === '2') {
-    $('#divPeriodicidad').show();
-    $('#periodicidad').attr('required', 'required');
+    $('#dirigidoA').prop('disabled', false).val('');
+    $('#periodicidad').prop('disabled', true);
     $('#seccionRetroYPlan').hide();
-    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('').removeAttr('required');
+    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').removeAttr('required');
     if (_optPostulantesEv && !$('#dirigidoA option[value="2"]').length) {
       $('#dirigidoA').append(_optPostulantesEv);
       _optPostulantesEv = null;
     }
-    _evUpdateDateVisibility();
   } else {
-    $('#divPeriodicidad').hide();
-    $('#periodicidad').val('').removeAttr('required');
+    $('#dirigidoA').prop('disabled', true).val('');
+    $('#periodicidad').prop('disabled', true);
     $('#seccionRetroYPlan').hide();
-    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').val('').removeAttr('required');
+    $('#inpRetroIni, #inpRetroFin, #inpPlanAIni, #inpPlanAFin').removeAttr('required');
     if (_optPostulantesEv && !$('#dirigidoA option[value="2"]').length) {
       $('#dirigidoA').append(_optPostulantesEv);
       _optPostulantesEv = null;
     }
-    $('#dv_DateFields').show();
   }
+
+  _evUpdateParticipantVisibility();
+  _evUpdateDateVisibility();
 });
 
 $(document).on('change', '#dirigidoA', function () {
@@ -727,12 +763,13 @@ $(document).on('change', '#dirigidoA', function () {
     toastr.info('La Evaluación 360° solo puede ir dirigida a Empleados', 'Información');
     return;
   }
-  if (dirigido === '2') {
-    $('#divParticipantes').hide();
-  } else {
-    $('#divParticipantes').show();
+
+  _evResetScheduleFields();
+  _evResetParticipants();
+  _evUpdateParticipantVisibility();
+  if (tipo === '2') {
+    _evUpdateDateVisibility();
   }
-  if (tipo === '2') _evUpdateDateVisibility();
 });
 
 // ---- GUARDAR ----

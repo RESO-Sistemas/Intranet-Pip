@@ -182,7 +182,12 @@
         }
 
         /* ─── Modal empleado ─── */
-        #modalEmpDetalle .modal-content { border: none; border-radius: 16px; overflow: hidden; }
+        #modalEmpDetalle .modal-content {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
         .modal-emp-header {
             background: #fff;
             border-bottom: 1px solid #e9ecef;
@@ -191,53 +196,130 @@
             align-items: center;
             gap: 16px;
         }
+
         #modalEmpInitials {
-            display: flex; align-items: center; justify-content: center;
-            width: 62px; height: 62px; border-radius: 50%;
-            background: #ffc107; color: #111;
-            font-size: 22px; font-weight: 800; letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #ffc107;
+            color: #111;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -1px;
             flex-shrink: 0;
-            box-shadow: 0 2px 12px rgba(255,193,7,.4);
+            box-shadow: 0 2px 12px rgba(255, 193, 7, .4);
         }
-        .modal-emp-header-info { flex: 1; min-width: 0; }
+
+        .modal-emp-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .modal-emp-name {
-            font-size: 16px; font-weight: 700; color: #111;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: 16px;
+            font-weight: 700;
+            color: #111;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             margin-bottom: 4px;
         }
+
         .modal-emp-puesto {
-            font-size: 12px; color: #64748b;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: 12px;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             margin-bottom: 8px;
         }
-        .modal-emp-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-        .modal-badge {
-            font-size: 10px; font-weight: 700; padding: 2px 8px;
-            border-radius: 5px; letter-spacing: .05em; text-transform: uppercase;
+
+        .modal-emp-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
         }
+
+        .modal-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 5px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
         .modal-badge-close {
-            background: none; border: none; color: #94a3b8;
-            cursor: pointer; padding: 4px; margin-left: auto; align-self: flex-start;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: auto;
+            align-self: flex-start;
             line-height: 1;
         }
-        .modal-badge-close:hover { color: #111; }
+
+        .modal-badge-close:hover {
+            color: #111;
+        }
+
         .modal-emp-section-label {
-            font-size: 10px; font-weight: 700; letter-spacing: .08em;
-            text-transform: uppercase; color: #94a3b8; margin-bottom: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 10px;
         }
+
         .modal-emp-row {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 13px; color: #374151; padding: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #374151;
+            padding: 5px 0;
         }
-        .modal-emp-row .material-symbols-outlined { font-size: 16px; color: #94a3b8; flex-shrink: 0; }
-        .modal-emp-row span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .modal-emp-row .material-symbols-outlined {
+            font-size: 16px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .modal-emp-row span:last-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .modal-emp-stat {
-            display: flex; flex-direction: column; align-items: center;
-            gap: 2px; padding: 12px;
-            background: #f8fafc; border-radius: 10px; text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            text-align: center;
         }
-        .modal-emp-stat-val { font-size: 22px; font-weight: 800; color: #111; }
-        .modal-emp-stat-lbl { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
+
+        .modal-emp-stat-val {
+            font-size: 22px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        .modal-emp-stat-lbl {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
     </style>
 </head>
 
@@ -270,6 +352,11 @@
                                 </div>
                                 <h1>Organigramas</h1>
                             </div>
+                            <button onclick="window.location.href='ControlOrganigrama.php'" class="ov-btn"
+                                title="Ir a administración de organigramas">
+                                <span class="material-symbols-outlined">settings</span>
+                                Administrar
+                            </button>
                             <button class="ov-btn" id="btnExportarVista" title="Exportar organigrama actual como PNG">
                                 <span class="material-symbols-outlined">download</span>
                                 Exportar PNG
@@ -289,18 +376,23 @@
     <div class="modal fade" id="modalExportPreview" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;">
-                <div style="background:#fff;border-bottom:1px solid #e9ecef;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:13px;font-weight:700;color:#111;letter-spacing:.06em;text-transform:uppercase;">Previsualización</span>
-                    <button data-bs-dismiss="modal" style="background:none;border:none;color:#94a3b8;cursor:pointer;display:flex;">
+                <div
+                    style="background:#fff;border-bottom:1px solid #e9ecef;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
+                    <span
+                        style="font-size:13px;font-weight:700;color:#111;letter-spacing:.06em;text-transform:uppercase;">Previsualización</span>
+                    <button data-bs-dismiss="modal"
+                        style="background:none;border:none;color:#94a3b8;cursor:pointer;display:flex;">
                         <span class="material-symbols-outlined" style="font-size:18px;">close</span>
                     </button>
                 </div>
                 <div style="padding:20px;background:#f8fafc;max-height:65vh;overflow:auto;text-align:center;">
-                    <img id="previewExportImg" src="" alt="Preview" style="max-width:100%;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,.1);">
+                    <img id="previewExportImg" src="" alt="Preview"
+                        style="max-width:100%;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,.1);">
                 </div>
                 <div style="padding:16px 20px;background:#fff;display:flex;justify-content:flex-end;gap:10px;">
                     <button data-bs-dismiss="modal" class="ov-btn">Cancelar</button>
-                    <button id="btnConfirmarExport" class="ov-btn" style="background:#ffc107;border-color:#ffc107;color:#111;font-weight:600;">
+                    <button id="btnConfirmarExport" class="ov-btn"
+                        style="background:#ffc107;border-color:#ffc107;color:#111;font-weight:600;">
                         <span class="material-symbols-outlined" style="font-size:16px;">download</span>
                         Descargar PNG
                     </button>
@@ -318,7 +410,7 @@
                 <div class="modal-emp-header">
                     <span id="modalEmpInitials">?</span>
                     <div class="modal-emp-header-info">
-                        <div class="modal-emp-name"   id="modalEmpName">—</div>
+                        <div class="modal-emp-name" id="modalEmpName">—</div>
                         <div class="modal-emp-puesto" id="modalEmpPuesto">—</div>
                         <div class="modal-emp-badges">
                             <span class="modal-badge" id="modalEmpTipo"></span>
