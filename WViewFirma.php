@@ -27,6 +27,41 @@
     $(document).ready(function(){
       getFirmaEmp();
     });
+
+    function resolveSignatureAsset(signatureValue, employeeNumber) {
+      if (!signatureValue || signatureValue === "null") {
+        return "";
+      }
+
+      const normalized = String(signatureValue).trim();
+      if (!normalized) {
+        return "";
+      }
+
+      const normalizeDataUri = function(value) {
+        const parts = value.split(",");
+        if (parts.length < 2) {
+          return value.replace(/ /g, "+");
+        }
+
+        return parts[0] + "," + parts.slice(1).join(",").replace(/ /g, "+");
+      };
+
+      if (normalized.startsWith("data:")) {
+        return normalizeDataUri(normalized);
+      }
+
+      if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
+        return normalized;
+      }
+
+      if (/\.(png|jpe?g|gif|webp|svg)$/i.test(normalized)) {
+        return "Archivos/ImgEmpleados/" + employeeNumber + "/Firma/" + normalized;
+      }
+
+      return "data:image/png;base64," + normalized.replace(/ /g, "+");
+    }
+
     async  function getFirmaEmp(){
       let emp = await $("#EmpSelected").val();
       let datos = await {
@@ -46,7 +81,7 @@
       } finally {
         console.log(respuesta);
         for (var i = 0; i < respuesta.length; i++) {
-          let urlImg = "Archivos/ImgEmpleados/"+respuesta[i]["NoEmpleado"]+"/Firma/"+respuesta[i]["Firma"];
+          let urlImg = resolveSignatureAsset(respuesta[i]["Firma"], respuesta[i]["NoEmpleado"]);
           $("#imgFirma").attr("src",urlImg);
         }
       }

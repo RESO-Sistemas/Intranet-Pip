@@ -291,6 +291,22 @@ $MenuP = $Conf->getMenusPadre();
 			gap: 8px;
 		}
 
+		.signature-canvas-wrap {
+			background: #F8F9FC;
+			border: 2px dashed #dfe6e9;
+			border-radius: 12px;
+			padding: 12px;
+		}
+
+		.signature-canvas-wrap canvas {
+			width: 100%;
+			height: 260px;
+			background: #ffffff;
+			border-radius: 10px;
+			touch-action: none;
+			cursor: crosshair;
+		}
+
 		.btn-warning-pip {
 			background: #FFD700;
 			color: #2d3436;
@@ -332,7 +348,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		.nav-tabs-pip .nav-link {
 			border: none;
-			color: #b2bec3;
+			color: #636e72;
 			font-weight: 700;
 			font-size: 0.85rem;
 			padding: 8px 20px;
@@ -347,7 +363,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.nav-tabs-pip .nav-link:hover {
-			color: #636e72;
+			color: #2d3436;
 		}
 
 		[hidden] {
@@ -683,9 +699,9 @@ $MenuP = $Conf->getMenusPadre();
 														<span id="imgFirmaEmpty" class="signature-empty-badge"
 															style="display:none;">No disponible</span>
 													</div>
-													<a href="AddFirma.php" class="btn btn-outline-warning-pip w-100">
-														<i class="fas fa-pen me-2"></i>Actualizar Firma
-													</a>
+											<button type="button" class="btn btn-outline-warning-pip w-100" data-bs-toggle="modal" data-bs-target="#modalActualizarFirmaPerfil">
+												<i class="fas fa-pen me-2"></i>Actualizar Firma
+											</button>
 												</div>
 											</div>
 
@@ -885,13 +901,36 @@ $MenuP = $Conf->getMenusPadre();
 													<img id="imgFirmaSalud" src="" alt="Firma del empleado">
 													<span id="imgFirmaSaludEmpty" class="signature-empty-badge" style="display:none;">No disponible</span>
 												</div>
-												<a href="AddFirma.php" class="btn btn-outline-warning-pip w-100">
-													<i class="fas fa-pen me-2"></i>Actualizar Firma
-												</a>
-											</div>
+											<button type="button" class="btn btn-outline-warning-pip w-100" data-bs-toggle="modal" data-bs-target="#modalActualizarFirmaPerfil">
+												<i class="fas fa-pen me-2"></i>Actualizar Firma
+											</button>
 										</div>
 									</div>
 								</div>
+							</div>
+
+							<div class="modal fade" id="modalActualizarFirmaPerfil" tabindex="-1" aria-hidden="true">
+								<div class="modal-dialog modal-lg modal-dialog-centered">
+									<div class="modal-content border-0" style="border-radius:16px; overflow:hidden;">
+										<div class="modal-header">
+											<h5 class="modal-title">Actualizar firma</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+										</div>
+										<div class="modal-body">
+											<p class="text-muted mb-3">Dibuja tu firma con el mouse o con el dedo y guárdala para actualizarla en tu perfil.</p>
+											<div id="contentCanvasPerfil" class="signature-canvas-wrap">
+												<canvas id="draw-canvas-perfil">Tu navegador no soporta canvas.</canvas>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-outline-secondary" id="draw-clearBtnPerfil">Limpiar</button>
+											<button type="button" class="btn btn-warning-pip" id="draw-submitBtnPerfil">
+												<i class="fas fa-save me-2"></i>Guardar Firma
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
 
 							</div>
 

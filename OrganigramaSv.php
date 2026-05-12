@@ -77,13 +77,19 @@
         right: 4px;
         top: 50%;
         transform: translateY(-50%);
-        background: #3b82f6;
-        color: #fff;
-        border: none;
+        background: transparent;
+        color: #6c757d;
+        border: 1px dashed #adb5bd;
         border-radius: 5px;
         padding: 2px 5px;
         cursor: pointer;
         font-size: 11px;
+        transition: all 0.2s ease;
+    }
+    .org-title-save-btn:hover {
+        border-color: #ffc407;
+        color: #1a1a2e;
+        background: #fff9e6;
     }
     #orgTitulo:focus ~ .org-title-save-btn { display: block; }
 
@@ -105,8 +111,8 @@
     }
     .tb-btn:hover { background: #f1f5f9; color: #1e293b; }
     .tb-btn .material-symbols-outlined { font-size: 16px; }
-    .tb-btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
-    .tb-btn-primary:hover { background: #2563eb; border-color: #2563eb; }
+    .tb-btn-primary { background: #ffc407; border-color: #ffc407; color: #1a1a1a; }
+    .tb-btn-primary:hover { background: #e6b200; border-color: #e6b200; }
 
     /* ── Editor main ──────────────────────────────────── */
     .org-editor-main {
@@ -251,11 +257,15 @@
     .org-search-result-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #374151; }
     .org-search-add-btn {
         width: 22px; height: 22px; border-radius: 50%;
-        background: #3b82f6; color: #fff; border: none;
+        background: transparent; color: #6c757d; border: 1px dashed #adb5bd;
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; cursor: pointer; transition: background .1s;
+        flex-shrink: 0; cursor: pointer; transition: all 0.2s ease;
     }
-    .org-search-add-btn:hover { background: #2563eb; }
+    .org-search-add-btn:hover {
+        border-color: #ffc407;
+        color: #1a1a2e;
+        background: #fff9e6;
+    }
     .org-search-add-btn .material-symbols-outlined { font-size: 13px; }
 
     /* ── Canvas ───────────────────────────────────────── */
@@ -338,8 +348,8 @@
         transition: all .15s;
     }
     .prop-btn .material-symbols-outlined { font-size: 16px; }
-    .prop-btn-blue   { background: #eff6ff; color: #2563eb; }
-    .prop-btn-blue:hover   { background: #dbeafe; }
+    .prop-btn-blue   { background: transparent; color: #6c757d; border: 1px dashed #adb5bd; }
+    .prop-btn-blue:hover   { border-color: #ffc407; color: #1a1a2e; background: #fff9e6; }
     .prop-btn-yellow { background: #fffbeb; color: #d97706; }
     .prop-btn-yellow:hover { background: #fef3c7; }
     .prop-btn-red    { background: #fff1f2; color: #e11d48; }
@@ -470,7 +480,7 @@
                             <span class="material-symbols-outlined">account_tree</span>
                             <h3>Organigrama vacío</h3>
                             <p>Agrega el primer empleado principal para comenzar.</p>
-                            <button class="tb-btn tb-btn-primary" id="btnAddEmpleadoEmpty">
+                            <button class="tb-btn btn-ghost" id="btnAddEmpleadoEmpty">
                                 <span class="material-symbols-outlined">person_add</span>
                                 Agregar primer empleado
                             </button>
@@ -562,7 +572,7 @@
                 </select>
             </div>
 
-            <button type="button" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 mt-auto" id="btnConfirmarAdd" style="height:44px;font-size:14px;border-radius:10px;">
+            <button type="button" class="btn btn-ghost w-100 d-flex align-items-center justify-content-center gap-2 mt-auto" id="btnConfirmarAdd" style="height:44px;font-size:14px;border-radius:10px;">
                 <span class="material-symbols-outlined">check_circle</span>
                 Agregar
             </button>
@@ -618,7 +628,7 @@
                 </select>
             </div>
 
-            <button type="button" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 mt-auto" id="btnConfirmarEdit" style="height:44px;font-size:14px;border-radius:10px;">
+            <button type="button" class="btn btn-ghost w-100 d-flex align-items-center justify-content-center gap-2 mt-auto" id="btnConfirmarEdit" style="height:44px;font-size:14px;border-radius:10px;">
                 <span class="material-symbols-outlined">save</span>
                 Guardar cambios
             </button>

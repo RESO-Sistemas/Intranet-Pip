@@ -409,6 +409,40 @@
     /**
      * Obtiene la firma actual del empleado y la muestra en el formulario
      */
+    function resolveSignatureAsset(signatureValue, employeeNumber) {
+      if (!signatureValue || signatureValue === "null") {
+        return "";
+      }
+
+      const normalized = String(signatureValue).trim();
+      if (!normalized) {
+        return "";
+      }
+
+      const normalizeDataUri = function(value) {
+        const parts = value.split(",");
+        if (parts.length < 2) {
+          return value.replace(/ /g, "+");
+        }
+
+        return parts[0] + "," + parts.slice(1).join(",").replace(/ /g, "+");
+      };
+
+      if (normalized.startsWith("data:")) {
+        return normalizeDataUri(normalized);
+      }
+
+      if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
+        return normalized;
+      }
+
+      if (/\.(png|jpe?g|gif|webp|svg)$/i.test(normalized)) {
+        return "Archivos/ImgEmpleados/" + employeeNumber + "/Firma/" + normalized;
+      }
+
+      return "data:image/png;base64," + normalized.replace(/ /g, "+");
+    }
+
     function getFirmaEmp() {
       $.ajax({
         type: "post",
@@ -421,10 +455,19 @@
           } else {
             for (var i = 0; i < response.length; i++) {
               if (response[i]["Firma"] && response[i]["Firma"] !== "" && response[i]["Firma"] !== "null") {
-                let urlImg = "Archivos/ImgEmpleados/" + response[i]["NoEmpleado"] + "/Firma/" + response[i]["Firma"];
-                $(".imgFirmaClass").attr("src", urlImg);
-                $(".firma-container").show();
+                let urlImg = resolveSignatureAsset(response[i]["Firma"], response[i]["NoEmpleado"]);
+                $(".imgFirmaClass")
+                  .off("load.signature error.signature")
+                  .on("load.signature", function() {
+                    $(".firma-container").show();
+                  })
+                  .on("error.signature", function() {
+                    $(this).attr("src", "");
+                    $(".firma-container").hide();
+                  })
+                  .attr("src", urlImg);
               } else {
+                $(".imgFirmaClass").attr("src", "");
                 $(".firma-container").hide();
               }
             }

@@ -775,16 +775,50 @@ async function getDatosEmpleado() {
   } finally {
     for (var i = 0; i < respuesta.length; i++) {
       const employeeName = respuesta[i]["Nombre"] || "Usuario";
+
+      const resolveSignatureAsset = function (signatureValue, employeeNumber) {
+        if (!signatureValue || signatureValue === "null") {
+          return "";
+        }
+
+        const normalized = String(signatureValue).trim();
+        if (!normalized) {
+          return "";
+        }
+
+        const normalizeDataUri = function (value) {
+          const parts = value.split(",");
+          if (parts.length < 2) {
+            return value.replace(/ /g, "+");
+          }
+
+          return `${parts[0]},${parts.slice(1).join(",").replace(/ /g, "+")}`;
+        };
+
+        if (normalized.startsWith("data:")) {
+          return normalizeDataUri(normalized);
+        }
+
+        if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
+          return normalized;
+        }
+
+        if (/\.(png|jpe?g|gif|webp|svg)$/i.test(normalized)) {
+          return `Archivos/ImgEmpleados/${employeeNumber}/Firma/${normalized}`;
+        }
+
+        return `data:image/png;base64,${normalized.replace(/ /g, "+")}`;
+      };
+
       const urlImg = getProfileAvatarUrl(
         respuesta[i]["Imagen"],
         respuesta[i]["NoEmpleado"],
         employeeName
       );
-      let urlImgFirma =
-        "Archivos/ImgEmpleados/" +
-        respuesta[i]["NoEmpleado"] +
-        "/Firma/" +
-        respuesta[i]["Firma"];
+      let urlImgFirma = resolveSignatureAsset(
+        respuesta[i]["Firma"],
+        respuesta[i]["NoEmpleado"]
+      );
       let textEmail = `Email address: ${respuesta[i]["Email"]}`;
       $("#NameEmpleado").html(respuesta[i]["Nombre"]);
       $("#textoEmailEmp").text(textEmail);

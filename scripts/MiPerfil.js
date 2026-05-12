@@ -27,6 +27,40 @@ function resolveEmployeeAsset(assetValue, fallback = "assets/images/logo-pip.png
   return `data:image/png;base64,${assetValue}`;
 }
 
+function resolveSignatureAsset(signatureValue, employeeNumber) {
+  if (!signatureValue || signatureValue === "null") {
+    return "";
+  }
+
+  const normalized = String(signatureValue).trim();
+  if (!normalized) {
+    return "";
+  }
+
+  const normalizeDataUri = function (value) {
+    const parts = value.split(",");
+    if (parts.length < 2) {
+      return value.replace(/ /g, "+");
+    }
+
+    return `${parts[0]},${parts.slice(1).join(",").replace(/ /g, "+")}`;
+  };
+
+  if (normalized.startsWith("data:")) {
+    return normalizeDataUri(normalized);
+  }
+
+  if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
+    return normalized;
+  }
+
+  if (/\.(png|jpe?g|gif|webp|svg)$/i.test(normalized)) {
+    return `Archivos/ImgEmpleados/${employeeNumber}/Firma/${normalized}`;
+  }
+
+  return `data:image/png;base64,${normalized.replace(/ /g, "+")}`;
+}
+
 function getDisplayValue(value) {
   if (value === null || value === undefined) {
     return "No disponible";
@@ -90,20 +124,184 @@ function setStatValue(selector, value) {
   }
 }
 
-function setSignatureValue(value) {
-  const signatureImg = $("#imgFirma");
-  const signatureEmpty = $("#imgFirmaEmpty");
-  const signatureBox = $(".signature-box");
-  const assetValue = resolveEmployeeAsset(value, "");
+function setSignatureCardValue(imgSelector, emptySelector, value, employeeNumber) {
+  const signatureImg = $(imgSelector);
+  const signatureEmpty = $(emptySelector);
+  const signatureBox = signatureImg.closest(".signature-box");
+  const assetValue = resolveSignatureAsset(value, employeeNumber);
+
+  if (!signatureImg.length || !signatureEmpty.length) {
+    return;
+  }
 
   if (assetValue) {
-    signatureImg.attr("src", assetValue).show();
-    signatureEmpty.hide();
-    signatureBox.removeClass("is-empty");
+    signatureImg
+      .off("load.signature error.signature")
+      .on("load.signature", function () {
+        signatureImg.show();
+        signatureEmpty.hide();
+        signatureBox.removeClass("is-empty");
+      })
+      .on("error.signature", function () {
+        signatureImg.attr("src", "").hide();
+        signatureEmpty.show();
+        signatureBox.addClass("is-empty");
+      })
+      .attr("src", assetValue);
   } else {
-    signatureImg.attr("src", "").hide();
+    signatureImg.off("load.signature error.signature").attr("src", "").hide();
     signatureEmpty.show();
     signatureBox.addClass("is-empty");
+  }
+}
+
+function setSignatureValue(value, employeeNumber) {
+  setSignatureCardValue("#imgFirma", "#imgFirmaEmpty", value, employeeNumber);
+  setSignatureCardValue("#imgFirmaSalud", "#imgFirmaSaludEmpty", value, employeeNumber);
+}
+
+function initializeSignatureModal() {
+  const modalElement = document.getElementById("modalActualizarFirmaPerfil");
+  if (!modalElement) {
+    return;
+  }
+
+  const canvas = document.getElementById("draw-canvas-perfil");
+  const contentCanvas = document.getElementById("contentCanvasPerfil");
+  const clearBtn = document.getElementById("draw-clearBtnPerfil");
+  const submitBtn = document.getElementById("draw-submitBtnPerfil");
+  const ctx = canvas ? canvas.getContext("2d") : null;
+
+  if (!canvas || !contentCanvas || !clearBtn || !submitBtn || !ctx) {
+    return;
+  }
+
+  let drawing = false;
+  let mousePos = { x: 0, y: 0 };
+  let lastPos = { x: 0, y: 0 };
+  let canvasListenersAttached = false;
+
+  const resizeCanvas = function () {
+    canvas.width = contentCanvas.offsetWidth;
+    canvas.height = contentCanvas.offsetHeight;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#111111";
+    ctx.lineWidth = 2;
+  };
+
+  const getMousePos = function (event) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+  };
+
+  const getTouchPos = function (event) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.touches[0].clientX - rect.left,
+      y: event.touches[0].clientY - rect.top,
+    };
+  };
+
+  const clearCanvas = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const renderCanvas = function () {
+    if (!drawing) {
+      window.requestAnimationFrame(renderCanvas);
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(mousePos.x, mousePos.y);
+    ctx.stroke();
+    ctx.closePath();
+    lastPos = mousePos;
+    window.requestAnimationFrame(renderCanvas);
+  };
+
+  $(modalElement).on("shown.bs.modal", function () {
+    resizeCanvas();
+    clearCanvas();
+  });
+
+  if (!canvasListenersAttached) {
+    clearBtn.addEventListener("click", clearCanvas);
+    submitBtn.addEventListener("click", function () {
+      const imageData = canvas.toDataURL("image/png");
+      $.ajax({
+        type: "POST",
+        url: "Backend/Empleados/App.php",
+        data: {
+          op: "SubirFirma",
+          imagen64: imageData,
+        },
+        success: function (response) {
+          if (String(response).trim() === "1") {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+              modalInstance.hide();
+            }
+            clearCanvas();
+            getDatosEmpleado();
+            Swal.fire("Actualizado", "La firma se actualizó correctamente.", "success");
+          } else {
+            Swal.fire("Error", "No se pudo actualizar la firma.", "error");
+          }
+        },
+        error: function () {
+          Swal.fire("Error", "No se pudo conectar con el servidor.", "error");
+        },
+      });
+    });
+
+    canvas.addEventListener("mousedown", function (event) {
+      drawing = true;
+      lastPos = getMousePos(event);
+    });
+    canvas.addEventListener("mouseup", function () {
+      drawing = false;
+    });
+    canvas.addEventListener("mouseleave", function () {
+      drawing = false;
+    });
+    canvas.addEventListener("mousemove", function (event) {
+      mousePos = getMousePos(event);
+    });
+
+    canvas.addEventListener(
+      "touchstart",
+      function (event) {
+        event.preventDefault();
+        drawing = true;
+        mousePos = getTouchPos(event);
+        lastPos = mousePos;
+      },
+      { passive: false }
+    );
+    canvas.addEventListener(
+      "touchmove",
+      function (event) {
+        event.preventDefault();
+        mousePos = getTouchPos(event);
+      },
+      { passive: false }
+    );
+    canvas.addEventListener(
+      "touchend",
+      function (event) {
+        event.preventDefault();
+        drawing = false;
+      },
+      { passive: false }
+    );
+
+    window.requestAnimationFrame(renderCanvas);
+    canvasListenersAttached = true;
   }
 }
 
@@ -128,6 +326,7 @@ $("#fileUpload").fileUpload({
 
 
 loadAll();
+initializeSignatureModal();
 async function loadAll() {
   toggleProfileLoading(true);
   try {
@@ -208,7 +407,7 @@ async function getDatosEmpleado() {
       setStatValue("#statPuesto", respuesta[i]["Puesto"]);
       setStatValue("#statSucursal", respuesta[i]["Sucursal"]);
       setStatValue("#statAntiguedad", respuesta[i]["Antiguedad"]);
-      setSignatureValue(respuesta[i]["Firma"]);
+      setSignatureValue(respuesta[i]["Firma"], respuesta[i]["NoEmpleado"]);
 
     }
   }

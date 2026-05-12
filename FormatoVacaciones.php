@@ -359,6 +359,55 @@
     const urlParams    = new URLSearchParams(myKeysValues);
     const idSolicitud  = urlParams.get('Solicitud');
 
+    function resolveSignatureAsset(signatureValue, employeeNumber) {
+      if (!signatureValue || signatureValue === "null") {
+        return "";
+      }
+
+      const normalized = String(signatureValue).trim();
+      if (!normalized) {
+        return "";
+      }
+
+      const normalizeDataUri = function(value) {
+        const parts = value.split(",");
+        if (parts.length < 2) {
+          return value.replace(/ /g, "+");
+        }
+
+        return parts[0] + "," + parts.slice(1).join(",").replace(/ /g, "+");
+      };
+
+      if (normalized.startsWith("data:")) {
+        return normalizeDataUri(normalized);
+      }
+
+      if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
+        return normalized;
+      }
+
+      if (/\.(png|jpe?g|gif|webp|svg)$/i.test(normalized)) {
+        return "Archivos/ImgEmpleados/" + employeeNumber + "/Firma/" + normalized;
+      }
+
+      return "data:image/png;base64," + normalized.replace(/ /g, "+");
+    }
+
+    function setSignatureImage(elementId, signatureValue, employeeNumber) {
+      const element = document.getElementById(elementId);
+      const resolvedSrc = resolveSignatureAsset(signatureValue, employeeNumber);
+
+      if (!element) {
+        return;
+      }
+
+      if (resolvedSrc) {
+        element.src = resolvedSrc;
+      } else {
+        element.removeAttribute("src");
+      }
+    }
+
     // Cargar datos al entrar a la página
     verDetalleSolicitud();
 
@@ -375,11 +424,6 @@
           if (!response || response.length === 0) return;
 
           const d = response[0];
-
-          // Rutas de firma
-          const urlFirmaSolicitante = "Archivos/ImgEmpleados/" + d["NoEmpleado"] + "/Firma/" + d["FirmaSolicitante"];
-          const urlFirmaJefe        = "Archivos/ImgEmpleados/" + d["NoJefe"]     + "/Firma/" + d["FirmaJefe"];
-          const urlFirmaFinal       = "Archivos/ImgEmpleados/" + d["NoFinalAutoriza"] + "/Firma/" + d["FirmaFinal"];
 
           // Datos del empleado
           document.getElementById("NombreSolicitante").textContent       = d["NombreSolicitante"]  || "—";
@@ -401,15 +445,15 @@
           // Firmas y nombres
           document.getElementById("NombreSolicitanteFirma").textContent = d["NombreSolicitante"] || "—";
           document.getElementById("JefeInmediato").textContent          = d["NombreJefe"]        || "—";
-          document.getElementById("imgFirmaSolicitante").src             = urlFirmaSolicitante;
+          setSignatureImage("imgFirmaSolicitante", d["FirmaSolicitante"], d["NoEmpleado"]);
 
           // Mostrar firma del jefe si está autorizada
           if (d["Status"] == "1" || d["Status"] == "3") {
-            document.getElementById("imgFirmaJefeInmediato").src = urlFirmaJefe;
+            setSignatureImage("imgFirmaJefeInmediato", d["FirmaJefe"], d["NoJefe"]);
           }
           // Mostrar firma final (Nómina) si está completamente autorizada
           if (d["Status"] == "3") {
-            document.getElementById("imgFirmaRecursosH").src = urlFirmaFinal;
+            setSignatureImage("imgFirmaRecursosH", d["FirmaFinal"], d["NoFinalAutoriza"]);
           }
         }
       });

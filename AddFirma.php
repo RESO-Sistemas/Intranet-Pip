@@ -246,8 +246,10 @@
       $.ajax({
         type: "POST",
         url: "Backend/Empleados/App.php",
-        type: "POST",
-        data: "op=SubirFirma&imagen64=" + imagen64,
+        data: {
+          op: "SubirFirma",
+          imagen64: imagen64
+        },
         success: function(text) {
           setTimeout(function() {
             $("#Regresar").click();

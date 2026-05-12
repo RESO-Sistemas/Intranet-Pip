@@ -927,6 +927,8 @@ class Empleados extends Conexiones
     {
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
+            $imagen64 = trim((string)$imagen64);
+            $imagen64 = str_replace(' ', '+', $imagen64);
             $q = "UPDATE Empleados SET Firma = ? WHERE NoEmpleado = ?;";
             $this->ExecuteQuery($q, array($imagen64, $NoEmpleado));
             return "1";
