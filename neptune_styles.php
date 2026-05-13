@@ -1,3 +1,4 @@
+<?php if (defined('NEPTUNE_STYLES_LOADED')) return; define('NEPTUNE_STYLES_LOADED', true); ?>
 <!-- Preconexión a fuentes externas -->
 <link rel="preconnect" href="https://fonts.gstatic.com">
 

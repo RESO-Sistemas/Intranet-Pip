@@ -15,7 +15,6 @@
 
     <!-- Styles neptune -->
     <!-- <link href="dist/css/style.css" rel="stylesheet"> -->
-    <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
     <!-- <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet"> -->
     <!-- <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet"> -->
     <!-- <link href="dist/css/pages/data-table.css" rel="stylesheet"> -->
@@ -180,8 +179,7 @@
     <!-- neptune Javascripts -->
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/libs/block-ui/jquery.blockUI.js"></script>
     
     <!-- Scripts específicos de esta página -->
     <script src="scripts/global.js" charset="utf-8"></script>

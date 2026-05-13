@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <?php include("neptune_styles.php"); ?>
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
   <style>
     body { padding: 0.75rem; margin: 0; background: #fff; }
     .detail-card { border-left: 4px solid #ffc407; margin-bottom: 1rem; }
@@ -110,7 +109,6 @@
   <!-- Styles neptune -->
 
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
 
   <style>
     .detail-card {

@@ -108,13 +108,7 @@
 	<!-- neptune Javascripts -->
 	<?php include("neptune_js.php"); ?>
 	<!-- neptune Javascripts -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
-		integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
-		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
-		integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
-		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="assets/libs/block-ui/jquery.blockUI.js"></script>
 
 
 

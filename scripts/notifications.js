@@ -11,9 +11,11 @@
 
 const NotificationManager = (() => {
   // ─── Configuración ───────────────────────────────────────────────────────────
-  const API_URL      = 'Backend/Notifications/App.php';
-  const POLL_INTERVAL = 5 * 60 * 1000; // 5 minutos (antes eran 8)
-  let   _pollTimer   = null;
+  const API_URL       = 'Backend/Notifications/App.php';
+  const SSE_URL       = 'Backend/Notifications/stream.php';
+  const POLL_INTERVAL = 5 * 60 * 1000; // fallback si SSE no está disponible
+  let   _pollTimer    = null;
+  let   _onRefreshHook = null;
 
   // Mapa de íconos y colores por tipo de notificación
   const TYPE_CONFIG = {
@@ -151,6 +153,8 @@ const NotificationManager = (() => {
         .filter(n => !n.isRead)
         .forEach(_maybeShowToast);
 
+      if (_onRefreshHook) _onRefreshHook();
+
     } catch (err) {
       // Fallo silencioso en segundo plano — no interrumpir el flujo del usuario
       console.warn('[NotificationManager] Error al obtener notificaciones:', err);
@@ -164,18 +168,30 @@ const NotificationManager = (() => {
    * Debe llamarse una sola vez desde global.js al cargar la página.
    */
   function init() {
-    // Verificar que no estemos en la página de login
     const currentPage = window.location.pathname.split('/').pop();
     if (currentPage === 'login.php') return;
 
-    // Carga inicial
     _fetchNotifications();
 
-    // Polling cada 5 minutos (solo si el usuario está activo online)
-    _pollTimer = setInterval(() => {
-      if (navigator.onLine) {
+    if (typeof EventSource !== 'undefined') {
+      const sse = new EventSource(SSE_URL);
+      sse.onmessage = (e) => {
+        try {
+          const payload = JSON.parse(e.data);
+          if (payload.auth === false) { sse.close(); return; }
+        } catch (_) {}
         _fetchNotifications();
-      }
+      };
+      // onerror: EventSource reconecta solo — no necesita fallback manual
+    } else {
+      _startPollingFallback();
+    }
+  }
+
+  function _startPollingFallback() {
+    if (_pollTimer) return;
+    _pollTimer = setInterval(() => {
+      if (navigator.onLine) _fetchNotifications();
     }, POLL_INTERVAL);
   }
 
@@ -241,6 +257,8 @@ const NotificationManager = (() => {
     }
   }
 
+  function onRefresh(fn) { _onRefreshHook = fn; }
+
   // Exponer API pública
-  return { init, refresh, markAsRead, markAllAsRead };
+  return { init, refresh, markAsRead, markAllAsRead, onRefresh };
 })();

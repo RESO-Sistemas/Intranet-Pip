@@ -12,8 +12,6 @@
   <?php include("neptune_styles.php"); ?>
 
   <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 
   <style>

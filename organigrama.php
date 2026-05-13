@@ -511,9 +511,7 @@
     </div>
 
     <?php include("neptune_js.php"); ?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
-        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="assets/libs/block-ui/jquery.blockUI.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="scripts/organigrama.js?v=<?php echo time(); ?>"></script>
 </body>

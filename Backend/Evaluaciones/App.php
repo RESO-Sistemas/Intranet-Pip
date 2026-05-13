@@ -452,6 +452,10 @@
       echo trim($Evaluaciones->acceptQuestionsEv($iEvaluation));
     }
 
+    if ($op == "getPendingEvaluationsWidget") {
+      echo trim($Evaluaciones->getPendingEvaluationsWidget());
+    }
+
     if ($op == "deleteAllDetailPerBranch") {
       $branch = $_POST["branch"];
       $ev = $_POST["ev"];

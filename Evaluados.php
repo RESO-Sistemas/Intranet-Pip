@@ -9,7 +9,6 @@
   <?php include("neptune_styles.php"); ?>
   <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet">
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
   <style>body { padding: 0.75rem; margin: 0; background: #fff; }</style>
 </head>
 <body>
@@ -141,8 +140,6 @@
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 
   <!-- <link rel="stylesheet" href="plugins/chosen/chosen.min.css"> -->
-
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
 
   <?php if ($embed): ?>
   <style>

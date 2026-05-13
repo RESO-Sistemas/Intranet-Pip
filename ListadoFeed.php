@@ -40,7 +40,6 @@
 
   <link href="assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons+Outlined">
 
   <style>
     .modal-archivo-item {
@@ -310,7 +309,7 @@
 
   <!-- neptune Javascripts -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="assets/libs/block-ui/jquery.blockUI.js"></script>
 
   <script src="scripts/ListadoFeed.js?<?= time() ?>" charset="utf-8"></script>
 

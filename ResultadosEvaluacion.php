@@ -10,7 +10,6 @@
   <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet">
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
   <link href="plugins/tabulator/dist/css/tabulator_modern.min.css" rel="stylesheet">
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
   <script src="plugins/tabulator/dist/js/tabulator.min.js"></script>
   <style>body { padding: 0.75rem; margin: 0; background: #fff; }</style>
 </head>
@@ -172,7 +171,6 @@ $MenuP = $Conf->getMenusPadre();
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
   <link href="plugins/tabulator/dist/css/tabulator.css" rel="stylesheet">
   <link href="plugins/tabulator/dist/css/tabulator_modern.min.css" rel="stylesheet">
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
   <?php if ($embed): ?>
   <style>
     html, body { height: auto !important; min-height: unset !important; background: #fff !important; overflow-x: hidden; }

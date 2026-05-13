@@ -186,6 +186,34 @@ class Evaluaciones extends Conexiones
             $q = "UPDATE Evaluaciones SET Status = '$Status' WHERE idEvaluaciones = '$idEvaluaciones';";
             $this->ExecuteQuery($q, array());
 
+            // Notificar empleados al activar
+            if ($Status === '1') {
+                try {
+                    require_once(__DIR__ . '/../Notifications/Notifications.php');
+                    $info = $this->SelectNotClose(
+                        "SELECT Titulo, EmpleadosParticipantes FROM Evaluaciones WHERE idEvaluaciones = '$idEvaluaciones'"
+                    );
+                    if (!empty($info)) {
+                        $titulo = $info[0]['Titulo'] ?? 'Evaluación';
+                        $participantes = array_filter(array_map('trim', explode(',', $info[0]['EmpleadosParticipantes'] ?? '')));
+                        $notifService = new Notifications();
+                        foreach ($participantes as $noEmpleado) {
+                            $notifService->insertNotification(
+                                $noEmpleado,
+                                'evaluation',
+                                'Evaluación pendiente',
+                                "Tienes una evaluación pendiente: $titulo",
+                                'pending-evaluations.php',
+                                (int) $idEvaluaciones,
+                                'Evaluaciones'
+                            );
+                        }
+                    }
+                } catch (\Exception $notifEx) {
+                    error_log('[updateStatusEvaluacion] Notif error: ' . $notifEx->getMessage());
+                }
+            }
+
             return "1";
         } catch (\Exception $e) {
             return "0";
@@ -3066,6 +3094,30 @@ class Evaluaciones extends Conexiones
                 ]);
             }
 
+            // Notificar a cada evaluador asignado
+            try {
+                require_once(__DIR__ . '/../Notifications/Notifications.php');
+                $tituloInfo = $this->SelectNotClose("SELECT Titulo FROM Evaluaciones WHERE idEvaluaciones = '$evDecoded'");
+                $titulo = $tituloInfo[0]['Titulo'] ?? 'Evaluación';
+                $evaluadores = $this->SelectNotClose(
+                    "SELECT DISTINCT NoEmpleadoEvalua FROM EvaluacionDetalle WHERE idEvaluaciones = '$evDecoded' AND Status = 1"
+                );
+                $notifService = new Notifications();
+                foreach ($evaluadores as $row) {
+                    $notifService->insertNotification(
+                        $row['NoEmpleadoEvalua'],
+                        'evaluation',
+                        'Evaluación pendiente',
+                        "Tienes una evaluación pendiente: $titulo",
+                        'pending-evaluations.php',
+                        (int) $evDecoded,
+                        'Evaluaciones'
+                    );
+                }
+            } catch (\Exception $notifEx) {
+                error_log('[acceptPublicationOfTheEvaluation] Notif error: ' . $notifEx->getMessage());
+            }
+
             $arrReturn = [
               "Resultado" => true,
               "Siguiente" => true,
@@ -3083,6 +3135,29 @@ class Evaluaciones extends Conexiones
               "ConMsg" => true,
               "Msg" => "Error al publicar la evaluación: " . $e->getMessage()
             ]);
+        }
+    }
+
+    public function getPendingEvaluationsWidget(): string
+    {
+        try {
+            $NoEmpleado = SessionManager::get('NoEmpleado');
+            $q = "SELECT TO_BASE64(E.idEvaluaciones) AS id, E.Titulo, E.FechaFin,
+                         COUNT(ED.idEvaluacionDetalle) AS Total,
+                         SUM(ED.StatusEvaluado) AS Completadas
+                  FROM Evaluaciones E
+                  INNER JOIN EvaluacionDetalle ED ON ED.idEvaluaciones = E.idEvaluaciones
+                  WHERE E.Activado = 1 AND E.Status = 1
+                    AND DATE_FORMAT(NOW(),'%Y-%m-%d') BETWEEN E.FechaInicio AND E.FechaFin
+                    AND ED.NoEmpleadoEvalua = '$NoEmpleado'
+                    AND ED.StatusEvaluado = 0
+                  GROUP BY E.idEvaluaciones, E.Titulo, E.FechaFin
+                  HAVING SUM(ED.StatusEvaluado) < COUNT(ED.idEvaluacionDetalle)";
+            $rows = $this->Select($q, []);
+            return json_encode(['Resultado' => true, 'Siguiente' => true, 'Data' => $rows ?? []]);
+        } catch (\Exception $e) {
+            error_log('[getPendingEvaluationsWidget] ' . $e->getMessage());
+            return json_encode(['Resultado' => false, 'Siguiente' => false, 'Data' => []]);
         }
     }
 

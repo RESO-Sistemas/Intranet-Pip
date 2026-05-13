@@ -12,7 +12,6 @@
 
 	<?php include("neptune_styles.php"); ?>
 
-	<link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
 	<link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 	<link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 	<script src="componentes/detallesEmpleadoLogeado.js"></script>

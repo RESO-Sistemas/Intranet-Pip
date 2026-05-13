@@ -19,8 +19,6 @@
 
   <title>PIP by Lugo</title>
 
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
-
   <!-- Styles neptune -->
 
 

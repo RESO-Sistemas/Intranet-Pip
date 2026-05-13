@@ -37,8 +37,6 @@
 
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
 
-  <link href="assets/libs/syncfusion/css/tailwind.css" rel="stylesheet">
-
 
 
 </head>
