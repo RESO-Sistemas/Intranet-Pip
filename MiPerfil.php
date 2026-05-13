@@ -909,6 +909,11 @@ $MenuP = $Conf->getMenusPadre();
 								</div>
 							</div>
 
+							</div>
+
+							</div>
+
+							<!-- Modal firma (fuera de tab-content para funcionar desde cualquier pestaña) -->
 							<div class="modal fade" id="modalActualizarFirmaPerfil" tabindex="-1" aria-hidden="true">
 								<div class="modal-dialog modal-lg modal-dialog-centered">
 									<div class="modal-content border-0" style="border-radius:16px; overflow:hidden;">
@@ -930,10 +935,6 @@ $MenuP = $Conf->getMenusPadre();
 										</div>
 									</div>
 								</div>
-							</div>
-
-							</div>
-
 							</div>
 
 							<div id="fullscreen-swiper"></div>

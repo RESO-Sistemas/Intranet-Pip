@@ -128,9 +128,14 @@
 
 					<div class="row">
 						<div class="col">
-							<div class="page-description page-description-tabbed">
+							<div class="page-description page-description-tabbed d-flex justify-content-between align-items-center flex-wrap gap-2">
 								<h1>Solicitudes de Vacaciones</h1>
-									<ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+								<button type="button" class="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-1"
+									data-bs-toggle="modal" data-bs-target="#modalActualizarFirma">
+									<span class="material-symbols-outlined" style="font-size:16px;">draw</span>
+									Actualizar firma
+								</button>
+								<ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
 										<li class="nav-item" role="presentation">
 											<button class="nav-link active" id="tab1-tab" data-bs-toggle="tab"
 												data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1"
@@ -205,6 +210,44 @@
 		</div>
 	</div>
 
+	<!-- Modal: Actualizar firma -->
+	<div class="modal fade" id="modalActualizarFirma" data-bs-backdrop="static"
+		data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">
+						<span class="material-symbols-outlined align-middle me-1" style="font-size:18px;">draw</span>
+						Traza tu firma aquí
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row mx-1">
+						<div id="contentCanvasVac" class="col form-control form-control-solid-bordered"
+							style="text-align:center; height:200px; width:100%; padding:0; overflow:hidden;">
+							<canvas id="draw-canvas-vac">No tienes un buen navegador.</canvas>
+						</div>
+						<input type="color" id="colorVac" value="#1a1a1a" style="display:none;">
+						<input type="range" id="punteroVac" min="1" value="2" max="5" style="display:none;">
+					</div>
+					<p class="text-muted mt-2 mb-0" style="font-size:12px;">
+						Dibuja tu firma con el mouse o el dedo en pantallas táctiles.
+					</p>
+				</div>
+				<div class="modal-footer d-flex justify-content-between">
+					<button type="button" class="btn btn-outline-danger d-inline-flex align-items-center gap-1" id="draw-clearBtnVac">
+						<span class="material-symbols-outlined" style="font-size:16px;">restart_alt</span>
+						Repetir trazo
+					</button>
+					<button type="button" id="draw-submitBtnVac" class="btn btn-success d-inline-flex align-items-center gap-1">
+						<span class="material-symbols-outlined" style="font-size:16px;">save</span>
+						Guardar Firma
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- neptune Javascripts -->
 	<?php include("neptune_js.php"); ?>
@@ -227,6 +270,97 @@
 			tecla_final = String.fromCharCode(tecla);
 			return patron.test(tecla_final);
 		}
+
+		// ── Lógica del canvas de firma en SolicitudVacaciones ──
+		(function() {
+			window.requestAnimFrame = (function() {
+				return window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame || function(cb) { window.setTimeout(cb, 1000 / 60); };
+			})();
+
+			let canvasListenersAttached = false;
+			let drawing = false;
+			let mousePos = { x: 0, y: 0 };
+			let lastPos  = { x: 0, y: 0 };
+
+			$('#modalActualizarFirma').on('shown.bs.modal', function() {
+				const canvas = document.getElementById("draw-canvas-vac");
+				const contentCanvas = document.getElementById("contentCanvasVac");
+				canvas.width  = contentCanvas.offsetWidth;
+				canvas.height = contentCanvas.offsetHeight;
+
+				if (!canvasListenersAttached) {
+					const ctx = canvas.getContext("2d");
+					const clearBtn = document.getElementById("draw-clearBtnVac");
+					const submitBtn = document.getElementById("draw-submitBtnVac");
+
+					clearBtn.addEventListener("click", function() {
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+					});
+
+					submitBtn.addEventListener("click", function() {
+						SubirFirmaVac(canvas.toDataURL());
+					});
+
+					function getMousePos(canvasDom, e) {
+						const rect = canvasDom.getBoundingClientRect();
+						return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+					}
+					function getTouchPos(canvasDom, e) {
+						const rect = canvasDom.getBoundingClientRect();
+						return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+					}
+
+					canvas.addEventListener("mousedown", function(e) { drawing = true;  lastPos = getMousePos(canvas, e); });
+					canvas.addEventListener("mouseup",    function()  { drawing = false; });
+					canvas.addEventListener("mousemove",  function(e) { mousePos = getMousePos(canvas, e); });
+					canvas.addEventListener("touchstart", function(e) {
+						e.preventDefault();
+						mousePos = getTouchPos(canvas, e);
+						const me = new MouseEvent("mousedown", { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+						canvas.dispatchEvent(me);
+					}, { passive: false });
+					canvas.addEventListener("touchend",   function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
+					canvas.addEventListener("touchleave", function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
+					canvas.addEventListener("touchmove",  function(e) {
+						e.preventDefault();
+						const me = new MouseEvent("mousemove", { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+						canvas.dispatchEvent(me);
+					}, { passive: false });
+
+					function renderCanvas() {
+						if (drawing) {
+							const tint  = document.getElementById("colorVac");
+							const punta = document.getElementById("punteroVac");
+							ctx.strokeStyle = tint.value;
+							ctx.beginPath();
+							ctx.moveTo(lastPos.x, lastPos.y);
+							ctx.lineTo(mousePos.x, mousePos.y);
+							ctx.lineWidth = punta.value;
+							ctx.lineCap  = "round";
+							ctx.stroke();
+							ctx.closePath();
+							lastPos = mousePos;
+						}
+					}
+					(function drawLoop() { requestAnimFrame(drawLoop); renderCanvas(); })();
+					canvasListenersAttached = true;
+				}
+			});
+
+			function SubirFirmaVac(imagen64) {
+				$.ajax({
+					type: "POST",
+					url: "Backend/Empleados/App.php",
+					data: "op=SubirFirma&imagen64=" + imagen64,
+					success: function() {
+						$('#modalActualizarFirma').modal('hide');
+						Swal.fire({ icon: 'success', title: 'Firma actualizada', showConfirmButton: false, timer: 1500 });
+					},
+					error: function(e) { alert(e.responseText); }
+				});
+			}
+		})();
 	</script>
 
 

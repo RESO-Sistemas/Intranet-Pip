@@ -392,7 +392,7 @@
         padding: 16px 20px;
         color: #fff;
     }
-    .org-oc-header-add { background: linear-gradient(135deg,#1e40af 0%,#3b82f6 100%); }
+    .org-oc-header-add { background: #f59e0b; }
     .org-oc-header-edit { background: linear-gradient(135deg,#6d28d9 0%,#a855f7 100%); }
     .org-oc-header h5 { margin: 0; font-size: 15px; font-weight: 600; }
     .org-oc-header .btn-close { filter: invert(1); }

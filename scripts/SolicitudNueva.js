@@ -146,16 +146,16 @@ async function enviarSolicitudVacaciones() {
           console.log("no hay jefes");
           // No abrir modal si no hay jefes disponibles
         } else if (response == "errorFirma") {
-          // toastr.info(
-          //   "Actualiza tu firma Por Favor antes de enviar la solicitud."
-          // );
           const messageContent = `
         <div class="alert-content">
              <span class="alert-title">Información!</span>
-              <span class="alert-text">Actualiza tu firma Por Favor antes de enviar la solicitud.</span>
+              <span class="alert-text">Actualiza tu firma antes de enviar la solicitud.</span>
         </div>`;
           showBootstrapAlert(messageContent, "top-right", 5000);
           setTimeout($.unblockUI, 1000);
+          // Abrir modal de firma automáticamente para que el usuario la actualice sin salir
+          const modalFirma = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalActualizarFirma'));
+          if (modalFirma) modalFirma.show();
         }
       },
       error: function (e) {
