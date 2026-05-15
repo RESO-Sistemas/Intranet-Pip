@@ -780,16 +780,23 @@ class Postulantes extends Conexiones
     {
         try {
             $IdPostulanteVacante = intval(base64_decode($IdPostulanteVacante));
+            /* FIX: Mismo problema que en getComparativoResultadosVacante.
+             * Subquery para colapsar duplicados por pregunta con MAX antes de promediar.
+             */
             $q = "SELECT
-                    pe.IdPostulanteEvaluacion,
-                    e.Titulo AS NombreEvaluacion,
-                    pe.Calificacion,
-                    IFNULL(c.Competencia, 'General') AS Competencia,
-                    -- ScoreCompetencia: AVG solo de preguntas evaluables (con respuesta correcta definida).
-                    -- Las preguntas de tipo Rango/texto retornan NULL para que AVG las ignore,
-                    -- evitando que bajen el promedio de la competencia a 0.
-                    ROUND(AVG(
-                        CASE
+                    outer_q.IdPostulanteEvaluacion,
+                    outer_q.NombreEvaluacion,
+                    outer_q.Calificacion,
+                    outer_q.Competencia,
+                    ROUND(AVG(outer_q.ScorePregunta), 2) AS ScoreCompetencia
+                FROM (
+                    SELECT
+                        pe.IdPostulanteEvaluacion,
+                        e.Titulo AS NombreEvaluacion,
+                        pe.Calificacion,
+                        IFNULL(c.Competencia, 'General') AS Competencia,
+                        pr.IdPostulanteRespuesta,
+                        MAX(CASE
                             WHEN pc.BoolCorreta IS NOT NULL AND (
                                 (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
                                 OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
@@ -801,20 +808,21 @@ class Postulantes extends Conexiones
                             ) THEN 100
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
                             ELSE NULL
-                        END
-                    ), 2) AS ScoreCompetencia
-                FROM PostulantesEvaluaciones pe
-                INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
-                INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
-                INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
-                INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
-                LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
-                LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
-                LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
-                WHERE pe.IdPostulanteVacante = $IdPostulanteVacante
-                  AND pe.EstatusEvaluacion = 3
-                GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pe.Calificacion, Competencia
-                ORDER BY e.Titulo, Competencia";
+                        END) AS ScorePregunta
+                    FROM PostulantesEvaluaciones pe
+                    INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                    INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                    INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
+                    INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                    LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
+                    LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+                    LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                    WHERE pe.IdPostulanteVacante = $IdPostulanteVacante
+                      AND pe.EstatusEvaluacion = 3
+                    GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pe.Calificacion, Competencia, pr.IdPostulanteRespuesta
+                ) AS outer_q
+                GROUP BY outer_q.IdPostulanteEvaluacion, outer_q.NombreEvaluacion, outer_q.Calificacion, outer_q.Competencia
+                ORDER BY outer_q.NombreEvaluacion, outer_q.Competencia";
 
             $resultado = $this->Select($q);
 
@@ -901,18 +909,34 @@ class Postulantes extends Conexiones
     {
         try {
             $IdVacante = base64_decode($IdVacante);
+            /* FIX: El JOIN directo con PreguntasConfiguracion/PreguntasPosiblesRespuestas
+             * puede generar filas duplicadas por pregunta cuando la tabla tiene múltiples
+             * registros asociados, haciendo que AVG divida entre más filas de las esperadas
+             * y el ScoreCompetencia resulte la mitad del valor real.
+             * Solución: subquery que resuelve el score de cada pregunta individual (MAX evita
+             * duplicados) y luego el outer query promedia esos scores por competencia.
+             */
             $q = "SELECT
-                    e.idEvaluaciones,
-                    e.Titulo AS NombreEvaluacion,
-                    pe.IdPostulanteEvaluacion,
-                    CONCAT(p.Nombre, ' ', p.ApellidoPaterno) AS NombreCandidato,
-                    pv.IdPostulanteVacante,
-                    pe.Calificacion,
-                    IFNULL(c.Competencia, 'General') AS Competencia,
-                    -- ScoreCompetencia comparativo: mismo fix, preguntas de rango retornan NULL
-                    -- para ser ignoradas por AVG y no bajar el score de la competencia.
-                    ROUND(AVG(
-                        CASE
+                    outer_q.idEvaluaciones,
+                    outer_q.NombreEvaluacion,
+                    outer_q.IdPostulanteEvaluacion,
+                    outer_q.NombreCandidato,
+                    outer_q.IdPostulanteVacante,
+                    outer_q.Calificacion,
+                    outer_q.Competencia,
+                    ROUND(AVG(outer_q.ScorePregunta), 2) AS ScoreCompetencia
+                FROM (
+                    SELECT
+                        e.idEvaluaciones,
+                        e.Titulo AS NombreEvaluacion,
+                        pe.IdPostulanteEvaluacion,
+                        CONCAT(p.Nombre, ' ', p.ApellidoPaterno) AS NombreCandidato,
+                        pv.IdPostulanteVacante,
+                        pe.Calificacion,
+                        IFNULL(c.Competencia, 'General') AS Competencia,
+                        pr.IdPostulanteRespuesta,
+                        -- MAX en lugar de directo para colapsar posibles duplicados por JOIN
+                        MAX(CASE
                             WHEN pc.BoolCorreta IS NOT NULL AND (
                                 (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
                                 OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
@@ -924,22 +948,26 @@ class Postulantes extends Conexiones
                             ) THEN 100
                             WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 0
                             ELSE NULL
-                        END
-                    ), 2) AS ScoreCompetencia
-                FROM PostulantesEvaluaciones pe
-                INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
-                INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
-                INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
-                INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
-                INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
-                INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
-                LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
-                LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
-                LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
-                WHERE pv.IdVacante = '$IdVacante'
-                  AND pe.EstatusEvaluacion = 3
-                GROUP BY pe.IdPostulanteEvaluacion, e.Titulo, pv.IdPostulanteVacante, pe.Calificacion, NombreCandidato, Competencia
-                ORDER BY e.Titulo, NombreCandidato, Competencia";
+                        END) AS ScorePregunta
+                    FROM PostulantesEvaluaciones pe
+                    INNER JOIN PostulantesVacantes pv ON pv.IdPostulanteVacante = pe.IdPostulanteVacante
+                    INNER JOIN Postulantes p ON p.IdPostulante = pv.IdPostulante
+                    INNER JOIN VacantesEvaluaciones ve ON ve.IdVacanteEvaluacion = pe.IdVacanteEvaluacion
+                    INNER JOIN Evaluaciones e ON e.idEvaluaciones = ve.IdEvaluacion
+                    INNER JOIN PostulantesRespuestas pr ON pr.IdPostulanteEvaluacion = pe.IdPostulanteEvaluacion
+                    INNER JOIN PreguntasEvaluacion preg ON preg.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                    LEFT JOIN Competencias c ON c.idCompetencias = preg.idCompetencias
+                    LEFT JOIN PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = preg.idPreguntasEvaluacion
+                    LEFT JOIN PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                    WHERE pv.IdVacante = '$IdVacante'
+                      AND pe.EstatusEvaluacion = 3
+                    GROUP BY pe.IdPostulanteEvaluacion, e.idEvaluaciones, e.Titulo,
+                             pv.IdPostulanteVacante, pe.Calificacion, NombreCandidato,
+                             Competencia, pr.IdPostulanteRespuesta
+                ) AS outer_q
+                GROUP BY outer_q.IdPostulanteEvaluacion, outer_q.idEvaluaciones, outer_q.NombreEvaluacion,
+                         outer_q.IdPostulanteVacante, outer_q.Calificacion, outer_q.NombreCandidato, outer_q.Competencia
+                ORDER BY outer_q.NombreEvaluacion, outer_q.NombreCandidato, outer_q.Competencia";
 
             $resultado = $this->Select($q);
 

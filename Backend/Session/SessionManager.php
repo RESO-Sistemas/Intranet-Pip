@@ -2,10 +2,31 @@
 
 class SessionManager
 {
+    // Evitar re-abrir la sesión después de session_write_close().
+    // $_SESSION sigue disponible para lectura después del cierre.
+    private static $started = false;
+
     public static function init()
     {
+        if (self::$started) return;
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            self::$started = true;
+            return;
+        }
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
+            self::$started = true;
+        }
+    }
+
+    // Libera el lock de sesión después de leer los datos necesarios.
+    // Llamar en endpoints que solo leen la sesión (nunca escriben).
+    // Tras esto, $_SESSION sigue accesible y self::$started=true
+    // previene que init() re-abra (y re-bloquee) la sesión.
+    public static function releaseAfterRead()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
         }
     }
 

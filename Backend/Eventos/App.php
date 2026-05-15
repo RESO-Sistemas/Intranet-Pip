@@ -2,6 +2,10 @@
   include("Eventos.php");
   $Eventos = new Eventos();
   $op = $_POST["op"];
+
+  SessionManager::init();
+  SessionManager::releaseAfterRead();
+
   if ($op == "getEventos") {
     $fecha = $_POST["fecha"];
     echo trim($Eventos->getEventos($fecha));

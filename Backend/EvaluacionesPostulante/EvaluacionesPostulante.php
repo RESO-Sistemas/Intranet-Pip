@@ -417,34 +417,40 @@ class EvaluacionesPostulante extends Conexiones
             }
 
             // Calcular calificación solo sobre preguntas evaluables (con respuesta correcta definida).
-            // Las preguntas de tipo Rango (tipo 3) y de texto libre no tienen BoolCorreta
-            // ni RespuestaCorrectaOM, así que se excluyen del denominador para no perjudicar
-            // la calificación del postulante.
+            // FIX: Se usa subquery con MAX por respuesta para colapsar posibles duplicados
+            // generados por el JOIN con PreguntasPosiblesRespuestas cuando una pregunta OM
+            // tiene múltiples opciones registradas, evitando que TotalEvaluables se infle
+            // y la calificación resulte menor al valor real.
             $Con4 = new Conexiones();
             $qCalc = "SELECT
-                        -- Total de preguntas que SÍ tienen respuesta correcta definida
-                        SUM(CASE
-                            WHEN pc.BoolCorreta IS NOT NULL THEN 1
-                            WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 1
-                            ELSE 0
-                        END) AS TotalEvaluables,
-                        -- Cuántas de esas fueron respondidas correctamente
-                        SUM(CASE
-                            WHEN pc.BoolCorreta IS NOT NULL AND (
-                                (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
-                                OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
-                            ) THEN 1
-                            WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
-                                LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)))
-                                OR LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(ppr.DescripcionRespuesta USING utf8mb4)))
-                            ) THEN 1
-                            ELSE 0
-                        END) AS Correctas
-                      FROM PostulantesRespuestas pr
-                      INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
-                      LEFT JOIN  PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
-                      LEFT JOIN  PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
-                      WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion";
+                        SUM(inner_q.EsEvaluable) AS TotalEvaluables,
+                        SUM(inner_q.EsCorrecta)  AS Correctas
+                      FROM (
+                          SELECT
+                              pr.IdPostulanteRespuesta,
+                              MAX(CASE
+                                  WHEN pc.BoolCorreta IS NOT NULL THEN 1
+                                  WHEN pc.RespuestaCorrectaOM IS NOT NULL THEN 1
+                                  ELSE 0
+                              END) AS EsEvaluable,
+                              MAX(CASE
+                                  WHEN pc.BoolCorreta IS NOT NULL AND (
+                                      (pc.BoolCorreta = 1 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('1', 'true', 'verdadero'))
+                                      OR (pc.BoolCorreta = 0 AND LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) IN ('0', 'false', 'falso'))
+                                  ) THEN 1
+                                  WHEN pc.RespuestaCorrectaOM IS NOT NULL AND (
+                                      LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(CAST(pc.RespuestaCorrectaOM AS CHAR) USING utf8mb4)))
+                                      OR LOWER(TRIM(CONVERT(pr.Respuesta USING utf8mb4))) = LOWER(TRIM(CONVERT(ppr.DescripcionRespuesta USING utf8mb4)))
+                                  ) THEN 1
+                                  ELSE 0
+                              END) AS EsCorrecta
+                          FROM PostulantesRespuestas pr
+                          INNER JOIN PreguntasEvaluacion pe ON pe.idPreguntasEvaluacion = pr.IdPreguntasEvaluacion
+                          LEFT JOIN  PreguntasConfiguracion pc ON pc.idPreguntasEvaluacion = pe.idPreguntasEvaluacion
+                          LEFT JOIN  PreguntasPosiblesRespuestas ppr ON ppr.idPreguntasPosiblesRespuestas = pc.RespuestaCorrectaOM
+                          WHERE pr.IdPostulanteEvaluacion = $IdPostulanteEvaluacion
+                          GROUP BY pr.IdPostulanteRespuesta
+                      ) AS inner_q";
             $resCalc = $Con4->Select($qCalc);
 
             // Denominador = preguntas evaluables (evitar división por cero)

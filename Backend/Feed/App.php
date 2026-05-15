@@ -1,9 +1,25 @@
 <?php
+  $__t0 = microtime(true);
   ob_start(); // Iniciar buffer de salida
   include("Feed.php");
   require_once(__DIR__ . "/../Sse/SseVersionStore.php");
+  $__t1 = microtime(true);
   $Feed = new Feed();
+  $__t2 = microtime(true);
   $op = $_POST["op"] ?? $_GET["op"] ?? '';
+
+  // Para endpoints no-SSE: leer sesión y liberar el lock inmediatamente.
+  // Peticiones largas (emails, push) no bloquean comentarios/reacciones.
+  // $started=true en SessionManager previene re-adquirir el lock.
+  if ($op !== 'streamUpdates') {
+    SessionManager::init();
+    $__t3 = microtime(true);
+    SessionManager::releaseAfterRead();
+    $__t4 = microtime(true);
+    if ($op === 'getCommentsFeedSelected') {
+      error_log("[TIMING $op] includes=".round(($__t1-$__t0)*1000)."ms pdo=".round(($__t2-$__t1)*1000)."ms session_start=".round(($__t3-$__t2)*1000)."ms session_close=".round(($__t4-$__t3)*1000)."ms");
+    }
+  }
 
   function sendSseEvent($eventName, $payload = []) {
     echo "event: " . $eventName . "\n";
@@ -331,7 +347,11 @@
 
   if ($op == "getCommentsFeedSelected") {
     $iFeed = $_POST["iFeed"];
-    echo trim($Feed->getCommentsFeedSelected($iFeed));
+    $__tq0 = microtime(true);
+    $result = trim($Feed->getCommentsFeedSelected($iFeed));
+    $__tq1 = microtime(true);
+    error_log("[TIMING getCommentsFeedSelected] query+process=".round(($__tq1-$__tq0)*1000)."ms total=".round(($__tq1-$__t0)*1000)."ms");
+    echo $result;
   }
 
   if ($op == "addPublicationFromIndex") {

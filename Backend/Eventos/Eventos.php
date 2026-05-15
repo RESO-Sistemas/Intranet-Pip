@@ -213,11 +213,46 @@
 
     function getProximosEventos() {
       $hoy = date('Y-m-d');
-      $q = "SELECT Titulo, Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin, Status, idEventos
+      $q = "SELECT
+                Titulo, Descripcion, FechaInicio, FechaFin, HoraInicio, HoraFin,
+                0    AS EsCumpleanos,
+                NULL AS NombreEmpleado
             FROM Eventos
             WHERE Status = 1 AND FechaFin >= '$hoy'
+
+            UNION ALL
+
+            SELECT
+                CONCAT('Cumpleaños: ', Nombre)   AS Titulo,
+                CONCAT('Cumpleaños de ', Nombre) AS Descripcion,
+                CASE
+                    WHEN DATE_FORMAT(CONCAT(YEAR('$hoy'),'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d') >= '$hoy'
+                    THEN DATE_FORMAT(CONCAT(YEAR('$hoy'),'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                    ELSE DATE_FORMAT(CONCAT(YEAR('$hoy')+1,'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                END AS FechaInicio,
+                CASE
+                    WHEN DATE_FORMAT(CONCAT(YEAR('$hoy'),'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d') >= '$hoy'
+                    THEN DATE_FORMAT(CONCAT(YEAR('$hoy'),'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                    ELSE DATE_FORMAT(CONCAT(YEAR('$hoy')+1,'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                END AS FechaFin,
+                NULL AS HoraInicio,
+                NULL AS HoraFin,
+                1      AS EsCumpleanos,
+                Nombre AS NombreEmpleado
+            FROM Empleados
+            WHERE Status = 1
+              AND FNacimiento IS NOT NULL
+              AND DATE_FORMAT(FNacimiento,'%m-%d') != '02-29'
+              AND (
+                  DATE_FORMAT(CONCAT(YEAR('$hoy'),'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                      BETWEEN '$hoy' AND DATE_ADD('$hoy', INTERVAL 30 DAY)
+                  OR
+                  DATE_FORMAT(CONCAT(YEAR('$hoy')+1,'-',DATE_FORMAT(FNacimiento,'%m-%d')),'%Y-%m-%d')
+                      BETWEEN '$hoy' AND DATE_ADD('$hoy', INTERVAL 30 DAY)
+              )
+
             ORDER BY FechaInicio ASC
-            LIMIT 10";
+            LIMIT 15";
       return json_encode($this->Select($q, array()));
     }
   }

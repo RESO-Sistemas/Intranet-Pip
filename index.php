@@ -100,6 +100,14 @@ $MenuP = $Conf->getMenusPadre();
 			line-height: 1.1;
 		}
 
+		.evento-date-box.birthday {
+			background: #e91e8c;
+		}
+
+		body.dark-mode .evento-date-box.birthday {
+			background: #c2185b;
+		}
+
 		.evento-date-box .ev-day {
 			font-size: 1.1rem;
 		}
@@ -1855,21 +1863,25 @@ $MenuP = $Conf->getMenusPadre();
 					];
 					var html = '';
 					eventos.forEach(function(ev) {
+						var esBday = parseInt(ev.EsCumpleanos) === 1;
 						var fecha = new Date(ev.FechaInicio + 'T00:00:00');
 						var dia = fecha.getDate();
 						var mes = meses[fecha.getMonth()];
 						var horaIni = ev.HoraInicio ? ev.HoraInicio.substring(0, 5) : '';
 						var horaFin = ev.HoraFin ? ev.HoraFin.substring(0, 5) : '';
-						var horario = horaIni && horaFin ? horaIni + ' - ' + horaFin : '';
+						var horario = (!esBday && horaIni && horaFin) ? horaIni + ' - ' + horaFin : '';
+						var titulo = esBday
+							? '🎂 ' + $('<div>').text(ev.NombreEmpleado || ev.Titulo).html()
+							: $('<div>').text(ev.Titulo).html();
 						html += '<div class="evento-item">' +
-							'<div class="evento-date-box">' +
+							'<div class="evento-date-box' + (esBday ? ' birthday' : '') + '">' +
 							'<div class="ev-day">' + dia + '</div>' +
 							'<div class="ev-month">' + mes + '</div>' +
 							'</div>' +
 							'<div class="evento-info">' +
-							'<div class="ev-title">' + $('<div>').text(ev.Titulo).html() + '</div>' +
-							(horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' +
-								horario + '</div>' : '') +
+							'<div class="ev-title">' + titulo + '</div>' +
+							(horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' + horario + '</div>' : '') +
+							(esBday ? '<div class="ev-time" style="font-size:.7rem;color:#e91e8c;">Cumpleaños</div>' : '') +
 							'</div>' +
 							'</div>';
 					});

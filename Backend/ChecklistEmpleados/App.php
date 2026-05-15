@@ -4,10 +4,11 @@ header("Content-Type: application/json");
 require_once("ChecklistEmpleados.php");
 $obj = new ChecklistEmpleados();
 
-// Leer noEmpleado e idPuesto de sesión
+// Leer sesión y liberar el lock inmediatamente
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 $noEmpleado = $_SESSION['NoEmpleado'] ?? '';
 $idPuesto   = $_SESSION['idSPuesto']  ?? '';
+session_write_close();
 
 $op = $_POST["op"] ?? "";
 

@@ -17,6 +17,7 @@ if (!SessionManager::isLoggedIn()) {
 }
 
 $noEmpleado  = (string) SessionManager::get('NoEmpleado');
+SessionManager::releaseAfterRead();
 $op          = $_POST['op'] ?? '';
 $notifService = new Notifications();
 

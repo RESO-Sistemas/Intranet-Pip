@@ -7,7 +7,8 @@
 
   $op = $_POST["op"] ?? $_GET["op"] ?? '';
 
-
+  SessionManager::init();
+  SessionManager::releaseAfterRead();
 
   if ($op == "getDashboardVisitSystem") {
 

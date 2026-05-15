@@ -172,6 +172,8 @@ if (btnActionGreen) {
         if (typeof closeComposeForm === 'function') {
           closeComposeForm();
         }
+        suppressNextSseFeedReload = true;
+        loadFeeds(1);
         Swal.fire({
           icon: 'success',
           title: '¡Publicación enviada!',
@@ -244,6 +246,7 @@ var hasFeedRenderedOnce = false;
 var feedPrefetchCache = {};
 var feedPrefetchInFlight = {};
 var fullscreenFeedSwiper = null;
+var suppressNextSseFeedReload = false;
 
 function setComposePublishingState(isPublishing) {
   const composeStatus = document.getElementById("composePublishStatus");
@@ -549,14 +552,18 @@ function startRealtimeFeedStream() {
       console.log("Error parseando feed_update SSE:", e);
     }
 
-    if (currentFeedPage === 1) {
-      loadFeeds(1);
+    if (suppressNextSseFeedReload) {
+      suppressNextSseFeedReload = false;
     } else {
-      $("#btnLoadMoreContainer").show();
+      if (currentFeedPage === 1) {
+        loadFeeds(1);
+      } else {
+        $("#btnLoadMoreContainer").show();
+      }
     }
 
     closeRealtimeFeedStream();
-    scheduleRealtimeFeedReconnect(1000);
+    scheduleRealtimeFeedReconnect(500);
   });
 
   feedRealtimeSource.addEventListener("dashboard_update", function (event) {
@@ -572,12 +579,12 @@ function startRealtimeFeedStream() {
     }));
 
     closeRealtimeFeedStream();
-    scheduleRealtimeFeedReconnect(1000);
+    scheduleRealtimeFeedReconnect(500);
   });
 
   feedRealtimeSource.addEventListener("done", function () {
     closeRealtimeFeedStream();
-    scheduleRealtimeFeedReconnect(1000);
+    scheduleRealtimeFeedReconnect(500);
   });
 
   feedRealtimeSource.onerror = function () {
