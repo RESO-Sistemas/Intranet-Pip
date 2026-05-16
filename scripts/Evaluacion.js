@@ -1,678 +1,402 @@
-const myKeysValues = window.location.search;
-const urlParams = new URLSearchParams(myKeysValues);
-const Evaluacion = urlParams.get("EV");
+/* ================================================================
+   Evaluacion.js — nuevo layout sidebar + contenido
+   Sin SmartWizard: navegación propia con estado en memoria
+================================================================ */
 
-const titulo_Ev = document.querySelector("#titulo_Ev");
-const empleado_Ev = document.querySelector("#empleado_Ev");
-const dv_contentComp = document.querySelector("#contentComp");
-const puesto_Ev = document.querySelector("#puesto_Ev");
-const lvl_Ev = document.querySelector("#lvl_Ev");
-// document.addEventListener('DOMContentLoaded', function () {
-//   var stepper = new Stepper(document.querySelector('.bs-stepper'))
-// })
-let lastResponse;
+const myKeysValues = window.location.search;
+const urlParams    = new URLSearchParams(myKeysValues);
+const Evaluacion   = urlParams.get("EV");
+
+// Estado global de la evaluación
+let evData         = [];   // Array de preguntas recibidas del servidor
+let evCurrentIndex = 0;    // Índice de la pregunta activa
+
 loadAllFunctions();
+
 async function loadAllFunctions() {
   await getGeneralEvaluacionSel();
   await getDetalleEvaluacionSel();
+  hideLoading();
 }
-async function getDetalleEvaluacionSel() {
-  let dataSend = {
-    op: "getDetalleEvaluacionSel",
-    idEv: Evaluacion,
-  };
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-  if (ajaxResponse !== undefined) {
-    const dataR = ajaxResponse.Data;
-    printDetalleEv(dataR);
+
+/* ---------------------------------------------------------------
+   Oculta el spinner y muestra el shell
+--------------------------------------------------------------- */
+function hideLoading() {
+  document.getElementById("ev-loading").style.display  = "none";
+  document.getElementById("ev-shell").style.display    = "flex";
+}
+
+/* ---------------------------------------------------------------
+   Obtiene los datos generales de la evaluación (cabecera)
+--------------------------------------------------------------- */
+async function getGeneralEvaluacionSel() {
+  const dataSend = { op: "getGeneralEvaluacionSel", idEv: Evaluacion };
+  const res = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  if (!res) return;
+
+  const d = res.Data;
+
+  document.getElementById("ev-badge-puesto").innerHTML   = `<i class="fas fa-briefcase"></i> ${d.Puesto ?? "—"}`;
+  document.getElementById("ev-badge-empleado").innerHTML = `<i class="fas fa-user"></i> ${d.NombreEmpleado ?? "—"}`;
+
+  // Notifica al padre (pending-evaluations) para actualizar el título del overlay
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "ev-title", title: d.TEvaluacion ?? "Evaluación" }, "*");
   }
+
+  // Guarda la última respuesta para posicionar la primera pregunta sin responder
+  window._evUltimaRespuesta = d.UltimaRespuesta ?? null;
+  window._evUltimoDec       = d.UltimoDec ?? 0;
 }
-function printDetalleEv(dataR) {
-  let contenidoHTML = "";
-  let contenidoManu = "";
-  let contenidoForm = "";
-  let contador = 0;
-  let contenidoGeneral = "";
-  let firstUnansweredIndex = 0;
-  let foundFirstUnanswered = false;
 
-  dataR.forEach((allC, index) => {
-    if (!foundFirstUnanswered && allC.Contestado == 0) {
-      firstUnansweredIndex = index;
-      foundFirstUnanswered = true;
-    }
-    console.log(allC);
-    contador++;
-    let contentConfig = "";
-    if (allC.idTipoPregunta == 1) {
-      let value = "";
-      if (allC.Contestado != 0) {
-        if (Number(allC.RespuestaQ)) {
-          value = "checked";
-        }
-      }
-      contentConfig = `
-        <div class="col" id="contentValues${contador}" data-typeq="1" data-answeres="${allC.idRespuestaEvaluaciones}">
-          <div class="switch d-flex flex-column align-items-center">
-            <label class="form-label mb-1">Falso / Verdadero</label>
-            <div class="form-check form-switch">
-              <input type="checkbox" class="form-check-input  trueOrFalse" ${value}>
-            </div>
-          </div>
- 
-          <div class="row">
-            <div class="col">
-              <div class="input-field m-t-20">
-                <label class="form-label">Comentarios</label>
-                <textarea  class="form-control" placeholder="Ingrese algún comentario (opcional)">${allC.Comentarios}</textarea>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    } else if (allC.idTipoPregunta == 2 || allC.idTipoPregunta == 4) {
-      let contentAnswers = "";
-      allC.Answers.forEach((answer) => {
-        let value = "";
-        if (allC.Contestado != 0) {
-          if (
-            Number(allC.RespuestaQ) ==
-            Number(answer.idPreguntasPosiblesRespuestas)
-          ) {
-            value = "checked";
-          }
-        }
-        contentAnswers += `
-  <div class="col d-flex justify-content-center mb-3">
-    <div class="form-check d-flex flex-column align-items-center">
-      <input 
-        class="form-check-input mb-1" 
-        type="radio" 
-        name="ans${index}" 
-        id="ans${answer.idPreguntasPosiblesRespuestas}" 
-        data-answer="${answer.idPreguntasPosiblesRespuestas}" 
-        ${value}
-      >
-      <label 
-        class="form-check-label text-center" 
-        for="ans${answer.idPreguntasPosiblesRespuestas}">
-        ${answer.DescripcionRespuesta}
-      </label>
-    </div>
-  </div>
-`;
-      });
-      contentConfig = `
-  <div class="col" id="contentValues${contador}" data-typeq="${allC.idTipoPregunta}" data-answeres="${allC.idRespuestaEvaluaciones}">
-    <div class="row justify-content-center">
-      ${contentAnswers}
-    </div>
-    <div class="row">
-      <div class="col">
-        <div class="input-field mt-3">
-          <label class="form-label" >Comentarios</label>
-          <textarea class="form-control" placeholder="Ingrese algún comentario (opcional)">${allC.Comentarios}</textarea>
+/* ---------------------------------------------------------------
+   Obtiene el detalle de preguntas y renderiza
+--------------------------------------------------------------- */
+async function getDetalleEvaluacionSel() {
+  const dataSend = { op: "getDetalleEvaluacionSel", idEv: Evaluacion };
+  const res = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  if (!res) return;
+
+  evData = res.Data ?? [];
+
+  // Posiciona en la primera pregunta sin responder
+  const firstUnanswered = evData.findIndex(q => q.Contestado == 0);
+  evCurrentIndex = firstUnanswered >= 0 ? firstUnanswered : 0;
+
+  renderSidebar();
+  renderQuestion(evCurrentIndex);
+  updateProgress();
+  updateNav();
+}
+
+/* ---------------------------------------------------------------
+   Renderiza el índice lateral de preguntas
+--------------------------------------------------------------- */
+function renderSidebar() {
+  const inner = document.getElementById("ev-sidebar-inner");
+  inner.innerHTML = evData.map((q, i) => {
+    const isDone   = q.Contestado != 0;
+    const isActive = i === evCurrentIndex;
+
+    let cls = "ev-q-item";
+    if (isActive) cls += " active";
+    else if (isDone) cls += " done";
+
+    const checkIcon = isDone && !isActive
+      ? `<i class="fas fa-check ev-q-check"></i>`
+      : "";
+
+    // Nombre corto de la competencia para el sidebar
+    const label = q.Competencia
+      ? (q.Competencia.length > 18 ? q.Competencia.slice(0, 17) + "…" : q.Competencia)
+      : `Pregunta ${i + 1}`;
+
+    return `
+      <button class="${cls}" onclick="goToQuestion(${i})">
+        <span class="ev-q-num">${i + 1}</span>
+        <span class="ev-q-label">${label}</span>
+        ${checkIcon}
+      </button>`;
+  }).join("");
+}
+
+/* ---------------------------------------------------------------
+   Navega a una pregunta específica (guarda antes la actual)
+--------------------------------------------------------------- */
+async function goToQuestion(index) {
+  // Guarda respuesta actual antes de navegar
+  if (index !== evCurrentIndex) {
+    await saveCurrentQuestion(evCurrentIndex);
+  }
+  evCurrentIndex = index;
+  renderSidebar();
+  renderQuestion(index);
+  updateProgress();
+  updateNav();
+  // Scroll al inicio del contenido
+  document.getElementById("ev-content").scrollTop = 0;
+}
+
+/* ---------------------------------------------------------------
+   Renderiza la pregunta activa
+--------------------------------------------------------------- */
+function renderQuestion(index) {
+  const q   = evData[index];
+  if (!q) return;
+
+  const container = document.getElementById("ev-q-container");
+
+  let answerHTML = "";
+
+  if (q.idTipoPregunta == 1) {
+    // Verdadero / Falso
+    const checked = (q.Contestado != 0 && Number(q.RespuestaQ)) ? "checked" : "";
+    answerHTML = `
+      <div class="ev-switch-wrap">
+        <span>Falso</span>
+        <div class="form-check form-switch mb-0">
+          <input type="checkbox" class="form-check-input trueOrFalse" ${checked} id="ev-inp-tf">
         </div>
+        <span>Verdadero</span>
+      </div>`;
+
+  } else if (q.idTipoPregunta == 2 || q.idTipoPregunta == 4) {
+    // Opciones de selección
+    const options = (q.Answers ?? []).map(ans => {
+      const checked = (q.Contestado != 0 && Number(q.RespuestaQ) == Number(ans.idPreguntasPosiblesRespuestas))
+        ? "checked" : "";
+      return `
+        <label class="ev-option-label">
+          <input type="radio" name="ev-ans-${index}"
+            data-answer="${ans.idPreguntasPosiblesRespuestas}" ${checked}>
+          <span class="ev-option-pill">${ans.DescripcionRespuesta}</span>
+        </label>`;
+    }).join("");
+
+    answerHTML = `<div class="ev-options-wrap">${options}</div>`;
+
+  } else if (q.idTipoPregunta == 3) {
+    // Rango numérico
+    const val = q.Contestado != 0 ? q.RespuestaQ : "";
+    answerHTML = `
+      <div class="ev-range-wrap">
+        <div class="ev-range-field">
+          <label>Rango Inicial</label>
+          <input type="number" data-typen="initial" data-range="${q.Config.RangoInicial}"
+            value="${q.Config.RangoInicial}" readonly>
+        </div>
+        <div class="ev-range-field">
+          <label>Rango Final</label>
+          <input type="number" data-typen="end" data-ramge="${q.Config.RangoFinal}"
+            value="${q.Config.RangoFinal}" readonly>
+        </div>
+        <div class="ev-range-field">
+          <label>Tu respuesta</label>
+          <input type="number" class="valueRange"
+            min="${q.Config.RangoInicial}" max="${q.Config.RangoFinal}" value="${val}"
+            placeholder="Ingresa un valor">
+        </div>
+      </div>`;
+  }
+
+  container.innerHTML = `
+    <div class="ev-q-card" id="contentValues1"
+      data-typeq="${q.idTipoPregunta}"
+      data-answeres="${q.idRespuestaEvaluaciones}">
+      <div class="ev-competencia-badge">
+        <i class="fas fa-star"></i> ${q.Competencia ?? "Competencia"}
       </div>
-    </div>
-  </div>`;
-    } else if (allC.idTipoPregunta == 3) {
-      let value = 0;
-      if (allC.Contestado != 0) {
-        value = `${allC.RespuestaQ}`;
-      }
-      contentConfig = `
-        <div class="col s12 m6" id="contentValues${contador}" data-typeq="3" data-answeres="${allC.idRespuestaEvaluaciones}">
-          <label class="form-label pb-2">En las preguntas de tipo rango, es necesario ingresar un valor el cual se encuentre entre el rango inicial y el rango final.</label >
-          <div class="row">
-            <div class="col s6 m3"  style="text-align:center;">
-              <label class="form-label">Rango Inicial:</label>
-              <input class="form-control form-control-solid-bordered m-b-sm" type="number" data-typen="initial" data-range="${allC.Config.RangoInicial}" value="${allC.Config.RangoInicial}" readonly  style="text-align:center;"/>
-            </div>
-            <div class="col s6 m3"  style="text-align:center;">
-              <label class="form-label">Rango Final:</label>
-              <input class="form-control form-control-solid-bordered m-b-sm" type="number" data-typen="end" data-ramge="${allC.Config.RangoFinal}" value="${allC.Config.RangoFinal}" readonly  style="text-align:center;"/>
-            </div>
-            <div class="col s12 m6"  style="text-align:center;">
-              <label class="form-label">Ingrese el valor:</label>
-              <input type="number" class="form-control text-center valueRange" min="${allC.Config.RangoInicial}" value="${value}">
-            </div>
-          </div>
-                    <div class="row">
-            <div class="col">
-              <div class="input-field m-t-20">
-                <label class="form-label">Comentarios</label>
-                <textarea  class="form-control" placeholder="Ingrese algún comentario (opcional)">${allC.Comentarios}</textarea>
-              </div>
-            </div>
-          </div>
-        </div>`;
-    }
-    // else if (allC.idTipoPregunta == 4) {
-    //   let contentAnswers = "";
-    //   allC.Answers.forEach( answer => {
-    //     contentAnswers += `
-    //       <div class="col s12">
-    //         <p>
-    //           <label>
-    //             <input type="radio" name="ans${index}" id="ans${answer.idPreguntasPosiblesRespuestas}"  data-answer="${answer.idPreguntasPosiblesRespuestas}"/>
-    //             <span for="ans${answer.idPreguntasPosiblesRespuestas}">${answer.DescripcionRespuesta}</span>
-    //           </label>
-    //         </p>
-    //       </div>
-    //     `;
-    //   });
-    //   contentConfig = `
-    //     <div class="col s12 m6" id="contentValues${contador}" data-typeq="4" data-answeres="${allC.idRespuestaEvaluaciones}">
-    //       <div class="row">
-    //         ${contentAnswers}
-    //         <div class="col s12">
-    //           <div class="input-field m-t-20">
-    //             <h6>Comentarios</h6>
-    //             <textarea  class="materialize-textarea" placeholder="Ingrese algún comentario (opcional)"></textarea>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </div>`;
-    // }
-    contenidoManu += `
-      <li class="nav-item">
-        <a class="nav-link" href="#res_${allC.idRespuestaEvaluaciones}">
-          <div class="num">${contador}</div>
-        </a>
-      </li>`;
-    contenidoForm += `
-<div id="res_${allC.idRespuestaEvaluaciones}" class="tab-pane" role="tabpanel" aria-labelledby="res_${allC.idRespuestaEvaluaciones}">
-  <div class="row justify-content-center">
-    <div class="col-lg-10 col-md-11 col-12">
-
-      <div class="card  p-4 mb-4">
-        <div class="card-body">
-          <div class="mb-3 text-center">
-          <h6 class="fw-bold mb-2" style="font-size: 1.1rem;">
-            <span class="text-muted">Competencia:</span> ${allC.Competencia}
-          </h6>
-          <h6 class="fw-bold" style="font-size: 1.1rem;">
-            <span class="text-muted">Pregunta:</span> ${allC.Descripcion}
-          </h6>
-        </div>
-
-        <div class="row mt-4">
-          ${contentConfig}
-        </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-    `;
-  });
-  contenidoGeneral += `
-    <div id="smartwizard">
-      <ul  class="nav">
-        ${contenidoManu}
-      </ul>
-      <div class="tab-content">
-        ${contenidoForm}
-      </div>
-      <div class="progress">
-         <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+      <p class="ev-q-text">${q.Descripcion ?? ""}</p>
+      ${answerHTML}
+      <div class="ev-comment-wrap">
+        <label><i class="fas fa-comment-alt"></i> Comentarios (opcional)</label>
+        <textarea placeholder="Ingresa algún comentario...">${q.Comentarios ?? ""}</textarea>
       </div>
     </div>`;
-  dv_contentComp.innerHTML = contenidoGeneral;
-  $(function () {
-    $("#smartwizard").smartWizard({
-      selected: firstUnansweredIndex, // Initial selected step
-      theme: "dots", // theme for the wizard, related css need to include for other than default theme
-      justified: true, // Nav menu justification. true/false
-      autoAdjustHeight: true, // Automatically adjust content height
-      backButtonSupport: true, // Enable the back button support
-      enableUrlHash: false, // Enable selection of the step based on url hash,
-      transition: {
-        animation: "slideVertical", // Animation effect on navigation, none|fade|slideHorizontal|slideVertical|slideSwing|css(Animation CSS class also need to specify)
-        speed: "400", // Animation speed. Not used if animation is 'css'
-        easing: "", // Animation easing. Not supported without a jQuery easing plugin. Not used if animation is 'css'
-        prefixCss: "", // Only used if animation is 'css'. Animation CSS prefix
-        fwdShowCss: "", // Only used if animation is 'css'. Step show Animation CSS on forward direction
-        fwdHideCss: "", // Only used if animation is 'css'. Step hide Animation CSS on forward direction
-        bckShowCss: "", // Only used if animation is 'css'. Step show Animation CSS on backward direction
-        bckHideCss: "", // Only used if animation is 'css'. Step hide Animation CSS on backward direction
+}
+
+/* ---------------------------------------------------------------
+   Actualiza la barra de progreso y el contador del sidebar
+--------------------------------------------------------------- */
+function updateProgress() {
+  const total    = evData.length;
+  const answered = evData.filter(q => q.Contestado != 0).length;
+  const pct      = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+  document.getElementById("ev-hprog-fill").style.width  = pct + "%";
+  document.getElementById("ev-hprog-label").textContent = `${answered} / ${total}`;
+  document.getElementById("ev-stat-done").textContent   = `${answered} respondidas`;
+  document.getElementById("ev-stat-pending").textContent = `${total - answered} pendientes`;
+
+  // Muestra botón Finalizar si todas están contestadas
+  const btnFinish = document.getElementById("btn-finish-ev");
+  if (answered === total && total > 0 && window._evUltimoDec != 0) {
+    btnFinish.style.display = "flex";
+  } else {
+    btnFinish.style.display = "none";
+  }
+}
+
+/* ---------------------------------------------------------------
+   Actualiza los botones de navegación inferior
+--------------------------------------------------------------- */
+function updateNav() {
+  const total = evData.length;
+  document.getElementById("ev-nav-counter").textContent =
+    `${evCurrentIndex + 1} / ${total}`;
+  document.getElementById("btn-prev").disabled = evCurrentIndex === 0;
+
+  const btnNext = document.getElementById("btn-next");
+  if (evCurrentIndex === total - 1) {
+    btnNext.innerHTML = `<i class="fas fa-check"></i> Listo`;
+  } else {
+    btnNext.innerHTML = `Siguiente <i class="fas fa-arrow-right"></i>`;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Navegar: Siguiente
+--------------------------------------------------------------- */
+async function evNavNext() {
+  const valid = await validateAndSave(evCurrentIndex);
+  if (!valid) return;
+
+  if (evCurrentIndex < evData.length - 1) {
+    evCurrentIndex++;
+    renderSidebar();
+    renderQuestion(evCurrentIndex);
+    updateProgress();
+    updateNav();
+    document.getElementById("ev-content").scrollTop = 0;
+  } else {
+    // Última pregunta — finalizar evaluación
+    await dialogfinishEvaluationNew();
+  }
+}
+
+/* ---------------------------------------------------------------
+   Navegar: Anterior (sin validación — solo guarda si hay respuesta)
+--------------------------------------------------------------- */
+async function evNavPrev() {
+  await saveCurrentQuestion(evCurrentIndex);
+  if (evCurrentIndex > 0) {
+    evCurrentIndex--;
+    renderSidebar();
+    renderQuestion(evCurrentIndex);
+    updateProgress();
+    updateNav();
+    document.getElementById("ev-content").scrollTop = 0;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Valida la pregunta actual y guarda; retorna true si es válida
+--------------------------------------------------------------- */
+async function validateAndSave(index) {
+  const card   = document.querySelector("#ev-q-container [data-typeq]");
+  if (!card) return true;
+
+  const typeQ  = card.dataset.typeq;
+  const inputs = card.querySelectorAll("input");
+  let valid    = false;
+
+  if (typeQ == 1) {
+    valid = true; // switch siempre tiene valor
+  } else if (typeQ == 2 || typeQ == 4) {
+    valid = Array.from(inputs).some(i => i.type === "radio" && i.checked);
+  } else if (typeQ == 3) {
+    const rangeInputs = card.querySelectorAll("[data-typen]");
+    const valueInput  = card.querySelector(".valueRange");
+    if (valueInput && rangeInputs.length >= 2) {
+      valid = Number(valueInput.value) >= Number(rangeInputs[0].dataset.range ?? rangeInputs[0].value)
+           && Number(valueInput.value) <= Number(rangeInputs[1].dataset.ramge ?? rangeInputs[1].value);
+    }
+  }
+
+  if (!valid) {
+    const messageContent = `
+      <div class="alert-content">
+        <span class="alert-title">Información</span>
+        <span class="alert-text">Ingresa una calificación válida para continuar.</span>
+      </div>`;
+    showBootstrapAlert(messageContent, "top-right", 4000);
+    return false;
+  }
+
+  await saveCurrentQuestion(index);
+  return true;
+}
+
+/* ---------------------------------------------------------------
+   Guarda la respuesta de la pregunta en el índice dado
+--------------------------------------------------------------- */
+async function saveCurrentQuestion(index) {
+  const card = document.querySelector("#ev-q-container [data-typeq]");
+  if (!card) return;
+
+  const typeQ     = card.dataset.typeq;
+  const answerRes = card.dataset.answeres;
+  const inputs    = card.querySelectorAll("input");
+  let value       = "";
+
+  if (typeQ == 1) {
+    const cb = card.querySelector(".trueOrFalse");
+    value = cb && cb.checked ? 1 : 0;
+  } else if (typeQ == 2 || typeQ == 4) {
+    for (const inp of inputs) {
+      if (inp.checked) { value = inp.dataset.answer; break; }
+    }
+  } else if (typeQ == 3) {
+    const vi = card.querySelector(".valueRange");
+    value = vi ? vi.value : "";
+  }
+
+  if (value === "" && typeQ != 1) return; // No guardar si no seleccionó nada
+
+  const comment = card.querySelector("textarea")?.value ?? "";
+
+  const dataSend = {
+    op:           "saveResultCompetence",
+    value:        value,
+    response:     answerRes,
+    comentarios:  comment,
+  };
+
+  return new Promise(resolve => {
+    $.ajax({
+      type:     "post",
+      url:      url_m_Evaluaciones,
+      data:     dataSend,
+      dataType: "json",
+      success:  function (result) {
+        // Marca como contestada en memoria
+        if (result && evData[index]) {
+          evData[index].Contestado  = 1;
+          evData[index].RespuestaQ  = value;
+          evData[index].Comentarios = comment;
+        }
+        if (typeof QuitarCargando === "function") QuitarCargando();
+        resolve(result);
       },
-      toolbar: {
-        position: "bottom", // none|top|bottom|both
-        showNextButton: true, // show/hide a Next button
-        showPreviousButton: true, // show/hide a Previous button
-        extraHtml: `<button class="btn btn-success" id="btnFinish" style="${lastResponse}" onclick="dialogfinishEvaluation(${contador})">Finish</button`, // Extra html to show on toolbar
+      error: function (e) {
+        if (typeof QuitarCargando === "function") QuitarCargando();
+        console.error(e);
+        resolve(false);
       },
-      anchor: {
-        enableNavigation: true, // Enable/Disable anchor navigation
-        enableNavigationAlways: false, // Activates all anchors clickable always
-        enableDoneState: true, // Add done state on visited steps
-        markPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
-        unDoneOnBackNavigation: false, // While navigate back, done state will be cleared
-        enableDoneStateNavigation: true, // Enable/Disable the done state navigation
-      },
-      keyboard: {
-        keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
-        keyLeft: [37], // Left key code
-        keyRight: [39], // Right key code
-      },
-      lang: {
-        // Language variables for button
-        next: "Siguiente",
-        previous: "Anterior",
-      },
-      disabledSteps: [], // Array Steps disabled
-      errorSteps: [], // Array Steps error
-      warningSteps: [], // Array Steps warning
-      hiddenSteps: [], // Hidden steps
     });
   });
-  $("#smartwizard").on(
-    "leaveStep",
-    function (e, anchorObject, currentStepIndex, nextStepIndex, stepDirection) {
-      const btnFinish = document.querySelector("#btnFinish");
-      if (stepDirection === "forward") {
-        let dv = `contentValues${currentStepIndex + 1}`;
-        const result = validateValue(dv);
-        if (result) {
-          if (anchorObject.prevObject.length - 1 == nextStepIndex) {
-            btnFinish.style.display = "";
-          } else {
-            btnFinish.style.display = "none";
-          }
-          return saveResultCompetence(currentStepIndex + 1);
-        } else {
-          return false;
-        }
-        return result;
-      }
-    }
-  );
 }
 
-async function dialogfinishEvaluation(evalIndex) {
-  let dv = `contentValues${evalIndex}`;
-  const resultV = await validateValue(dv);
-  if (resultV) {
-    const title = "¿Desea enviar la evaluación?";
-    const resultDial = await dialogConfirmSAlert(title);
-    if (resultDial) {
-      await finishEvaluation(evalIndex);
-    }
-  }
-}
+/* ---------------------------------------------------------------
+   Diálogo de confirmación y envío final de la evaluación
+--------------------------------------------------------------- */
+async function dialogfinishEvaluationNew() {
+  const valid = await validateAndSave(evCurrentIndex);
+  if (!valid) return;
 
-async function finishEvaluation(dv) {
-  const all = document.querySelector(`#contentValues${dv}`);
-  const typeQ = all.dataset.typeq;
-  const answerRes = all.dataset.answeres;
-  const inpValue = all.querySelectorAll("input");
-  let value = "";
-  if (typeQ == 4 || typeQ == 2) {
-    for (var i = 0; i < inpValue.length; i++) {
-      if (inpValue[i].checked) {
-        value = inpValue[i].dataset.answer;
-        break;
-      }
-    }
-  } else if (typeQ == 3) {
-    const inputVal = all.querySelector(".valueRange");
-    value = inputVal.value;
-    console.log(value);
-  } else if (typeQ == 1) {
-    const inputVal = all.querySelector(".trueOrFalse");
-    console.log(inputVal.checked);
-    value = inputVal.checked ? 1 : 0;
-  }
-  const inpArea = all.querySelectorAll("textarea");
-  console.log(inpArea.length);
-  console.log(inpArea[0].value);
-  let dataSend = {
-    op: "finishEvaluation",
-    value: value,
-    response: answerRes,
-    comentarios: inpArea[0].value,
+  const confirm = await dialogConfirmSAlert("¿Deseas enviar la evaluación?");
+  if (!confirm) return;
+
+  const dataSend = {
+    op:         "finishEvaluation",
+    value:      "",          // ya guardado paso a paso
+    response:   "",
+    comentarios:"",
     idResponse: Evaluacion,
   };
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-  if (ajaxResponse !== undefined) {
-    setTimeout(function () {
-      window.location.href = "pending-evaluations.php";
-    }, 3000);
-  }
-}
-
-async function validateResultsEvaluation() {
-  let dataSend = {
-    op: "validateResultsEvaluation",
-    ev: Evaluacion,
-  };
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-  if (ajaxResponse !== undefined) {
-    return ajaxResponse.Siguiente;
-  } else {
-    return false;
-  }
-}
-
-function saveResultCompetence(result) {
-  // Cargando();
-  const all = document.querySelector(`#contentValues${result}`);
-  const typeQ = all.dataset.typeq;
-  const answerRes = all.dataset.answeres;
-  const inpValue = all.querySelectorAll("input");
-  let value = "";
-  if (typeQ == 4 || typeQ == 2) {
-    for (var i = 0; i < inpValue.length; i++) {
-      if (inpValue[i].checked) {
-        value = inpValue[i].dataset.answer;
-        break;
-      }
-    }
-  } else if (typeQ == 3) {
-    const inputVal = all.querySelector(".valueRange");
-    value = inputVal.value;
-  } else if (typeQ == 1) {
-    const inputVal = all.querySelector(".trueOrFalse");
-    value = inputVal.checked ? 1 : 0;
-  }
-  const inpArea = all.querySelectorAll("textarea");
-  let dataSend = {
-    op: "saveResultCompetence",
-    value: value,
-    response: answerRes,
-    comentarios: inpArea[0].value,
-  };
-  $.ajax({
-    type: "post",
-    url: url_m_Evaluaciones,
-    data: dataSend,
-    dataType: "json",
-    success: function (result) {
-      if (!result) {
-        // toastr.warning("Ha ocurrido un error al evaluar la competencia.");
-        const messageContent = `
-            <div class="alert-content">
-             <span class="alert-title">Alerta!</span>
-              <span class="alert-text">Ha ocurrido un error al evaluar la competencia.</span>
-            </div>`;
-        showBootstrapAlertWar(messageContent, "top-right", 5000);
-      }
-      QuitarCargando();
-      return result;
-    },
-    error: function (e) {
-      QuitarCargando();
-      console.log(e);
-    },
-  });
-}
-
-function validateValue(cn) {
-  const all = document.querySelector(`#${cn}`);
-  const typeQ = all.dataset.typeq;
-  const thisVal = all.querySelectorAll("input");
-  let whitVal = 0;
-  if (typeQ == 1) {
-    whitVal = 1;
-  } else if (typeQ == 2 || typeQ == 4) {
-    for (var i = 0; i < thisVal.length; i++) {
-      if (thisVal[i].checked) {
-        whitVal = 1;
-        break;
-      }
-    }
-  } else if (typeQ == 3) {
-    const inputsRange = document.querySelectorAll("[data-typen]");
-    const inputValue = document.querySelector(".valueRange");
-    if (
-      Number(inputValue.value) >= Number(inputsRange[0].value) &&
-      Number(inputValue.value) <= Number(inputsRange[1].value)
-    ) {
-      whitVal = 1;
-    }
-  }
-  let contador = 0;
-  if (!whitVal) {
-    // toastr.info("Ingrese una calificación válida para poder continuar");
-    const messageContent = `
-        <div class="alert-content">
-             <span class="alert-title">Información!</span>
-              <span class="alert-text">Ingrese una calificación válida para poder continuar.</span>
-        </div>`;
-    showBootstrapAlert(messageContent, "top-right", 5000);
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function asignarValor(Resp, val) {
-  console.log(Resp);
-  const inpCalif = document.querySelector(`[data-response="${Resp}"]`);
-  inpCalif.value = val;
-}
-
-async function getGeneralEvaluacionSel() {
-  let dataSend = {
-    op: "getGeneralEvaluacionSel",
-    idEv: Evaluacion,
-  };
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-  if (ajaxResponse !== undefined) {
-    const dataR = ajaxResponse.Data;
-    console.log(dataR);
-    titulo_Ev.textContent = dataR.TEvaluacion;
-    empleado_Ev.textContent = dataR.NombreEmpleado;
-    puesto_Ev.textContent = dataR.Puesto;
-    lvl_Ev.textContent = dataR.NivelEvaluado;
-    if (dataR.UltimoDec == 0) {
-      lastResponse = "display:none;";
+  const res = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  if (res !== undefined) {
+    // Notifica al padre (pending-evaluations) para cerrar el offcanvas
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "ev-finished" }, "*");
     } else {
-      lastResponse = "";
+      setTimeout(() => { window.location.href = "pending-evaluations.php"; }, 2000);
     }
-    window.location.hash = "";
-    window.location.hash = `#res_${dataR.UltimaRespuesta}`;
   }
-  // let tableTab = new Tabulator("#table_general", {
-  //   layout:"fitColumns",
-  // });
 }
 
-// getDatosEvaluacionSelected();
-// getEvaluacion();
-// function getEvaluacion () {
-//   datos = {
-//     op: "getDetalleEvaluacion"
-//   }
-//   $.ajax({
-//     type: "post",
-//     url: "Backend/Evaluaciones/App.php",
-//     data: datos,
-//     success:function(response){
-//       let contenido = "";
-//       let NoEmpleado = "";
-//       let EmpEvaluante = "";
-//       const ArrCompetencias = [];
-//       const ArrEvaluados = [];
-//       response = JSON.parse(response.trim());
-//       console.log(response);
-//       response.map(AllArray => {
-//         AllArray.ListCompetencias.map(Competencias => {
-//            ArrCompetencias.push(Competencias);
-//         });
-//       });
-//       EmpEvaluante = response.map(NoEmpleado => NoEmpleado.NoEmpleado);
-//       response.map(AllArray => {
-//         AllArray.ListColaboradores.map(Evaluados => {
-//             ArrEvaluados.push(Evaluados);
-//         })
-//       })
-//       ArrCompetencias.map(Competencia => {
-//         contenido += `
-//           <div class="col-12 col-lg-12" style="padding:3vh; box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px; width:100%; background-color:white; border-radius:15px">
-//             <div class="row">
-//               <div class="col-12 col-lg-12">
-//                 <div class="row" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; ">
-//                   <div class="col-12 col-lg-12 text-center" style="text-align:justify;position:sticky">
-//                     <p><span style="font-size: large;"><b>${Competencia.Competencia}</b></span></p>
-//                   </div>
-//                   <div class="col-12 col-lg-12 text-center">
-//                     <p><span style="font-size: small;"><b>Significado:</b> ${Competencia.Significado}</span></p>
-//                   </div>
-//                   <div class="col-12 col-lg-12">
-//                     <div class="contenidobox">
-//                       <div class="row">
-//                         <div class="col-6 col-lg-6 text-center">
-//                           <p><span><b>Calificación: A</b></span></p>
-//                           <p style="text-align:justify;font-size: small;"><span>${Competencia.A}</span></p>
-//                         </div>
-//                         <div class="col-6 col-lg-6 text-center">
-//                           <p><span><b>Calificación: B</b></span></p>
-//                           <p style="text-align:justify;font-size: small;"><span>${Competencia.B}</span></p>
-//                         </div>
-//                         <div class="col-6 col-lg-6 text-center">
-//                           <p><span><b>Calificación: C</b></span></p>
-//                           <p style="text-align:justify;font-size: small;"><span>${Competencia.C}</span></p>
-//                         </div>
-//                         <div class="col-6 col-lg-6 text-center">
-//                           <p><span><b>Calificación: D</b></span></p>
-//                           <p style="text-align:justify;font-size: small;"><span>${Competencia.D}</span></p>
-//                         </div>
-//                         <div class="col-12 col-lg-12 text-center">
-//                           <p><span><b>Calificación: E</b></span></p>
-//                           <p style="text-align:justify;font-size: small;"><span>${Competencia.E}</span></p>
-//                         </div>
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-//                 <hr>
-//               </div>
-//               <div class="col-12 col-lg-12 text-center">
-//                 <div class="row">
-//                   <div class="col-4 col-lg-4">
-//                     <span><b>Evaluado</b></span>
-//                   </div>
-//                   <div class="col-1 col-lg-1" style="text-align:center;">
-//                     <span><b>A</b></span>
-//                   </div>
-//                   <div class="col-1 col-lg-1" style="text-align:center;">
-//                     <span><b>B</b></span>
-//                   </div>
-//                   <div class="col-1 col-lg-1" style="text-align:center;">
-//                     <span><b>C</b></span>
-//                   </div>
-//                   <div class="col-1 col-lg-1" style="text-align:center;">
-//                     <span><b>D</b></span>
-//                   </div>
-//                   <div class="col-1 col-lg-1" style="text-align:center;">
-//                     <span><b>E</b></span>
-//                   </div>
-//                   <div class="col-3 col-lg-3" style="text-align:center;">
-//                     <span><b>Comentarios</b> (opcional)</span>
-//                   </div>
-//         `;
-//         ArrEvaluados.map(Evaluado => {
-//           contenido += `
-//             <div class="col-4 col-lg-4">
-//               <input type="hidden" name="valCompetencia" value="${Competencia.idCompetencias}" required></input>
-//               <input type="hidden" name="valNoEmpleado" value="${EmpEvaluante}" required></input>
-//               <input type="text" id="CalifEval${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" name="valCalificacion" value="" required style="display:none;"></input>
-//               <input type="hidden" name="valEmpEvaluado" value="${Evaluado.NoEmpleado}" required></input>
-//               <p><span>${Evaluado.Nombre}</span></p>
-//             </div>
-//             <div class="col-1 col-lg-1" style="text-align:center;">
-//               <input type="radio" onclick="asignarValor(${Evaluado.NoEmpleado},${Competencia.idCompetencias},10)"name="radioEmp${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" ></input>
-//             </div>
-//             <div class="col-1 col-lg-1" style="text-align:center;">
-//               <input type="radio" onclick="asignarValor(${Evaluado.NoEmpleado},${Competencia.idCompetencias},8)"name="radioEmp${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" ></input>
-//             </div>
-//             <div class="col-1 col-lg-1" style="text-align:center;">
-//               <input type="radio" onclick="asignarValor(${Evaluado.NoEmpleado},${Competencia.idCompetencias},6)"name="radioEmp${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" ></input>
-//             </div>
-//             <div class="col-1 col-lg-1" style="text-align:center;">
-//               <input type="radio" onclick="asignarValor(${Evaluado.NoEmpleado},${Competencia.idCompetencias},4)"name="radioEmp${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" ></input>
-//             </div>
-//             <div class="col-1 col-lg-1" style="text-align:center;">
-//               <input type="radio" onclick="asignarValor(${Evaluado.NoEmpleado},${Competencia.idCompetencias},2)"name="radioEmp${Evaluado.NoEmpleado}Comp${Competencia.idCompetencias}" ></input>
-//             </div>
-//             <div class="col-3 col-lg-3" style="text-align:center;">
-//               <input type="text"  name="ContenidoComentarios" placeholder="Ingrese un comentario"></input>
-//             </div>
-//           `;
-//         });
-//         contenido +=`
-//               </div>
-//             </div>
-//           </div>
-//         </diV>
-//         <hr>
-//         `
-//       });
-//
-//       $("#ContenedorEvaluacion").html(contenido);
-//     },error:function(e){
-//       alert(e.responseText);
-//     }
-//   });
-// }
-// function asignarValor (Eval,Comp,Valor) {
-//   $("#CalifEval"+Eval+"Comp"+Comp).val(Valor);
-// }
-//
-// $("#EnviarFormulario").click(async function(){
-//     if (document.getElementById("FormEnviaFormulario").checkValidity()){
-//       event.preventDefault();
-//       var form = await  $("#FormEnviaFormulario");
-//       var data = form.serializeArray();
-//       let dataString = JSON.stringify(data);
-//       let datos = await {
-//         op: "respondeEvaluacion",
-//         idEvaluaciones: Evaluacion,
-//         registros: dataString
-//       };
-//       console.log(dataString);
-//       let respuesta = "";
-//         try {
-//             respuesta = await $.ajax({
-//                 type: "post",
-//                 url: "Backend/Evaluaciones/App.php",
-//                 data: datos,
-//             });
-//         } catch (error) {
-//             console.log(error);
-//         } finally {
-//             if (respuesta == "1") {
-//                 toastr.success("Datos Guardados con exito");
-//                 setTimeout(function () {
-//                   window.location.href=`Evaluaciones.php`;
-//                 }, 1500);
-//               }else {
-//                 toastr.info("No Guardado");
-//               }
-//         }
-//   }else {
-//     toastr.info("Ingrese todos los datos");
-//   }
-// });
-//
-//  function getDatosEvaluacionSelected () {
-//    datos = {
-//      op: "getDatosEvaluacionSelected",
-//      idEvaluaciones: Evaluacion
-//    }
-//    $.ajax({
-//      type: "post",
-//      url: "Backend/Evaluaciones/App.php",
-//      data: datos,
-//      success:function(response){
-//        response = JSON.parse(response.trim());
-//        $("#tituloEvaluacion").html("Evaluación: "+response[0]["Titulo"]);
-//      },error:function(e){
-//        alert(e.responseText);
-//      }
-//    });
-//  }
+/* ---------------------------------------------------------------
+   Alias para compatibilidad con llamada existente desde el HTML
+--------------------------------------------------------------- */
+window.dialogfinishEvaluation = dialogfinishEvaluationNew;
