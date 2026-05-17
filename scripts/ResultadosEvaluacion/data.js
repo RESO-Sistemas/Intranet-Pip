@@ -48,7 +48,7 @@ async function getFinalDataEvaluated(){
       (hasPar ? base.par : 0) +
       (hasSub ? base.sub : 0);
     if (sumBase > 0) {
-      group = "N";
+      group = "Mixto";
       porcentJe = hasJe ? (base.je / sumBase) : 0;
       porcentAuto = hasAuto ? (base.auto / sumBase) : 0;
       porcentPar = hasPar ? (base.par / sumBase) : 0;

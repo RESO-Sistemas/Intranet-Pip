@@ -277,6 +277,58 @@
 
     #selTypeResult-wrapper { display: none !important; }
 
+    /* KPI strip en panel general */
+    .res-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.65rem;
+      padding: 0.85rem 1rem;
+      background: #fff;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .res-kpi-card {
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      background: #FAFBFF;
+      padding: 0.55rem 0.65rem;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+    .res-kpi-label {
+      font-size: 0.65rem;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    .res-kpi-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E293B;
+      line-height: 1.2;
+    }
+    .res-kpi-sub {
+      font-size: 0.72rem;
+      color: #64748B;
+      line-height: 1.2;
+    }
+    .res-kpi-value.good { color: #15803D; }
+    .res-kpi-value.warn { color: #B45309; }
+    .res-kpi-value.bad  { color: #B91C1C; }
+
+    @media (max-width: 1200px) {
+      .res-kpi-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 768px) {
+      .res-kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .res-kpi-strip { grid-template-columns: 1fr; }
+    }
+
     #modalGeneralDetail .res-general-body {
       padding: 0;
       overflow-y: auto;
@@ -559,6 +611,35 @@
         <span class="ms ms-sm">group</span> Pares y Subordinados
       </button>
     </div>
+
+    <div class="res-kpi-strip" id="resKpiStrip">
+      <div class="res-kpi-card">
+        <div class="res-kpi-label">Cobertura</div>
+        <div class="res-kpi-value" id="kpiCoverage">-</div>
+        <div class="res-kpi-sub" id="kpiCoverageSub">-</div>
+      </div>
+      <div class="res-kpi-card">
+        <div class="res-kpi-label">Distribución Tipos</div>
+        <div class="res-kpi-value" id="kpiTypes">-</div>
+        <div class="res-kpi-sub" id="kpiTypesSub">-</div>
+      </div>
+      <div class="res-kpi-card">
+        <div class="res-kpi-label">Última Respuesta</div>
+        <div class="res-kpi-value" id="kpiLastUpdate">-</div>
+        <div class="res-kpi-sub" id="kpiLastUpdateSub">-</div>
+      </div>
+      <div class="res-kpi-card">
+        <div class="res-kpi-label">Delta vs Promedio</div>
+        <div class="res-kpi-value" id="kpiDelta">-</div>
+        <div class="res-kpi-sub" id="kpiDeltaSub">-</div>
+      </div>
+      <div class="res-kpi-card">
+        <div class="res-kpi-label">Estabilidad</div>
+        <div class="res-kpi-value" id="kpiStability">-</div>
+        <div class="res-kpi-sub" id="kpiStabilitySub">-</div>
+      </div>
+    </div>
+
     <div id="selTypeResult-wrapper">
       <select id="selTypeResult">
         <option value="1">FORTALEZAS Y ÁREAS A MEJORAR</option>

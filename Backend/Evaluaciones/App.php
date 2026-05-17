@@ -417,6 +417,12 @@
       echo trim($Evaluaciones->getListEvaluatorsDetail($employee, $evaluation));
     }
 
+    if ($op == "getEvaluationInsights") {
+      $employee = $_POST["employee"];
+      $evaluation = $_POST["evaluation"];
+      echo trim($Evaluaciones->getEvaluationInsights($evaluation, $employee));
+    }
+
     if ($op == "checkTemporaryDataEvaluation") {
       $ev = $_POST["ev"];
       $branchL = $_POST["branch"];

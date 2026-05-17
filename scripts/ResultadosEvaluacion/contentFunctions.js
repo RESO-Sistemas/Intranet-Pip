@@ -220,6 +220,7 @@ async function getPrincipalDetailEvaluated(employee, type) {
         $("#selTypeResult").val("1").trigger("change");
 
         printFinalGeneralTableEvaluated(dataR);
+        await loadGeneralInsights(employee);
 
         $("#gn_calculo").fadeOut();
         $("#gn_par_sub").fadeOut();
@@ -228,6 +229,93 @@ async function getPrincipalDetailEvaluated(employee, type) {
       }
     }
   }
+}
+
+function formatDbDateToMx(dateStr) {
+  if (!dateStr) return "Sin datos";
+  const iso = dateStr.replace(" ", "T");
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleString("es-MX", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function setKpiValue(id, value, cssClass = "") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove("good", "warn", "bad");
+  if (cssClass) el.classList.add(cssClass);
+  el.textContent = value;
+}
+
+async function loadGeneralInsights(employee) {
+  const dataSend = {
+    op: "getEvaluationInsights",
+    evaluation: Evaluacion,
+    employee: employee,
+  };
+
+  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 0);
+  if (ajaxResponse === undefined || !ajaxResponse.Data) {
+    return;
+  }
+
+  const coverage = ajaxResponse.Data.Coverage || {};
+  const avgCoverage = ajaxResponse.Data.AvgCoverage || {};
+  const lastUpdate = ajaxResponse.Data.LastUpdate || {};
+
+  const totalAsignados = Number(coverage.TotalAsignados || 0);
+  const totalCompletados = Number(coverage.TotalCompletados || 0);
+  const coberturaPct = totalAsignados > 0 ? (totalCompletados * 100 / totalAsignados) : 0;
+  const coberturaFmt = `${coberturaPct.toFixed(1)}%`;
+
+  const confiabilidad = coberturaPct >= 75 ? "Alta" : (coberturaPct >= 45 ? "Media" : "Baja");
+  const confiabClass = coberturaPct >= 75 ? "good" : (coberturaPct >= 45 ? "warn" : "bad");
+
+  setKpiValue("kpiCoverage", coberturaFmt, confiabClass);
+  const kpiCoverageSub = document.getElementById("kpiCoverageSub");
+  if (kpiCoverageSub) kpiCoverageSub.textContent = `${totalCompletados}/${totalAsignados} evaluadores • Conf. ${confiabilidad}`;
+
+  const asigJefe = Number(coverage.AsigJefe || 0);
+  const asigAuto = Number(coverage.AsigAuto || 0);
+  const asigPar = Number(coverage.AsigPar || 0);
+  const asigSub = Number(coverage.AsigSub || 0);
+  const compJefe = Number(coverage.CompJefe || 0);
+  const compAuto = Number(coverage.CompAuto || 0);
+  const compPar = Number(coverage.CompPar || 0);
+  const compSub = Number(coverage.CompSub || 0);
+
+  setKpiValue("kpiTypes", `J:${compJefe}/${asigJefe} A:${compAuto}/${asigAuto}`, "");
+  const kpiTypesSub = document.getElementById("kpiTypesSub");
+  if (kpiTypesSub) kpiTypesSub.textContent = `P:${compPar}/${asigPar} S:${compSub}/${asigSub}`;
+
+  const formattedLast = formatDbDateToMx(lastUpdate.UltimaRespuesta || "");
+  setKpiValue("kpiLastUpdate", formattedLast === "Sin datos" ? "Sin datos" : formattedLast.split(",")[0], "");
+  const kpiLastUpdateSub = document.getElementById("kpiLastUpdateSub");
+  if (kpiLastUpdateSub) {
+    kpiLastUpdateSub.textContent = formattedLast === "Sin datos" ? "No hay respuestas registradas" : formattedLast;
+  }
+
+  const promedioCobertura = Number(avgCoverage.PromedioCobertura || 0);
+  const delta = coberturaPct - promedioCobertura;
+  const deltaClass = delta >= 5 ? "good" : (delta <= -5 ? "bad" : "warn");
+  const sign = delta > 0 ? "+" : "";
+  setKpiValue("kpiDelta", `${sign}${delta.toFixed(1)} pp`, deltaClass);
+  const kpiDeltaSub = document.getElementById("kpiDeltaSub");
+  if (kpiDeltaSub) kpiDeltaSub.textContent = `Promedio evaluación: ${promedioCobertura.toFixed(1)}%`;
+
+  const estabilidad = coberturaPct >= 75 ? "Estable" : (coberturaPct >= 45 ? "Intermedia" : "Preliminar");
+  const estabilidadClass = coberturaPct >= 75 ? "good" : (coberturaPct >= 45 ? "warn" : "bad");
+  setKpiValue("kpiStability", estabilidad, estabilidadClass);
+  const kpiStabilitySub = document.getElementById("kpiStabilitySub");
+  if (kpiStabilitySub) kpiStabilitySub.textContent = coberturaPct >= 75
+    ? "Base suficiente para interpretación"
+    : "Resultado sensible a respuestas faltantes";
 }
 
 async function printFinalDataEvaluated() {
@@ -254,7 +342,7 @@ function printFinalTableGraph(data, group, resFinal) {
     // ── Actualizar badges del hero ──
     const badgeGroup = document.getElementById('res-hero-badge-group');
     const badgeScore = document.getElementById('res-hero-badge-score');
-    if (badgeGroup) badgeGroup.textContent = `Grupo ${group}`;
+    if (badgeGroup) badgeGroup.textContent = group ? `Grupo ${group}` : "Grupo --";
     if (badgeScore) badgeScore.textContent = `${parseFloat(resFinal).toFixed(1)}/100`;
 
     // ── Mantener compatibilidad: actualizar tabla Syncfusion oculta ──

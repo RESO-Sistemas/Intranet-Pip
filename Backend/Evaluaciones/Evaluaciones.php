@@ -2794,6 +2794,63 @@ class Evaluaciones extends Conexiones
         }
     }
 
+    public function getEvaluationInsights($evaluation, $employee)
+    {
+        try {
+            $qCoverage = "SELECT
+                COUNT(*) AS TotalAsignados,
+                SUM(CASE WHEN StatusEvaluado = 1 THEN 1 ELSE 0 END) AS TotalCompletados,
+                SUM(CASE WHEN StatusEvaluado = 0 THEN 1 ELSE 0 END) AS TotalPendientes,
+                SUM(CASE WHEN JefeEvalua = 1 THEN 1 ELSE 0 END) AS AsigJefe,
+                SUM(CASE WHEN AutoEvalua = 1 THEN 1 ELSE 0 END) AS AsigAuto,
+                SUM(CASE WHEN ParEvalua = 1 THEN 1 ELSE 0 END) AS AsigPar,
+                SUM(CASE WHEN SubordinadoEvalua = 1 THEN 1 ELSE 0 END) AS AsigSub,
+                SUM(CASE WHEN JefeEvalua = 1 AND StatusEvaluado = 1 THEN 1 ELSE 0 END) AS CompJefe,
+                SUM(CASE WHEN AutoEvalua = 1 AND StatusEvaluado = 1 THEN 1 ELSE 0 END) AS CompAuto,
+                SUM(CASE WHEN ParEvalua = 1 AND StatusEvaluado = 1 THEN 1 ELSE 0 END) AS CompPar,
+                SUM(CASE WHEN SubordinadoEvalua = 1 AND StatusEvaluado = 1 THEN 1 ELSE 0 END) AS CompSub
+                FROM EvaluacionDetalle
+                WHERE TO_BASE64(idEvaluaciones) = '$evaluation'
+                  AND TO_BASE64(NoEmpleadoEvaluado) = '$employee'
+                  AND Status = 1;";
+
+            $resCoverage = $this->Select($qCoverage);
+
+            $qLastUpdate = "SELECT MAX(RE.Registro) AS UltimaRespuesta
+                FROM RespuestaEvaluaciones AS RE
+                INNER JOIN EvaluacionDetalle AS ED ON ED.idEvaluacionDetalle = RE.idEvaluacionDetalle
+                WHERE TO_BASE64(ED.idEvaluaciones) = '$evaluation'
+                  AND TO_BASE64(ED.NoEmpleadoEvaluado) = '$employee';";
+            $resLastUpdate = $this->Select($qLastUpdate);
+
+            $qAvgCoverage = "SELECT AVG(tmp.Cobertura) AS PromedioCobertura
+                FROM (
+                    SELECT
+                      ED.NoEmpleadoEvaluado,
+                      (SUM(CASE WHEN ED.StatusEvaluado = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS Cobertura
+                    FROM EvaluacionDetalle AS ED
+                    WHERE TO_BASE64(ED.idEvaluaciones) = '$evaluation'
+                      AND ED.Status = 1
+                    GROUP BY ED.NoEmpleadoEvaluado
+                ) AS tmp;";
+            $resAvgCoverage = $this->Select($qAvgCoverage);
+
+            $arrReturn = [
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => [
+                    "Coverage" => $resCoverage[0],
+                    "LastUpdate" => $resLastUpdate[0],
+                    "AvgCoverage" => $resAvgCoverage[0]
+                ]
+            ];
+
+            return json_encode($arrReturn);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
     public function getConfigQuestionsEvaluated($evaluation, $employee)
     {
         try {
