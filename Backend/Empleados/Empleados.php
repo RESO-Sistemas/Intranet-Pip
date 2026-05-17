@@ -2305,7 +2305,7 @@ class Empleados extends Conexiones
             IF(E.Imagen IS NULL OR E.Imagen = '','assets/images/logo-pip.png',CONCAT('Archivos/ImgEmpleados/',E.NoEmpleado,'/',E.Imagen)) AS ImgEmpleado
             FROM Empleados AS E
             INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
-            INNER JOIN SucursalDepto AS SP ON SP.IdSucursal = E.IdPuesto
+            INNER JOIN SucursalDepto AS SP ON SP.IdSucursal = E.IdSucursal
             WHERE TO_BASE64(E.NoEmpleado) = '$employee';";
       $resultado =  $this->Select($q,array());
       if (sizeof($resultado) > 0) {

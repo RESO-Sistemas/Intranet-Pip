@@ -71,19 +71,21 @@ window.viewFinalReultsSF = function(e){
 
 $(document).on("change","#slc_evaluated_by",async function(){
 
-  const dv = document.querySelector('#table_general_detail');
-
-  const tr = dv.querySelectorAll('tr');
-
-  console.log(tr);
-
-  const allTd = tr[2].querySelectorAll('td');
-
-  console.log(allTd);
-
   let newText = slc_evaluated_by.options[slc_evaluated_by.selectedIndex].text;
 
-  allTd[3].textContent = newText;
+  // Actualizar la tabla Syncfusion oculta (si existe y está renderizada)
+  const dv = document.querySelector('#table_general_detail');
+  if (dv) {
+    const tr = dv.querySelectorAll('tr');
+    if (tr.length > 2) {
+      const allTd = tr[2].querySelectorAll('td');
+      if (allTd.length > 3) allTd[3].textContent = newText;
+    }
+  }
+
+  // Actualizar nombre del evaluador en la info card visual
+  const resInfoEvaluador = document.getElementById('res-info-evaluador');
+  if (resInfoEvaluador) resInfoEvaluador.textContent = newText;
 
   await getEvaluationDetailValues();
 

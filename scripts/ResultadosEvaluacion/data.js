@@ -12,10 +12,10 @@ async function getFinalDataEvaluated(){
   let allData = await getDataCalculationByTypeOfEvaluator();
   let finalDataValues = [];
   let group = "";
-  let porcentJe = "";
-  let porcentAuto = "";
-  let porcentPar = "";
-  let porcentSub = "";
+  let porcentJe = 0;
+  let porcentAuto = 0;
+  let porcentPar = 0;
+  let porcentSub = 0;
   if(allData.dataJe.length > 0 && allData.dataAuto.length > 0 && allData.dataPar.length > 0 && allData.dataSub.length > 0){
     group = "A";
     porcentJe = 0.4;
@@ -32,11 +32,29 @@ async function getFinalDataEvaluated(){
     porcentJe = 0.5;
     porcentAuto = 0.2;
     porcentSub = 0.3;
-  } else if (allData.dataJe.length > 0 && allData.dataAuto.length > 0){
+  } else if (allData.dataJe.length > 0 && allData.dataAuto.length > 0){
     group = "D";
     porcentJe = 0.65;
     porcentAuto = 0.35;
-  }
+  } else {
+    const base = { je: 0.4, auto: 0.1, par: 0.25, sub: 0.25 };
+    const hasJe = allData.dataJe.length > 0;
+    const hasAuto = allData.dataAuto.length > 0;
+    const hasPar = allData.dataPar.length > 0;
+    const hasSub = allData.dataSub.length > 0;
+    const sumBase =
+      (hasJe ? base.je : 0) +
+      (hasAuto ? base.auto : 0) +
+      (hasPar ? base.par : 0) +
+      (hasSub ? base.sub : 0);
+    if (sumBase > 0) {
+      group = "N";
+      porcentJe = hasJe ? (base.je / sumBase) : 0;
+      porcentAuto = hasAuto ? (base.auto / sumBase) : 0;
+      porcentPar = hasPar ? (base.par / sumBase) : 0;
+      porcentSub = hasSub ? (base.sub / sumBase) : 0;
+    }
+  }
   const resultJe = allData.dataJe.map(item => ({
       competence: item.competence,
       result: item.result * porcentJe,
@@ -65,19 +83,27 @@ async function getFinalDataEvaluated(){
     let value = 0;
     if (resultJe.length > 0) {
       let position = resultJe.findIndex( reg => reg.idCompetence == competence.idCompetencia);
-      value += Number(resultJe[position].result);
+      if (position !== -1) {
+        value += Number(resultJe[position].result);
+      }
     }
     if (resultAu.length > 0) {
       let position = resultAu.findIndex( reg => reg.idCompetence == competence.idCompetencia);
-      value += Number(resultAu[position].result);
+      if (position !== -1) {
+        value += Number(resultAu[position].result);
+      }
     }
     if (resultPar.length > 0) {
       let position = resultPar.findIndex( reg => reg.idCompetence == competence.idCompetencia);
-      value += Number(resultPar[position].result);
+      if (position !== -1) {
+        value += Number(resultPar[position].result);
+      }
     }
     if (resultSub.length > 0) {
       let position = resultSub.findIndex( reg => reg.idCompetence == competence.idCompetencia);
-      value += Number(resultSub[position].result);
+      if (position !== -1) {
+        value += Number(resultSub[position].result);
+      }
     }
     finalDataValues.push({
       idCompetence: competence.idCompetencia,
@@ -102,7 +128,7 @@ async function getDataCalculationParSub(){
   let allDataPar = arrListEvaluators.filter( evaluator => evaluator.ParEvalua == 1);
   let allDataSub = arrListEvaluators.filter( evaluator => evaluator.SubordinadoEvalua == 1);
   if (allDataPar.length > 0) {
-    for (const par in allDataPar) {
+    for (const par of allDataPar) {
       let dataPerEvaluator = arrAllDetailEvaluated.filter(values => values.IdEvDetail == par.IdEvDetail);
       const result = await getDataResultsPerEvaluatorUnique(dataPerEvaluator);
       resultAcumPar.push(result)
