@@ -3,10 +3,9 @@ $(window).on('load', function() {
   $(".preloader").fadeOut();
 });
 
-
-  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
-
-);
+if (typeof ej !== 'undefined' && ej.base && ej.base.registerLicense) {
+  ej.base.registerLicense("ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE=");
+}
 
 
 

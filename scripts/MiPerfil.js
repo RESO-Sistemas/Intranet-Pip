@@ -668,8 +668,13 @@ async function getColaboradores() {
 }
 
 
-async function loadFeeds() {
-  let datos = { op: "loadFeeds" };
+let currentFeedPage = 1;
+let feedHasMorePages = true;
+let feedCommentsData = {};
+let feedCommentsLoading = {};
+
+async function loadFeeds(page = 1) {
+  let datos = { op: "loadFeeds", lightweight: 1, page: page, limit: 8 };
   let response = [];
   try {
     response = await $.ajax({
@@ -761,6 +766,7 @@ async function loadFeeds() {
                                 : "Image Anniversary"
                             }"
                                 src="Archivos/${folder}/${feed.Archivo}"
+                                loading="lazy"
                                 data-image="Archivos/${folder}/${feed.Archivo}"
                                 data-description="${
                                   feed.Tipo === "CMP"
@@ -779,6 +785,7 @@ async function loadFeeds() {
                                 <img alt="Image 1 Title" src="Archivos/Feed/${
                                   feed.idFeed
                                 }/${f}"
+                                    loading="lazy"
                                     data-image="Archivos/Feed/${
                                       feed.idFeed
                                     }/${f}"
@@ -930,11 +937,22 @@ async function loadFeeds() {
 </div>`;
     }
 
-    $("#ContenidoFeed").html(contentHtmlFinal);
-    const allFeeds = document.querySelectorAll(".galleryImgCl");
-    if (allFeeds.length > 0) {
-      for (let i = 0; i < allFeeds.length; i++) {
-        const f = allFeeds[i];
+    if (page === 1) {
+      $("#ContenidoFeed").html(contentHtmlFinal);
+    } else {
+      $("#ContenidoFeed").append(contentHtmlFinal);
+    }
+
+    feedHasMorePages = response.length >= 8;
+    const btnLoadMore = document.getElementById("btnLoadMoreFeedPerfil");
+    if (btnLoadMore) {
+      btnLoadMore.style.display = feedHasMorePages ? "" : "none";
+    }
+
+    const newGalleries = document.querySelectorAll(".galleryImgCl:not(.ug-gallery-wrapper)");
+    if (newGalleries.length > 0) {
+      for (let i = 0; i < newGalleries.length; i++) {
+        const f = newGalleries[i];
         $(f).unitegallery({
           gallery_skin: "alexis",
           slider_scale_mode: "fit",
@@ -957,6 +975,12 @@ async function loadFeeds() {
       $(".ug-slider-control.ug-button-play.ug-skin-alexis").hide();
     }
   }
+}
+
+function loadMoreFeedPerfil() {
+  if (!feedHasMorePages) return;
+  currentFeedPage += 1;
+  loadFeeds(currentFeedPage);
 }
 
 $(document).on("mouseenter", ".TooltipHoverMg", function () {
@@ -1265,90 +1289,84 @@ function mostrarComentarios(val) {
 
 const showCommentsMain = (content) => {
   var dvContent = document.getElementById(`dv_commentarios${content}`);
-  var dvContentFeed = document.getElementById(
-    `dv_contentCommentsFeed${content}`
-  );
   if (dvContent) {
     if (dvContent.style.display == "none") {
       dvContent.style.display = "";
-      getCommentsFeedSelected(content);
+      if (!feedCommentsLoading[content]) {
+        getCommentsFeedSelected(content);
+      }
     } else {
       dvContent.style.display = "none";
-      dvContentFeed.innerHTML = "";
     }
   }
 };
 
-const getCommentsFeedSelected = async (content) => {
-  let dataSend = {
-    op: "getCommentsFeedSelected",
-    iFeed: content,
-  };
-  let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
-  if (ajaxR !== undefined) {
-    let cant = ajaxR.Data.length;
-    let colorReaction = "black";
-    if (ajaxR.Data[0].inReaction) {
-      colorReaction = "#ffc407";
+const renderCommentsFeedInline = (content) => {
+  if (!feedCommentsData[content]) return;
+  const ajaxR = feedCommentsData[content];
+  const cant = ajaxR.Data.length;
+  let contentCom = "";
+  if (cant > 0) {
+    let colorReaction = ajaxR.Data[0].inReaction ? "#ffc407" : "black";
+    let employeesRLike = "";
+    let cantReactions = ajaxR.Data[0].reactionsC.length;
+    if (cantReactions > 0) {
+      for (var i = 0; i < cantReactions; i++) {
+        employeesRLike += `<li>${ajaxR.Data[0].reactionsC[i]["Nombre"]}</li>`;
+      }
+    } else {
+      employeesRLike = "<li>Sin registros...</li>";
     }
+    contentCom = `
+      <div class="m-t-10 m-l-10">
+        <h6 class="text-comments" onclick="viewAllCommentsFeed('${content}')">Ver todos los comentarios.</h6>
+      </div>
+      <div class="chat-box scrollable ps ps--theme_default ps--active-y">
+        <ul class="chat-list">
+          <li style="position: relative;">
+            <div class="chat-img"><img src="Archivos/ImgEmpleados/${ajaxR.Data[0].ImagenEmpleado}" alt="user" loading="lazy"></div>
+            <div class="chat-content">
+              <div class="box bg-light-info" style="position: relative;">
+                <h6><b>${ajaxR.Data[0].Nombre}</b></h6>
+                <span>${ajaxR.Data[0].Comentario}</span>
+                <div class="content-reactionComm hover-actionCmm" onclick="reactsToComment('1', '${ajaxR.Data[0].idComentariosFeed}')" data-comment="${ajaxR.Data[0].idComentariosFeed}">
+                  <i id="icon-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" class="fa fa-thumbs-up" style="color: ${colorReaction}; font-size: 20px;"></i>
+                  <span id="span-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" style="margin-left: 5px;">${cantReactions}</span>
+                </div>
+              </div>
+              <div class="chat-time">${ajaxR.Data[0].Registro}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div style="position: relative;">
+        <div id="WindowReactionComm${ajaxR.Data[0].idComentariosFeed}" class="reactionComm row">
+          <span><b>Personas que reaccionaron</b></span>
+          <ul id="employeesReactionComm-1-${ajaxR.Data[0].idComentariosFeed}">${employeesRLike}</ul>
+        </div>
+      </div>`;
+  }
+  const dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
+  if (dvContent) dvContent.innerHTML = `<div class="row">${contentCom}</div>`;
+};
+
+const getCommentsFeedSelected = async (content, forceReload = false) => {
+  if (feedCommentsLoading[content]) return;
+  if (feedCommentsData[content] && !forceReload) {
+    renderCommentsFeedInline(content);
+    return;
+  }
+  feedCommentsLoading[content] = true;
+  let dataSend = { op: "getCommentsFeedSelected", iFeed: content };
+  let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
+  feedCommentsLoading[content] = false;
+  if (ajaxR !== undefined) {
+    feedCommentsData[content] = ajaxR;
     let btnComm = document.getElementById(`btnComment${content}`);
     if (btnComm) {
-      btnComm.innerHTML = `<i class="far fa-comments"></i> ${cant} Comentarios`;
+      btnComm.innerHTML = `<i class="far fa-comments"></i> ${ajaxR.Data.length} Comentarios`;
     }
-    let contentCom = "";
-    if (cant > 0) {
-      let employeesRLike = "";
-      let cantReactions = ajaxR.Data[0].reactionsC.length;
-      if (cantReactions > 0) {
-        for (var i = 0; i < cantReactions; i++) {
-          employeesRLike += `<li>
-						${ajaxR.Data[0].reactionsC[i]["Nombre"]}
-					</li>`;
-        }
-      } else {
-        employeesRLike = "<li>Sin registros...</li>";
-      }
-      contentCom = `
-			<div class="m-t-10 m-l-10">
-				<h6 class="text-comments" onclick="viewAllCommentsFeed('${dataSend.iFeed}')">Ver todos los comentarios.</h6>
-			</div>
-			<div class="chat-box scrollable ps ps--theme_default ps--active-y">
-				<ul class="chat-list">
-						<li style="position: relative;">
-								<div class="chat-img"><img src="Archivos/ImgEmpleados/${ajaxR.Data[0].ImagenEmpleado}" alt="user"></div>
-								<div class="chat-content">
-										<div class="box bg-light-info" style="position: relative;">
-												<h6><b>${ajaxR.Data[0].Nombre}</b></h6>
-												<span>${ajaxR.Data[0].Comentario}</span>
-
-												<div class="content-reactionComm hover-actionCmm" onclick="reactsToComment('1', '${ajaxR.Data[0].idComentariosFeed}')" data-comment="${ajaxR.Data[0].idComentariosFeed}">
-														<i id="icon-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" class="fa fa-thumbs-up" style="color: ${colorReaction}; font-size: 20px;"></i>
-														<span id="span-1-CommentP-${ajaxR.Data[0].idComentariosFeed}" style="margin-left: 5px;">${cantReactions}</span>
-												</div>
-										</div>
-										<div class="chat-time">${ajaxR.Data[0].Registro}</div>
-								</div>
-						</li>
-				</ul>
-			</div>
-
-			<div style="position: relative;">
-					<div id="WindowReactionComm${ajaxR.Data[0].idComentariosFeed}" class="reactionComm row">
-									<span><b>Personas que reaccionaron</b></span>
-									<ul id="employeesReactionComm-1-${ajaxR.Data[0].idComentariosFeed}">
-											${employeesRLike}
-									</ul>
-					</div>
-			</div>
-			`;
-    }
-    let contentFinal = `
-      <div class="row">
-        ${contentCom}
-      </div>
-    `;
-    var dvContent = document.getElementById(`dv_contentCommentsFeed${content}`);
-    dvContent.innerHTML = contentFinal;
+    renderCommentsFeedInline(content);
   }
 };
 

@@ -4,12 +4,6 @@ $(window).on('load', function() {
 });
 
 
-  "ORg4AjUWIQA/Gnt2VVhjQlFaclhJXGFWfVJpTGpQdk5xdV9DaVZUTWY/P1ZhSXxRd0diXn5dcndRRWZfUUE="
-
-);
-
-
-
 const myKeysValues = window.location.search;
 
 const urlParams = new URLSearchParams(myKeysValues);

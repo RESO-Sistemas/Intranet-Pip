@@ -2136,20 +2136,23 @@ const showCommentsMain = (content) => {
   if (dvContent) {
     if (dvContent.style.display == "none") {
       dvContent.style.display = "";
-      if (dvContentFeed && !feedCommentsData[content]) {
+      if (feedCommentsData[content]) {
+        // DOM preservado — reapertura instantánea sin AJAX ni re-render
+        return;
+      }
+      if (dvContentFeed) {
         dvContentFeed.innerHTML = `
           <div class="feed-comments-skeleton">
             <div class="fcs-item"><div class="fcs-lines"><div class="fcs-line" style="width:35%"></div><div class="fcs-line" style="width:70%"></div></div></div>
             <div class="fcs-item"><div class="fcs-lines"><div class="fcs-line" style="width:42%"></div><div class="fcs-line" style="width:58%"></div></div></div>
           </div>`;
       }
-      // Solo hacer petición si no hay datos en cache o ya está cargando
       if (!feedCommentsLoading[content]) {
         getCommentsFeedSelected(content);
       }
     } else {
       dvContent.style.display = "none";
-      dvContentFeed.innerHTML = "";
+      // DOM intacto — próxima apertura es display="" puro
     }
   }
 };
