@@ -51,7 +51,7 @@
                   $ArgumentosH = $MenuH[$j]["Argumentos"];
                ?>
                  <li>
-                   <a href="<?php echo $URLH ?>"><?php echo $DescripcionH ?></a>
+                   <a href="<?php echo $URLH ?>" <?php if ($URLH === 'pending-evaluations.php') echo 'id="menu-item-pending-evals"'; ?>><?php echo $DescripcionH ?></a>
                  </li>
                <?php
                 }

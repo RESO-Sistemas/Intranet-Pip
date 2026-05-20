@@ -1,5 +1,7 @@
 let mensajesGlobalData = [];
 let idMensajeActivo = null;
+let revealTimeout = null;
+let revealedTicketId = null;
 
 const d_lista_LineaEtica = document.getElementById("listaMensajesEtica");
 const d_emptyState = document.getElementById("emptyStateContainer");
@@ -71,6 +73,14 @@ async function getMensajesLineaEtica() {
 function verDetalleMensaje(id, event) {
     if (event) event.preventDefault();
     
+    if (id !== idMensajeActivo) {
+        if (revealTimeout) {
+            clearTimeout(revealTimeout);
+            revealTimeout = null;
+            revealedTicketId = null;
+        }
+    }
+    
     idMensajeActivo = id;
     const msg = mensajesGlobalData.find(m => m.idLineaEticaMensajes == id);
     
@@ -115,22 +125,35 @@ function verDetalleMensaje(id, event) {
         </div>
 
         <div class="row g-3 mb-4">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
                     <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">Motivo / Categoría</span>
                     <strong class="text-primary fs-6">${msg.Descripcion}</strong>
                 </div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
                     <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">División Afectada</span>
                     <strong class="fs-6">${msg.Division}</strong>
                 </div>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <div class="p-3 bg-light rounded-3 border h-100">
                     <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">Sucursal</span>
                     <strong class="fs-6">${msg.Sucursal || 'N/A'}</strong>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="p-3 bg-light rounded-3 border h-100">
+                    <span class="d-block text-muted small mb-1 fw-semibold text-uppercase">Reportado Por</span>
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <strong class="fs-6 creator-name-blur" id="creator-name-${msg.idLineaEticaMensajes}">
+                            ${msg.Nombre} (${msg.NoEmpleado})
+                        </strong>
+                        <button type="button" class="btn-apple-info" onclick="revealCreator(${msg.idLineaEticaMensajes})" title="Revelar Autor">
+                            <span class="info-letter">i</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -371,3 +394,86 @@ $("#btnAgregaNuevoCatalogo").click(function () {
     showBootstrapAlertWar(messageContent, "top-right", 5000);
   }
 });
+
+function revealCreator(id) {
+    Swal.fire({
+        title: 'Verificación de Identidad',
+        text: 'Por favor, ingresa tu contraseña de inicio de sesión para revelar el autor del reporte:',
+        input: 'password',
+        inputAttributes: {
+            autocapitalize: 'off',
+            autocorrect: 'off',
+            autocomplete: 'new-password'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        confirmButtonColor: '#007aff',
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#d33',
+        inputPlaceholder: 'Contraseña',
+        preConfirm: (password) => {
+            if (!password) {
+                Swal.showValidationMessage('La contraseña es requerida');
+                return false;
+            }
+            return $.ajax({
+                type: 'POST',
+                url: 'Backend/LineaEtica/App.php',
+                data: {
+                    op: 'verificarPasswordUsuario',
+                    password: password
+                }
+            }).then(response => {
+                if (response.trim() === '1') {
+                    return true;
+                } else {
+                    Swal.showValidationMessage('Contraseña incorrecta');
+                    return false;
+                }
+            }).catch(err => {
+                Swal.showValidationMessage('Error de comunicación con el servidor');
+                return false;
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const el = document.getElementById(`creator-name-${id}`);
+            if (el) {
+                el.classList.remove('creator-name-blur');
+                el.style.filter = 'none';
+                el.style.userSelect = 'text';
+                
+                const btn = el.nextElementSibling;
+                if (btn && btn.classList.contains('btn-apple-info')) {
+                    btn.style.display = 'none';
+                }
+                
+                revealedTicketId = id;
+                
+                if (revealTimeout) {
+                    clearTimeout(revealTimeout);
+                }
+                
+                revealTimeout = setTimeout(() => {
+                    blurCreator(id);
+                }, 300000); // 5 minutos
+            }
+        }
+    });
+}
+
+function blurCreator(id) {
+    const el = document.getElementById(`creator-name-${id}`);
+    if (el) {
+        el.classList.add('creator-name-blur');
+        el.style.filter = 'blur(5px)';
+        el.style.userSelect = 'none';
+        
+        const btn = el.nextElementSibling;
+        if (btn && btn.classList.contains('btn-apple-info')) {
+            btn.style.display = 'inline-flex';
+        }
+    }
+    revealedTicketId = null;
+    revealTimeout = null;
+}

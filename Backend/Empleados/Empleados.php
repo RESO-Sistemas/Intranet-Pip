@@ -72,7 +72,7 @@ class Empleados extends Conexiones
       $URL = end($parts); // tomar el último segmento (el nombre del archivo .php)
 
       // Páginas que siempre se permiten para evitar loops
-      $paginasLibres = ['index.php', 'login.php', 'logout.php', ''];
+      $paginasLibres = ['index.php', 'login.php', 'logout.php', 'MiPerfil.php', ''];
       if (in_array($URL, $paginasLibres)) {
         return "1";
       }

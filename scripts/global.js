@@ -37,13 +37,14 @@ async function loadAllFunctions() {
   // Cargar datos del empleado (perfil en el header)
   loadGblDataEmployee();
 
+  // Cargar/actualizar el indicador de evaluaciones pendientes en el sidebar
+  updateSidebarPendingEvals();
+
   // Inicializar el sistema unificado de notificaciones.
-  // Esto reemplaza las 6 llamadas AJAX independientes anteriores:
-  //   getMensajeVistoLineaEtica, getMsgSolicitudesVacacionesRecibidas,
-  //   getMsgSolicitudesVacacionesRecibidasFinal, getMensajeCapacitacionGlobal,
-  //   getCantidadNotificaciones, getMsgLineaEtica
   if (typeof NotificationManager !== 'undefined') {
     NotificationManager.init();
+    // Registrar actualización automática cuando se actualicen las notificaciones globales
+    NotificationManager.onRefresh(updateSidebarPendingEvals);
   }
 }
 
@@ -1619,3 +1620,65 @@ async function verifyInputsDv(dv) {
     resolve(allTrue);
   });
 }
+
+// Actualiza los badges de evaluaciones pendientes en el sidebar
+async function updateSidebarPendingEvals() {
+  const childLink = document.getElementById("menu-item-pending-evals");
+  if (!childLink) return;
+
+  try {
+    const response = await $.ajax({
+      type: "POST",
+      url: "Backend/Evaluaciones/App.php",
+      data: {
+        op: "getPendingEvaluationsWidget",
+      },
+      dataType: "json",
+    });
+
+    const pendingList = response?.Data ?? [];
+    const count = pendingList.length;
+
+    // Eliminar badges anteriores si existen para redibujarlos
+    const existingChildBadge = document.getElementById("badge-pending-evals-child");
+    const existingParentBadge = document.getElementById("badge-pending-evals-parent");
+    if (existingChildBadge) existingChildBadge.remove();
+    if (existingParentBadge) existingParentBadge.remove();
+
+    if (count > 0) {
+      // Crear badge para el submenú (hijo)
+      const childBadge = document.createElement("span");
+      childBadge.id = "badge-pending-evals-child";
+      childBadge.className = "badge bg-danger rounded-pill ms-2 float-end";
+      childBadge.style.fontSize = "0.7rem";
+      childBadge.style.padding = "3px 6px";
+      childBadge.textContent = count;
+      childLink.appendChild(childBadge);
+
+      // Buscar menú padre dinámicamente y agregarle un indicador acumulado
+      const subMenuContainer = childLink.closest("ul.sub-menu");
+      if (subMenuContainer) {
+        const parentLink = subMenuContainer.previousElementSibling;
+        if (parentLink) {
+          const parentBadge = document.createElement("span");
+          parentBadge.id = "badge-pending-evals-parent";
+          parentBadge.className = "badge bg-danger rounded-pill ms-2";
+          parentBadge.style.fontSize = "0.65rem";
+          parentBadge.style.padding = "3px 6px";
+          parentBadge.textContent = count;
+
+          // Insertar antes del icono de flecha del submenú para mantener alineación limpia
+          const arrowIcon = parentLink.querySelector(".has-sub-menu");
+          if (arrowIcon) {
+            parentLink.insertBefore(parentBadge, arrowIcon);
+          } else {
+            parentLink.appendChild(parentBadge);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[updateSidebarPendingEvals] Error al actualizar indicadores del sidebar:", err);
+  }
+}
+

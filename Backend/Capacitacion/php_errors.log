@@ -10386,3 +10386,5 @@ https://www.youtube.com/
 [31-Mar-2026 17:44:32 UTC] PHP Warning:  Trying to access array offset on value of type null in C:\Users\Guillermo\OneDrive\Documentos\reso 2\Intranet-Pip\Backend\Capacitacion\Capacitacion.php on line 133
 [31-Mar-2026 17:44:32 UTC] PHP Warning:  Undefined array key 0 in C:\Users\Guillermo\OneDrive\Documentos\reso 2\Intranet-Pip\Backend\Capacitacion\Capacitacion.php on line 133
 [31-Mar-2026 17:44:32 UTC] PHP Warning:  Trying to access array offset on value of type null in C:\Users\Guillermo\OneDrive\Documentos\reso 2\Intranet-Pip\Backend\Capacitacion\Capacitacion.php on line 133
+[20-May-2026 17:16:09 UTC] getArchivosCapacitacion
+[20-May-2026 17:16:09 UTC] SELECT * FROM ArchivosCapacitacion

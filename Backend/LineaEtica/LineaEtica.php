@@ -238,4 +238,17 @@ class LineaEtica extends Conexiones
         return false;
       }
     }
+
+    function verificarPasswordUsuario($Password)
+    {
+        $NoEmpleado = SessionManager::get("NoEmpleado");
+        $PasswordEncoded = base64_encode($Password);
+        
+        $q = "SELECT NoEmpleado FROM Empleados WHERE NoEmpleado = '$NoEmpleado' AND Password = '$PasswordEncoded';";
+        $cons = $this->Select($q, array());
+        if (sizeof($cons) > 0) {
+            return "1";
+        }
+        return "0";
+    }
 }

@@ -15,7 +15,7 @@ const NotificationManager = (() => {
   const SSE_URL       = 'Backend/Notifications/stream.php';
   const POLL_INTERVAL = 5 * 60 * 1000; // fallback si SSE no está disponible
   let   _pollTimer    = null;
-  let   _onRefreshHook = null;
+  let   _onRefreshHooks = [];
 
   // Mapa de íconos y colores por tipo de notificación
   const TYPE_CONFIG = {
@@ -153,7 +153,11 @@ const NotificationManager = (() => {
         .filter(n => !n.isRead)
         .forEach(_maybeShowToast);
 
-      if (_onRefreshHook) _onRefreshHook();
+      _onRefreshHooks.forEach(fn => {
+        if (typeof fn === 'function') {
+          try { fn(); } catch (e) { console.warn('[NotificationManager] Error en callback onRefresh:', e); }
+        }
+      });
 
     } catch (err) {
       // Fallo silencioso en segundo plano — no interrumpir el flujo del usuario
@@ -257,7 +261,7 @@ const NotificationManager = (() => {
     }
   }
 
-  function onRefresh(fn) { _onRefreshHook = fn; }
+  function onRefresh(fn) { if (typeof fn === 'function') _onRefreshHooks.push(fn); }
 
   // Exponer API pública
   return { init, refresh, markAsRead, markAllAsRead, onRefresh };

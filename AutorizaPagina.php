@@ -12,6 +12,7 @@ $VerificaPermisoPagina = $Empleados->autorizaPermisoPagina(basename($_SERVER['RE
 
 if ($VerificaPermisoPagina == "0") {
   echo '<meta http-equiv="refresh" content="0;url=index.php">';
+  exit();
 }
 
 ?>

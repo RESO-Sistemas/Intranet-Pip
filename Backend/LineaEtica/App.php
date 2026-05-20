@@ -46,3 +46,8 @@ if ($op == "getOpcionesLineaEticaConfig") {
 if ($op == "getNotifiLineaEticaPendientes") {
   echo trim($LineaEtica->getNotifiLineaEticaPendientes());
 }
+
+if ($op == "verificarPasswordUsuario") {
+    $Password = $_POST["password"] ?? "";
+    echo trim($LineaEtica->verificarPasswordUsuario($Password));
+}
