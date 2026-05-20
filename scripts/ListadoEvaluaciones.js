@@ -185,13 +185,13 @@ function getEvaluaciones() {
         const progressCell = `<div class="ev-progress-cell"><span class="material-symbols-outlined">groups</span>${cantRes} / ${cantEv}</div>`;
 
         const toggleBtn = row.Status == 1
-          ? `<button type="button" class="btn btn-secondary btn-accion btn-toggle-activo" data-status="1" data-id="${row.idEvaluaciones}" title="Desactivar evaluación"><span class="material-symbols-outlined">visibility_off</span></button>`
-          : `<button type="button" class="btn btn-success btn-accion btn-toggle-activo" data-status="0" data-id="${row.idEvaluaciones}" title="Activar evaluación"><span class="material-symbols-outlined">check_circle</span></button>`;
+          ? `<button type="button" class="btn-minimal btn-minimal-secondary btn-sm btn-accion btn-toggle-activo" data-status="1" data-id="${row.idEvaluaciones}" title="Desactivar evaluación"><span class="material-symbols-outlined">visibility_off</span></button>`
+          : `<button type="button" class="btn-minimal btn-minimal-success btn-sm btn-accion btn-toggle-activo" data-status="0" data-id="${row.idEvaluaciones}" title="Activar evaluación"><span class="material-symbols-outlined">check_circle</span></button>`;
 
         let Acciones = `<div class="d-flex justify-content-center gap-2">
-            <button type="button" class="btn btn-primary btn-accion btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><span class="material-symbols-outlined">visibility</span></button>
+            <button type="button" class="btn-minimal btn-minimal-primary btn-sm btn-accion btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><span class="material-symbols-outlined">visibility</span></button>
             ${toggleBtn}
-            <button type="button" class="btn btn-danger btn-accion btn-eliminar-ev" data-id="${row.idEvaluaciones}" title="Eliminar evaluación"><span class="material-symbols-outlined">delete</span></button>
+            <button type="button" class="btn-minimal btn-minimal-danger btn-sm btn-accion btn-eliminar-ev" data-id="${row.idEvaluaciones}" title="Eliminar evaluación"><span class="material-symbols-outlined">delete</span></button>
           </div>`;
 
         return {

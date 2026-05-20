@@ -2710,7 +2710,7 @@ window.deleteResExpectedSF = function(e) {
 
   
 
-  btn.className = 'btn btn-danger';
+  btn.className = 'btn-minimal btn-minimal-danger btn-sm';
 
   btn.setAttribute("onclick", `deleteResultExpected('${e.lvl}','${e.answer}','${e.question}')`);
 
@@ -2744,7 +2744,7 @@ window.deleteResExpectedSVSF = function(e){
 
   let iBtn = document.createElement('span');
 
-  btn.className = 'btn btn-ddanger';
+  btn.className = 'btn-minimal btn-minimal-danger btn-sm';
 
   btn.setAttribute("onclick", `deleteResultExpectedSV('${e.lvl}','${e.answerExpected}','${e.IdQuestion}')`);
 
@@ -2772,7 +2772,7 @@ window.deleteResExpectedSVNewSF = function(e){
 
   let iBtn = document.createElement('span');
 
-  btn.className = 'btn btn-warning';
+  btn.className = 'btn-minimal btn-minimal-danger btn-sm';
 
   btn.setAttribute("onclick", `deleteResultExpectedSVNew('${e.lvl}','${e.answer}','${e.question}')`);
 

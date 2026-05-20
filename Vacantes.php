@@ -1387,6 +1387,42 @@
             color: #e0e0e0;
         }
 
+        /* Comparativo: ambos controles misma altura fija */
+        #selComparativoEvaluaciones {
+            height: 32px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            font-size: 12px;
+        }
+        #selCandidatosComparar + .select2-container .select2-selection--multiple {
+            min-height: 32px;
+            padding: 2px 4px;
+        }
+        #selCandidatosComparar + .select2-container .select2-selection--multiple .select2-selection__rendered {
+            padding: 0 2px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            align-items: center;
+        }
+        #selCandidatosComparar + .select2-container .select2-selection__choice {
+            margin: 0;
+            padding: 1px 6px;
+            font-size: 12px;
+            line-height: 20px;
+            border-radius: 3px;
+        }
+        #selCandidatosComparar + .select2-container .select2-selection__choice__remove {
+            font-size: 11px;
+            margin-right: 3px;
+        }
+        #selCandidatosComparar + .select2-container .select2-search--inline .select2-search__field {
+            margin: 0;
+            padding: 1px 4px;
+            height: 22px;
+            font-size: 12px;
+        }
+
         @media (max-width: 768px) {
 
             #panelListaVacantes .card,
@@ -2295,7 +2331,7 @@
 
                                                 <!-- Controls Bar -->
                                                 <div class="comparativo-controls-bar">
-                                                    <div class="row g-3 align-items-end">
+                                                    <div class="row g-2">
                                                         <div class="col-md-5">
                                                             <label class="form-label fw-bold small mb-1">
                                                                 <span

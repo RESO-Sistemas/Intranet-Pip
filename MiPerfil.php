@@ -986,7 +986,6 @@ $MenuP = $Conf->getMenusPadre();
 
 	<script src="scripts/MiPerfil.js?v=<?php echo time(); ?>"></script>
 
-	<script src="scripts/global.js" charset="utf-8"></script>
 	<script src="scripts/salud.js" charset="utf-8"></script>
 
 	<script>

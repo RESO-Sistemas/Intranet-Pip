@@ -247,6 +247,9 @@ var feedPrefetchCache = {};
 var feedPrefetchInFlight = {};
 var fullscreenFeedSwiper = null;
 var suppressNextSseFeedReload = false;
+var feedCommentsState = {};
+var feedCommentsData = {};
+var feedCommentsLoading = {};
 
 function setComposePublishingState(isPublishing) {
   const composeStatus = document.getElementById("composePublishStatus");
@@ -1584,6 +1587,47 @@ async function loadFeeds(page = 1) {
     }
 
     initPendingFeedGalleries();
+    prefetchCommentsForFeeds(response);
+  }
+}
+
+// ===== PRECARGA DE COMENTARIOS EN SEGUNDO PLANO =====
+function prefetchCommentsForFeeds(feeds) {
+  if (!Array.isArray(feeds)) return;
+  const feedsToPrefetch = feeds.filter(feed => {
+    const id = feed.idFeed;
+    const cantComm = parseInt(feed.CantidadComentarios || 0, 10);
+    return cantComm > 0 && !feedCommentsData[id] && !feedCommentsLoading[id];
+  });
+  feedsToPrefetch.forEach((feed, index) => {
+    setTimeout(() => {
+      if (!feedCommentsData[feed.idFeed] && !feedCommentsLoading[feed.idFeed]) {
+        prefetchCommentsAjax(feed.idFeed);
+      }
+    }, index * 250);
+  });
+}
+
+async function prefetchCommentsAjax(iFeed) {
+  if (feedCommentsLoading[iFeed] || feedCommentsData[iFeed]) return;
+  feedCommentsLoading[iFeed] = true;
+  try {
+    let dataSend = {
+      op: "getCommentsFeedSelected",
+      iFeed: iFeed,
+    };
+    let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 0);
+    if (ajaxR !== undefined && Array.isArray(ajaxR.Data)) {
+      feedCommentsData[iFeed] = ajaxR.Data;
+      let btnComm = document.getElementById(`btnComment${iFeed}`);
+      if (btnComm) {
+        btnComm.innerHTML = `<i class="far fa-comments"></i> ${ajaxR.Data.length} Comentarios`;
+      }
+    }
+  } catch (e) {
+    console.warn("Error en prefetch de comentarios para feed " + iFeed, e);
+  } finally {
+    feedCommentsLoading[iFeed] = false;
   }
 }
 
@@ -1803,11 +1847,49 @@ async function getAgenda() {
 }
 
 async function MeGusta(valor, tipo) {
-  datos = await {
+  const datos = {
     op: "MeGustaFeed",
     FeedId: valor,
     idTipoReaccion: tipo,
   };
+
+  // Variables para rollback
+  let prevLiked = false;
+  let prevCongrats = false;
+  let prevCount = 0;
+
+  // Cambios de UI optimistas
+  if (tipo == "1" || tipo == 1) {
+    const $btnMeGusta = $("#btnEventoMG" + valor);
+    const $heartIcon = $btnMeGusta.find(".heart-icon");
+    prevLiked = $btnMeGusta.hasClass("liked");
+    prevCount = parseInt($btnMeGusta.find(".me-gusta-count").text(), 10) || 0;
+
+    const newCount = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
+    $btnMeGusta.find(".me-gusta-count").text(newCount);
+    if (prevLiked) {
+      $heartIcon.removeClass("heart-filled").addClass("heart-outline");
+      $btnMeGusta.removeClass("liked").css({ color: "" });
+    } else {
+      $heartIcon.removeClass("heart-outline").addClass("heart-filled");
+      $btnMeGusta.addClass("liked").css({ color: "#FFC107" });
+    }
+  } else {
+    const $btnFel = $("#btnEventoF" + valor);
+    const btnText = $btnFel.text().trim();
+    prevCount = parseInt(btnText.match(/\d+/) || [0], 10);
+    const btnColor = $btnFel.css("color");
+    prevCongrats = btnColor === "rgb(142, 36, 170)" || btnColor === "#8e24aa" || btnColor === "#8E24AA";
+
+    const newCount = prevCongrats ? Math.max(0, prevCount - 1) : prevCount + 1;
+    $btnFel.html(`<i class="fas fa-birthday-cake"></i> ${newCount} Felicitaciones`);
+    if (prevCongrats) {
+      $btnFel.css({ color: "black" });
+    } else {
+      $btnFel.css({ color: "#8E24AA" });
+    }
+  }
+
   let response = [];
   try {
     response = await $.ajax({
@@ -1816,52 +1898,35 @@ async function MeGusta(valor, tipo) {
       data: datos,
       dataType: "json",
     });
-  } catch (e) {
-    console.log(e);
-  } finally {
+
     if (!Array.isArray(response) || response.length === 0 || !response[0]) {
-      return;
+      throw new Error("Respuesta de reacción vacía o inválida.");
     }
 
-    if (response[0]["TipoReaccion"] == "1") {
-      $("#ulEmpleadosReaccionanMG" + response[0]["IdFeed"]).html("");
-      
-      // Actualizar el contador de Me Gusta
-      const $btnMeGusta = $("#btnEventoMG" + response[0]["IdFeed"]);
-      $btnMeGusta.find(".me-gusta-count").text(response[0]["CantidadMeGusta"]);
-      
-      // Actualizar estado del corazón
-      const $heartIcon = $btnMeGusta.find(".heart-icon");
-      const isMeGusta = response[0]["MeGusta"] == "1";
-      
-      if (isMeGusta) {
-        // Corazón relleno: cambiar clase a filled
-        $heartIcon.removeClass("heart-outline").addClass("heart-filled");
-        $btnMeGusta.addClass("liked").css({
-          color: "#FFC107",
-        });
+    const resObj = response[0];
+    if (resObj.TipoReaccion == "1") {
+      $("#ulEmpleadosReaccionanMG" + resObj.IdFeed).html("");
+      const $btnMG = $("#btnEventoMG" + resObj.IdFeed);
+      $btnMG.find(".me-gusta-count").text(resObj.CantidadMeGusta);
+      const $heart = $btnMG.find(".heart-icon");
+      if (resObj.MeGusta == "1") {
+        $heart.removeClass("heart-outline").addClass("heart-filled");
+        $btnMG.addClass("liked").css({ color: "#FFC107" });
       } else {
-        // Corazón vacío: cambiar clase a outline
-        $heartIcon.removeClass("heart-filled").addClass("heart-outline");
-        $btnMeGusta.removeClass("liked").css({
-          color: "",
-        });
+        $heart.removeClass("heart-filled").addClass("heart-outline");
+        $btnMG.removeClass("liked").css({ color: "" });
       }
     } else {
-      $("#ulEmpleadosReaccionanFEL" + response[0]["IdFeed"]).html("");
-      $("#btnEventoF" + response[0]["IdFeed"]).html(
-        `<i class="fas fa-birthday-cake"></i> ${response[0]["CantidadFelicitaciones"]} Felicitaciones`
-      );
-      if (response[0]["Felicitacion"] == "1") {
-        $("#btnEventoF" + response[0]["IdFeed"]).css({
-          color: "#8E24AA",
-        });
+      $("#ulEmpleadosReaccionanFEL" + resObj.IdFeed).html("");
+      const $btnF = $("#btnEventoF" + resObj.IdFeed);
+      $btnF.html(`<i class="fas fa-birthday-cake"></i> ${resObj.CantidadFelicitaciones} Felicitaciones`);
+      if (resObj.Felicitacion == "1") {
+        $btnF.css({ color: "#8E24AA" });
       } else {
-        $("#btnEventoF" + response[0]["IdFeed"]).css({
-          color: "black",
-        });
+        $btnF.css({ color: "black" });
       }
     }
+
     response.forEach((arr) => {
       let siguiente = 0;
       if (
@@ -1872,17 +1937,15 @@ async function MeGusta(valor, tipo) {
       }
       if (siguiente == "1") {
         arr.EmpleadosReaccion.forEach((empReaccion) => {
-          if (siguiente == "1") {
-            if (empReaccion.idTipoReaccion == arr.TipoReaccion) {
-              if (arr.TipoReaccion == "1") {
-                $("#ulEmpleadosReaccionanMG" + arr.IdFeed).append(`
-                  <li style="font-size:.8em"> * ${empReaccion.Nombre}</li>
-                `);
-              } else {
-                $("#ulEmpleadosReaccionanFEL" + arr.IdFeed).append(`
-                  <li style="font-size:.8em"> * ${empReaccion.Nombre}</li>
-                `);
-              }
+          if (empReaccion.idTipoReaccion == arr.TipoReaccion) {
+            if (arr.TipoReaccion == "1") {
+              $("#ulEmpleadosReaccionanMG" + arr.IdFeed).append(`
+                <li style="font-size:.8em"> * ${empReaccion.EmpleadoReaccion || empReaccion.Nombre}</li>
+              `);
+            } else {
+              $("#ulEmpleadosReaccionanFEL" + arr.IdFeed).append(`
+                <li style="font-size:.8em"> * ${empReaccion.EmpleadoReaccion || empReaccion.Nombre}</li>
+              `);
             }
           }
         });
@@ -1898,11 +1961,32 @@ async function MeGusta(valor, tipo) {
         }
       }
     });
-    // if (response == "1") {
-    //   loadFeeds();
-    // }else {
-    //   toastr.info("ERROR");
-    // }
+  } catch (e) {
+    console.error("Error en MeGusta AJAX:", e);
+    // Rollback
+    if (tipo == "1" || tipo == 1) {
+      const $btnMG = $("#btnEventoMG" + valor);
+      const $heart = $btnMG.find(".heart-icon");
+      $btnMG.find(".me-gusta-count").text(prevCount);
+      if (prevLiked) {
+        $heart.removeClass("heart-outline").addClass("heart-filled");
+        $btnMG.addClass("liked").css({ color: "#FFC107" });
+      } else {
+        $heart.removeClass("heart-filled").addClass("heart-outline");
+        $btnMG.removeClass("liked").css({ color: "" });
+      }
+    } else {
+      const $btnF = $("#btnEventoF" + valor);
+      $btnF.html(`<i class="fas fa-birthday-cake"></i> ${prevCount} Felicitaciones`);
+      if (prevCongrats) {
+        $btnF.css({ color: "#8E24AA" });
+      } else {
+        $btnF.css({ color: "black" });
+      }
+    }
+    if (typeof toastr !== "undefined") {
+      toastr.error("No se pudo registrar tu reacción. Revisa tu conexión a internet.");
+    }
   }
 }
 
@@ -2136,8 +2220,13 @@ const showCommentsMain = (content) => {
   if (dvContent) {
     if (dvContent.style.display == "none") {
       dvContent.style.display = "";
-      if (feedCommentsData[content]) {
+      const hasList = dvContentFeed && dvContentFeed.querySelector('.feed-comments-list');
+      if (feedCommentsData[content] && hasList) {
         // DOM preservado — reapertura instantánea sin AJAX ni re-render
+        return;
+      }
+      if (feedCommentsData[content]) {
+        renderCommentsFeedInline(content);
         return;
       }
       if (dvContentFeed) {
@@ -2157,9 +2246,7 @@ const showCommentsMain = (content) => {
   }
 };
 
-let feedCommentsState = {};
-let feedCommentsData = {};
-let feedCommentsLoading = {}; // Previene peticiones duplicadas al abrir comentarios
+// Variables de estado de comentarios (declaradas al inicio del archivo)
 
 const getCommentsFeedSelected = async (content, forceReload = false) => {
   if (feedCommentsLoading[content]) return;
@@ -2319,68 +2406,95 @@ const makeCommentM = async (content, i_Feed) => {
 };
 
 const makeComment = async (content, i_Feed) => {
-  // Prevenir doble-clic: deshabilitar controles durante el envío
+  if (!content || !content.trim()) return;
+  content = content.trim();
+
   let inpText = document.getElementById(`f_newComentary${i_Feed}`);
   let btnComment = inpText ? inpText.closest('.rpc-comments-area')?.querySelector('.btn-comment') : null;
 
+  // Limpiar y deshabilitar input optimísticamente
+  if (inpText) {
+    $(inpText).val("");
+    inpText.disabled = true;
+  }
   if (btnComment) {
     btnComment.disabled = true;
     btnComment.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
   }
-  if (inpText) inpText.disabled = true;
+
+  // 1. Insertar el comentario optimísticamente
+  let nombreEl = document.getElementById('NameEmpleado');
+  let nombre = nombreEl ? nombreEl.textContent.trim() : 'Tú';
+  let ahora = new Date().toLocaleString('es-MX');
+  let tempId = 'tmp_' + Date.now();
+  let nuevoComentario = {
+    idFeed: i_Feed,
+    Comentario: content,
+    Registro: ahora,
+    Nombre: nombre,
+    ImagenEmpleado: '0/0.png',
+    TypeCommentUs: 1,
+    idComentariosFeed: tempId,
+    inReaction: false,
+    reactionsC: []
+  };
+
+  // Guardar estado previo para rollback
+  let prevComments = feedCommentsData[i_Feed] ? [...feedCommentsData[i_Feed]] : null;
+  let btnComm = document.getElementById(`btnComment${i_Feed}`);
+  let prevBtnHtml = btnComm ? btnComm.innerHTML : "";
+  let prevCount = btnComm ? parseInt((btnComm.textContent.match(/\d+/) || ['0'])[0], 10) : 0;
+
+  // Actualizar contador visualmente
+  if (btnComm) {
+    btnComm.innerHTML = `<i class="far fa-comments"></i> ${prevCount + 1} Comentarios`;
+  }
+
+  if (feedCommentsData[i_Feed]) {
+    feedCommentsData[i_Feed].unshift(nuevoComentario);
+    renderCommentsFeedInline(i_Feed);
+  } else {
+    feedCommentsData[i_Feed] = [nuevoComentario];
+    renderCommentsFeedInline(i_Feed);
+  }
 
   let dataSend = {
     op: "makeComment",
     commentary: content,
     i_Feed: i_Feed,
   };
+
   try {
     let ajaxR = await pAjaxAsync(url_m_Feed, dataSend, 1);
-    if (ajaxR !== undefined && ajaxR.Resultado) {
-      if (inpText) $(inpText).val("");
-
-      // Actualizar contador del botón
-      let btnComm = document.getElementById(`btnComment${i_Feed}`);
-      if (btnComm) {
-        let currentCount = parseInt((btnComm.textContent.match(/\d+/) || ['0'])[0], 10);
-        btnComm.innerHTML = `<i class="far fa-comments"></i> ${currentCount + 1} Comentarios`;
-      }
-
-      // Insertar comentario en cache local (Optimistic UI):
-      // evitamos un segundo round-trip completo al servidor.
-      if (feedCommentsData[i_Feed]) {
-        // El nombre del usuario ya está en el DOM
-        let nombreEl = document.getElementById('NameEmpleado');
-        let nombre = nombreEl ? nombreEl.textContent.trim() : 'Tú';
-        let ahora = new Date().toLocaleString('es-MX');
-        let nuevoComentario = {
-          idFeed: i_Feed,
-          Comentario: content,
-          Registro: ahora,
-          Nombre: nombre,
-          ImagenEmpleado: '0/0.png',
-          TypeCommentUs: 1,
-          idComentariosFeed: 'tmp_' + Date.now(),
-          inReaction: false,
-          reactionsC: []
-        };
-        // Agregar al inicio para que sea visible inmediatamente
-        feedCommentsData[i_Feed].unshift(nuevoComentario);
-        renderCommentsFeedInline(i_Feed);
-      } else {
-        // Primera vez: traer todos los comentarios del servidor
-        delete feedCommentsData[i_Feed];
-        feedCommentsState[i_Feed] = null;
-        getCommentsFeedSelected(i_Feed, true);
-      }
+    if (ajaxR === undefined || !ajaxR.Resultado) {
+      throw new Error("Error en servidor al guardar comentario");
+    }
+  } catch (e) {
+    console.error("Error al publicar comentario:", e);
+    // Rollback
+    if (prevComments) {
+      feedCommentsData[i_Feed] = prevComments;
+    } else {
+      delete feedCommentsData[i_Feed];
+    }
+    renderCommentsFeedInline(i_Feed);
+    
+    if (btnComm) {
+      btnComm.innerHTML = prevBtnHtml;
+    }
+    if (inpText) {
+      $(inpText).val(content);
+    }
+    
+    if (typeof toastr !== "undefined") {
+      toastr.error("No se pudo publicar tu comentario. Intenta de nuevo.");
     }
   } finally {
-    // Rehabilitar controles siempre, incluso si hay error
+    if (inpText) inpText.disabled = false;
     if (btnComment) {
       btnComment.disabled = false;
       btnComment.innerHTML = 'Comentar';
     }
-    if (inpText) inpText.disabled = false;
   }
 };
 

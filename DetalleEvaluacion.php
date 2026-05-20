@@ -1,4 +1,4 @@
-﻿<?php include("AutorizaPagina.php"); ?>
+<?php include("AutorizaPagina.php"); ?>
 <?php $embed = isset($_GET['embed']); ?>
 <?php if ($embed): ?>
 <!DOCTYPE html>
@@ -20,6 +20,74 @@
     .dirigido-empleados { background-color: #e8f5e9; color: #2e7d32; border: 2px solid #2e7d32; }
     .dirigido-postulantes { background-color: #fff3e0; color: #e65100; border: 2px solid #e65100; }
     .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e9ecef; }
+    
+    /* Estilos personalizados para el Modal de Faltantes */
+    .bg-danger-subtle { background-color: #fee2e2 !important; }
+    .text-danger { color: #dc2626 !important; }
+    .bg-warning-subtle { background-color: #fef3c7 !important; }
+    .text-warning { color: #d97706 !important; }
+    .avatar-circle-sm {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(99,102,241,0.25);
+    }
+    .badge-sucursal {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge-puesto {
+      color: #64748b;
+      font-size: 11px;
+      display: block;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+    .progress-premium-bar {
+      height: 6px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-premium-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-fill-red { background: linear-gradient(90deg, #f87171 0%, #ef4444 100%); }
+    .progress-fill-orange { background: linear-gradient(90deg, #fb923c 0%, #f97316 100%); }
+    .progress-fill-green { background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%); }
+    
+    #tblUnfinishedEmployees tbody tr {
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      cursor: default;
+    }
+    #tblUnfinishedEmployees tbody tr:hover {
+      background-color: #f8fafc !important;
+    }
+    #tblUnfinishedEmployees td {
+      padding: 12px 8px !important;
+      border-bottom: 1px solid #f1f5f9;
+    }
   </style>
 </head>
 <body>
@@ -73,17 +141,90 @@
     </div></div></div></div>
   </div>
 
-  <div class="modal fade" id="faltantes" tabindex="-1" aria-hidden="true" style="display:none;">
-    <div class="modal-dialog modal-xl"><div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title h4" id="evSelectedF"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body"><div class="row"><div id="t_unfinished_employees"></div></div></div>
-    </div></div>
-  </div>
+  <!-- Modal Faltantes Embebido -->
+  <div class="modal fade" id="faltantes" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        <div class="modal-header px-4 py-3 bg-light" style="border-bottom: 1px solid #f1f5f9;">
+          <div class="d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-warning" style="font-size: 26px;">pending_actions</span>
+            <div>
+              <h5 class="modal-title fw-bold text-dark m-0" id="evSelectedF" style="font-size: 1.1rem;">Evaluadores Pendientes</h5>
+              <span class="text-muted" style="font-size: 0.78rem;">Listado de personas que aún no completan sus evaluaciones asignadas.</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" style="background-color: #fafbfe;">
+          <!-- Fila de Tarjetas KPIs -->
+          <div class="row g-3 mb-4">
+            <!-- 1. Evaluadores Pendientes -->
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="d-flex align-items-center justify-content-center bg-danger-subtle text-danger" style="width: 46px; height: 46px; border-radius: 10px;">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
+                  </div>
+                  <div>
+                    <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Evaluadores Faltantes</p>
+                    <h4 class="fw-bold mb-0 text-dark" id="kpiTotalFaltantes" style="font-size: 1.6rem; line-height: 1.1;">0</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 2. Evaluaciones Pendientes -->
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 46px; height: 46px; border-radius: 10px; background-color: #e0f2fe !important; color: #0284c7 !important;">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">assignment_late</span>
+                  </div>
+                  <div>
+                    <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Evaluaciones Pendientes</p>
+                    <h4 class="fw-bold mb-0 text-dark" id="kpiTotalEvaluacionesPendientes" style="font-size: 1.6rem; line-height: 1.1;">0</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 3. Avance Promedio -->
+            <div class="col-12 col-md-4">
+              <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="d-flex align-items-center justify-content-center bg-warning-subtle text-warning" style="width: 46px; height: 46px; border-radius: 10px;">
+                    <span class="material-symbols-outlined" style="font-size: 24px;">percent</span>
+                  </div>
+                  <div class="flex-grow-1">
+                    <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Avance Promedio de Pendientes</p>
+                    <h4 class="fw-bold mb-0 text-dark" id="kpiAvanceFaltantes" style="font-size: 1.6rem; line-height: 1.1;">0%</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <script type="text/x-jsrender" id="t_unfinishedTemplate">${t_unfinishedSF(data)}</script>
+          <!-- Tabla de Pendientes -->
+          <div class="bg-white p-2 rounded shadow-sm">
+            <div class="p-1">
+              <table id="tblUnfinishedEmployees" class="table table-hover align-middle w-100" style="font-size:13.5px; border-collapse: separate !important; border-spacing: 0 4px !important;">
+                <thead>
+                  <tr class="text-uppercase text-muted" style="font-size: 10.5px; letter-spacing: 0.6px; background-color: #f8fafc;">
+                    <th class="ps-3 border-0 py-3">Empleado</th>
+                    <th class="border-0 py-3">No. Empleado</th>
+                    <th class="border-0 py-3">Sucursal / Puesto</th>
+                    <th class="border-0 py-3 text-center">Evaluaciones (Res/Total)</th>
+                    <th class="border-0 py-3 pe-3" style="width: 25%;">Progreso</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Renderizado por JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <?php include("neptune_js.php"); ?>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -190,6 +331,74 @@
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
       border-bottom: 1px solid #e9ecef;
+    }
+    
+    /* Estilos personalizados para el Modal de Faltantes */
+    .bg-danger-subtle { background-color: #fee2e2 !important; }
+    .text-danger { color: #dc2626 !important; }
+    .bg-warning-subtle { background-color: #fef3c7 !important; }
+    .text-warning { color: #d97706 !important; }
+    .avatar-circle-sm {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(99,102,241,0.25);
+    }
+    .badge-sucursal {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge-puesto {
+      color: #64748b;
+      font-size: 11px;
+      display: block;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+    .progress-premium-bar {
+      height: 6px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-premium-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .progress-fill-red { background: linear-gradient(90deg, #f87171 0%, #ef4444 100%); }
+    .progress-fill-orange { background: linear-gradient(90deg, #fb923c 0%, #f97316 100%); }
+    .progress-fill-green { background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%); }
+    
+    #tblUnfinishedEmployees tbody tr {
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      cursor: default;
+    }
+    #tblUnfinishedEmployees tbody tr:hover {
+      background-color: #f8fafc !important;
+    }
+    #tblUnfinishedEmployees td {
+      padding: 12px 8px !important;
+      border-bottom: 1px solid #f1f5f9;
     }
   </style>
   <?php if ($embed): ?>
@@ -402,17 +611,85 @@
           <div class="chat-windows"></div>
         </div>
 
-        <!-- Modal Faltantes -->
+        <!-- Modal Faltantes Estándar -->
         <div class="modal fade" id="faltantes" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true">
-          <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title h4" id="evSelectedF"></h5>
+          <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+              <div class="modal-header px-4 py-3 bg-light" style="border-bottom: 1px solid #f1f5f9;">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="material-symbols-outlined text-warning" style="font-size: 26px;">pending_actions</span>
+                  <div>
+                    <h5 class="modal-title fw-bold text-dark m-0" id="evSelectedF" style="font-size: 1.1rem;">Evaluadores Pendientes</h5>
+                    <span class="text-muted" style="font-size: 0.78rem;">Listado de personas que aún no completan sus evaluaciones asignadas.</span>
+                  </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div id="t_unfinished_employees"></div>
+              <div class="modal-body p-4" style="background-color: #fafbfe;">
+                 <!-- Fila de Tarjetas KPIs -->
+                 <div class="row g-3 mb-4">
+                   <!-- 1. Evaluadores Pendientes -->
+                   <div class="col-12 col-md-4">
+                     <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                       <div class="d-flex align-items-center gap-3">
+                         <div class="d-flex align-items-center justify-content-center bg-danger-subtle text-danger" style="width: 46px; height: 46px; border-radius: 10px;">
+                           <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
+                         </div>
+                         <div>
+                           <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Evaluadores Faltantes</p>
+                           <h4 class="fw-bold mb-0 text-dark" id="kpiTotalFaltantes" style="font-size: 1.6rem; line-height: 1.1;">0</h4>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                   <!-- 2. Evaluaciones Pendientes -->
+                   <div class="col-12 col-md-4">
+                     <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                       <div class="d-flex align-items-center gap-3">
+                         <div class="d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 46px; height: 46px; border-radius: 10px; background-color: #e0f2fe !important; color: #0284c7 !important;">
+                           <span class="material-symbols-outlined" style="font-size: 24px;">assignment_late</span>
+                         </div>
+                         <div>
+                           <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Evaluaciones Pendientes</p>
+                           <h4 class="fw-bold mb-0 text-dark" id="kpiTotalEvaluacionesPendientes" style="font-size: 1.6rem; line-height: 1.1;">0</h4>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                   <!-- 3. Avance Promedio -->
+                   <div class="col-12 col-md-4">
+                     <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 12px; background: #fff;">
+                       <div class="d-flex align-items-center gap-3">
+                         <div class="d-flex align-items-center justify-content-center bg-warning-subtle text-warning" style="width: 46px; height: 46px; border-radius: 10px;">
+                           <span class="material-symbols-outlined" style="font-size: 24px;">percent</span>
+                         </div>
+                         <div class="flex-grow-1">
+                           <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 10px; letter-spacing: 0.8px;">Avance Promedio de Pendientes</p>
+                           <h4 class="fw-bold mb-0 text-dark" id="kpiAvanceFaltantes" style="font-size: 1.6rem; line-height: 1.1;">0%</h4>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+                <!-- Tabla de Pendientes -->
+                <div class="bg-white p-2 rounded shadow-sm">
+                   <div class="p-1">
+                    <table id="tblUnfinishedEmployees" class="table table-hover align-middle w-100" style="font-size:13.5px; border-collapse: separate !important; border-spacing: 0 4px !important;">
+                      <thead>
+                        <tr class="text-uppercase text-muted" style="font-size: 10.5px; letter-spacing: 0.6px; background-color: #f8fafc;">
+                          <th class="ps-3 border-0 py-3">Empleado</th>
+                          <th class="border-0 py-3">No. Empleado</th>
+                          <th class="border-0 py-3">Sucursal / Puesto</th>
+                          <th class="border-0 py-3 text-center">Evaluaciones (Res/Total)</th>
+                          <th class="border-0 py-3 pe-3" style="width: 25%;">Progreso</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Renderizado por JS -->
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -421,10 +698,6 @@
       </div>
     </div>
   </div>
-
-  <script type="text/x-jsrender" id="t_unfinishedTemplate">
-    ${t_unfinishedSF(data)}
-  </script>
 
   <!-- neptune Javascripts -->
   <?php include("neptune_js.php");  ?>

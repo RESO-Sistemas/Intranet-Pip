@@ -784,10 +784,8 @@
         <div class="evq-meta" id="evqMetaBar">Cargando...</div>
       </div>
       <div class="evq-actions">
-        <button type="button" class="evq-btn evq-btn-primary" id="btnAddQuestion"><i class="fas fa-plus"></i> Nueva
-          Pregunta</button>
-        <button type="button" class="evq-btn evq-btn-success" id="btnSaveQuestions"><i class="fas fa-save"></i>
-          Guardar</button>
+        <button type="button" class="btn-minimal btn-minimal-primary btn-sm" id="btnAddQuestion"><i class="fas fa-plus"></i> Nueva Pregunta</button>
+        <button type="button" class="btn-minimal btn-minimal-success btn-sm" id="btnSaveQuestions"><i class="fas fa-save"></i> Guardar</button>
       </div>
     </div>
 
@@ -1144,16 +1142,15 @@
                     <div class="d-flex justify-content-between pb-4">
 
                       <?php if (!$embed): ?>
-                        <button type="button" class="btn btn-danger"
+                        <button type="button" class="btn-minimal btn-minimal-danger btn-sm"
                           onclick="window.location.href='ListadoEvaluaciones.php'">Regresar</button>
                       <?php endif; ?>
 
                       <div class="d-flex gap-2">
 
-                        <button type="button" class="btn btn-primary" id="btnAddQuestion">Nueva Pregunta</button>
+                        <button type="button" class="btn-minimal btn-minimal-primary btn-sm" id="btnAddQuestion">Nueva Pregunta</button>
 
-                        <button type="button" class="btn btn-success" id="btnSaveQuestions">Guardar nuevas
-                          preguntas</button>
+                        <button type="button" class="btn-minimal btn-minimal-success btn-sm" id="btnSaveQuestions">Guardar nuevas preguntas</button>
 
                       </div>
 

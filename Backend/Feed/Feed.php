@@ -299,15 +299,31 @@
             // Reemplaza 4 queries separadas (conn2, conn3, conn4, conn5) con 1 sola query.
             $qConsolidada = "SELECT
                 FI.idFeed,
-                SUM(CASE WHEN RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS CantidadMeGusta,
-                SUM(CASE WHEN RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS CantidadFelicitaciones,
-                MAX(CASE WHEN RF.NoEmpleado = $NoEmpleado AND RF.idTipoReaccion = 1 THEN 1 ELSE 0 END) AS MeGusta_User,
-                MAX(CASE WHEN RF.NoEmpleado = $NoEmpleado AND RF.idTipoReaccion = 2 THEN 1 ELSE 0 END) AS Felicitacion_User,
-                COUNT(DISTINCT CF.idComentariosFeed) AS CantidadComentarios
+                COALESCE(R.CantidadMeGusta, 0) AS CantidadMeGusta,
+                COALESCE(R.CantidadFelicitaciones, 0) AS CantidadFelicitaciones,
+                COALESCE(R.MeGusta_User, 0) AS MeGusta_User,
+                COALESCE(R.Felicitacion_User, 0) AS Felicitacion_User,
+                COALESCE(C.CantidadComentarios, 0) AS CantidadComentarios
               FROM (SELECT DISTINCT idFeed FROM Feed WHERE idFeed IN ($feedIdsStr)) AS FI
-              LEFT JOIN ReaccionFeed AS RF ON RF.idFeed = FI.idFeed AND RF.NoEmpleado <> 0
-              LEFT JOIN ComentariosFeed AS CF ON CF.idFeed = FI.idFeed AND CF.Autorizado = 1
-              GROUP BY FI.idFeed";
+              LEFT JOIN (
+                SELECT 
+                  idFeed,
+                  SUM(CASE WHEN idTipoReaccion = 1 THEN 1 ELSE 0 END) AS CantidadMeGusta,
+                  SUM(CASE WHEN idTipoReaccion = 2 THEN 1 ELSE 0 END) AS CantidadFelicitaciones,
+                  MAX(CASE WHEN NoEmpleado = $NoEmpleado AND idTipoReaccion = 1 THEN 1 ELSE 0 END) AS MeGusta_User,
+                  MAX(CASE WHEN NoEmpleado = $NoEmpleado AND idTipoReaccion = 2 THEN 1 ELSE 0 END) AS Felicitacion_User
+                FROM ReaccionFeed
+                WHERE idFeed IN ($feedIdsStr) AND NoEmpleado <> 0
+                GROUP BY idFeed
+              ) AS R ON R.idFeed = FI.idFeed
+              LEFT JOIN (
+                SELECT 
+                  idFeed,
+                  COUNT(*) AS CantidadComentarios
+                FROM ComentariosFeed
+                WHERE idFeed IN ($feedIdsStr) AND Autorizado = 1
+                GROUP BY idFeed
+              ) AS C ON C.idFeed = FI.idFeed";
             $consolidada = $this->Select($qConsolidada);
             $reactionCountsByFeed = [];
             $userReactionsByFeed  = [];

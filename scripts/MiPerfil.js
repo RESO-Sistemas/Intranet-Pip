@@ -318,10 +318,6 @@ function toggleProfileLoading(show) {
   }
 }
 
-$("#fileUpload").fileUpload({
-  id: "filesFeedForm",
-  multiple: true,
-});
 
 
 

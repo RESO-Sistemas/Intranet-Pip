@@ -31,8 +31,8 @@ $MenuP = $Conf->getMenusPadre();
 	<script src="assets/syncfusion/Packages/ej2-circulargauge/circular-gauge.js"></script>
 	<style>
 		/* ============================================================
-       KPI Gauge cards — SIN CAMBIOS
-    ============================================================ */
+	   KPI Gauge cards — SIN CAMBIOS
+	============================================================ */
 		.kpi-gauge-card {
 			min-width: 225px;
 			max-width: 285px;
@@ -66,8 +66,8 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		/* ============================================================
-       Evento item — SIN CAMBIOS
-    ============================================================ */
+	   Evento item — SIN CAMBIOS
+	============================================================ */
 		.evento-item {
 
 			display: flex;
@@ -216,8 +216,8 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		/* ============================================================
-       Checklist items — SIN CAMBIOS
-    ============================================================ */
+	   Checklist items — SIN CAMBIOS
+	============================================================ */
 		.checklist-item {
 			display: flex;
 			align-items: center;
@@ -355,8 +355,8 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		/* ============================================================
-       Ajustes de espaciado globales — SIN CAMBIOS
-    ============================================================ */
+	   Ajustes de espaciado globales — SIN CAMBIOS
+	============================================================ */
 		.app-content {
 			padding-top: 0 !important;
 		}
@@ -490,8 +490,8 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		/* ============================================================
-       REDDIT-STYLE FEED — Nuevos estilos
-    ============================================================ */
+	   REDDIT-STYLE FEED — Nuevos estilos
+	============================================================ */
 
 		/* Fondo general del área de contenido */
 		.reddit-feed-wrapper {
@@ -1603,15 +1603,15 @@ $MenuP = $Conf->getMenusPadre();
 		<!-- Preloader - style you can find in spinners.css -->
 		<!-- ============================================================== -->
 		<!-- <div class="preloader">
-      <div class="loader">
-        <div class="loader__figure"></div>
-        <p class="loader__label">PIP</p>
-      </div>
-    </div> -->
+	  <div class="loader">
+		<div class="loader__figure"></div>
+		<p class="loader__label">PIP</p>
+	  </div>
+	</div> -->
 		<div id="Menu">
 			<?php
-      include("menus.php");
-?>
+			include("menus.php");
+			?>
 		</div>
 		<div class="app-container">
 			<?php include("includes/_Header.php"); ?>
@@ -1649,8 +1649,8 @@ $MenuP = $Conf->getMenusPadre();
 						<div class="row g-3 align-items-start">
 
 							<!-- ═══════════════════════════════════════
-                   Columna principal: Feed estilo Reddit
-              ═══════════════════════════════════════ -->
+				   Columna principal: Feed estilo Reddit
+			  ═══════════════════════════════════════ -->
 							<div class="col-12 col-lg-8">
 
 
@@ -1749,8 +1749,8 @@ $MenuP = $Conf->getMenusPadre();
 							</div><!-- /col feed -->
 
 							<!-- ═══════════════════════════════════════
-                   Sidebar sticky: Eventos + Checklist
-              ═══════════════════════════════════════ -->
+				   Sidebar sticky: Eventos + Checklist
+			  ═══════════════════════════════════════ -->
 							<div class="col-12 col-lg-4">
 								<div class="reddit-sidebar">
 
@@ -1844,7 +1844,7 @@ $MenuP = $Conf->getMenusPadre();
 				data: {
 					op: 'getProximosEventos'
 				},
-				success: function(response) {
+				success: function (response) {
 					var eventos;
 					try {
 						eventos = JSON.parse(response);
@@ -1862,17 +1862,18 @@ $MenuP = $Conf->getMenusPadre();
 						'Dic'
 					];
 					var html = '';
-					eventos.forEach(function(ev) {
+					eventos.forEach(function (ev) {
 						var esBday = parseInt(ev.EsCumpleanos) === 1;
 						var fecha = new Date(ev.FechaInicio + 'T00:00:00');
 						var dia = fecha.getDate();
 						var mes = meses[fecha.getMonth()];
 						var horaIni = ev.HoraInicio ? ev.HoraInicio.substring(0, 5) : '';
 						var horaFin = ev.HoraFin ? ev.HoraFin.substring(0, 5) : '';
-						var horario = (!esBday && horaIni && horaFin) ? horaIni + ' - ' + horaFin : '';
-						var titulo = esBday
-							? '🎂 ' + $('<div>').text(ev.NombreEmpleado || ev.Titulo).html()
-							: $('<div>').text(ev.Titulo).html();
+						var horario = (!esBday && horaIni && horaFin) ? horaIni + ' - ' + horaFin :
+							'';
+						var titulo = esBday ?
+							'🎂 ' + $('<div>').text(ev.NombreEmpleado || ev.Titulo).html() :
+							$('<div>').text(ev.Titulo).html();
 						html += '<div class="evento-item">' +
 							'<div class="evento-date-box' + (esBday ? ' birthday' : '') + '">' +
 							'<div class="ev-day">' + dia + '</div>' +
@@ -1880,14 +1881,17 @@ $MenuP = $Conf->getMenusPadre();
 							'</div>' +
 							'<div class="evento-info">' +
 							'<div class="ev-title">' + titulo + '</div>' +
-							(horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' + horario + '</div>' : '') +
-							(esBday ? '<div class="ev-time" style="font-size:.7rem;color:#e91e8c;">Cumpleaños</div>' : '') +
+							(horario ? '<div class="ev-time"><i class="far fa-clock me-1"></i>' +
+								horario + '</div>' : '') +
+							(esBday ?
+								'<div class="ev-time" style="font-size:.7rem;color:#e91e8c;">Cumpleaños</div>' :
+								'') +
 							'</div>' +
 							'</div>';
 					});
 					el.innerHTML = html;
 				},
-				error: function() {
+				error: function () {
 					var el = document.getElementById('listaEventos');
 					if (el) el.innerHTML =
 						'<p class="text-muted small text-center py-2">Error al cargar eventos</p>';
@@ -1922,7 +1926,7 @@ $MenuP = $Conf->getMenusPadre();
 					badge.textContent = items.length;
 					badge.style.display = '';
 				}
-				lista.innerHTML = items.map(function(e) {
+				lista.innerHTML = items.map(function (e) {
 					return '<a href="pending-evaluations.php" class="d-block text-decoration-none py-2 px-1 border-bottom">' +
 						'<small class="fw-semibold text-dark d-block">' + $('<div>').text(e.Titulo).html() +
 						'</small>' +
@@ -1953,7 +1957,7 @@ $MenuP = $Conf->getMenusPadre();
 			// Mostrar formulario con animación
 			document.getElementById('postComposeFormContainer').style.display = 'block';
 			// Foco en el primer campo
-			setTimeout(function() {
+			setTimeout(function () {
 				var t = document.getElementById('mnf_title');
 				if (t) t.focus();
 			}, 50);
@@ -1977,7 +1981,7 @@ $MenuP = $Conf->getMenusPadre();
 			}
 		}
 
-		document.addEventListener('DOMContentLoaded', function() {
+		document.addEventListener('DOMContentLoaded', function () {
 			var params = new URLSearchParams(window.location.search);
 			if (params.get('compose') === '1') {
 				openComposeForm();

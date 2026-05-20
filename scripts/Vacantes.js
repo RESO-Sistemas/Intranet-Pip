@@ -2187,7 +2187,7 @@ function loadComparativoCandidatos() {
     });
     const primerosCinco = candidatosUnicosInfo.slice(0, 5).map(c => c.Nombre);
     $sel.val(primerosCinco);
-    $sel.select2({ dropdownParent: $('#tabComparativo'), placeholder: 'Seleccionar candidatos...', allowClear: true, width: '100%' })
+    $sel.select2({ dropdownParent: $('#tabComparativo'), placeholder: 'Seleccionar candidatos...', width: '100%' })
         .on('change', function () { drawComparativoResultados(); updatePodiumActiveState(); });
     drawComparativoResultados();
     renderComparativoPodium(candidatosUnicosInfo);

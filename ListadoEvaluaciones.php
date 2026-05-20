@@ -418,6 +418,196 @@
       .ev-modal-body { max-height: 75vh; }
       .ev-summary-label { min-width: 130px; }
     }
+
+    /* ===== PUBLISH WIZARD ===== */
+    .pw-modal-dialog { max-width: min(900px, 96vw); }
+    .pw-modal-content {
+      border: none; border-radius: 18px !important; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .pw-modal-header {
+      padding: 1.1rem 1.5rem; border-bottom: 1px solid #F1F5F9;
+      background: #fff; display: flex; align-items: center; justify-content: space-between;
+    }
+    .pw-modal-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1rem; font-weight: 700; color: #1E293B;
+    }
+    .pw-modal-icon {
+      width: 34px; height: 34px; border-radius: 9px; background: #FEF3C7; color: #D97706;
+      display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+    }
+
+    /* Stepper */
+    .pw-stepper {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 1rem 1.5rem 0.75rem; background: #FAFBFF; border-bottom: 1px solid #F1F5F9;
+    }
+    .pw-step {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      flex: 0 0 auto; position: relative; z-index: 2;
+    }
+    .pw-step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+      border: 2px solid #E2E8F0; background: #F8FAFC; color: #94A3B8;
+      transition: all 0.3s ease;
+    }
+    .pw-step-label {
+      font-size: 10px; font-weight: 600; color: #94A3B8;
+      text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .pw-step.active .pw-step-circle { background: #F59E0B; border-color: #F59E0B; color: #fff; box-shadow: 0 0 0 4px rgba(245,158,11,0.2); }
+    .pw-step.active .pw-step-label  { color: #D97706; }
+    .pw-step.done .pw-step-circle   { background: #10B981; border-color: #10B981; color: #fff; }
+    .pw-step.done .pw-step-label    { color: #10B981; }
+    .pw-connector {
+      flex: 1; height: 2px; background: #E2E8F0; margin-top: 17px; position: relative; z-index: 1; overflow: hidden;
+    }
+    .pw-connector::after {
+      content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+      background: #10B981; transition: width 0.4s ease;
+    }
+    .pw-connector.done::after { width: 100%; }
+
+    /* Panes */
+    .pw-body { max-height: 70vh; overflow-y: auto; scroll-behavior: smooth; }
+    .pw-pane { display: none; }
+    .pw-pane.active { display: block; animation: pwIn 0.22s ease forwards; }
+    @keyframes pwIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Section header */
+    .pw-section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0.9rem 1.5rem; border-bottom: 1px solid #F1F5F9;
+    }
+    .pw-section-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+    }
+    .pw-section-icon.amber   { background: rgba(245,158,11,0.12); color: #D97706; }
+    .pw-section-icon.teal    { background: rgba(20,184,166,0.1);  color: #14B8A6; }
+    .pw-section-icon.emerald { background: rgba(16,185,129,0.1);  color: #10B981; }
+    .pw-section-title { font-size: 0.88rem; font-weight: 700; color: #1E293B; margin: 0; }
+    .pw-section-desc  { font-size: 11.5px; color: #64748B; margin: 0; }
+    .pw-form-area { padding: 1.25rem 1.5rem; }
+
+    /* Branch chips */
+    .pw-chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pw-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 20px; font-size: 0.83rem; font-weight: 500;
+      border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #64748B;
+      cursor: pointer; transition: all 0.2s ease; user-select: none;
+    }
+    .pw-chip .material-symbols-outlined { font-size: 15px; }
+    .pw-chip:hover { border-color: #F59E0B; background: #FFFBEB; color: #92400E; }
+    .pw-chip.active { border-color: #F59E0B; background: #FEF3C7; color: #78350F; font-weight: 700; }
+    .pw-select-all { font-size: 0.78rem; color: #64748B; cursor: pointer; text-decoration: underline; border: none; background: none; padding: 0; }
+    .pw-select-all:hover { color: #D97706; }
+
+    /* Accordion evaluadores */
+    .pw-accordion-item { border: none; border-bottom: 1px solid #F1F5F9; }
+    .pw-accordion-btn {
+      font-size: 0.875rem; font-weight: 700; color: #1E293B;
+      background: #FAFBFF !important; padding: 0.75rem 1.25rem;
+    }
+    .pw-accordion-btn:not(.collapsed) { color: #D97706; background: #FFFBEB !important; box-shadow: none; }
+    .pw-accordion-btn::after { filter: none; }
+    .pw-badge-count {
+      font-size: 0.72rem; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; background: #F1F5F9; color: #64748B; margin-left: auto !important;
+    }
+
+    /* Evaluado block */
+    .pw-evaluado-block { padding: 0.75rem 1.25rem; border-bottom: 1px solid #F8FAFC; }
+    .pw-evaluado-block:last-child { border-bottom: none; }
+    .pw-evaluado-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .pw-evaluado-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #1C1917; font-weight: 800; font-size: 0.75rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pw-evaluado-nombre { font-weight: 700; font-size: 0.875rem; color: #1E293B; }
+    .pw-evaluado-meta   { font-size: 0.75rem; color: #94A3B8; margin-top: 1px; }
+
+    /* Pair rows */
+    .pw-evaluador-list { display: flex; flex-direction: column; gap: 4px; padding-left: 44px; }
+    .pw-pair-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 10px; background: #F8FAFC; border-radius: 8px;
+      border: 1px solid #F1F5F9; transition: border-color 0.2s;
+    }
+    .pw-pair-row:hover { border-color: #FDE68A; }
+    .pw-pair-evaluador { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .pw-pair-nombre { font-size: 0.82rem; font-weight: 500; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pw-pair-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Add evaluador ghost */
+    .pw-btn-add-ev {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: transparent; border: 1px dashed #CBD5E1; color: #94A3B8;
+      border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s ease; margin-left: 44px;
+    }
+    .pw-btn-add-ev:hover { border-color: #F59E0B; color: #D97706; background: #FFFBEB; }
+    .pw-btn-add-ev .material-symbols-outlined { font-size: 14px; }
+
+    /* Step 3 KPIs */
+    .pw-summary-kpis { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .pw-kpi {
+      flex: 1; min-width: 100px; text-align: center;
+      background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 10px;
+    }
+    .pw-kpi-number { font-size: 1.6rem; font-weight: 800; color: #1E293B; line-height: 1; }
+    .pw-kpi-label  { font-size: 0.7rem; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
+    .pw-warning-box {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: #FFF9E6; border: 1px solid #FDE68A; border-left: 3px solid #F59E0B;
+      border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.83rem; color: #78350F;
+    }
+    .pw-warning-box .material-symbols-outlined { font-size: 18px; color: #F59E0B; flex-shrink: 0; margin-top: 1px; }
+    .pw-confirm-box {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 1.5rem; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px;
+    }
+    .pw-confirm-box p { font-size: 0.875rem; color: #166534; margin: 8px 0 0; max-width: 420px; }
+
+    /* Nav footer */
+    .pw-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.9rem 1.5rem; border-top: 1px solid #F1F5F9; background: #FAFBFF;
+    }
+    .pw-nav .btn { min-width: 120px; font-weight: 600; font-size: 13px; padding: 0.5rem 1.1rem; border-radius: 9px; }
+    .pw-btn-publish {
+      background: linear-gradient(135deg, #10B981, #059669) !important;
+      border: none !important; color: #fff !important; font-weight: 700 !important;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.35);
+    }
+    .pw-btn-publish:hover { background: linear-gradient(135deg, #059669, #047857) !important; }
+    .pw-step-indicator { font-size: 0.78rem; font-weight: 600; color: #94A3B8; }
+
+    /* Add evaluador sub-modal */
+    .pw-sub-modal .modal-content { border-radius: 14px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .pw-sub-modal .modal-header { padding: 1rem 1.25rem; border-color: #F1F5F9; }
+
+    /* Search in step 2 */
+    .pw-search-wrap { margin-bottom: 1rem; }
+    .pw-search-wrap .input-group-text { background: #fff; border-right: none; }
+    .pw-search-wrap .form-control { border-left: none; font-size: 0.875rem; }
+    .pw-search-wrap .form-control:focus { box-shadow: none; border-color: #F59E0B; }
+
+    /* Configurar button in grid */
+    .btn-accion-config {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E;
+      border-radius: 8px; padding: 5px 10px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+    }
+    .btn-accion-config:hover { background: #F59E0B; border-color: #F59E0B; color: #1C1917; }
+    .btn-accion-config .material-symbols-outlined { font-size: 15px; }
   </style>
 </head>
 
@@ -776,6 +966,186 @@
             </div>
             <!-- /MODAL NUEVA EVALUACIÓN -->
 
+            <!-- ================================================================ -->
+            <!-- MODAL WIZARD: CONFIGURAR Y PUBLICAR EVALUACIÓN 360°             -->
+            <!-- ================================================================ -->
+            <div class="modal fade" id="modalPublishWizard" tabindex="-1"
+              data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable pw-modal-dialog">
+                <div class="modal-content pw-modal-content">
+
+                  <!-- Header -->
+                  <div class="pw-modal-header">
+                    <div class="pw-modal-title">
+                      <div class="pw-modal-icon">
+                        <span class="material-symbols-outlined" style="font-size:16px;">settings</span>
+                      </div>
+                      <div>
+                        <div style="font-size:1rem;font-weight:700;">Configurar y Publicar</div>
+                        <div id="pw-eval-titulo" style="font-size:0.78rem;color:#64748B;margin-top:1px;"></div>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+
+                  <!-- Stepper -->
+                  <div class="pw-stepper">
+                    <div class="pw-step active" id="pw-wi-1">
+                      <div class="pw-step-circle"><span class="material-symbols-outlined" style="font-size:15px;">location_on</span></div>
+                      <span class="pw-step-label">Sucursales</span>
+                    </div>
+                    <div class="pw-connector" id="pw-conn-1"></div>
+                    <div class="pw-step" id="pw-wi-2">
+                      <div class="pw-step-circle"><span class="material-symbols-outlined" style="font-size:15px;">group</span></div>
+                      <span class="pw-step-label">Evaluadores</span>
+                    </div>
+                    <div class="pw-connector" id="pw-conn-2"></div>
+                    <div class="pw-step" id="pw-wi-3">
+                      <div class="pw-step-circle"><span class="material-symbols-outlined" style="font-size:15px;">rocket_launch</span></div>
+                      <span class="pw-step-label">Publicar</span>
+                    </div>
+                  </div>
+
+                  <!-- Body -->
+                  <div class="pw-body">
+
+                    <!-- PASO 1: SUCURSALES -->
+                    <div class="pw-pane active" id="pw-pane-1">
+                      <div class="pw-section-header">
+                        <div class="pw-section-icon amber">
+                          <span class="material-symbols-outlined">location_on</span>
+                        </div>
+                        <div>
+                          <p class="pw-section-title">Sucursales participantes</p>
+                          <p class="pw-section-desc">Selecciona las sucursales cuyos empleados participan en esta evaluación</p>
+                        </div>
+                      </div>
+                      <div class="pw-form-area">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                          <span style="font-size:0.78rem;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.5px;">
+                            Sucursales disponibles
+                          </span>
+                          <div class="d-flex gap-2">
+                            <button class="pw-select-all" onclick="pwSelectAllBranches(true)">Seleccionar todas</button>
+                            <span style="color:#CBD5E1;">·</span>
+                            <button class="pw-select-all" onclick="pwSelectAllBranches(false)">Ninguna</button>
+                          </div>
+                        </div>
+                        <div class="pw-chips-wrap" id="pw-branches-chips">
+                          <div class="text-muted" style="font-size:0.85rem;">Cargando sucursales...</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- PASO 2: EVALUADORES -->
+                    <div class="pw-pane" id="pw-pane-2">
+                      <div class="pw-section-header">
+                        <div class="pw-section-icon teal">
+                          <span class="material-symbols-outlined">group</span>
+                        </div>
+                        <div>
+                          <p class="pw-section-title">Revisión de evaluadores</p>
+                          <p class="pw-section-desc">Verifica y ajusta los pares evaluado → evaluador antes de publicar</p>
+                        </div>
+                      </div>
+                      <div class="pw-form-area">
+                        <div class="pw-search-wrap">
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text border-end-0">
+                              <span class="material-symbols-outlined text-muted" style="font-size:15px;">search</span>
+                            </span>
+                            <input type="text" id="pw-search-evaluado" class="form-control border-start-0"
+                              placeholder="Buscar evaluado..." oninput="pwFiltrarEvaluados()">
+                          </div>
+                        </div>
+                        <div id="pw-evaluadores-content">
+                          <div class="text-center py-4 text-muted" style="font-size:0.85rem;">Cargando...</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- PASO 3: PUBLICAR -->
+                    <div class="pw-pane" id="pw-pane-3">
+                      <div class="pw-section-header">
+                        <div class="pw-section-icon emerald">
+                          <span class="material-symbols-outlined">rocket_launch</span>
+                        </div>
+                        <div>
+                          <p class="pw-section-title">Confirmar publicación</p>
+                          <p class="pw-section-desc">Revisa el resumen antes de activar los cuestionarios</p>
+                        </div>
+                      </div>
+                      <div class="pw-form-area">
+                        <div id="pw-summary-content"></div>
+                      </div>
+                    </div>
+
+                  </div><!-- /pw-body -->
+
+                  <!-- Footer nav -->
+                  <div class="pw-nav">
+                    <button type="button" class="btn ev-btn-slate" id="pw-btn-prev" onclick="pwPrev()">
+                      <i class="fas fa-arrow-left me-1"></i> Anterior
+                    </button>
+                    <span class="pw-step-indicator" id="pw-step-indicator">Paso 1 de 3</span>
+                    <button type="button" class="btn ev-btn-indigo" id="pw-btn-next" onclick="pwNext()">
+                      Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!-- /MODAL PUBLISH WIZARD -->
+
+            <!-- Sub-modal: Agregar Evaluador dentro del wizard -->
+            <div class="modal fade pw-sub-modal" id="pwModalAddEv" tabindex="-1"
+              data-bs-backdrop="false" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div class="pw-section-icon teal" style="width:30px;height:30px;font-size:14px;">
+                        <span class="material-symbols-outlined" style="font-size:14px;">person_add</span>
+                      </div>
+                      <div>
+                        <div style="font-size:0.9rem;font-weight:700;color:#1E293B;">Agregar Evaluador</div>
+                        <div id="pw-add-evaluado-nombre" style="font-size:0.75rem;color:#64748B;"></div>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input type="hidden" id="pw-add-evaluado-id">
+                    <input type="hidden" id="pw-add-sucursal-id">
+                    <div class="mb-3">
+                      <label class="ev-modal-form-label" style="font-size:12px;font-weight:600;color:#374151;">Tipo de relación</label>
+                      <div class="d-flex gap-2 mt-1" id="pw-tipo-btns">
+                        <button type="button" class="pw-tipo-btn active" data-val="1">JEFE</button>
+                        <button type="button" class="pw-tipo-btn" data-val="2">PAR</button>
+                        <button type="button" class="pw-tipo-btn" data-val="3">SUBORDINADO</button>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="ev-modal-form-label" style="font-size:12px;font-weight:600;color:#374151;">Buscar evaluador</label>
+                      <div class="input-group input-group-sm mt-1">
+                        <span class="input-group-text border-end-0">
+                          <span class="material-symbols-outlined text-muted" style="font-size:15px;">search</span>
+                        </span>
+                        <input type="text" id="pw-add-search" class="form-control border-start-0"
+                          placeholder="Nombre del evaluador..." oninput="pwFiltrarPosiblesEv()">
+                      </div>
+                    </div>
+                    <div id="pw-posibles-ev-list"
+                      style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;">
+                      <p class="text-muted text-center py-2" style="font-size:0.82rem;">Escribe para buscar</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Sub-modal -->
+
             <!-- Panel de detalle de evaluación existente -->
             <div class="offcanvas offcanvas-end evaluation-panel" tabindex="-1" id="evaluationPanel"
               aria-labelledby="evaluationPanelLabel">
@@ -854,6 +1224,7 @@
 
   <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
   <script src="scripts/ListadoEvaluaciones.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/PublishWizard.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 

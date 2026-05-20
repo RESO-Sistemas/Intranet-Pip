@@ -13,9 +13,9 @@ window.viewIndvResultsSF = function(e){
 
   iBtn.className = 'material-symbols-outlined';
 
-  iBtn.textContent="info_i";
+  iBtn.textContent="info";
 
-  btn.className = 'btn btn-warning';
+  btn.className = 'btn-minimal btn-minimal-primary btn-sm';
 
   btn.setAttribute("onclick", `viewDetail('${e.IdEvaluado}')`);
 
@@ -49,9 +49,9 @@ window.viewFinalReultsSF = function(e){
 
     iBtn.className = 'material-symbols-outlined';
 
-    iBtn.textContent = "info_i";
+    iBtn.textContent = "info";
 
-    btn.className = 'btn btn-success';
+    btn.className = 'btn-minimal btn-minimal-success btn-sm';
 
     btn.setAttribute("onclick", `viewFinalResults('${e.IdEvaluado}')`);
 

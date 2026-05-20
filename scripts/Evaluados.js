@@ -1,1126 +1,424 @@
-// Ocultar preloader cuando la página termine de cargar
 $(window).on('load', function() {
   $(".preloader").fadeOut();
 });
 
-
 const myKeysValues = window.location.search;
-
 const urlParams = new URLSearchParams(myKeysValues);
-
 const Evaluacion = urlParams.get("EV");
 
-
-
-const slcPuestosModal = document.querySelector("#slcPuestosModal");
-
+const slcPuestosModal  = document.querySelector("#slcPuestosModal");
 const slcDivisionModal = document.querySelector("#slcDivisionModal");
-
 const slcSucursalModal = document.querySelector("#slcSucursalModal");
-
-const modalEmpSeleccionado = document.querySelector("#modalEmpSeleccionado");
-
-const modal_NoEvaluado = document.querySelector("#modal_NoEvaluado");
-
 const evaluadoSelected = document.querySelector("#evaluadoSelected");
+const tx_title         = document.querySelector("#tx_title");
 
-const tx_title = document.querySelector("#tx_title");
+function initTooltips() {
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    bootstrap.Tooltip.getInstance(el)?.dispose();
+    new bootstrap.Tooltip(el, { trigger: 'hover' });
+  });
+}
 
-let table_evaluados;
-
-
-
-let table_evaluadores = $("#table_evaluadores").dataTable({
-
-  language: {
-
-    lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-
-    zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-
-    info: "PÁGINA _PAGE_ DE _PAGES_",
-
-    infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-
-    infoFiltered: "",
-
-    search: "BUSCAR",
-
-  },
-
-  columnDefs: [
-
-    {
-
-      className: "dt-center",
-
-      targets: "_all",
-
-    },
-
-  ],
-
-  order: [],
-
-  bSort: true,
-
-  bPaginate: true,
-
-  bFilter: true,
-
-  bInfo: true,
-
-});
-
-let table_newEvaluadores = $("#table_newEvaluadores").dataTable({
-
-  language: {
-
-    lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-
-    zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-
-    info: "PÁGINA _PAGE_ DE _PAGES_",
-
-    infoEmpty: "",
-
-    infoFiltered: "",
-
-    search: "BUSCAR",
-
-  },
-
-
-
-  columnDefs: [
-
-    {
-
-      className: "dt-center",
-
-      targets: "_all",
-
-    },
-
-  ],
-
-  order: [],
-
-  bSort: true,
-
-  bPaginate: true,
-
-  bFilter: true,
-
-  bInfo: true,
-
-});
+let _posiblesEvaluadoresData = [];
 
 allFunctions();
 
-
-
 $(document).ready(function () {
-
-  $("#modalEvaluadoresBootstrap select").each(function () {
-
-    $(this).select2({
-
-      dropdownParent: $("#modalEvaluadoresBootstrap"),
-
-    });
-
-  });
-
   $("#modal_relacion").select2({
-
     width: "100%",
-
     dropdownParent: $("#modalEvaluadoresBootstrap"),
-
   });
-
 });
-
-$(document).ready(function () {
-
-  // Inicializa todos los selects dentro del modal
-
-  $("#modal_evaluadores select").each(function () {
-
-    $(this).select2({
-
-      dropdownParent: $("#modal_evaluadores"),
-
-    });
-
-  });
-
-});
-
-
 
 async function allFunctions() {
-
   await getGeneralInfo();
-
   await getListDivisiones();
-
   await getListPuestos();
-
   await getListSucursales();
-
-  // await getListPuestosGeneral();
-
-  // await getListSucursalesGeneral();
-
   await getListEvaluados();
 
-  // $("#slcPuestosModal").chosen({ width: "100%" });
-
-  // $("#slcSucursalModal").chosen({ width: "100%" });
-
-  // $("#slcPuestos").chosen({ width: "100%" });
-
-  // $("#slcSucursal").chosen({ width: "100%" });
-
   $("#slcPuestosModal").select2({
-
     width: "100%",
-
     dropdownParent: $("#modalEvaluadoresBootstrap"),
-
   });
 
   $("#slcSucursalModal").select2({
-
     width: "100%",
-
     dropdownParent: $("#modalEvaluadoresBootstrap"),
-
   });
-
-  $("#slcPuestos").select2({
-
-    width: "100%",
-
-    dropdownParent: $("#modalEvaluadoresBootstrap"),
-
-  });
-
-  $("#slcSucursal").select2({
-
-    width: "100%",
-
-    dropdownParent: $("#modalEvaluadoresBootstrap"),
-
-  });
-
 }
-
-
 
 async function getGeneralInfo() {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
     op: "getGeneralInfoEvaluacion",
-
     evaluacion: Evaluacion,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  }, 1);
 
   if (ajaxResponse !== undefined) {
-
-    const dataR = ajaxResponse.Data;
-
-    printGeneralInfo(dataR);
-
+    tx_title.textContent = ajaxResponse.Data.Titulo;
   }
-
 }
-
-function printGeneralInfo(data) {
-
-  tx_title.textContent = data.Titulo;
-
-}
-
-
 
 async function getListEvaluados() {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
     op: "listEvaluados",
-
     idEvaluaciones: Evaluacion,
+  }, 1);
 
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-
-  const dataR = ajaxResponse.Data;
-
-  printListEvaluados(dataR);
-
+  if (ajaxResponse !== undefined) {
+    printListEvaluados(ajaxResponse.Data);
+  }
 }
+
+let _evaluadosData = [];
 
 function printListEvaluados(data) {
-
-  if (table_evaluados) {
-
-    table_evaluados.destroy();
-
-  }
-
-  table_evaluados = new ej.grids.Grid({
-
-    dataSource: data,
-
-    allowFiltering: true,
-
-    filterSettings: { type: "Menu" },
-
-    allowPaging: true,
-
-    toolbar: ["Search"],
-
-    columns: [
-
-      {
-
-        field: "NoEmpleado",
-
-        headerText: "No. Empleado",
-
-        width: 40,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "Nombre",
-
-        headerText: "Empleado",
-
-        width: 90,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "NivelEvaluado",
-
-        headerText: "Nivel Durante la Evaluación",
-
-        width: 90,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "Puesto",
-
-        headerText: "Puesto Durante la Evaluación",
-
-        width: 90,
-
-        textAlign: "Center",
-
-        filter: { type: "CheckBox" },
-
-      },
-
-      {
-
-        field: "",
-
-        headerText: "Evaluadores",
-
-        width: 35,
-
-        textAlign: "Center",
-
-        allowFiltering: false,
-
-        template: "#btnListEvaluatorsTemplate",
-
-      },
-
-    ],
-
-  });
-
-  table_evaluados.appendTo("#table_evaluados");
-
-  // table_evaluados.fnClearTable();
-
-  // data.forEach( d =>{
-
-  //   table_evaluados.fnAddData([
-
-  //     d.NoEmpleado,
-
-  //     d.Nombre,
-
-  //     d.NivelEvaluado,
-
-  //     d.Puesto,
-
-  //     `<button class="btn-ViewDetail" onclick="verificaEvaluadores('${d.NoEmpleadoEvaluado}','${d.Nombre}')"><i class="far fa-user"></i></button>`
-
-  //   ]);
-
-  // });
-
+  _evaluadosData = data;
+  renderEvaluadosCards(data);
 }
 
+function renderEvaluadosCards(data) {
+  const container = document.getElementById('table_evaluados');
+  if (!container) return;
 
+  if (!data || data.length === 0) {
+    container.innerHTML = `
+      <div class="ev-empty-state">
+        <span class="material-symbols-outlined">group_off</span>
+        <p>Sin evaluados registrados en esta evaluación</p>
+      </div>`;
+    return;
+  }
 
-window.btnListEvaluatorsSF = function (e) {
+  container.innerHTML = data.map(d => {
+    const initials = d.Nombre.trim().split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase();
+    return `
+      <div class="ev-evaluado-card" data-nombre="${d.Nombre.toLowerCase()}">
+        <div class="ev-evaluado-avatar-lg">${initials}</div>
+        <div class="ev-evaluado-body">
+          <div class="ev-evaluado-nombre">${d.Nombre}</div>
+          <div class="ev-evaluado-meta">
+            <span class="ev-evaluado-meta-item">
+              <span class="material-symbols-outlined">badge</span> #${d.NoEmpleado}
+            </span>
+            <span class="ev-evaluado-meta-item">
+              <span class="material-symbols-outlined">work</span> ${d.Puesto}
+            </span>
+            <span class="ev-evaluado-meta-item">
+              <span class="material-symbols-outlined">signal_cellular_alt</span> Nivel ${d.NivelEvaluado}
+            </span>
+          </div>
+        </div>
+        <div class="ev-evaluado-actions">
+          <button class="btn-minimal btn-sm"
+            onclick="verificaEvaluadores('${d.NoEmpleadoEvaluado}','${d.Nombre}')"
+            data-bs-toggle="tooltip" data-bs-placement="left"
+            title="Ver y gestionar evaluadores">
+            <span class="material-symbols-outlined">group</span>
+            Evaluadores
+          </button>
+        </div>
+      </div>`;
+  }).join('');
 
-  let div = document.createElement("div");
+  initTooltips();
+}
 
-  let btn = `<button class="btn btn-primary" onclick="verificaEvaluadores('${e.NoEmpleadoEvaluado}','${e.Nombre}')"><span class="material-symbols-outlined">person</span></button>`;
-
-  $(div).append(btn);
-
-  return div.outerHTML;
-
+window.filtrarEvaluados = function() {
+  const q = document.getElementById('txtBuscarEvaluado')?.value.toLowerCase() ?? '';
+  document.querySelectorAll('#table_evaluados .ev-evaluado-card').forEach(card => {
+    card.style.display = card.dataset.nombre.includes(q) ? '' : 'none';
+  });
 };
 
 
-
 async function verificaEvaluadores(noEmpleado, name) {
-
   evaluadoSelected.value = noEmpleado;
 
-  await list_evaluadores(name);
+  const titleEl = document.getElementById('offcanvas-evaluado-nombre');
+  if (titleEl) titleEl.textContent = name;
 
-  // let hd = `Listado de Evaluadores para el empleado: ${name}`;
+  await list_evaluadores();
 
-  // let dv = "modal_evaluadores";
-
-  // openMMinNoMaximizable(hd,dv,false);
-
-  const modal = new bootstrap.Modal(
-
-    document.getElementById("modal_evaluadores")
-
-  );
-
-  modal.show();
-
+  const offcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvas_evaluadores'));
+  offcanvas.show();
 }
 
-async function list_evaluadores(name) {
-
-  let dataSend = {
-
-    op: "getlist_evaluadores",
-
-    evaluado: evaluadoSelected.value,
-
-    evaluacion: Evaluacion,
-
-  };
-
-  table_evaluadores.fnClearTable();
-
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-
-  if (ajaxResponse !== undefined) {
-
-    // modal_NoEvaluado.value = noEmpleado;
-
-    const dataR = ajaxResponse.Data;
-
-    printList_evaluadores(dataR, name);
-
+async function list_evaluadores() {
+  const container = document.getElementById('ev-evaluadores-list');
+  if (container) {
+    container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#F59E0B;"></div></div>';
   }
 
+  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
+    op: "getlist_evaluadores",
+    evaluado: evaluadoSelected.value,
+    evaluacion: Evaluacion,
+  }, 1);
+
+  if (ajaxResponse !== undefined) {
+    printList_evaluadores(ajaxResponse.Data);
+  }
 }
 
 function printList_evaluadores(data) {
+  const container = document.getElementById('ev-evaluadores-list');
+  if (!container) return;
 
-  data.forEach((d) => {
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p class="text-muted text-center py-3" style="font-size:0.85rem;">Sin evaluadores asignados</p>';
+    return;
+  }
 
-    let btn = "";
+  const badgeClass = { 'JEFE': 'amber', 'PAR': 'teal', 'SUBORDINADO': 'blue' };
 
-    if (d.StatusEvaluacion == 0) {
-
-      btn = `<button class="btn btn-dark" disabled><span class="material-symbols-outlined">block</span></button>`;
-
-    } else {
-
-      btn = `<button class="btn btn-danger" onclick="verificaDeleteEvaluador('${d.idEvaluacionDetalle}','${d.Nombre}')"><span class="material-symbols-outlined">mode_off_on</span></button>`;
-
-    }
-
-    table_evaluadores.fnAddData([d.Nombre, d.TipoEvaluador, btn]);
-
+  // dispose tooltips sobre elementos que van a desaparecer
+  container.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    bootstrap.Tooltip.getInstance(el)?.dispose();
   });
 
-  // $("#modal_evaluadores").modal('open');
+  container.innerHTML = data.map(d => {
+    const initials  = d.Nombre.trim().split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase();
+    const badge     = badgeClass[d.TipoEvaluador] || 'gray';
+    const tipoLabel = { JEFE: 'Evaluador tipo Jefe', PAR: 'Evaluador tipo Par', SUBORDINADO: 'Evaluador tipo Subordinado' }[d.TipoEvaluador] || d.TipoEvaluador;
 
+    const actionBtn = d.StatusEvaluacion == 0
+      ? `<span data-bs-toggle="tooltip" data-bs-placement="left"
+              title="La evaluación ya fue iniciada, no se puede modificar"
+              style="display:inline-flex;">
+           <button class="btn-minimal-danger" disabled style="pointer-events:none;">
+             <span class="material-symbols-outlined">block</span>
+           </button>
+         </span>`
+      : `<button class="btn-minimal-danger"
+           onclick="verificaDeleteEvaluador('${d.idEvaluacionDetalle}','${d.Nombre}')"
+           data-bs-toggle="tooltip" data-bs-placement="left"
+           title="Cancelar la evaluación de este evaluador">
+           <span class="material-symbols-outlined">close</span>
+         </button>`;
+
+    return `
+      <div class="ev-evaluador-card">
+        <div class="ev-evaluador-info">
+          <div class="ev-evaluador-avatar"
+            data-bs-toggle="tooltip" data-bs-placement="top" title="${tipoLabel}">
+            ${initials}
+          </div>
+          <div>
+            <div class="ev-evaluador-name">${d.Nombre}</div>
+            <span class="ev-sbadge ${badge}">${d.TipoEvaluador}</span>
+          </div>
+        </div>
+        ${actionBtn}
+      </div>`;
+  }).join('');
+
+  initTooltips();
 }
-
-
-
-// async function verificaDeleteEvaluador(val, name) {
-
-//   let title = `Desea cancelar la evaluación del evaluador  "${name}"?`;
-
-//   let tx =
-
-//     "Una vez sea eliminado la evaluación, los datos no podrán ser recuperados.";
-
-//   const result = await dialogConfirmAlertify(title, tx);
-
-//   if (result) {
-
-//     await deleteEvaluador(val);
-
-//   }
-
-// }
 
 async function verificaDeleteEvaluador(val, name) {
-
   const result = await Swal.fire({
-
     title: `¿Desea cancelar la evaluación del evaluador "${name}"?`,
-
-    html: "Una vez sea eliminada la evaluación, los datos no podrán ser recuperados.",
-
+    html: "Una vez cancelada, los datos no podrán ser recuperados.",
     icon: "warning",
-
     showCancelButton: true,
-
     confirmButtonText: "Sí, cancelar",
-
     cancelButtonText: "No, mantener",
-
-    confirmButtonColor: "#ffc407", // azul (Bootstrap primary)
-
-    cancelButtonColor: "#dc3545", // rojo (Bootstrap danger)
-
+    confirmButtonColor: "#ffc407",
+    cancelButtonColor: "#dc3545",
   });
 
-
-
   if (result.isConfirmed) {
-
     await deleteEvaluador(val);
-
   }
-
 }
-
-
 
 async function deleteEvaluador(val) {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
     op: "deleteEvaluador",
-
     evaluador: val,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  }, 1);
 
   if (ajaxResponse !== undefined) {
-
     await list_evaluadores();
-
   }
-
 }
 
-
-
 $(document).on("click", "#btnNuevoEvaluador", async function () {
-
-  // let hd = "Nuevo Evaluador";
-
-  // let dv = "contNuevoEvaluador";
-
-  // openMMinNoMaximizable(hd, dv, false);
-
-  // Mostrar el modal
-
-  const modal = new bootstrap.Modal(
-
-    document.getElementById("modalEvaluadoresBootstrap")
-
-  );
-
+  const modal = new bootstrap.Modal(document.getElementById("modalEvaluadoresBootstrap"));
   modal.show();
-
 });
 
-
-
 async function getListPuestos() {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_puestos, {
     op: "getListPuestosDivision",
-
     IdDivision: slcDivisionModal.value,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_puestos, dataSend, 0);
+  }, 0);
 
   if (ajaxResponse.Resultado) {
-
-    const dataR = ajaxResponse.Data;
-
-    printListPuestos(dataR);
-
+    printListPuestos(ajaxResponse.Data);
   }
-
 }
 
 function printListPuestos(data) {
-
   slcPuestosModal.innerHTML = "";
+  const first = document.createElement("option");
+  first.value = ""; first.textContent = "Listado de Puestos"; first.disabled = true;
+  slcPuestosModal.appendChild(first);
 
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Puestos";
-
-  firstElement.disabled = true;
-
-  slcPuestosModal.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdPuesto;
-
-    newElement.textContent = d.Puesto;
-
-    slcPuestosModal.appendChild(newElement);
-
+  data.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d.IdPuesto; opt.textContent = d.Puesto;
+    slcPuestosModal.appendChild(opt);
   });
 
   $("#slcPuestosModal").trigger("change");
-
 }
-
-
-
-async function getListPuestosGeneral() {
-
-  let dataSend = {
-
-    op: "getListPuestosDivision",
-
-    IdDivision: slcDivision.value,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_puestos, dataSend, 0);
-
-  if (ajaxResponse.Resultado) {
-
-    const dataR = ajaxResponse.Data;
-
-    printListPuestosGeneral(dataR);
-
-  }
-
-}
-
-function printListPuestosGeneral(data) {
-
-  slcPuestos.innerHTML = "";
-
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Puestos";
-
-  slcPuestos.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdPuesto;
-
-    newElement.textContent = d.Puesto;
-
-    slcPuestos.appendChild(newElement);
-
-  });
-
-  $("#slcPuestos").trigger("change");
-
-}
-
-
 
 async function getListDivisiones() {
-
-  let dataSend = {
-
-    op: "getListDivisiones",
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Divisiones, dataSend, 0);
+  const ajaxResponse = await pAjaxAsync(url_m_Divisiones, { op: "getListDivisiones" }, 0);
 
   if (ajaxResponse.Resultado) {
-
-    const dataR = ajaxResponse.Datos;
-
-    printListDivisiones(dataR);
-
-    // printListDivisionesGeneral(dataR);
-
+    printListDivisiones(ajaxResponse.Datos);
   }
-
 }
 
 function printListDivisiones(data) {
+  const first = document.createElement("option");
+  first.value = ""; first.textContent = "Listado de Divisiones"; first.disabled = true;
+  slcDivisionModal.appendChild(first);
 
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Divisiones";
-
-  // firstElement.selected = true;
-
-  firstElement.disabled = true;
-
-  slcDivisionModal.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdDivision;
-
-    newElement.textContent = d.Division;
-
-    slcDivisionModal.appendChild(newElement);
-
+  data.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d.IdDivision; opt.textContent = d.Division;
+    slcDivisionModal.appendChild(opt);
   });
-
-  // $("#slcDivisionModal").chosen({ width: "100%" });
 
   $("#slcDivisionModal").select2({
-
     width: "100%",
-
     dropdownParent: $("#modalEvaluadoresBootstrap"),
-
   });
-
-}
-
-function printListDivisionesGeneral(data) {
-
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Divisiones";
-
-  firstElement.disabled = true;
-
-  slcDivision.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdDivision;
-
-    newElement.textContent = d.Division;
-
-    slcDivision.appendChild(newElement);
-
-  });
-
-  $("#slcDivision").chosen({ width: "100%" });
-
 }
 
 $(document).on("change", "#slcDivisionModal", async function () {
-
   await getListPuestos();
-
   await getListSucursales();
-
   await getPosiblesEvaluadores();
-
 });
 
-$(document).on("change", "#slcDivision", async function () {
-
-  await getListPuestosGeneral();
-
-  // await getListSucursalesGeneral();
-
-  await getListEvaluados();
-
-});
-
-$(document).on("change", "#slcPuestos", async function () {
-
-  await getListEvaluados();
-
-});
-
-$(document).on("change", "#slcSucursal", async function () {
-
-  await getListEvaluados();
-
-});
-
-
+$(document).on("change", "#slcPuestosModal",  async function () { await getPosiblesEvaluadores(); });
+$(document).on("change", "#slcSucursalModal", async function () { await getPosiblesEvaluadores(); });
 
 async function getListSucursales() {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_Sucursal, {
     op: "getListSucursalPorDivision",
-
     IdDivision: slcDivisionModal.value,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Sucursal, dataSend, 0);
+  }, 0);
 
   if (ajaxResponse !== undefined) {
-
-    const dataR = ajaxResponse.Data;
-
-    printListSucursales(dataR);
-
+    printListSucursales(ajaxResponse.Data);
   }
-
 }
 
 function printListSucursales(data) {
-
   slcSucursalModal.innerHTML = "";
+  const first = document.createElement("option");
+  first.value = ""; first.textContent = "Listado de Sucursales"; first.disabled = true;
+  slcSucursalModal.appendChild(first);
 
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Sucursales";
-
-  firstElement.disabled = true;
-
-  slcSucursalModal.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdSucursal;
-
-    newElement.textContent = d.Sucursal;
-
-    slcSucursalModal.appendChild(newElement);
-
+  data.forEach(d => {
+    const opt = document.createElement("option");
+    opt.value = d.IdSucursal; opt.textContent = d.Sucursal;
+    slcSucursalModal.appendChild(opt);
   });
 
   $("#slcSucursalModal").trigger("change");
-
-}
-
-
-
-async function getListSucursalesGeneral() {
-
-  let dataSend = {
-
-    op: "getListSucursalPorDivision",
-
-    IdDivision: slcDivision.value,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Sucursal, dataSend, 0);
-
-  if (ajaxResponse !== undefined) {
-
-    const dataR = ajaxResponse.Data;
-
-    printListSucursalesGeneral(dataR);
-
-  }
-
-}
-
-function printListSucursalesGeneral(data) {
-
-  slcSucursal.innerHTML = "";
-
-  const firstElement = document.createElement("option");
-
-  firstElement.value = "";
-
-  firstElement.textContent = "Listado de Sucursales";
-
-  slcSucursal.appendChild(firstElement);
-
-  data.forEach((d) => {
-
-    let newElement = document.createElement("option");
-
-    newElement.value = d.IdSucursal;
-
-    newElement.textContent = d.Sucursal;
-
-    slcSucursal.appendChild(newElement);
-
-  });
-
-  $("#slcSucursal").trigger("change");
-
 }
 
 async function getPosiblesEvaluadores() {
-
-  let dataSend = {
-
+  const ajaxResponse = await pAjaxAsync(url_m_Empleados, {
     op: "getPosiblesEvaluadores",
-
     IdSucursal: slcSucursalModal.value,
-
-    IdPuesto: slcPuestosModal.value,
-
-    evaluado: evaluadoSelected.value,
-
+    IdPuesto:   slcPuestosModal.value,
+    evaluado:   evaluadoSelected.value,
     evaluacion: Evaluacion,
-
-  };
-
-  const ajaxResponse = await pAjaxAsync(url_m_Empleados, dataSend, 1);
-
-  table_newEvaluadores.fnClearTable();
+  }, 1);
 
   if (ajaxResponse !== undefined) {
-
-    const dataR = ajaxResponse.Data;
-
-    printPosiblesEvaluadores(dataR);
-
+    _posiblesEvaluadoresData = ajaxResponse.Data;
+    const buscar = document.getElementById('txtBuscarPosibleEvaluador');
+    if (buscar) buscar.value = '';
+    printPosiblesEvaluadores(_posiblesEvaluadoresData);
   }
-
 }
 
 function printPosiblesEvaluadores(data) {
-
-  data.forEach((d) => {
-
-    table_newEvaluadores.fnAddData([
-
-      d.Empleado,
-
-      `<button class="btn btn-info" onclick="addEmpleadoEvaluador('${d.NoEmpleado}','${d.Empleado}')"><span class="material-symbols-outlined">check</span></button>`,
-
-    ]);
-
-  });
-
-}
-
-
-
-$(document).on("change", "#slcPuestosModal", async function () {
-
-  await getPosiblesEvaluadores();
-
-});
-
-$(document).on("change", "#slcSucursalModal", async function () {
-
-  await getPosiblesEvaluadores();
-
-});
-
-
-
-// async function addEmpleadoEvaluador(val, empleado) {
-
-//   let title = "¿Desea registrar como evaluador al empleado seleccionado?";
-
-//   let tx = `Empleado Seleccionado: ${empleado}`;
-
-//   const result = await dialogConfirmAlertify(title, tx);
-
-//   if (result) {
-
-//     let dataSend = {
-
-//       op: "addEmpleadoEvaluador",
-
-//       evaluador: val,
-
-//       evaluado: evaluadoSelected.value,
-
-//       relacion: modal_relacion.value,
-
-//       evaluacion: Evaluacion,
-
-//     };
-
-//     const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-
-//     if (ajaxResponse !== undefined) {
-
-//       await list_evaluadores();
-
-//       await getPosiblesEvaluadores();
-
-//     }
-
-//   }
-
-// }
-
-async function addEmpleadoEvaluador(val, empleado) {
-
-  const result = await Swal.fire({
-
-    title: "¿Desea registrar como evaluador al empleado seleccionado?",
-
-    html: `Empleado Seleccionado: <strong>${empleado}</strong>`,
-
-    icon: "question",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Sí, registrar",
-
-    cancelButtonText: "Cancelar",
-
-    confirmButtonColor: "#ffc407", // azul (Bootstrap primary)
-
-    cancelButtonColor: "#dc3545", // rojo (Bootstrap danger)
-
-  });
-
-
-
-  if (result.isConfirmed) {
-
-    let dataSend = {
-
-      op: "addEmpleadoEvaluador",
-
-      evaluador: val,
-
-      evaluado: evaluadoSelected.value,
-
-      relacion: modal_relacion.value,
-
-      evaluacion: Evaluacion,
-
-    };
-
-
-
-    const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
-
-    if (ajaxResponse !== undefined) {
-
-      await list_evaluadores();
-
-      await getPosiblesEvaluadores();
-
-
-
-      // Opcional: mostrar mensaje de éxito
-
-      Swal.fire({
-
-        icon: "success",
-
-        title: "Evaluador registrado",
-
-        timer: 1500,
-
-        showConfirmButton: false,
-
-      });
-
-    }
-
+  const container = document.getElementById('ev-posibles-evaluadores-list');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p class="text-muted text-center py-3" style="font-size:0.85rem;">Sin empleados disponibles con los filtros seleccionados</p>';
+    return;
   }
 
+  container.innerHTML = data.map(d => {
+    const initials = d.Empleado.trim().split(/\s+/).slice(0, 2).map(w => w[0] ?? '').join('').toUpperCase();
+    return `
+      <div class="ev-evaluador-card" data-nombre="${d.Empleado.toLowerCase()}">
+        <div class="ev-evaluador-info">
+          <div class="ev-evaluador-avatar">${initials}</div>
+          <div class="ev-evaluador-name">${d.Empleado}</div>
+        </div>
+        <button class="btn-minimal btn-sm"
+          onclick="addEmpleadoEvaluador('${d.NoEmpleado}','${d.Empleado}')"
+          data-bs-toggle="tooltip" data-bs-placement="left"
+          title="Registrar como evaluador">
+          <span class="material-symbols-outlined" style="font-size:16px;">person_add</span>
+        </button>
+      </div>`;
+  }).join('');
+
+  initTooltips();
 }
 
+window.filtrarPosiblesEvaluadores = function() {
+  const q = document.getElementById('txtBuscarPosibleEvaluador')?.value.toLowerCase() ?? '';
+  document.querySelectorAll('#ev-posibles-evaluadores-list .ev-evaluador-card').forEach(card => {
+    card.style.display = card.dataset.nombre.includes(q) ? '' : 'none';
+  });
+};
 
+async function addEmpleadoEvaluador(val, empleado) {
+  const result = await Swal.fire({
+    title: "¿Registrar como evaluador?",
+    html: `Empleado: <strong>${empleado}</strong>`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, registrar",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#ffc407",
+    cancelButtonColor: "#dc3545",
+  });
 
-//nueva funcion para modales
+  if (result.isConfirmed) {
+    const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
+      op:         "addEmpleadoEvaluador",
+      evaluador:  val,
+      evaluado:   evaluadoSelected.value,
+      relacion:   modal_relacion.value,
+      evaluacion: Evaluacion,
+    }, 1);
 
-// Al abrir el segundo modal, ocultar el primero si está abierto
+    if (ajaxResponse !== undefined) {
+      await list_evaluadores();
+      await getPosiblesEvaluadores();
 
-document
-
-  .getElementById("modalEvaluadoresBootstrap")
-
-  .addEventListener("show.bs.modal", function () {
-
-    const modal1 = bootstrap.Modal.getInstance(
-
-      document.getElementById("modal_evaluadores")
-
-    );
-
-    if (modal1) {
-
-      modal1.hide();
-
+      Swal.fire({
+        icon: "success",
+        title: "Evaluador registrado",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     }
-
-  });
-
-// Al cerrar el segundo modal, volver a mostrar el primero
-
-document
-
-  .getElementById("modalEvaluadoresBootstrap")
-
-  .addEventListener("hidden.bs.modal", function () {
-
-    const modal1El = document.getElementById("modal_evaluadores");
-
-    const modal1 = new bootstrap.Modal(modal1El);
-
-    modal1.show();
-
-  });
-
+  }
+}

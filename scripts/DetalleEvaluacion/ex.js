@@ -107,50 +107,6 @@ function renderActions(ev) {
   const container = document.getElementById("actionsContainer");
   container.innerHTML = "";
 
-  // 1. Ver Evaluados
-  if (ev.TipoEvaluacion == 1) {
-    if (ev.Activado == 0) {
-      container.appendChild(
-        createActionBtn(
-          "Ver Evaluados",
-          "group",
-          "btn-primary",
-          null,
-          true,
-          "Evaluación no activada"
-        )
-      );
-    } else {
-      container.appendChild(
-        createActionBtn("Ver Evaluados", "group", "btn-primary", function () {
-          window.location.href = "Evaluados.php?EV=" + ev.idEvaluaciones;
-        })
-      );
-    }
-  }
-
-  // 2. Ver Resultados
-  if (ev.TipoEvaluacion == 1) {
-    if (ev.Activado == 0) {
-      container.appendChild(
-        createActionBtn(
-          "Ver Resultados",
-          "donut_large",
-          "btn-secondary",
-          null,
-          true,
-          "Evaluación no activada"
-        )
-      );
-    } else {
-      container.appendChild(
-        createActionBtn("Ver Resultados", "donut_large", "btn-secondary", function () {
-          window.location.href = "ResultadosEvaluacion.php?Ev=" + ev.idEvaluaciones;
-        })
-      );
-    }
-  }
-
   // 3. Publicar
   if (ev.ConPreguntas > 0) {
     if (ev.PreguntasAceptadas == 1) {
@@ -159,7 +115,7 @@ function renderActions(ev) {
           createActionBtn(
             "Publicar",
             "send",
-            "btn-success",
+            "btn-minimal-success",
             null,
             true,
             "Ya publicada"
@@ -167,7 +123,7 @@ function renderActions(ev) {
         );
       } else {
         container.appendChild(
-          createActionBtn("Publicar", "send", "btn-success", function () {
+          createActionBtn("Publicar", "send", "btn-minimal-success", function () {
             openShareEvaluation(ev.idEvaluaciones);
           })
         );
@@ -177,7 +133,7 @@ function renderActions(ev) {
         createActionBtn(
           "Aceptar Preguntas",
           "check",
-          "btn-outline-success",
+          "btn-minimal-warning",
           function () {
             acceptQuestionsDialog(ev.idEvaluaciones);
           }
@@ -189,7 +145,7 @@ function renderActions(ev) {
       createActionBtn(
         "Publicar",
         "send",
-        "btn-success",
+        "btn-minimal-success",
         null,
         true,
         "Sin preguntas"
@@ -203,7 +159,7 @@ function renderActions(ev) {
       createActionBtn(
         "Restantes (" + ev.Restantes + ")",
         "pending_actions",
-        "btn-outline-dark",
+        "btn-minimal-warning",
         function () {
           viewUnfinishedEmployees(ev.idEvaluaciones, ev.Titulo);
         }
@@ -223,7 +179,7 @@ function renderActions(ev) {
  */
 function createActionBtn(label, icon, btnClass, onClick, disabled, disabledTooltip) {
   const btn = document.createElement("button");
-  btn.className = "btn " + btnClass + " action-btn";
+  btn.className = "btn-minimal " + btnClass + " action-btn";
   btn.type = "button";
 
   const iconEl = document.createElement("span");
@@ -283,9 +239,13 @@ async function openShareEvaluation(evaluation) {
   console.log("openShareEvaluation - TipoEvaluacion:", tipoEvaluacion);
 
   if (tipoEvaluacion == 1) {
-    // Evaluación 360° - Ir a la página de configuración de evaluadores
-    console.log("Redirigiendo a publish-evaluation.php (360°)");
-    window.location.href = "publish-evaluation.php?EV=" + evaluation;
+    // Evaluación 360° - Abrir wizard en el padre si está en iframe, sino fallback a página completa
+    if (window.parent && typeof window.parent.openPublishWizard === 'function') {
+      const titulo = currentEvaluation ? (currentEvaluation.Titulo || '') : '';
+      window.parent.openPublishWizard(evaluation, titulo);
+    } else {
+      window.location.href = "publish-evaluation.php?EV=" + evaluation;
+    }
   } else {
     // Encuesta Normal (tipo 2) - Publicar directamente sin configurar evaluadores
     console.log("Publicando directamente (Encuesta Normal)");
@@ -361,100 +321,126 @@ async function viewUnfinishedEmployees(ev, t) {
     modalFaltantes.show();
 
     const dataR = ajaxR.Data;
-    if (t_unfinished_employees) {
-      t_unfinished_employees.destroy();
+
+    // Calcular KPIs de la lista de faltantes
+    let totalFaltantes = dataR.length;
+    let totalEvaluaciones = 0;
+    let totalRespondidas = 0;
+    let evaluacionesPendientes = 0;
+    
+    dataR.forEach(e => {
+      let cant = parseInt(e.CantEvaluaciones) || 0;
+      let resp = parseInt(e.CantRespondidas) || 0;
+      totalEvaluaciones += cant;
+      totalRespondidas += resp;
+      evaluacionesPendientes += (cant - resp);
+    });
+    
+    let avgAvance = totalEvaluaciones > 0 ? ((totalRespondidas * 100) / totalEvaluaciones).toFixed(1) : 0;
+    
+    // Asignar los valores a los elementos del DOM (tanto si es embed como si no)
+    // Usamos selectores de clase o iteramos sobre todos los que coincidan con el id en el modal actual
+    const kpiTotalEl = document.getElementById("kpiTotalFaltantes");
+    if (kpiTotalEl) kpiTotalEl.textContent = totalFaltantes;
+    
+    const kpiTotalPendientesEl = document.getElementById("kpiTotalEvaluacionesPendientes");
+    if (kpiTotalPendientesEl) kpiTotalPendientesEl.textContent = evaluacionesPendientes;
+    
+    const kpiAvanceEl = document.getElementById("kpiAvanceFaltantes");
+    if (kpiAvanceEl) kpiAvanceEl.textContent = avgAvance + "%";
+
+    // Destruir instancia previa de DataTable si existe
+    if ($.fn.DataTable.isDataTable('#tblUnfinishedEmployees')) {
+      $('#tblUnfinishedEmployees').DataTable().destroy();
     }
-    t_unfinished_employees = new ej.grids.Grid({
-      dataSource: dataR,
-      allowFiltering: true,
-      filterSettings: { type: "Menu" },
-      allowPaging: true,
-      pageSettings: { pageSize: 6 },
-      allowTextWrap: true,
-      toolbar: ["Search"],
+    
+    // Inicializar DataTable
+    t_unfinished_employees = $('#tblUnfinishedEmployees').DataTable({
+      data: dataR,
+      order: [[4, "asc"]], // Ordenar por progreso (columna 4) de menor a mayor
       columns: [
         {
-          field: "NoEmpleado",
-          headerText: "No Empleado",
-          width: 70,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
+          data: "Nombre",
+          render: function(data, type, row) {
+            // Iniciales
+            let initials = "";
+            if (data) {
+              let parts = data.split(" ");
+              if (parts.length > 0) initials += parts[0][0];
+              if (parts.length > 1) initials += parts[1][0];
+            }
+            initials = initials.toUpperCase();
+            
+            // Color único basado en el nombre del empleado para consistencia visual
+            let hash = 0;
+            for (let i = 0; i < data.length; i++) {
+               hash = data.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            let h = Math.abs(hash % 360);
+            
+            return `
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar-circle-sm flex-shrink-0" style="background: linear-gradient(135deg, hsl(${h}, 65%, 65%) 0%, hsl(${h}, 60%, 45%) 100%);">
+                  ${initials}
+                </div>
+                <span class="fw-bold text-dark">${data}</span>
+              </div>
+            `;
+          }
         },
         {
-          field: "Nombre",
-          headerText: "Empleado",
-          width: 100,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
+          data: "NoEmpleado",
+          render: function(data) {
+            return `<span class="fw-semibold text-dark" style="color: #475569 !important;">#${data}</span>`;
+          }
         },
         {
-          field: "Sucursal",
-          headerText: "Sucursal/Departamento",
-          width: 80,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
+          data: null,
+          render: function(row) {
+            return `
+              <div class="badge-sucursal" title="${row.Sucursal || 'Sin Sucursal'}">${row.Sucursal || 'Sin Sucursal'}</div>
+              <div class="badge-puesto" title="${row.Puesto || 'Sin Puesto'}">${row.Puesto || 'Sin Puesto'}</div>
+            `;
+          }
         },
         {
-          field: "CantEvaluaciones",
-          headerText: "Cantidad Evaluaciones",
-          width: 80,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
+          data: null,
+          className: "text-center",
+          render: function(row) {
+            return `<span class="fw-bold text-dark">${row.CantRespondidas}</span> <span class="text-muted">/ ${row.CantEvaluaciones}</span>`;
+          }
         },
         {
-          field: "CantRespondidas",
-          headerText: "Evaluaciones Respondidas",
-          width: 80,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
-        },
-        {
-          field: "",
-          headerText: "Avance",
-          width: 80,
-          textAlign: "Center",
-          filter: { type: "CheckBox" },
-          template: "#t_unfinishedTemplate",
-        },
+          data: null,
+          render: function(row) {
+            let percent = ((Number(row.CantRespondidas) * 100) / Number(row.CantEvaluaciones)).toFixed(1);
+            let fillClass = "progress-fill-red";
+            if (percent >= 80) {
+              fillClass = "progress-fill-green";
+            } else if (percent >= 30) {
+              fillClass = "progress-fill-orange";
+            }
+            return `
+              <div class="d-flex align-items-center justify-content-between mb-1" style="font-size: 11px;">
+                <span class="text-muted">Avance</span>
+                <span class="fw-bold text-dark">${percent}%</span>
+              </div>
+              <div class="progress-premium-bar">
+                <div class="progress-premium-fill ${fillClass}" style="width: ${percent}%;"></div>
+              </div>
+            `;
+          }
+        }
       ],
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      responsive: true,
+      pageLength: 6,
+      lengthMenu: [6, 12, 24]
     });
-    t_unfinished_employees.appendTo("#t_unfinished_employees");
   }
 }
-
-window.t_unfinishedSF = function (e) {
-  let div = document.createElement("div");
-  let porcent = (
-    (Number(e.CantRespondidas) * 100) /
-    Number(e.CantEvaluaciones)
-  ).toFixed(2);
-  let content =
-    '<div class="row">' +
-    '<div class="col s12">' +
-    '<ul class="m-t-10">' +
-    "<li>" +
-    '<div class="d-flex no-block align-items-center">' +
-    "<div>" +
-    '<span class="m-b-0 op-5">Completado</span>' +
-    "</div>" +
-    '<div class="ml-auto">' +
-    '<span class="m-b-0">' +
-    porcent +
-    "%</span>" +
-    "</div>" +
-    "</div>" +
-    '<div class="progress m-t-10" style="background-color: rgba(0,0,0,.1);">' +
-    '<div class="determinate" style="width: ' +
-    porcent +
-    '%"></div>' +
-    "</div>" +
-    "</li>" +
-    "</ul>" +
-    "</div>" +
-    "</div>";
-  $(div).append(content);
-  return div.outerHTML;
-};
 
 async function updateStatusEvaluacion(accion, evaluacion) {
   // Determinar el nuevo status
