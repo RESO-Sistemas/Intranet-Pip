@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-05-20 22:44:40] ✨ feat: páginas libres y firmas svg móvil
+
+- 🐛 **Permisos:** Se agregaron `SolicitudVacaciones.php`, `FormatoVacaciones.php`
+  y `LineaEticaUs.php` al arreglo de páginas libres para evitar redirecciones.
+- ✨ **Firmas:** Soporte para firmas SVG en formato XML crudo desde la
+  aplicación móvil en `MiPerfil.js`.
+
 ## [2026-05-09] ✨ feat: Rediseño completo módulo Organigramas
 
 ### ControlOrganigrama.php / ControlOrganigrama.js

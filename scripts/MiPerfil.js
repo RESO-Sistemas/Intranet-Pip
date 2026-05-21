@@ -50,6 +50,11 @@ function resolveSignatureAsset(signatureValue, employeeNumber) {
     return normalizeDataUri(normalized);
   }
 
+  // SVG XML crudo guardado desde la app móvil (formato legacy)
+  if (normalized.startsWith("<svg") || normalized.startsWith("<?xml")) {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(normalized)}`;
+  }
+
   if (/^(https?:\/\/|\/|Archivos\/)/i.test(normalized)) {
     return normalized;
   }
