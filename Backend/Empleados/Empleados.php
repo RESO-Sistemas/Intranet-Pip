@@ -35,17 +35,36 @@ class Empleados extends Conexiones
 {
   function loginEmpleado($NoEmpleado, $Password)
   {
-      $Password = base64_encode($Password);
-      $q = "SELECT NoEmpleado,Nivel,IdDivision,IdSucursal,Nombre,IdPuesto,IdCentroCosto FROM Empleados WHERE NoEmpleado = '$NoEmpleado' AND Password = '$Password';";
-      $cons = $this->Select($q, array());
-      if (sizeof($cons) > 0) {
-          // Usar SessionManager en lugar de cookies
+      $q = "SELECT NoEmpleado,Nivel,IdDivision,IdSucursal,Nombre,IdPuesto,IdCentroCosto,Password FROM Empleados WHERE NoEmpleado = ?;";
+      $cons = $this->ExecuteQueryWithParam($q, array($NoEmpleado));
+
+      if (empty($cons)) {
+          error_log("el usuario $NoEmpleado no pudo iniciar sesion");
+          return "Numero de usuario y/o contraseña incorrectos";
+      }
+
+      $storedPassword = $cons[0]['Password'];
+      $authenticated = false;
+
+      if (strpos($storedPassword, '$2y$') === 0) {
+          $authenticated = password_verify($Password, $storedPassword);
+      } else {
+          // Soporte transitorio base64 legacy: migra a bcrypt al autenticar
+          if (base64_encode($Password) === $storedPassword) {
+              $authenticated = true;
+              $newHash = password_hash($Password, PASSWORD_BCRYPT);
+              $this->ExecuteQuery("UPDATE Empleados SET Password = ? WHERE NoEmpleado = ?;", array($newHash, $NoEmpleado));
+          }
+      }
+
+      if ($authenticated) {
+          unset($cons[0]['Password']);
           SessionManager::login($cons[0]);
           error_log("el usuario $NoEmpleado inicio sesion");
           return "1";
       } else {
           error_log("el usuario $NoEmpleado no pudo iniciar sesion");
-          return "Numero de usuario y/o contrase?a incorrectos";
+          return "Numero de usuario y/o contraseña incorrectos";
       }
   }
 
@@ -151,16 +170,15 @@ class Empleados extends Conexiones
     {
         $NoEmpleado = (SessionManager::get("NoEmpleado"));
         try {
-            // Obtener el password actual de la BD para comparar
             $qActual = "SELECT Password FROM Empleados WHERE NoEmpleado = ?;";
-            $consActual = $this->Select($qActual, array($NoEmpleado));
+            $consActual = $this->ExecuteQueryWithParam($qActual, array($NoEmpleado));
             $PasswordActualBD = $consActual[0]["Password"];
-            
-            // Solo codificar si el password es diferente al que ya esta en la BD
+
+            // Si el frontend devuelve el hash almacenado sin cambios, no re-hashear
             if ($Password !== $PasswordActualBD) {
-                $Password = base64_encode($Password);
+                $Password = password_hash($Password, PASSWORD_BCRYPT);
             }
-            
+
             $q = "UPDATE Empleados SET Email = ?, Movil = ?, Password = ? WHERE NoEmpleado = ?;";
             $this->ExecuteQuery($q, array($Email, $Movil, $Password, $NoEmpleado));
             return "1";
@@ -1216,7 +1234,7 @@ class Empleados extends Conexiones
 
     function insertaEmpleadosExcel($Datos)
     {
-        $PassEncrypt = base64_encode('12345');
+        $PassEncrypt = password_hash('12345', PASSWORD_BCRYPT);
         $DatosRegisroArr = [];
         $ArregloRegistros = [];
         $Datos = explode('[', $Datos);

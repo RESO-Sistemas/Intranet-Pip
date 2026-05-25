@@ -3175,6 +3175,40 @@ class Evaluaciones extends Conexiones
                 error_log('[acceptPublicationOfTheEvaluation] Notif error: ' . $notifEx->getMessage());
             }
 
+            // Push notifications a la app móvil vía API .NET
+            try {
+                $tituloInfo2 = $this->SelectNotClose("SELECT Titulo FROM Evaluaciones WHERE idEvaluaciones = '$evDecoded'");
+                $tituloEv = $tituloInfo2[0]['Titulo'] ?? 'Evaluación';
+                $pushPayload = json_encode([
+                    'titulo' => 'Nueva evaluación disponible',
+                    'cuerpo'  => "Tienes una nueva evaluación pendiente: $tituloEv",
+                ]);
+                $apiUrl = defined('DOTNET_API_URL') ? DOTNET_API_URL : 'http://localhost:5000';
+                $internalKey = defined('DOTNET_INTERNAL_KEY') ? DOTNET_INTERNAL_KEY : 'pip-internal-2025-X9kLmQ7rNvTz';
+                $ch = curl_init("$apiUrl/api/notificacion/internal/evaluacion/$evDecoded/notificar");
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST           => true,
+                    CURLOPT_POSTFIELDS     => $pushPayload,
+                    CURLOPT_HTTPHEADER     => [
+                        'Content-Type: application/json',
+                        "X-Internal-Key: $internalKey",
+                        'ngrok-skip-browser-warning: 1',
+                    ],
+                    CURLOPT_TIMEOUT        => 10,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                ]);
+                $pushResult = curl_exec($ch);
+                $curlErr    = curl_error($ch);
+                if ($curlErr) {
+                    error_log("[acceptPublicationOfTheEvaluation] Push móvil curl error: $curlErr");
+                } else {
+                    error_log("[acceptPublicationOfTheEvaluation] Push móvil result: $pushResult");
+                }
+            } catch (\Exception $pushEx) {
+                error_log('[acceptPublicationOfTheEvaluation] Push móvil error: ' . $pushEx->getMessage());
+            }
+
             $arrReturn = [
               "Resultado" => true,
               "Siguiente" => true,

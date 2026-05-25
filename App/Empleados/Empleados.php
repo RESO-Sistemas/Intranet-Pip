@@ -26,21 +26,37 @@ class Empleados extends Conexiones
 {
     function loginEmpleado($NoEmpleado, $Password)
     {
-        $ArrayRetorno = [];
-        $Datos = [];
-        $Password = base64_encode($Password);
-        $q = "SELECT e.NoEmpleado, e.DiasVacacionesRest, e.Nivel,e.IdDivision,e.IdSucursal,e.Nombre, e.Imagen, p.Puesto, e.Email, e.Password, e.Movil,e.IdPuesto,e.IdCentroCosto,IF(e.NoEmpleado='' OR isnull(e.NoEmpleado), 'vacio', 'Verificado') as Encontrado
-        FROM Empleados as e inner join Puestos as p on p.IdPuesto = e.IdPuesto
-        WHERE e.NoEmpleado = '$NoEmpleado' AND e.Password = '$Password';";
-        $cons = $this->Select($q, array());
-        if (sizeof($cons) > 0) {
-             $Respuesta = $cons;
-         }
-         else
-         {
-              $Respuesta = "";
-         }
-        return json_encode($Respuesta);
+        $q = "SELECT e.NoEmpleado, e.DiasVacacionesRest, e.Nivel, e.IdDivision, e.IdSucursal,
+               e.Nombre, e.Imagen, p.Puesto, e.Email, e.Password, e.Movil, e.IdPuesto,
+               e.IdCentroCosto,
+               IF(e.NoEmpleado='' OR isnull(e.NoEmpleado), 'vacio', 'Verificado') as Encontrado
+              FROM Empleados as e
+              INNER JOIN Puestos as p ON p.IdPuesto = e.IdPuesto
+              WHERE e.NoEmpleado = ?;";
+        $cons = $this->ExecuteQueryWithParam($q, array($NoEmpleado));
+
+        if (empty($cons)) {
+            return json_encode("");
+        }
+
+        $storedPassword = $cons[0]['Password'];
+        $authenticated = false;
+
+        if (strpos($storedPassword, '$2y$') === 0) {
+            $authenticated = password_verify($Password, $storedPassword);
+        } else {
+            if (base64_encode($Password) === $storedPassword) {
+                $authenticated = true;
+                $newHash = password_hash($Password, PASSWORD_BCRYPT);
+                $this->ExecuteQuery("UPDATE Empleados SET Password = ? WHERE NoEmpleado = ?;", array($newHash, $NoEmpleado));
+            }
+        }
+
+        if ($authenticated) {
+            unset($cons[0]['Password']);
+            return json_encode($cons);
+        }
+        return json_encode("");
     }
 
 
@@ -74,7 +90,7 @@ class Empleados extends Conexiones
             "NoEmpleado" => $cons[0]["NoEmpleado"],
             "NoSeguro" => $cons[0]["NoSeguro"],
             "Nombre" => $cons[0]["Nombre"],
-            "Pass_Text" => base64_decode($cons[0]["Password"]),
+            "Pass_Text" => "",
             "Puesto" => $cons[0]["Puesto"],
             "RFC" => $cons[0]["RFC"],
             "Sucursal" => $cons[0]["Sucursal"],
@@ -84,12 +100,17 @@ class Empleados extends Conexiones
         return '{ "DatosEmpleado": '.json_encode($ArrayRetorno)."}";
     }
 
-    function updateDatosEmpleado($Email, $Movil, $Password,$NoEmpleado)
+    function updateDatosEmpleado($Email, $Movil, $Password, $NoEmpleado)
     {
         try {
-            $Password = base64_encode($Password);
-            $q = "UPDATE Empleados SET Email = '$Email', Movil = '$Movil', Password = '$Password' WHERE NoEmpleado = '$NoEmpleado';";
-            $this->ExecuteQuery($q, array());
+            if ($Password !== '' && $Password !== null) {
+                $hashedPassword = password_hash($Password, PASSWORD_BCRYPT);
+                $q = "UPDATE Empleados SET Email = ?, Movil = ?, Password = ? WHERE NoEmpleado = ?;";
+                $this->ExecuteQuery($q, array($Email, $Movil, $hashedPassword, $NoEmpleado));
+            } else {
+                $q = "UPDATE Empleados SET Email = ?, Movil = ? WHERE NoEmpleado = ?;";
+                $this->ExecuteQuery($q, array($Email, $Movil, $NoEmpleado));
+            }
             return "1";
         } catch (\Exception $e) {
             return "0";
