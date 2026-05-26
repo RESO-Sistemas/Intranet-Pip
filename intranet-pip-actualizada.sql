@@ -1072,6 +1072,42 @@ CREATE TABLE `PlanAccionIncidencias` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `AvanceActividadPlanA`
+--
+
+DROP TABLE IF EXISTS `AvanceActividadPlanA`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `AvanceActividadPlanA` (
+  `idAvanceActividadPlanA` int(11) NOT NULL AUTO_INCREMENT,
+  `idActividadesPlanAccion` int(11) NOT NULL,
+  `NuevoAvance` int(11) NOT NULL,
+  `DescripcionAvance` text NOT NULL,
+  `FechaRegistro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `idHistorialRechazo` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idAvanceActividadPlanA`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `HistorialRechazosPlanA`
+--
+
+DROP TABLE IF EXISTS `HistorialRechazosPlanA`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `HistorialRechazosPlanA` (
+  `idHistorialRechazosPlanA` int(11) NOT NULL AUTO_INCREMENT,
+  `idPlanesAccionEvaluacion` int(11) NOT NULL,
+  `MotivoRechazo` text NOT NULL,
+  `AvanceGlobalAlRechazar` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `FechaRechazo` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UsuarioRechazo` int(11) NOT NULL,
+  PRIMARY KEY (`idHistorialRechazosPlanA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `PlanesAccionEvaluacion`
 --
 

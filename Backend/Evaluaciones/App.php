@@ -311,6 +311,27 @@ if ($op == "addProgressActivity") {
     echo trim($Evaluaciones->addProgressActivity($activity, $newProgress, $description));
 }
 
+if ($op == "acceptActivitiesActionPlan") {
+    $planA = $_POST["planA"];
+    echo trim($Evaluaciones->acceptActivitiesActionPlan($planA));
+}
+
+if ($op == "acceptProgressActionPlan") {
+    $planA = $_POST["planA"];
+    echo trim($Evaluaciones->acceptProgressActionPlan($planA));
+}
+
+if ($op == "rejectProgressActionPlan") {
+    $planA = $_POST["planA"];
+    $motivo = $_POST["motivo"];
+    echo trim($Evaluaciones->rejectProgressActionPlan($planA, $motivo));
+}
+
+if ($op == "getHistorialRechazos") {
+    $planA = $_POST["planA"];
+    echo trim($Evaluaciones->getHistorialRechazos($planA));
+}
+
 if ($op == "getListEvaluations") {
     echo trim($Evaluaciones->getListEvaluations());
 }

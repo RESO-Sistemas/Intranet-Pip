@@ -893,7 +893,8 @@ class Evaluaciones extends Conexiones
     public function getDataEmployeeGeneral($employee, $evaluation)
     {
         try {
-            $q = "SELECT E.Nombre,E.NoEmpleado,ED.NivelEvaluado,P.Puesto,
+            $q = "SELECT E.Nombre,E.NoEmpleado,ED.NivelEvaluado,P.Puesto,EV.TipoEvaluacion,
+              CASE WHEN EV.TipoEvaluacion = 1 THEN '360°' ELSE 'Encuesta Normal' END AS TxTipoEvaluacion,
               IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation' AND TO_BASE64(NoEmpleadoEvaluado) = '$employee' AND Status = 1) > 0 AND
               	(SELECT COUNT(*) FROM EvaluacionDetalle WHERE ParEvalua = 1 AND TO_BASE64(idEvaluaciones) = '$evaluation' AND TO_BASE64(NoEmpleadoEvaluado) = '$employee' AND Status = 1) > 0,'A',
               IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = TO_BASE64(idEvaluaciones) = '$evaluation' AND TO_BASE64(NoEmpleadoEvaluado) = '$employee' AND Status = 1)  = 0 AND
@@ -904,6 +905,7 @@ class Evaluaciones extends Conexiones
               FROM Empleados AS E
               INNER JOIN EvaluacionDetalle AS ED ON ED.NoEmpleadoEvaluado = E.NoEmpleado
               INNER JOIN Puestos AS P ON P.IdPuesto = ED.PuestoEvaluado
+              INNER JOIN Evaluaciones AS EV ON EV.idEvaluaciones = ED.idEvaluaciones
               WHERE TO_BASE64(NoEmpleado) = '$employee'
               GROUP BY E.Nombre;";
             $resultado = $this->Select($q, array());
@@ -1200,7 +1202,9 @@ class Evaluaciones extends Conexiones
     {
         try {
             $NoEmpleado = SessionManager::get("NoEmpleado");
-            $q = "SELECT EV.Titulo AS NameEvaluacion,E.Nombre,E.NoEmpleado,ED.NivelEvaluado,P.Puesto,TO_BASE64(ED.idEvaluaciones) AS idEvaluaciones,
+            $q = "SELECT EV.Titulo AS NameEvaluacion,E.Nombre,E.NoEmpleado,ED.NivelEvaluado,P.Puesto,EV.TipoEvaluacion,
+              CASE WHEN EV.TipoEvaluacion = 1 THEN '360°' ELSE 'Evaluación Normal' END AS TxTipoEvaluacion,
+              TO_BASE64(ED.idEvaluaciones) AS idEvaluaciones,
               IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = 1 AND NoEmpleadoEvaluado = '$NoEmpleado' AND Status = 1) > 0 AND
               	(SELECT COUNT(*) FROM EvaluacionDetalle WHERE ParEvalua = 1 AND NoEmpleadoEvaluado = '$NoEmpleado' AND Status = 1) > 0,'A',
               IF((SELECT COUNT(*) FROM EvaluacionDetalle WHERE SubordinadoEvalua = 1 AND NoEmpleadoEvaluado = '$NoEmpleado' AND Status = 1)  = 0 AND
@@ -1215,7 +1219,7 @@ class Evaluaciones extends Conexiones
               IF(ED.idEvaluaciones IN (SELECT idEvaluaciones FROM PlanesAccionEvaluacion WHERE NoEmpleado = '$NoEmpleado'),1,0) AS ConPlanAccion,
               TO_BASE64(PA.idPlanesAccionEvaluacion) AS PlanAction,
               IF(NOW() BETWEEN EV.RetroFechaIni AND EV.RetroFechaFin,1,0) AS RetroDisponible,
-              IF(UNIX_TIMESTAMP(NOW()) < UNIX_TIMESTAMP(EV.RetroFechaIni),CONCAT('Retroalimentación disponible desde el ',DATE_FORMAT(EV.RetroFechaIni,'%d-%m-%Y'),' al ',DATE_FORMAT(EV.RetroFechaFin,'%d-%m-%Y')),
+              IF(UNIX_TIMESTAMP(NOW()) < UNIX_TIMESTAMP(EV.RetroFechaIni),CONCAT('Retroalimentación disponible desde el ',DATE_FORMAT(EV.RetroFechaIni,'%d-%m-%Y'),' al ',DATE_FORMAT(EV.RetroFechaFin,'%d-%m-%Y')),
                  IF(UNIX_TIMESTAMP(NOW()) > UNIX_TIMESTAMP(EV.RetroFechaFin),'El periodo para aceptar la retroalimentación ha caducado','')) AS MsgRetroDisponible,
               IF(EV.idEvaluaciones IN(SELECT idEvaluaciones FROM RetroalimentacionEvaluacion WHERE NoEmpleado = '$NoEmpleado'),1,0) AS RetroRealizada,
               EV.PlanAFechaIni, EV.PlanAFechaFin
@@ -1240,10 +1244,32 @@ class Evaluaciones extends Conexiones
     public function getAllGeneralDataPerEmployeeFinal()
     {
         try {
-            $finalData = [];
-            $NoEmpleado = base64_encode(SessionManager::get("NoEmpleado"));
+            $NoEmpleado = SessionManager::get("NoEmpleado");
+            $NoEmpleadoB64 = base64_encode($NoEmpleado);
             $InstInitialEv = new Evaluaciones();
             $ResInstInitialEv = $InstInitialEv->getAllDataEmployeeGeneral();
+
+            if (is_array($ResInstInitialEv)) {
+                foreach ($ResInstInitialEv as $key => $row) {
+                    $isNormal = isset($row['TipoEvaluacion']) && (int)$row['TipoEvaluacion'] !== 1;
+                    $isComplete = isset($row['CantMisEvaluadores']) && isset($row['CantMisEvaluadoresF'])
+                        && (int)$row['CantMisEvaluadoresF'] === (int)$row['CantMisEvaluadores'];
+
+                    if ($isNormal && $isComplete) {
+                        $evId = $row['idEvaluaciones'];
+                        $grupo = isset($row['GrupoEvaluado']) ? $row['GrupoEvaluado'] : 'A';
+                        $summary = $InstInitialEv->getSummaryNormalEvaluation($evId, $NoEmpleadoB64, $grupo);
+                        if ($summary !== null) {
+                            $ResInstInitialEv[$key]['CalificacionFinal'] = $summary['CalificacionFinal'];
+                            $ResInstInitialEv[$key]['TotalCompetencias'] = $summary['TotalCompetencias'];
+                            $ResInstInitialEv[$key]['FortalezasCount'] = $summary['FortalezasCount'];
+                            $ResInstInitialEv[$key]['DebilidadesCount'] = $summary['DebilidadesCount'];
+                            $ResInstInitialEv[$key]['CompetenciasDetalle'] = $summary['CompetenciasDetalle'];
+                        }
+                    }
+                }
+            }
+
             $arrReturn = [
               "Resultado" => true,
               "Siguiente" => true,
@@ -1253,6 +1279,243 @@ class Evaluaciones extends Conexiones
             return json_encode($arrReturn);
         } catch (\Exception $e) {
             return $e;
+        }
+    }
+
+    public function getSummaryNormalEvaluation($evaluationB64, $employeeB64, $grupoEvaluado = 'A')
+    {
+        try {
+            // 1. Nivel del evaluado
+            $lvlData = $this->getLevelOfTheEvaluatedPerEvaluation($employeeB64, $evaluationB64);
+            $lvlEvaluated = $lvlData && isset($lvlData['NivelEvaluado']) ? $lvlData['NivelEvaluado'] : null;
+            if ($lvlEvaluated === null) {
+                return null;
+            }
+
+            // 2. Respuestas de todos los evaluadores
+            $allDetail = $this->getAllEvaluationDetail($evaluationB64, $employeeB64);
+            if (!$allDetail || !is_array($allDetail) || count($allDetail) === 0) {
+                return null;
+            }
+
+            // 3. Configuración de preguntas
+            $qConfig = "SELECT TO_BASE64(PC.idPreguntasEvaluacion) AS IdPregunta,
+                  PC.RangoInicial, PC.RangoFinal, PC.BoolCorreta, PC.RespuestaEsperadoOM, PC.NivelEmpleadoEsperadoOM,
+                  PC.RespuestaCorrectaOM
+                  FROM PreguntasConfiguracion AS PC
+                  INNER JOIN PreguntasEvaluacion AS PE ON PE.idPreguntasEvaluacion = PC.idPreguntasEvaluacion
+                  WHERE TO_BASE64(PE.idEvaluaciones) = '{$evaluationB64}';";
+            $arrConfig = $this->Select($qConfig);
+
+            // 4. Respuestas posibles
+            $Con2 = new Conexiones();
+            $qAnswers = "SELECT PPR.idPreguntasPosiblesRespuestas AS Respuesta, TO_BASE64(PPR.idPreguntasEvaluacion) AS IdPregunta
+                  FROM PreguntasPosiblesRespuestas AS PPR
+                  INNER JOIN PreguntasEvaluacion AS PE ON PE.idPreguntasEvaluacion = PPR.idPreguntasEvaluacion
+                  WHERE TO_BASE64(PE.idEvaluaciones) = '{$evaluationB64}';";
+            $arrAnswersQuestion = $Con2->Select($qAnswers);
+
+            // 5. Evaluadores
+            $qEvaluators = "SELECT TO_BASE64(idEvaluacionDetalle) AS IdEvDetail
+                  FROM EvaluacionDetalle
+                  WHERE TO_BASE64(idEvaluaciones) = '{$evaluationB64}' AND TO_BASE64(NoEmpleadoEvaluado) = '{$employeeB64}' AND StatusEvaluado = 1 AND Status = 1;";
+            $evaluators = $this->Select($qEvaluators);
+            if (!is_array($evaluators) || count($evaluators) === 0) {
+                $evaluators = [['IdEvDetail' => null]];
+            }
+
+            // 6. Calcular resultados por evaluador y competencia
+            $allResults = [];
+            foreach ($evaluators as $evaluator) {
+                $idEv = $evaluator['IdEvDetail'];
+                $evaluatorRows = ($idEv === null)
+                    ? $allDetail
+                    : array_filter($allDetail, function ($v) use ($idEv) {
+                        return $v['IdEvDetail'] === $idEv;
+                    });
+
+                if (count($evaluatorRows) === 0) {
+                    continue;
+                }
+
+                // Agrupar por competencia
+                $competencesMap = [];
+                foreach ($evaluatorRows as $row) {
+                    $idComp = $row['IdCompetencia'];
+                    $compName = $row['Competencia'];
+                    if (!isset($competencesMap[$idComp])) {
+                        $competencesMap[$idComp] = [
+                            'idCompetencia' => $idComp,
+                            'competencia' => $compName,
+                            'preguntas' => []
+                        ];
+                    }
+                    $competencesMap[$idComp]['preguntas'][] = $row;
+                }
+
+                foreach ($competencesMap as $competence) {
+                    $sumFinal = 0;
+                    foreach ($competence['preguntas'] as $question) {
+                        $tipo = (int)$question['idTipoPregunta'];
+                        $idPregunta = $question['IdPregunta'];
+                        $calificacion = $question['Calificacion'];
+
+                        $dataConfig = array_values(array_filter($arrConfig, function ($c) use ($idPregunta) {
+                            return $c['IdPregunta'] === $idPregunta;
+                        }));
+
+                        if ($tipo === 1) {
+                            if (isset($dataConfig[0]['BoolCorreta']) && $dataConfig[0]['BoolCorreta'] == $calificacion) {
+                                $sumFinal += 100;
+                            }
+                        } elseif ($tipo === 2) {
+                            $answerEsp = array_values(array_filter($arrConfig, function ($c) use ($idPregunta, $lvlEvaluated) {
+                                return $c['IdPregunta'] === $idPregunta && $c['NivelEmpleadoEsperadoOM'] == $lvlEvaluated;
+                            }));
+
+                            if (isset($answerEsp[0]['RespuestaEsperadoOM']) && $answerEsp[0]['RespuestaEsperadoOM'] == $calificacion) {
+                                $sumFinal += 100;
+                            } else {
+                                $answerExpected = isset($answerEsp[0]['RespuestaEsperadoOM']) ? $answerEsp[0]['RespuestaEsperadoOM'] : null;
+                                if ($answerExpected !== null) {
+                                    $allAnswersPerQuestion = array_values(array_filter($arrAnswersQuestion, function ($a) use ($idPregunta) {
+                                        return $a['IdPregunta'] === $idPregunta;
+                                    }));
+
+                                    $indexExpected = -1;
+                                    $indexAnswer = -1;
+                                    foreach ($allAnswersPerQuestion as $idx => $ans) {
+                                        if ($ans['Respuesta'] == $answerExpected) {
+                                            $indexExpected = $idx;
+                                        }
+                                        if ($ans['Respuesta'] == $calificacion) {
+                                            $indexAnswer = $idx;
+                                        }
+                                    }
+
+                                    if ($indexExpected > $indexAnswer) {
+                                        $sumFinal += 100;
+                                    } else {
+                                        $sumaElse = 100;
+                                        $resNoExpected = array_values(array_filter($allAnswersPerQuestion, function ($a) use ($answerExpected) {
+                                            return $a['Respuesta'] > $answerExpected;
+                                        }));
+                                        $countResNoExpected = count($resNoExpected);
+                                        if ($countResNoExpected > 0) {
+                                            $valuePerRes = 100 / $countResNoExpected;
+                                            foreach ($resNoExpected as $rNE) {
+                                                $sumaElse -= $valuePerRes;
+                                                if ($rNE['Respuesta'] == $calificacion) {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        $sumFinal += $sumaElse;
+                                    }
+                                }
+                            }
+                        } elseif ($tipo === 3) {
+                            if (isset($dataConfig[0]['RangoFinal']) && isset($dataConfig[0]['RangoInicial'])) {
+                                $diffRange = (float)$dataConfig[0]['RangoFinal'] - (float)$dataConfig[0]['RangoInicial'];
+                                $diffValue = $diffRange - (float)$calificacion;
+                                $restFinal = 100 - $diffValue;
+                                $sumFinal += $restFinal;
+                            }
+                        } elseif ($tipo === 4) {
+                            if (isset($dataConfig[0]['RespuestaCorrectaOM']) && $dataConfig[0]['RespuestaCorrectaOM'] == $calificacion) {
+                                $sumFinal += 100;
+                            }
+                        }
+                    }
+
+                    $countPreguntas = count($competence['preguntas']);
+                    $resFinal = $countPreguntas > 0 ? ($sumFinal / $countPreguntas) : 0;
+                    $allResults[] = [
+                        'idCompetence' => $competence['idCompetencia'],
+                        'competence' => $competence['competencia'],
+                        'result' => $resFinal
+                    ];
+                }
+            }
+
+            // 7. Promediar resultados por competencia entre evaluadores
+            $grouped = [];
+            foreach ($allResults as $item) {
+                $id = $item['idCompetence'];
+                if (!isset($grouped[$id])) {
+                    $grouped[$id] = ['competence' => $item['competence'], 'total' => 0, 'count' => 0];
+                }
+                $grouped[$id]['total'] += $item['result'];
+                $grouped[$id]['count'] += 1;
+            }
+
+            $finalDataValues = [];
+            foreach ($grouped as $id => $item) {
+                $finalDataValues[] = [
+                    'idCompetence' => $id,
+                    'competence' => $item['competence'],
+                    'result' => round($item['total'] / $item['count'], 2)
+                ];
+            }
+
+            // 8. Calificar final y mejores/peores
+            $sumResults = array_reduce($finalDataValues, function ($acc, $c) {
+                return $acc + $c['result'];
+            }, 0);
+            $totalCompetences = count($finalDataValues);
+            $finalResult = $totalCompetences > 0 ? round($sumResults / $totalCompetences, 2) : 0;
+
+            $maxResult = $totalCompetences > 0 ? max(array_column($finalDataValues, 'result')) : 0;
+            $best = array_filter($finalDataValues, function ($r) use ($maxResult) {
+                return $r['result'] == $maxResult;
+            });
+            $worst = array_filter($finalDataValues, function ($r) {
+                return $r['result'] < 70;
+            });
+
+            // Calificaciones esperadas según nivel y grupo
+            $escalas = [
+                'A' => ['A'=>100,'B'=>75,'C'=>50,'D'=>25,'E'=>0],
+                'B' => ['A'=>100,'B'=>100,'C'=>66,'D'=>33,'E'=>0],
+                'C' => ['A'=>100,'B'=>100,'C'=>100,'D'=>50,'E'=>0],
+                'D' => ['A'=>100,'B'=>100,'C'=>100,'D'=>100,'E'=>0]
+            ];
+            $escala = isset($escalas[$grupoEvaluado]) ? $escalas[$grupoEvaluado] : $escalas['A'];
+
+            $qExpected = "SELECT TO_BASE64(DC.idCompetencias) AS IdCompetencia, DC.CalificacionEsperado
+                  FROM DetalleCompetencias AS DC
+                  WHERE DC.NivelEmpleado = '{$lvlEvaluated}';";
+            $expectedData = $this->Select($qExpected);
+            $expectedMap = [];
+            foreach ($expectedData as $exp) {
+                $expectedMap[$exp['IdCompetencia']] = $exp['CalificacionEsperado'];
+            }
+
+            $competenciasDetalle = [];
+            foreach ($finalDataValues as $comp) {
+                $idComp = $comp['idCompetence'];
+                $esperadoLetra = isset($expectedMap[$idComp]) ? $expectedMap[$idComp] : 'A';
+                $esperadoValor = isset($escala[$esperadoLetra]) ? $escala[$esperadoLetra] : 100;
+                $gap = round($comp['result'] - $esperadoValor, 2);
+                $competenciasDetalle[] = [
+                    'idCompetence' => $idComp,
+                    'competence' => $comp['competence'],
+                    'result' => $comp['result'],
+                    'expected' => $esperadoValor,
+                    'gap' => $gap,
+                    'isWeak' => $comp['result'] < 70
+                ];
+            }
+
+            return [
+                'CalificacionFinal' => $finalResult,
+                'TotalCompetencias' => $totalCompetences,
+                'FortalezasCount' => count($best),
+                'DebilidadesCount' => count($worst),
+                'CompetenciasDetalle' => $competenciasDetalle
+            ];
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
@@ -1388,7 +1651,7 @@ class Evaluaciones extends Conexiones
                 if (sizeof($resultado) > 0) {
                     $newPlanAction = $resultado[0]["PlanGenerated"];
                     for ($i = 0; $i < sizeof($dataCompetences); $i++) {
-                        $resultadoEv = $dataCompetences[$i]["resultado"];
+                        $resultadoEv = $dataCompetences[$i]["result"] ?? $dataCompetences[$i]["resultado"] ?? 0;
                         $competence = $dataCompetences[$i]["competence"];
                         $idCompetence = $dataCompetences[$i]["idCompetence"];
                         $idCompetence = base64_decode($idCompetence);
@@ -1486,7 +1749,8 @@ class Evaluaciones extends Conexiones
               INNER JOIN Empleados AS E ON E.NoEmpleado = PAE.NoEmpleado
               INNER JOIN Puestos AS P ON P.IdPuesto = E.IdPuesto
               INNER JOIN SucursalDepto AS SD ON SD.IdSucursal = E.IdSucursal
-              WHERE PAE.UsuarioAlta = '$NoEmpleado' AND E.Status = 1 AND PAE.Requerido = 1
+              INNER JOIN EvaluacionDetalle AS ED ON ED.NoEmpleadoEvaluado = PAE.NoEmpleado AND ED.idEvaluaciones = PAE.idEvaluaciones
+              WHERE ED.NoEmpleadoEvalua = '$NoEmpleado' AND ED.JefeEvalua = 1 AND E.Status = 1 AND PAE.Requerido = 1
               GROUP BY E.NoEmpleado;";
             $resultado = $this->Select($q, array());
             $arrReturn = [
@@ -1565,16 +1829,185 @@ class Evaluaciones extends Conexiones
               FROM PlanesAccionEvaluacion
               WHERE TO_BASE64(idPlanesAccionEvaluacion) = '$planA';";
 
-            $InstCant = new Evaluaciones();
-            $ResultInst = $InstCant->summaryOfActionPlanQuantities($planA);
-            $resultado = $this->Select($q, array());
+            $resultado = $this->Select($q);
+            $resumen = count($resultado) > 0 ? $resultado[0] : null;
+
+            // Obtener cantidades de actividades para la barra de resumen en plan-action.php
+            $qAct = "SELECT APA.Progreso
+              FROM ActividadesPlanAccion AS APA
+              INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+              WHERE TO_BASE64(OPA.idPlanesAccionEvaluacion) = '$planA';";
+            $resAct = $this->Select($qAct);
+            
+            $cantidadAct = count($resAct);
+            $cantidadActTerminadas = 0;
+            foreach ($resAct as $act) {
+                if (intval($act['Progreso']) == 100) {
+                    $cantidadActTerminadas++;
+                }
+            }
+
+            // Consultar si hay rechazos previos sin que el plan esté aceptado
+            $qRechazo = "SELECT MotivoRechazo, DATE_FORMAT(FechaRechazo,'%d/%m/%Y %H:%i') AS FechaRechazo
+                          FROM HistorialRechazosPlanA
+                          WHERE idPlanesAccionEvaluacion = (SELECT idPlanesAccionEvaluacion
+                            FROM PlanesAccionEvaluacion WHERE TO_BASE64(idPlanesAccionEvaluacion) = '$planA')
+                          ORDER BY FechaRechazo DESC LIMIT 1;";
+            $resRechazo = $this->Select($qRechazo);
+            $tieneRechazo = count($resRechazo) > 0 && ($resumen === null || !$resumen['StatusConfirmaPlanAccion']);
+            $ultimoMotivo = $tieneRechazo ? $resRechazo[0]['MotivoRechazo'] : null;
+            $ultimaFechaRechazo = $tieneRechazo ? $resRechazo[0]['FechaRechazo'] : null;
+
+            // Estructura compatible con plan-action.js y my-results/general.js (usa índice "0")
+            $data = [
+                "Cantidades" => [
+                    "CantidadAct" => $cantidadAct,
+                    "CantidadActTerminadas" => $cantidadActTerminadas
+                ],
+                "Resumen" => $resumen,
+                "0" => $resumen,
+                "TieneRechazo" => $tieneRechazo ? 1 : 0,
+                "UltimoMotivoRechazo" => $ultimoMotivo,
+                "UltimaFechaRechazo" => $ultimaFechaRechazo
+            ];
+
             $arrReturn = [
               "Resultado" => true,
               "Siguiente" => true,
-              "Data" => [
-                "Resumen" => $resultado[0],
-                "Cantidades" => $ResultInst
-              ]
+              "Data" => $data
+            ];
+
+            return json_encode($arrReturn);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    public function acceptActivitiesActionPlan($planA)
+    {
+        try {
+            $planADec = base64_decode($planA);
+            $q = "UPDATE PlanesAccionEvaluacion 
+                  SET StatusConfirmaActividades = 1, FechaConfirmaActividades = NOW() 
+                  WHERE idPlanesAccionEvaluacion = '$planADec';";
+            $this->ExecuteQuery($q, array());
+
+            $arrReturn = [
+              "Resultado" => true,
+              "Siguiente" => true,
+              "ConMsg" => true,
+              "Msg" => "Las actividades del plan de acción han sido aceptadas con éxito"
+            ];
+
+            return json_encode($arrReturn);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    public function acceptProgressActionPlan($planA)
+    {
+        try {
+            $planADec = base64_decode($planA);
+            $q = "UPDATE PlanesAccionEvaluacion 
+                  SET StatusConfirmaPlanAccion = 1, FechaConfirmaPlanAccion = NOW() 
+                  WHERE idPlanesAccionEvaluacion = '$planADec';";
+            $this->ExecuteQuery($q, array());
+
+            $arrReturn = [
+              "Resultado" => true,
+              "Siguiente" => true,
+              "ConMsg" => true,
+              "Msg" => "El progreso final del plan de acción ha sido aceptado con éxito"
+            ];
+
+            return json_encode($arrReturn);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    public function rejectProgressActionPlan($planA, $motivo)
+    {
+        try {
+            $NoEmpleado = SessionManager::get("NoEmpleado");
+            $planADec = base64_decode($planA);
+
+            // Calcular el avance global actual antes de resetear
+            $qAvance = "SELECT COALESCE(AVG(APA.Progreso), 0) AS AvanceGlobal
+                          FROM ActividadesPlanAccion AS APA
+                          INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                          WHERE OPA.idPlanesAccionEvaluacion = '$planADec';";
+            $resAvance = $this->Select($qAvance);
+            $avanceGlobal = isset($resAvance[0]['AvanceGlobal']) ? floatval($resAvance[0]['AvanceGlobal']) : 0;
+
+            // Insertar el registro de rechazo en el historial
+            $motivoSafe = addslashes($motivo);
+            $qInsert = "INSERT INTO HistorialRechazosPlanA
+                          (idPlanesAccionEvaluacion, MotivoRechazo, AvanceGlobalAlRechazar, UsuarioRechazo)
+                          VALUES ('$planADec', '$motivoSafe', '$avanceGlobal', '$NoEmpleado');";
+            $this->ExecuteQuery($qInsert, array());
+
+            // Obtener el id del rechazo recién insertado
+            $qLastId = "SELECT MAX(idHistorialRechazosPlanA) AS idRechazo FROM HistorialRechazosPlanA WHERE idPlanesAccionEvaluacion = '$planADec';";
+            $resLastId = $this->Select($qLastId);
+            $idRechazo = isset($resLastId[0]['idRechazo']) ? $resLastId[0]['idRechazo'] : null;
+
+            if ($idRechazo) {
+                // Vincular todos los avances actuales al rechazo (archivarlos)
+                $qArchivar = "UPDATE AvanceActividadPlanA
+                                SET idHistorialRechazo = '$idRechazo'
+                                WHERE idActividadesPlanAccion IN (
+                                  SELECT idActividadesPlanAccion FROM ActividadesPlanAccion
+                                  WHERE idObjetivosPlanAccion IN (
+                                    SELECT idObjetivosPlanAccion FROM ObjetivosPlanAccion
+                                    WHERE idPlanesAccionEvaluacion = '$planADec'
+                                  )
+                                ) AND idHistorialRechazo IS NULL;";
+                $this->ExecuteQuery($qArchivar, array());
+            }
+
+            // Resetear el progreso de todas las actividades a 0
+            $qReset = "UPDATE ActividadesPlanAccion
+                         SET Progreso = 0
+                         WHERE idObjetivosPlanAccion IN (
+                           SELECT idObjetivosPlanAccion FROM ObjetivosPlanAccion
+                           WHERE idPlanesAccionEvaluacion = '$planADec'
+                         );";
+            $this->ExecuteQuery($qReset, array());
+
+            $arrReturn = [
+              "Resultado" => true,
+              "Siguiente" => true,
+              "ConMsg" => true,
+              "Msg" => "El progreso del plan de acción fue rechazado. El empleado podrá registrar nuevos avances."
+            ];
+
+            return json_encode($arrReturn);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    public function getHistorialRechazos($planA)
+    {
+        try {
+            $q = "SELECT idHistorialRechazosPlanA,
+                    MotivoRechazo,
+                    AvanceGlobalAlRechazar,
+                    DATE_FORMAT(FechaRechazo,'%d/%m/%Y %H:%i') AS FechaRechazo
+                  FROM HistorialRechazosPlanA
+                  WHERE idPlanesAccionEvaluacion = (
+                    SELECT idPlanesAccionEvaluacion FROM PlanesAccionEvaluacion
+                    WHERE TO_BASE64(idPlanesAccionEvaluacion) = '$planA'
+                  )
+                  ORDER BY FechaRechazo DESC;";
+            $resultado = $this->Select($q);
+
+            $arrReturn = [
+              "Resultado" => true,
+              "Siguiente" => true,
+              "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -1706,11 +2139,13 @@ class Evaluaciones extends Conexiones
     public function getGeneralDetailActivityPlanA($activity)
     {
         try {
+            // Solo mostrar avances del ciclo activo (idHistorialRechazo IS NULL = no archivados)
             $q = "SELECT NuevoAvance,DescripcionAvance,FechaRegistro
               FROM AvanceActividadPlanA
               WHERE TO_BASE64(idActividadesPlanAccion) = '$activity'
+                AND idHistorialRechazo IS NULL
               ORDER BY FechaRegistro DESC;";
-            $resultado = $this->Select($q, array());
+            $resultado = $this->Select($q);
             $arrReturn = [
               "Resultado" => true,
               "Siguiente" => true,
@@ -1727,8 +2162,37 @@ class Evaluaciones extends Conexiones
     {
         try {
             $activity = base64_decode($activity);
+
+            // Validar que el nuevo avance sea un entero en el rango [1, 100]
+            $newProgress = intval($newProgress);
+            if ($newProgress < 1 || $newProgress > 100) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg"    => true,
+                    "Msg"       => "El avance debe ser un valor entre 1% y 100%."
+                ]);
+            }
+
+            // Consultar el avance actual del ciclo activo (excluir avances archivados por rechazos previos)
+            $qCurrentProgress = "SELECT COALESCE(MAX(NuevoAvance), 0) AS ProgresoActual
+                                   FROM AvanceActividadPlanA
+                                  WHERE idActividadesPlanAccion = '$activity'
+                                    AND idHistorialRechazo IS NULL";
+            $currentResult = $this->Select($qCurrentProgress);
+            $progresoActual = isset($currentResult[0]["ProgresoActual"]) ? intval($currentResult[0]["ProgresoActual"]) : 0;
+
+            if ($newProgress <= $progresoActual) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg"    => true,
+                    "Msg"       => "El nuevo avance ({$newProgress}%) debe ser mayor al avance actual ({$progresoActual}%)."
+                ]);
+            }
+
             $q = "CALL sp_AddPgoressActivityPlanA('$activity','$newProgress','$description')";
-            $resultado = $this->Procedure($q, array());
+            $resultado = $this->Procedure($q);
             if (sizeof($resultado) > 0) {
                 if ($resultado[0]["Retorno"] == 1) {
                     $arrReturn = [

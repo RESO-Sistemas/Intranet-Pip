@@ -145,37 +145,67 @@ async function getDataResultAuto(){
   return resultFinal;
 }
 
-async function getDataResultPar(){
-  let resultFinal = [];
-  let allDataPar = arrListEvaluators.filter( evaluator => evaluator.ParEvalua == 1);
-  if (allDataPar.length > 0) {
-    for (const par of allDataPar) {
-      let dataPerEvaluator = arrAllDetailEvaluated.filter(values => values.IdEvDetail == par.IdEvDetail);
-      const result = await getDataResultsPerEvaluatorUnique(dataPerEvaluator);
-      resultAcum.push(result);
-    }
-    const arregloAplanado = resultAcum.flatMap(registro => registro);
-    const sumaPorCompetencia = [];
-    arregloAplanado.forEach(item => {
-        const { result, idCompetence , competence} = item;
-        if (!sumaPorCompetencia[idCompetence]) {
-            sumaPorCompetencia[idCompetence] = { sum: 0, count: 0 , competence: competence};
-        }
-        sumaPorCompetencia[idCompetence].sum += result;
-        sumaPorCompetencia[idCompetence].count++;
-    });
-    resultFinal = Object.keys(sumaPorCompetencia).map(idCompetence => {
-        const { sum, count, competence } = sumaPorCompetencia[idCompetence];
-        const result = count > 0 ? sum / count : 0;
-        return {
-            idCompetence,
-            result,
-            competence
-        };
-    });
-    const resultFinal = resultAcum.flatMap(registro => registro);
-  }
-  return resultFinal;
+async function getDataResultPar(){
+
+  let resultAcum = [];
+
+  let resultFinal = [];
+
+  let allDataPar = arrListEvaluators.filter( evaluator => evaluator.ParEvalua == 1);
+
+  if (allDataPar.length > 0) {
+
+    for (const par of allDataPar) {
+
+      let dataPerEvaluator = arrAllDetailEvaluated.filter(values => values.IdEvDetail == par.IdEvDetail);
+
+      const result = await getDataResultsPerEvaluatorUnique(dataPerEvaluator);
+
+      resultAcum.push(result);
+
+    }
+
+    const arregloAplanado = resultAcum.flatMap(registro => registro);
+
+    const sumaPorCompetencia = [];
+
+    arregloAplanado.forEach(item => {
+
+        const { result, idCompetence , competence} = item;
+
+        if (!sumaPorCompetencia[idCompetence]) {
+
+            sumaPorCompetencia[idCompetence] = { sum: 0, count: 0 , competence: competence};
+
+        }
+
+        sumaPorCompetencia[idCompetence].sum += result;
+
+        sumaPorCompetencia[idCompetence].count++;
+
+    });
+
+    resultFinal = Object.keys(sumaPorCompetencia).map(idCompetence => {
+
+        const { sum, count, competence } = sumaPorCompetencia[idCompetence];
+
+        const result = count > 0 ? sum / count : 0;
+
+        return {
+
+            idCompetence,
+
+            result,
+
+            competence
+
+        };
+
+    });
+
+  }
+
+  return resultFinal;
 }
 
 async function getDataResultSub() {

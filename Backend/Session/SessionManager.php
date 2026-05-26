@@ -51,6 +51,19 @@ class SessionManager
         $_SESSION['tipo_sesion'] = '1';
         $_SESSION['verificaSesion'] = 'activa';
         $_SESSION['login_time'] = time();
+
+        // Compatibilidad con paginas legacy que aun validan cookies en lugar de session.
+        $cookieExpire = time() + (86400 * 30);
+        setcookie('NoEmpleado', (string) $userData['NoEmpleado'], $cookieExpire, '/');
+        setcookie('nivel', (string) $userData['Nivel'], $cookieExpire, '/');
+        setcookie('IdDivision', (string) $userData['IdDivision'], $cookieExpire, '/');
+        setcookie('IdSucursal', (string) $userData['IdSucursal'], $cookieExpire, '/');
+        setcookie('idSPuesto', (string) $userData['IdPuesto'], $cookieExpire, '/');
+        setcookie('idCentroCosto', (string) $userData['IdCentroCosto'], $cookieExpire, '/');
+        setcookie('nombre', (string) $userData['Nombre'], $cookieExpire, '/');
+        setcookie('sesion', 'activa', time() + (86400 * 300), '/');
+        setcookie('tipo_sesion', '1', $cookieExpire, '/');
+        setcookie('verificaSesion', 'activa', $cookieExpire, '/');
     }
 
     /**
@@ -77,7 +90,14 @@ class SessionManager
             );
             unset($_COOKIE[session_name()]);
         }
-        
+
+        foreach (['NoEmpleado', 'nivel', 'IdDivision', 'IdSucursal', 'idSPuesto', 'idCentroCosto', 'nombre', 'sesion', 'tipo_sesion', 'verificaSesion'] as $cookieName) {
+            if (isset($_COOKIE[$cookieName])) {
+                setcookie($cookieName, '', time() - 3600, '/');
+                unset($_COOKIE[$cookieName]);
+            }
+        }
+
         // Destruir la sesión completamente
         session_destroy();
     }

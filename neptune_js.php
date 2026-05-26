@@ -53,17 +53,7 @@ if ($current_page !== 'login'):
 
 <!-- Toastr -->
 <script src="./assets/libs/toastr/build/toastr.min.js"></script>
-<script src="./assets/extra-libs/toastr/toastr-init.js"></script>
-
 <!-- Swiper -->
 <script src="./assets/swiper/package/swiper-bundle.min.js"></script>
-
-<?php if ($current_page !== 'login'): ?>
-
-
-    <!-- pdfmake para DataTables PDF export -->
-    <script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/pdfmake.min.js"></script>
-    <script src="./assets/extra-libs/DataTables_old1/pdfmake-0.1.32/vfs_fonts.js"></script>
-<?php endif; ?>
 <!-- Syncfusion Config -->
 <script src="./scripts/syncfusion-config.js?v=<?php echo time(); ?>"></script>

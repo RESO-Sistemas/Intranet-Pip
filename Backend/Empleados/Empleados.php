@@ -90,8 +90,14 @@ class Empleados extends Conexiones
       $parts = explode('/', $URL);
       $URL = end($parts); // tomar el último segmento (el nombre del archivo .php)
 
-      // Páginas que siempre se permiten para evitar loops
-      $paginasLibres = ['index.php', 'login.php', 'logout.php', 'MiPerfil.php', 'SolicitudVacaciones.php', 'FormatoVacaciones.php', 'LineaEticaUs.php', ''];
+      // El superusuario (Nivel 0) siempre tiene acceso autorizado
+      $nivel = SessionManager::get("Nivel");
+      if ($nivel == 0 || $nivel === '0') {
+        return "1";
+      }
+
+      // Paginas que siempre se permiten para evitar loops o porque son transversales
+      $paginasLibres = ['index.php', 'login.php', 'logout.php', 'MiPerfil.php', 'SolicitudVacaciones.php', 'FormatoVacaciones.php', 'LineaEticaUs.php', 'my-results.php', 'plan-action.php', 'list-plan-action.php', ''];
       if (in_array($URL, $paginasLibres)) {
         return "1";
       }
