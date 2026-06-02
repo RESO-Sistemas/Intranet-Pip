@@ -49,12 +49,12 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .checklist-item:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
-    
+
     .checklist-status-icon {
       width: 32px;
       height: 32px;
@@ -65,13 +65,13 @@
       font-size: 1rem;
       flex-shrink: 0;
     }
-    
+
     .checklist-status-completed {
       background-color: #d1e7dd;
       color: #0f5132;
       border: 1px solid #badbcc;
     }
-    
+
     .checklist-status-pending {
       background-color: #fff3cd;
       color: #664d03;
@@ -89,19 +89,19 @@
       background-color: #fffaf0 !important;
       border-bottom: 1px solid #ffeeba !important;
     }
-    
+
     .modal-alert-info {
       background-color: #fff9e6;
       border: 1px solid #ffeeba;
       color: #856404;
       border-radius: 8px;
     }
-    
+
     .form-control:focus {
       border-color: #ffc407 !important;
       box-shadow: 0 0 0 0.25rem rgba(255, 196, 7, 0.2) !important;
     }
-    
+
     .input-group-text-premium {
       background-color: #fffaf0 !important;
       border-color: #ced4da !important;
@@ -155,14 +155,17 @@
               <div class="col-12 col-md-3 mb-4">
 
                 <!-- Progreso Global del Plan -->
-                <div class="card mb-3 shadow-sm border-0" style="background-color: #fffaf0; border-left: 4px solid #ffc407 !important;">
+                <div class="card mb-3 shadow-sm border-0"
+                  style="background-color: #fffaf0; border-left: 4px solid #ffc407 !important;">
                   <div class="card-body">
                     <h6 class="text-dark small text-uppercase fw-bold mb-2">Avance Global del Plan</h6>
                     <div class="d-flex align-items-baseline mb-2">
                       <span class="fs-2 fw-bold text-dark" id="txt_global_progress">0%</span>
                     </div>
                     <div class="progress" style="height: 8px; background-color: rgba(0,0,0,.06); border-radius: 4px;">
-                      <div id="bar_global_progress" class="progress-bar" role="progressbar" style="width: 0%; background-color: #ffc407;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                      <div id="bar_global_progress" class="progress-bar" role="progressbar"
+                        style="width: 0%; background-color: #ffc407;" aria-valuenow="0" aria-valuemin="0"
+                        aria-valuemax="100"></div>
                     </div>
                   </div>
                 </div>
@@ -188,27 +191,31 @@
                 <div class="card mb-3 shadow-sm border-0">
                   <div class="card-body">
                     <h6 class="text-dark small text-uppercase fw-bold mb-3">Aceptaciones de Flujo</h6>
-                    
+
                     <div class="mb-3">
                       <label class="text-dark small fw-bold d-block mb-1">Acepta Actividades (Jefe)</label>
                       <div id="t_summ_act" class="d-flex align-items-center">
-                        <span class="badge bg-warning-subtle text-warning"><i class="fa-regular fa-clock me-1"></i> Pendiente</span>
+                        <span class="badge bg-warning-subtle text-warning"><i class="fa-regular fa-clock me-1"></i>
+                          Pendiente</span>
                       </div>
                     </div>
-                    
+
                     <div class="mb-1">
                       <label class="text-dark small fw-bold d-block mb-1">Acepta Plan Acción (Jefe)</label>
                       <div id="t_summ_planA" class="d-flex align-items-center">
-                        <span class="badge bg-warning-subtle text-warning"><i class="fa-regular fa-clock me-1"></i> Pendiente</span>
+                        <span class="badge bg-warning-subtle text-warning"><i class="fa-regular fa-clock me-1"></i>
+                          Pendiente</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <!-- Aceptar Actividades (Jefe) -->
-                <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeIn" id="card_acceptActivities" style="display: none;">
+                <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeIn" id="card_acceptActivities"
+                  style="display: none;">
                   <div class="card-body text-center p-3">
-                    <h6 class="card-title fw-bold mb-3 small text-dark text-uppercase">Autorizar actividades registradas</h6>
+                    <h6 class="card-title fw-bold mb-3 small text-dark text-uppercase">Autorizar actividades registradas
+                    </h6>
                     <button type="button" id="acceptActivities" class="btn btn-minimal btn-minimal-success w-100 py-2">
                       <i class="fa-solid fa-circle-check me-2"></i> Aceptar Actividades
                     </button>
@@ -216,10 +223,14 @@
                 </div>
 
                 <!-- Aceptar Progreso final (Jefe) -->
-                <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeIn" id="card_acceptProgress" style="display: none;">
+                <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeIn" id="card_acceptProgress"
+                  style="display: none;">
                   <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-3 small text-dark text-uppercase">Autorizar progreso final</h6>
-                    <button type="button" id="btn_acceptProgress" class="btn btn-minimal btn-minimal-success w-100 py-2 mb-2">
+                    <p id="tx_accept_progress_note" class="small text-dark mb-3">El cierre final sólo estará disponible
+                      cuando no existan avances pendientes y todas las actividades estén al 100% aprobado.</p>
+                    <button type="button" id="btn_acceptProgress"
+                      class="btn btn-minimal btn-minimal-success w-100 py-2 mb-2">
                       <i class="fa-solid fa-circle-check me-2"></i> Aceptar Progreso final
                     </button>
                     <button type="button" id="btn_rejectProgress" class="btn btn-minimal btn-minimal-danger w-100 py-2">
@@ -228,24 +239,27 @@
                   </div>
                 </div>
 
-              <!-- Card de alerta: Plan rechazado (visible para el empleado) -->
-              <div class="card mb-3 border-0 animate__animated animate__fadeIn" id="card_rechazo"
-                style="display: none; background: linear-gradient(135deg,#fff5f5,#ffe0e0); border-left: 4px solid #dc3545 !important;">
-                <div class="card-body p-3">
-                  <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-triangle-exclamation text-danger me-2 fs-5"></i>
-                    <h6 class="m-0 fw-bold text-danger small text-uppercase">Plan Rechazado</h6>
+                <!-- Card de alerta: Plan rechazado (visible para el empleado) -->
+                <div class="card mb-3 border-0 animate__animated animate__fadeIn" id="card_rechazo"
+                  style="display: none; background: linear-gradient(135deg,#fff5f5,#ffe0e0); border-left: 4px solid #dc3545 !important;">
+                  <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <i class="fa-solid fa-triangle-exclamation text-danger me-2 fs-5"></i>
+                      <h6 class="m-0 fw-bold text-danger small text-uppercase">Plan Rechazado</h6>
+                    </div>
+                    <p class="text-dark small mb-2" id="tx_rechazo_fecha" style="font-size:0.75rem;"></p>
+                    <p class="text-dark small mb-2 fw-bold">Motivo:</p>
+                    <p class="text-dark small mb-3" id="tx_rechazo_motivo"
+                      style="font-size:0.82rem; background:#fff; border-radius:6px; padding:8px; border:1px solid #f5c6cb;">
+                    </p>
+                    <button type="button" id="btn_historialRechazos"
+                      class="btn btn-minimal btn-minimal-secondary btn-sm w-100">
+                      <i class="fa-solid fa-clock-rotate-left me-1"></i> Ver historial de rechazos
+                    </button>
                   </div>
-                  <p class="text-dark small mb-2" id="tx_rechazo_fecha" style="font-size:0.75rem;"></p>
-                  <p class="text-dark small mb-2 fw-bold">Motivo:</p>
-                  <p class="text-dark small mb-3" id="tx_rechazo_motivo" style="font-size:0.82rem; background:#fff; border-radius:6px; padding:8px; border:1px solid #f5c6cb;"></p>
-                  <button type="button" id="btn_historialRechazos" class="btn btn-minimal btn-minimal-secondary btn-sm w-100">
-                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Ver historial de rechazos
-                  </button>
                 </div>
-              </div>
 
-            </div>
+              </div>
 
               <!-- Sección Derecha (Listado del Plan de Acción) -->
               <div class="col-12 col-md-9">
@@ -285,24 +299,27 @@
         </div>
         <div class="modal-body p-4">
           <input type="hidden" id="m_obj_objetiveAct">
-          
+
           <!-- Banner Competencia Estilizado -->
           <div class="alert modal-alert-info d-flex align-items-center mb-4 p-3 shadow-none" role="alert">
             <i class="fa-solid fa-graduation-cap text-warning fs-4 me-3"></i>
             <div>
-              <small class="text-uppercase fw-bold text-dark d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Competencia</small>
+              <small class="text-uppercase fw-bold text-dark d-block"
+                style="font-size: 0.65rem; letter-spacing: 0.5px;">Competencia</small>
               <span id="m_obj_competence" class="fw-bold text-dark" style="font-size: 0.9rem;"></span>
             </div>
           </div>
 
           <div class="mb-3">
             <label for="upd_Obj_title" class="form-label fw-bold small text-dark">* Objetivo</label>
-            <textarea id="upd_Obj_title" class="form-control border-light shadow-sm bg-light" rows="2" placeholder="Ingrese el título del objetivo" required></textarea>
+            <textarea id="upd_Obj_title" class="form-control border-light shadow-sm bg-light" rows="2"
+              placeholder="Ingrese el título del objetivo" required></textarea>
             <div class="invalid-feedback" data-msg="El título de la actividad es obligatoria"></div>
           </div>
           <div class="mb-3">
             <label for="upd_Obj_descriptions" class="form-label fw-bold small text-dark">* Descripción</label>
-            <textarea id="upd_Obj_descriptions" class="form-control border-light shadow-sm bg-light" rows="4" placeholder="Ingrese la descripción del objetivo" required></textarea>
+            <textarea id="upd_Obj_descriptions" class="form-control border-light shadow-sm bg-light" rows="4"
+              placeholder="Ingrese la descripción del objetivo" required></textarea>
             <div class="invalid-feedback" data-msg="La descripción de la actividad es obligatoria"></div>
           </div>
         </div>
@@ -317,10 +334,12 @@
   </div>
 
   <!-- Modal: Rechazar Progreso del Plan de Acción -->
-  <div class="modal fade" id="modal_rejectProgress" tabindex="-1" aria-labelledby="modalRejectProgressLabel" aria-hidden="true">
+  <div class="modal fade" id="modal_rejectProgress" tabindex="-1" aria-labelledby="modalRejectProgressLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header" style="background: linear-gradient(135deg,#fff5f5,#ffe0e0); border-bottom: 1px solid #f5c6cb;">
+        <div class="modal-header"
+          style="background: linear-gradient(135deg,#fff5f5,#ffe0e0); border-bottom: 1px solid #f5c6cb;">
           <h5 class="modal-title fw-bold text-danger d-flex align-items-center" id="modalRejectProgressLabel">
             <i class="fa-solid fa-circle-xmark me-2"></i> Rechazar Progreso del Plan
           </h5>
@@ -332,7 +351,9 @@
             <i class="fa-solid fa-triangle-exclamation text-warning fs-5 me-3 mt-1"></i>
             <div>
               <strong class="text-dark d-block mb-1">Atención</strong>
-              <span class="text-dark small">Al rechazar, el progreso de <strong>todas las actividades</strong> se reiniciará a <strong>0%</strong>. El empleado podrá registrar nuevos avances. El historial anterior quedará guardado.</span>
+              <span class="text-dark small">Al rechazar, el progreso de <strong>todas las actividades</strong> se
+                reiniciará a <strong>0%</strong>. El empleado podrá registrar nuevos avances. El historial anterior
+                quedará guardado.</span>
             </div>
           </div>
           <div id="dv_reject_inputs">
@@ -353,7 +374,8 @@
   </div>
 
   <!-- Modal: Historial de Rechazos del Plan de Acción -->
-  <div class="modal fade" id="modal_historialRechazos" tabindex="-1" aria-labelledby="modalHistorialRechazosLabel" aria-hidden="true">
+  <div class="modal fade" id="modal_historialRechazos" tabindex="-1" aria-labelledby="modalHistorialRechazosLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header">
@@ -403,7 +425,9 @@
                 <tr>
                   <th>Descripción</th>
                   <th>Fecha</th>
+                  <th>Estado</th>
                   <th>Avance</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -451,6 +475,7 @@
                 <tr>
                   <th>Descripción</th>
                   <th>Fecha</th>
+                  <th>Estado</th>
                   <th>Avance</th>
                 </tr>
               </thead>
@@ -460,7 +485,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-minimal btn-minimal-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-minimal btn-minimal-success" id="btn_m_addProgress">Agregar Actividad</button>
+          <button type="button" class="btn btn-minimal btn-minimal-success" id="btn_m_addProgress">Registrar
+            Avance</button>
         </div>
       </div>
     </div>
@@ -481,35 +507,43 @@
           <div class="row" id="dv_inp_modal">
             <div class="col-12 mb-3">
               <label for="new_Act_title" class="form-label fw-bold small text-dark">* Título de la Actividad</label>
-              <textarea id="new_Act_title" class="form-control border-light shadow-sm bg-light" rows="2" placeholder="Ingrese el título de la actividad" required></textarea>
+              <textarea id="new_Act_title" class="form-control border-light shadow-sm bg-light" rows="2"
+                placeholder="Ingrese el título de la actividad" required></textarea>
               <div class="invalid-feedback" data-msg="El título de la actividad es obligatoria"></div>
             </div>
             <div class="col-12 mb-3">
-              <label for="new_Act_descriptions" class="form-label fw-bold small text-dark">* Criterios de Éxito / Descripción</label>
-              <textarea id="new_Act_descriptions" class="form-control border-light shadow-sm bg-light" rows="4" placeholder="Ingrese la descripción de la actividad" required></textarea>
+              <label for="new_Act_descriptions" class="form-label fw-bold small text-dark">* Criterios de Éxito /
+                Descripción</label>
+              <textarea id="new_Act_descriptions" class="form-control border-light shadow-sm bg-light" rows="4"
+                placeholder="Ingrese la descripción de la actividad" required></textarea>
               <div class="invalid-feedback" data-msg="La descripción de la actividad es obligatoria"></div>
             </div>
-            
+
             <!-- Periodo de Ejecución Agrupado -->
             <div class="col-12">
               <div class="bg-light p-3 rounded mb-2 border border-light-subtle">
-                <h6 class="fw-bold mb-3 text-dark small text-uppercase" style="letter-spacing: 0.5px;"><i class="fa-regular fa-clock me-1 text-warning"></i> Periodo de Ejecución</h6>
+                <h6 class="fw-bold mb-3 text-dark small text-uppercase" style="letter-spacing: 0.5px;"><i
+                    class="fa-regular fa-clock me-1 text-warning"></i> Periodo de Ejecución</h6>
                 <div class="row">
                   <div class="col-12 col-md-6 mb-3 mb-md-0">
                     <label for="new_Act_DateIni" class="form-label fw-bold small text-dark">* Fecha Inicio</label>
                     <div class="input-group">
-                      <span class="input-group-text input-group-text-premium"><i class="fa-regular fa-calendar"></i></span>
+                      <span class="input-group-text input-group-text-premium"><i
+                          class="fa-regular fa-calendar"></i></span>
                       <input type="date" id="new_Act_DateIni" class="form-control" required>
                     </div>
-                    <div class="invalid-feedback" data-msg="Es necesario ingresar la fecha en la que iniciara la actividad"></div>
+                    <div class="invalid-feedback"
+                      data-msg="Es necesario ingresar la fecha en la que iniciara la actividad"></div>
                   </div>
                   <div class="col-12 col-md-6">
                     <label for="new_Act_DateEnd" class="form-label fw-bold small text-dark">* Fecha Final</label>
                     <div class="input-group">
-                      <span class="input-group-text input-group-text-premium"><i class="fa-regular fa-calendar"></i></span>
+                      <span class="input-group-text input-group-text-premium"><i
+                          class="fa-regular fa-calendar"></i></span>
                       <input type="date" id="new_Act_DateEnd" class="form-control" required>
                     </div>
-                    <div class="invalid-feedback" data-msg="Es necesario ingresar la fecha en la que terminara la actividad"></div>
+                    <div class="invalid-feedback"
+                      data-msg="Es necesario ingresar la fecha en la que terminara la actividad"></div>
                   </div>
                 </div>
               </div>

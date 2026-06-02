@@ -1084,6 +1084,11 @@ CREATE TABLE `AvanceActividadPlanA` (
   `NuevoAvance` int(11) NOT NULL,
   `DescripcionAvance` text NOT NULL,
   `FechaRegistro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  -- 0 = pendiente, 1 = aprobado, 2 = rechazado
+  `EstadoAprobacion` tinyint(4) NOT NULL DEFAULT '1',
+  `FechaRevision` datetime DEFAULT NULL,
+  `UsuarioRevision` int(11) DEFAULT NULL,
+  `MotivoRevision` text DEFAULT NULL,
   `idHistorialRechazo` int(11) DEFAULT NULL,
   PRIMARY KEY (`idAvanceActividadPlanA`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

@@ -38,31 +38,31 @@ class Evaluaciones extends Conexiones
 
                     if (sizeof($DetalleEv) > 0) {
                         array_push($arrDatos, [
-                          "idEvaluaciones" => $Evaluacion["idEvaluaciones"],
-                          "Evaluacion" => $Evaluacion["Titulo"],
-                          "FechaInicio" => $Evaluacion["FechaInicio"],
-                          "FechaFin" => $Evaluacion["FechaFin"],
-                          "Detalle" => $DetalleEv
+                            "idEvaluaciones" => $Evaluacion["idEvaluaciones"],
+                            "Evaluacion" => $Evaluacion["Titulo"],
+                            "FechaInicio" => $Evaluacion["FechaInicio"],
+                            "FechaFin" => $Evaluacion["FechaFin"],
+                            "Detalle" => $DetalleEv
                         ]);
                     }
                 }
 
                 if (sizeof($arrDatos) > 0) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => $arrDatos
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => $arrDatos
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
+                        "Resultado" => true,
+                        "Siguiente" => false,
                     ];
                 }
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
+                    "Resultado" => true,
+                    "Siguiente" => false,
                 ];
             }
 
@@ -113,10 +113,10 @@ class Evaluaciones extends Conexiones
         $ListColaboradores = $Evaluaciones->getColaboradoresOrganigrama();
         $ListCompetencias = $Evaluacione2->getCompetencias();
         $datos = [
-          "ListColaboradores" => $ListColaboradores,
-          "ListCompetencias" => $ListCompetencias,
-          "NivelEmpleado" => $Nivel,
-          "NoEmpleado" => $NoEmpleado
+            "ListColaboradores" => $ListColaboradores,
+            "ListCompetencias" => $ListCompetencias,
+            "NivelEmpleado" => $Nivel,
+            "NoEmpleado" => $NoEmpleado
         ];
         array_push($retorno, $datos);
 
@@ -254,25 +254,25 @@ class Evaluaciones extends Conexiones
                 $resultado = $this->Procedure($q, array());
                 if (sizeof($resultado) > 0) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "ConMsg" => true,
-                      "Msg" => "¡Nueva evaluación generada con éxito!"
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "ConMsg" => true,
+                        "Msg" => "¡Nueva evaluación generada con éxito!"
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al generar una nueva evaluación."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al generar una nueva evaluación."
                     ];
                 }
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al registrar el listado de los evaluadores y evaluados!"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al registrar el listado de los evaluadores y evaluados!"
                 ];
             }
 
@@ -318,9 +318,9 @@ class Evaluaciones extends Conexiones
               $CompWhere;";
             $resultado = $this->Select($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrRetorno);
@@ -337,9 +337,9 @@ class Evaluaciones extends Conexiones
               WHERE Estatus = 1;";
             $resultado = $this->Select($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrRetorno);
@@ -365,17 +365,17 @@ class Evaluaciones extends Conexiones
                 $qUpdate = "UPDATE Competencias SET Estatus = '$NewStatus' WHERE idCompetencias = '$competence';";
                 $ConUpdate->ExecuteQuery($qUpdate, array());
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "ConMsg" => true,
-                  "Msg" => "Status actualizado"
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "ConMsg" => true,
+                    "Msg" => "Status actualizado"
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al obtener los datos de la competencia seleccionada"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un problema al obtener los datos de la competencia seleccionada"
                 ];
             }
 
@@ -394,16 +394,16 @@ class Evaluaciones extends Conexiones
             $resQ = $this->Select($q);
             if (sizeof($resQ) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resQ[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resQ[0]
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al obtener el detalle de la competencia seleccionada"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un problema al obtener el detalle de la competencia seleccionada"
                 ];
             }
 
@@ -428,11 +428,11 @@ class Evaluaciones extends Conexiones
             }
             $resultado = $this->Procedure($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => $MsgR,
-              "Data" => $resultado[0]
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => $MsgR,
+                "Data" => $resultado[0]
             ];
 
             return json_encode($arrRetorno);
@@ -467,19 +467,19 @@ class Evaluaciones extends Conexiones
                     $q = "INSERT INTO DetalleCompetencias (idCompetencias,NivelEmpleado,CalificacionEsperado) VALUES $valuesFormat";
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al realizar el procedimiento de verificación de niveles al actualizar los datos de la competencia."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al realizar el procedimiento de verificación de niveles al actualizar los datos de la competencia."
                     ];
                 }
             }
             $this->ExecuteQuery($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => $msgReturn
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => $msgReturn
             ];
 
             return json_encode($arrRetorno);
@@ -529,26 +529,26 @@ class Evaluaciones extends Conexiones
             $ResultInst = $InstDetail->getDetailCompetence($idCompetence);
             if (!$ResultInst) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener el detalle de la competencia seleccionada, inténtelo de nuevamente."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener el detalle de la competencia seleccionada, inténtelo de nuevamente."
                 ];
             } else {
                 $resultado = $this->Select($q, array());
                 if (sizeof($resultado) > 0) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => $resultado[0],
-                      "DataDetail" => $ResultInst
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => $resultado[0],
+                        "DataDetail" => $ResultInst
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al obtener los datos de la competencia seleccionada, inténtelo de nuevamente."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al obtener los datos de la competencia seleccionada, inténtelo de nuevamente."
                     ];
                 }
             }
@@ -590,16 +590,16 @@ class Evaluaciones extends Conexiones
                     }
                 }
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $res
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $res
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación seleccionada, inténtelo de nuevo más tarde."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación seleccionada, inténtelo de nuevo más tarde."
                 ];
             }
 
@@ -679,16 +679,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado[0]
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener los datos generales de la evaluación, inténtelo de nuevo más tarde."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener los datos generales de la evaluación, inténtelo de nuevo más tarde."
                 ];
             }
 
@@ -721,23 +721,23 @@ class Evaluaciones extends Conexiones
                 $Valicion = $resultado[0]["Validando"];
                 if ($Valicion == 1) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true
+                        "Resultado" => true,
+                        "Siguiente" => true
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al validar los datos de la evaluación, inténtelo nuevamente en unos momentos."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al validar los datos de la evaluación, inténtelo nuevamente en unos momentos."
                     ];
                 }
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al validar los datos de la evaluación, inténtelo nuevamente en unos momentos."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al validar los datos de la evaluación, inténtelo nuevamente en unos momentos."
                 ];
             }
 
@@ -756,17 +756,17 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Procedure($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "ConMsg" => true,
-                  "Msg" => "¡Evaluación realizada con éxito!"
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "ConMsg" => true,
+                    "Msg" => "¡Evaluación realizada con éxito!"
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al finalizar la evaluación, inténtelo nuevamente en unos momentos."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al finalizar la evaluación, inténtelo nuevamente en unos momentos."
                 ];
             }
 
@@ -790,9 +790,9 @@ class Evaluaciones extends Conexiones
               HAVING TotalEvaluadores > 0;";
             $resultado = $this->Select($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrRetorno);
@@ -812,16 +812,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener la lista de evaluadores del empleado seleccionado."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener la lista de evaluadores del empleado seleccionado."
                 ];
             }
 
@@ -838,10 +838,10 @@ class Evaluaciones extends Conexiones
             $DataLvl = $Instlvl->getLevelOfTheEvaluated($idEvaluated);
             if (!$DataLvl) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener el nivel del empleado evaluado."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener el nivel del empleado evaluado."
                 ];
             } else {
                 $q = "SELECT RE.Calificacion, C.Competencia,DC.NivelEmpleado,DC.CalificacionEsperado
@@ -852,17 +852,17 @@ class Evaluaciones extends Conexiones
                 $resultado = $this->Select($q, array());
                 if (sizeof($resultado) > 0) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => $resultado,
-                      "DataLvl" => $DataLvl
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => $resultado,
+                        "DataLvl" => $DataLvl
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación."
                     ];
                 }
             }
@@ -925,20 +925,20 @@ class Evaluaciones extends Conexiones
             $DataEmployee = $InstDataEmployee->getDataEmployeeGeneral($employee, $evaluation);
             if (!$DataEmployee) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener los registros generales del empleado seleccionado."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener los registros generales del empleado seleccionado."
                 ];
             } else {
                 $Instlvl = new Evaluaciones();
                 $DataLvl = $Instlvl->getLevelOfTheEvaluatedGeneral($employee, $evaluation);
                 if (!$DataLvl) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un error al obtener el nivel general del empleado seleccionado."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un error al obtener el nivel general del empleado seleccionado."
                     ];
                 } else {
                     $q = "SELECT TO_BASE64(RE.idCompetencias) AS IdCompetencia, RE.Calificacion, C.Competencia, DC.CalificacionEsperado,
@@ -952,17 +952,17 @@ class Evaluaciones extends Conexiones
                     $resultado = $this->Select($q, array());
                     if (sizeof($resultado) > 0) {
                         $arrRetorno = [
-                          "Resultado" => true,
-                          "Siguiente" => true,
-                          "Data" => $resultado,
-                          "DataEmployee" => $DataEmployee
+                            "Resultado" => true,
+                            "Siguiente" => true,
+                            "Data" => $resultado,
+                            "DataEmployee" => $DataEmployee
                         ];
                     } else {
                         $arrRetorno = [
-                          "Resultado" => true,
-                          "Siguiente" => false,
-                          "ConMsg" => true,
-                          "Msg" => "Ha ocurrido un error al obtener los registros de la evaluación del empleado seleccionado."
+                            "Resultado" => true,
+                            "Siguiente" => false,
+                            "ConMsg" => true,
+                            "Msg" => "Ha ocurrido un error al obtener los registros de la evaluación del empleado seleccionado."
                         ];
                     }
                 }
@@ -1000,16 +1000,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado[0]
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación seleccionada."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener los datos de la evaluación seleccionada."
                 ];
             }
 
@@ -1040,9 +1040,9 @@ class Evaluaciones extends Conexiones
                 GROUP BY E.Nombre";
             $resultado = $this->Select($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrRetorno);
@@ -1063,16 +1063,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener el listado de los evaluadores."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener el listado de los evaluadores."
                 ];
             }
 
@@ -1089,16 +1089,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado[0]
                 ];
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener los datos generales de la evaluación seleccionada."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener los datos generales de la evaluación seleccionada."
                 ];
             }
 
@@ -1114,10 +1114,10 @@ class Evaluaciones extends Conexiones
             $q = "UPDATE EvaluacionDetalle SET Status = 0 WHERE TO_BASE64(idEvaluacionDetalle) = '$idEvaluacionDetalle'";
             $this->ExecuteQuery($q, array());
             $arrRetorno = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Evaluador eliminado con éxito."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Evaluador eliminado con éxito."
             ];
 
             return json_encode($arrRetorno);
@@ -1139,25 +1139,25 @@ class Evaluaciones extends Conexiones
                 $msgProc = $resultado[0]["MsgRetorno"];
                 if ($valProc == 1) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "ConMsg" => true,
-                      "Msg" => $msgProc
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "ConMsg" => true,
+                        "Msg" => $msgProc
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => $msgProc
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => $msgProc
                     ];
                 }
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al agregar un nuevo evaluador."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al agregar un nuevo evaluador."
                 ];
             }
 
@@ -1187,9 +1187,9 @@ class Evaluaciones extends Conexiones
               HAVING CantRespondidas < CantEvaluaciones;";
             $resultado = $this->Select($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -1251,9 +1251,9 @@ class Evaluaciones extends Conexiones
 
             if (is_array($ResInstInitialEv)) {
                 foreach ($ResInstInitialEv as $key => $row) {
-                    $isNormal = isset($row['TipoEvaluacion']) && (int)$row['TipoEvaluacion'] !== 1;
+                    $isNormal = isset($row['TipoEvaluacion']) && (int) $row['TipoEvaluacion'] !== 1;
                     $isComplete = isset($row['CantMisEvaluadores']) && isset($row['CantMisEvaluadoresF'])
-                        && (int)$row['CantMisEvaluadoresF'] === (int)$row['CantMisEvaluadores'];
+                        && (int) $row['CantMisEvaluadoresF'] === (int) $row['CantMisEvaluadores'];
 
                     if ($isNormal && $isComplete) {
                         $evId = $row['idEvaluaciones'];
@@ -1271,9 +1271,9 @@ class Evaluaciones extends Conexiones
             }
 
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $ResInstInitialEv
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $ResInstInitialEv
             ];
 
             return json_encode($arrReturn);
@@ -1356,7 +1356,7 @@ class Evaluaciones extends Conexiones
                 foreach ($competencesMap as $competence) {
                     $sumFinal = 0;
                     foreach ($competence['preguntas'] as $question) {
-                        $tipo = (int)$question['idTipoPregunta'];
+                        $tipo = (int) $question['idTipoPregunta'];
                         $idPregunta = $question['IdPregunta'];
                         $calificacion = $question['Calificacion'];
 
@@ -1416,8 +1416,8 @@ class Evaluaciones extends Conexiones
                             }
                         } elseif ($tipo === 3) {
                             if (isset($dataConfig[0]['RangoFinal']) && isset($dataConfig[0]['RangoInicial'])) {
-                                $diffRange = (float)$dataConfig[0]['RangoFinal'] - (float)$dataConfig[0]['RangoInicial'];
-                                $diffValue = $diffRange - (float)$calificacion;
+                                $diffRange = (float) $dataConfig[0]['RangoFinal'] - (float) $dataConfig[0]['RangoInicial'];
+                                $diffValue = $diffRange - (float) $calificacion;
                                 $restFinal = 100 - $diffValue;
                                 $sumFinal += $restFinal;
                             }
@@ -1475,10 +1475,10 @@ class Evaluaciones extends Conexiones
 
             // Calificaciones esperadas según nivel y grupo
             $escalas = [
-                'A' => ['A'=>100,'B'=>75,'C'=>50,'D'=>25,'E'=>0],
-                'B' => ['A'=>100,'B'=>100,'C'=>66,'D'=>33,'E'=>0],
-                'C' => ['A'=>100,'B'=>100,'C'=>100,'D'=>50,'E'=>0],
-                'D' => ['A'=>100,'B'=>100,'C'=>100,'D'=>100,'E'=>0]
+                'A' => ['A' => 100, 'B' => 75, 'C' => 50, 'D' => 25, 'E' => 0],
+                'B' => ['A' => 100, 'B' => 100, 'C' => 66, 'D' => 33, 'E' => 0],
+                'C' => ['A' => 100, 'B' => 100, 'C' => 100, 'D' => 50, 'E' => 0],
+                'D' => ['A' => 100, 'B' => 100, 'C' => 100, 'D' => 100, 'E' => 0]
             ];
             $escala = isset($escalas[$grupoEvaluado]) ? $escalas[$grupoEvaluado] : $escalas['A'];
 
@@ -1527,10 +1527,10 @@ class Evaluaciones extends Conexiones
             $q = "INSERT INTO RetroalimentacionEvaluacion(idEvaluaciones, NoEmpleado) VALUES('$evaluation','$NoEmpleado')";
             $this->ExecuteQuery($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "La retroalimentación ha sido aceptada con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "La retroalimentación ha sido aceptada con éxito"
             ];
 
             return json_encode($arrReturn);
@@ -1661,28 +1661,28 @@ class Evaluaciones extends Conexiones
                         $conPlanAction->ExecuteQuery($qPA, array());
                     }
                     $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => base64_encode($newPlanAction),
-                      "GoUrl" => true,
-                      "ConMsg" => true,
-                      "Msg" => "Se ha generado un nuevo plan de acción"
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => base64_encode($newPlanAction),
+                        "GoUrl" => true,
+                        "ConMsg" => true,
+                        "Msg" => "Se ha generado un nuevo plan de acción"
                     ];
                 } else {
                     $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un problema al continuar con la acción seleccionada"
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un problema al continuar con la acción seleccionada"
                     ];
                 }
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "GoUrl" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Los resultados finales han sido aceptados de manera correcta"
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "GoUrl" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Los resultados finales han sido aceptados de manera correcta"
                 ];
             }
 
@@ -1721,16 +1721,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "El empleado seleccionado aún no se le ha asignado alguna evaluación"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "El empleado seleccionado aún no se le ha asignado alguna evaluación"
                 ];
             }
 
@@ -1754,9 +1754,9 @@ class Evaluaciones extends Conexiones
               GROUP BY E.NoEmpleado;";
             $resultado = $this->Select($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -1769,23 +1769,32 @@ class Evaluaciones extends Conexiones
     {
         try {
             $q = "SELECT TO_BASE64(PAE.idPlanesAccionEvaluacion) AS idPlanesAccionEvaluacion, EV.Titulo,
-              IF(PAE.StatusConfirmaPlanAccion = 0,'Plan de acción sin terminar','Plan de acción finalizado') AS MsgEstadoPlanA
+                            IF(PAE.StatusConfirmaPlanAccion = 0,'Plan de acción sin terminar','Plan de acción finalizado') AS MsgEstadoPlanA,
+                            (
+                                SELECT COUNT(*)
+                                FROM AvanceActividadPlanA AS AVA
+                                INNER JOIN ActividadesPlanAccion AS APA ON APA.idActividadesPlanAccion = AVA.idActividadesPlanAccion
+                                INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                                WHERE OPA.idPlanesAccionEvaluacion = PAE.idPlanesAccionEvaluacion
+                                    AND AVA.idHistorialRechazo IS NULL
+                                    AND COALESCE(AVA.EstadoAprobacion,1) = 0
+                            ) AS CantidadAvancesPendientes
               FROM PlanesAccionEvaluacion AS PAE
               INNER JOIN Evaluaciones AS EV ON EV.idEvaluaciones = PAE.idEvaluaciones
               WHERE PAE.Requerido = 1 AND PAE.NoEmpleado = '$employee';";
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al obtener el listado de los planes de acción generados para el empleado seleccionado"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un problema al obtener el listado de los planes de acción generados para el empleado seleccionado"
                 ];
             }
 
@@ -1805,9 +1814,9 @@ class Evaluaciones extends Conexiones
               WHERE PAE.Requerido = 1 AND PAE.NoEmpleado = '$NoEmpleado';";
             $resultado = $this->Select($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -1825,6 +1834,15 @@ class Evaluaciones extends Conexiones
               (SELECT RE.FechaAceptado FROM RetroalimentacionEvaluacion AS RE
               	INNER JOIN PlanesAccionEvaluacion PAE ON PAE.idEvaluaciones = RE.idEvaluaciones
               	WHERE TO_BASE64(PAE.idPlanesAccionEvaluacion) = '$planA')  AS FechaAceptaRetroalimentacion,
+                            (
+                                SELECT COUNT(*)
+                                FROM AvanceActividadPlanA AS AVA
+                                INNER JOIN ActividadesPlanAccion AS APA ON APA.idActividadesPlanAccion = AVA.idActividadesPlanAccion
+                                INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                                WHERE TO_BASE64(OPA.idPlanesAccionEvaluacion) = '$planA'
+                                    AND AVA.idHistorialRechazo IS NULL
+                                    AND COALESCE(AVA.EstadoAprobacion,1) = 0
+                            ) AS CantidadAvancesPendientes,
               IF(NoEmpleado = '$NoEmpleado',1,0) AS TipoRealiza
               FROM PlanesAccionEvaluacion
               WHERE TO_BASE64(idPlanesAccionEvaluacion) = '$planA';";
@@ -1838,7 +1856,7 @@ class Evaluaciones extends Conexiones
               INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
               WHERE TO_BASE64(OPA.idPlanesAccionEvaluacion) = '$planA';";
             $resAct = $this->Select($qAct);
-            
+
             $cantidadAct = count($resAct);
             $cantidadActTerminadas = 0;
             foreach ($resAct as $act) {
@@ -1862,7 +1880,8 @@ class Evaluaciones extends Conexiones
             $data = [
                 "Cantidades" => [
                     "CantidadAct" => $cantidadAct,
-                    "CantidadActTerminadas" => $cantidadActTerminadas
+                    "CantidadActTerminadas" => $cantidadActTerminadas,
+                    "CantidadAvancesPendientes" => isset($resumen['CantidadAvancesPendientes']) ? intval($resumen['CantidadAvancesPendientes']) : 0
                 ],
                 "Resumen" => $resumen,
                 "0" => $resumen,
@@ -1872,9 +1891,9 @@ class Evaluaciones extends Conexiones
             ];
 
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $data
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $data
             ];
 
             return json_encode($arrReturn);
@@ -1887,16 +1906,28 @@ class Evaluaciones extends Conexiones
     {
         try {
             $planADec = base64_decode($planA);
-            $q = "UPDATE PlanesAccionEvaluacion 
-                  SET StatusConfirmaActividades = 1, FechaConfirmaActividades = NOW() 
+            $q = "UPDATE PlanesAccionEvaluacion
+                  SET StatusConfirmaActividades = 1, FechaConfirmaActividades = NOW()
                   WHERE idPlanesAccionEvaluacion = '$planADec';";
             $this->ExecuteQuery($q, array());
 
+            $context = $this->getPlanActionNotificationContext($planADec);
+            if (!empty($context['NoEmpleadoEvaluado'])) {
+                $bossName = !empty($context['NombreJefe']) ? $context['NombreJefe'] : 'Tu jefe directo';
+                $this->notifyPlanActionParticipant(
+                    $context['NoEmpleadoEvaluado'],
+                    'Actividades aprobadas en Plan de Acción',
+                    "$bossName aprobó las actividades de tu plan de acción. Ya puedes registrar avances.",
+                    $planADec,
+                    false
+                );
+            }
+
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Las actividades del plan de acción han sido aceptadas con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Las actividades del plan de acción han sido aceptadas con éxito"
             ];
 
             return json_encode($arrReturn);
@@ -1909,16 +1940,65 @@ class Evaluaciones extends Conexiones
     {
         try {
             $planADec = base64_decode($planA);
-            $q = "UPDATE PlanesAccionEvaluacion 
-                  SET StatusConfirmaPlanAccion = 1, FechaConfirmaPlanAccion = NOW() 
+
+            $qPendientes = "SELECT COUNT(*) AS CantidadPendientes
+                FROM AvanceActividadPlanA AS AVA
+                INNER JOIN ActividadesPlanAccion AS APA ON APA.idActividadesPlanAccion = AVA.idActividadesPlanAccion
+                INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                WHERE OPA.idPlanesAccionEvaluacion = '$planADec'
+                  AND AVA.idHistorialRechazo IS NULL
+                  AND COALESCE(AVA.EstadoAprobacion,1) = 0;";
+            $resPendientes = $this->Select($qPendientes);
+            $cantidadPendientes = isset($resPendientes[0]['CantidadPendientes']) ? intval($resPendientes[0]['CantidadPendientes']) : 0;
+
+            if ($cantidadPendientes > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No se puede aceptar el plan mientras existan avances pendientes de revisión."
+                ]);
+            }
+
+            $qIncompletas = "SELECT COUNT(*) AS CantidadIncompletas
+                FROM ActividadesPlanAccion AS APA
+                INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                WHERE OPA.idPlanesAccionEvaluacion = '$planADec'
+                  AND APA.Progreso < 100;";
+            $resIncompletas = $this->Select($qIncompletas);
+            $cantidadIncompletas = isset($resIncompletas[0]['CantidadIncompletas']) ? intval($resIncompletas[0]['CantidadIncompletas']) : 0;
+
+            if ($cantidadIncompletas > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No se puede aceptar el plan hasta que todas las actividades estén al 100% aprobado."
+                ]);
+            }
+
+            $q = "UPDATE PlanesAccionEvaluacion
+                  SET StatusConfirmaPlanAccion = 1, FechaConfirmaPlanAccion = NOW()
                   WHERE idPlanesAccionEvaluacion = '$planADec';";
             $this->ExecuteQuery($q, array());
 
+            $context = $this->getPlanActionNotificationContext($planADec);
+            if (!empty($context['NoEmpleadoEvaluado'])) {
+                $bossName = !empty($context['NombreJefe']) ? $context['NombreJefe'] : 'Tu jefe directo';
+                $this->notifyPlanActionParticipant(
+                    $context['NoEmpleadoEvaluado'],
+                    'Plan de Acción aprobado',
+                    "$bossName aprobó el cierre final de tu plan de acción.",
+                    $planADec,
+                    false
+                );
+            }
+
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "El progreso final del plan de acción ha sido aceptado con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "El progreso final del plan de acción ha sido aceptado con éxito"
             ];
 
             return json_encode($arrReturn);
@@ -1932,6 +2012,8 @@ class Evaluaciones extends Conexiones
         try {
             $NoEmpleado = SessionManager::get("NoEmpleado");
             $planADec = base64_decode($planA);
+            $context = $this->getPlanActionNotificationContext($planADec);
+            $bossName = $this->getEmployeeName($NoEmpleado, 'Tu jefe directo');
 
             // Calcular el avance global actual antes de resetear
             $qAvance = "SELECT COALESCE(AVG(APA.Progreso), 0) AS AvanceGlobal
@@ -1977,11 +2059,28 @@ class Evaluaciones extends Conexiones
             $this->ExecuteQuery($qReset, array());
 
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "El progreso del plan de acción fue rechazado. El empleado podrá registrar nuevos avances."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "El progreso del plan de acción fue rechazado. El empleado podrá registrar nuevos avances."
             ];
+
+            if (!empty($context['NoEmpleadoEvaluado'])) {
+                $notifTitle = intval($context['StatusConfirmaActividades']) === 0
+                    ? 'Objetivos/Actividades devueltos'
+                    : 'Avances de Plan de Acción rechazados';
+                $notifBody = intval($context['StatusConfirmaActividades']) === 0
+                    ? "$bossName rechazó los objetivos/actividades propuestos para tu plan de acción. Motivo: $motivo"
+                    : "$bossName rechazó el progreso de tu plan de acción. Motivo: $motivo";
+
+                $this->notifyPlanActionParticipant(
+                    $context['NoEmpleadoEvaluado'],
+                    $notifTitle,
+                    $notifBody,
+                    $planADec,
+                    false
+                );
+            }
 
             return json_encode($arrReturn);
         } catch (\Exception $e) {
@@ -2005,9 +2104,9 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
 
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -2035,15 +2134,15 @@ class Evaluaciones extends Conexiones
                     $InstActivities = new Evaluaciones();
                     $ResultInst = $InstActivities->getActivitiesObjetive($IdObjetive);
                     array_push($finalArr, [
-                      "Principal" => $resultado[$i],
-                      "Activities" => $ResultInst
+                        "Principal" => $resultado[$i],
+                        "Activities" => $ResultInst
                     ]);
                 }
             }
             $arrReturn = [
-              "Resultado" => true,
-              "Data" => $finalArr,
-              "Siguiente" => true
+                "Resultado" => true,
+                "Data" => $finalArr,
+                "Siguiente" => true
             ];
 
             return json_encode($arrReturn);
@@ -2056,6 +2155,19 @@ class Evaluaciones extends Conexiones
     {
         try {
             $q = "SELECT to_base64(idActividadesPlanAccion) AS idActividadesPlanAccion, Titulo, Descripcion, FechaInicio, FechaFin, Progreso,
+                            (
+                                SELECT COUNT(*)
+                                FROM AvanceActividadPlanA AS AVA
+                                WHERE AVA.idActividadesPlanAccion = ActividadesPlanAccion.idActividadesPlanAccion
+                                    AND AVA.idHistorialRechazo IS NULL
+                                    AND COALESCE(AVA.EstadoAprobacion,1) = 0
+                            ) AS CantidadAvancesPendientes,
+                            (
+                                SELECT COUNT(*)
+                                FROM AvanceActividadPlanA AS AVA
+                                WHERE AVA.idActividadesPlanAccion = ActividadesPlanAccion.idActividadesPlanAccion
+                                    AND AVA.idHistorialRechazo IS NULL
+                            ) AS CantidadAvancesRegistrados,
               IF(unix_timestamp(FechaFin) < unix_timestamp(curdate()),'1','0') AS FechaCaduca
               FROM ActividadesPlanAccion
               WHERE TO_BASE64(idObjetivosPlanAccion) = '$objetive';";
@@ -2073,12 +2185,34 @@ class Evaluaciones extends Conexiones
             $objetive = base64_decode($objetive);
             $q = "CALL sp_AddActivityPlanA('$objetive','$title','$description','$dateIni','$dateEnd');";
             $resultado = $this->Procedure($q, array());
+
+            $qPlan = "SELECT OPA.idPlanesAccionEvaluacion AS PlanId
+                FROM ObjetivosPlanAccion AS OPA
+                WHERE OPA.idObjetivosPlanAccion = '$objetive'
+                LIMIT 1;";
+            $planResult = $this->Select($qPlan, array());
+            $planId = isset($planResult[0]['PlanId']) ? $planResult[0]['PlanId'] : null;
+
+            if (!empty($planId)) {
+                $context = $this->getPlanActionNotificationContext($planId);
+                if (!empty($context['NoEmpleadoJefe'])) {
+                    $employeeName = !empty($context['NombreEvaluado']) ? $context['NombreEvaluado'] : 'Un empleado';
+                    $this->notifyPlanActionParticipant(
+                        $context['NoEmpleadoJefe'],
+                        'Nueva actividad propuesta en Plan de Acción',
+                        "$employeeName agregó la actividad: $title. Revisa el plan para validar las actividades propuestas.",
+                        $planId,
+                        true
+                    );
+                }
+            }
+
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Actividad registrada",
-              "Data" => $resultado[0]
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Actividad registrada",
+                "Data" => $resultado[0]
             ];
 
             return json_encode($arrReturn);
@@ -2097,16 +2231,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q, array());
             if (sizeof($resultado) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado[0]
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al obtener los datos del objetivo seleccionado"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un problema al obtener los datos del objetivo seleccionado"
                 ];
             }
 
@@ -2124,10 +2258,10 @@ class Evaluaciones extends Conexiones
               WHERE idObjetivosPlanAccion = '$objetive_id';";
             $this->ExecuteQuery($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Datos actualizados"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Datos actualizados"
             ];
 
             return json_encode($arrReturn);
@@ -2140,16 +2274,24 @@ class Evaluaciones extends Conexiones
     {
         try {
             // Solo mostrar avances del ciclo activo (idHistorialRechazo IS NULL = no archivados)
-            $q = "SELECT NuevoAvance,DescripcionAvance,FechaRegistro
-              FROM AvanceActividadPlanA
-              WHERE TO_BASE64(idActividadesPlanAccion) = '$activity'
-                AND idHistorialRechazo IS NULL
+            $q = "SELECT TO_BASE64(AVA.idAvanceActividadPlanA) AS idAvanceActividadPlanA,
+                                AVA.NuevoAvance,
+                                AVA.DescripcionAvance,
+                                DATE_FORMAT(AVA.FechaRegistro,'%d/%m/%Y %H:%i') AS FechaRegistro,
+                                COALESCE(AVA.EstadoAprobacion,1) AS EstadoAprobacion,
+                                DATE_FORMAT(AVA.FechaRevision,'%d/%m/%Y %H:%i') AS FechaRevision,
+                                AVA.MotivoRevision,
+                                IFNULL(E.Nombre,'') AS NombreRevision
+                            FROM AvanceActividadPlanA AS AVA
+                            LEFT JOIN Empleados AS E ON E.NoEmpleado = AVA.UsuarioRevision
+                            WHERE TO_BASE64(AVA.idActividadesPlanAccion) = '$activity'
+                                AND AVA.idHistorialRechazo IS NULL
               ORDER BY FechaRegistro DESC;";
             $resultado = $this->Select($q);
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -2169,16 +2311,32 @@ class Evaluaciones extends Conexiones
                 return json_encode([
                     "Resultado" => true,
                     "Siguiente" => false,
-                    "ConMsg"    => true,
-                    "Msg"       => "El avance debe ser un valor entre 1% y 100%."
+                    "ConMsg" => true,
+                    "Msg" => "El avance debe ser un valor entre 1% y 100%."
                 ]);
             }
 
-            // Consultar el avance actual del ciclo activo (excluir avances archivados por rechazos previos)
-            $qCurrentProgress = "SELECT COALESCE(MAX(NuevoAvance), 0) AS ProgresoActual
-                                   FROM AvanceActividadPlanA
-                                  WHERE idActividadesPlanAccion = '$activity'
-                                    AND idHistorialRechazo IS NULL";
+            $qPending = "SELECT COUNT(*) AS CantidadPendientes
+                FROM AvanceActividadPlanA
+                WHERE idActividadesPlanAccion = '$activity'
+                  AND idHistorialRechazo IS NULL
+                  AND COALESCE(EstadoAprobacion,1) = 0;";
+            $resPending = $this->Select($qPending);
+            $cantidadPendientes = isset($resPending[0]['CantidadPendientes']) ? intval($resPending[0]['CantidadPendientes']) : 0;
+
+            if ($cantidadPendientes > 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ya existe un avance pendiente de revisión para esta actividad."
+                ]);
+            }
+
+            // Consultar el avance aprobado actual de la actividad
+            $qCurrentProgress = "SELECT Progreso AS ProgresoActual
+                FROM ActividadesPlanAccion
+                WHERE idActividadesPlanAccion = '$activity'";
             $currentResult = $this->Select($qCurrentProgress);
             $progresoActual = isset($currentResult[0]["ProgresoActual"]) ? intval($currentResult[0]["ProgresoActual"]) : 0;
 
@@ -2186,41 +2344,327 @@ class Evaluaciones extends Conexiones
                 return json_encode([
                     "Resultado" => true,
                     "Siguiente" => false,
-                    "ConMsg"    => true,
-                    "Msg"       => "El nuevo avance ({$newProgress}%) debe ser mayor al avance actual ({$progresoActual}%)."
+                    "ConMsg" => true,
+                    "Msg" => "El nuevo avance ({$newProgress}%) debe ser mayor al avance actual ({$progresoActual}%)."
                 ]);
             }
 
-            $q = "CALL sp_AddPgoressActivityPlanA('$activity','$newProgress','$description')";
-            $resultado = $this->Procedure($q);
-            if (sizeof($resultado) > 0) {
-                if ($resultado[0]["Retorno"] == 1) {
-                    $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "ConMsg" => true,
-                      "Msg" => $resultado[0]["MsgReturn"]
-                    ];
-                } else {
-                    $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => $resultado[0]["MsgReturn"]
-                    ];
+            $descriptionSafe = addslashes($description);
+            $qInsert = "INSERT INTO AvanceActividadPlanA
+                (idActividadesPlanAccion, NuevoAvance, DescripcionAvance, EstadoAprobacion)
+                VALUES ('$activity', '$newProgress', '$descriptionSafe', 0);";
+            $this->ExecuteQuery($qInsert, array());
+
+            $qPlan = "SELECT OPA.idPlanesAccionEvaluacion AS PlanId, APA.Titulo AS TituloActividad
+                FROM ActividadesPlanAccion AS APA
+                INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+                WHERE APA.idActividadesPlanAccion = '$activity'
+                LIMIT 1;";
+            $planResult = $this->Select($qPlan, array());
+            $planId = isset($planResult[0]['PlanId']) ? $planResult[0]['PlanId'] : null;
+
+            if (!empty($planId)) {
+                $context = $this->getPlanActionNotificationContext($planId);
+                if (!empty($context['NoEmpleadoJefe'])) {
+                    $employeeName = !empty($context['NombreEvaluado']) ? $context['NombreEvaluado'] : 'Un empleado';
+                    $activityTitle = !empty($planResult[0]['TituloActividad']) ? $planResult[0]['TituloActividad'] : 'la actividad';
+                    $this->notifyPlanActionParticipant(
+                        $context['NoEmpleadoJefe'],
+                        'Avance pendiente en Plan de Acción',
+                        "$employeeName registró un avance de {$newProgress}% en la actividad: $activityTitle. Requiere tu aprobación.",
+                        $planId,
+                        true
+                    );
                 }
-            } else {
-                $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al registrar el avance ingresado"
-                ];
             }
+
+            $arrReturn = [
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "El avance fue registrado y quedó pendiente de aprobación por tu jefe."
+            ];
 
             return json_encode($arrReturn);
         } catch (\Exception $e) {
             return $e;
+        }
+    }
+
+    public function approveProgressActivity($progressId)
+    {
+        try {
+            $NoEmpleado = SessionManager::get("NoEmpleado");
+            $progressIdDec = base64_decode($progressId);
+
+            $qDetalle = "SELECT AVA.idAvanceActividadPlanA, AVA.idActividadesPlanAccion, AVA.NuevoAvance,
+                APA.Titulo, APA.Progreso AS ProgresoAprobado,
+                                PAE.idPlanesAccionEvaluacion AS PlanId,
+                                PAE.NoEmpleado AS NoEmpleadoEvaluado, PAE.idEvaluaciones, PAE.StatusConfirmaActividades, PAE.StatusConfirmaPlanAccion
+              FROM AvanceActividadPlanA AS AVA
+              INNER JOIN ActividadesPlanAccion AS APA ON APA.idActividadesPlanAccion = AVA.idActividadesPlanAccion
+              INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+              INNER JOIN PlanesAccionEvaluacion AS PAE ON PAE.idPlanesAccionEvaluacion = OPA.idPlanesAccionEvaluacion
+              WHERE AVA.idAvanceActividadPlanA = '$progressIdDec'
+                AND AVA.idHistorialRechazo IS NULL
+                AND COALESCE(AVA.EstadoAprobacion,1) = 0
+              LIMIT 1;";
+            $detalle = $this->Select($qDetalle);
+
+            if (count($detalle) === 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No se encontró un avance pendiente para aprobar."
+                ]);
+            }
+
+            $avance = $detalle[0];
+            $qPermiso = "SELECT COUNT(*) AS TienePermiso
+              FROM EvaluacionDetalle
+              WHERE NoEmpleadoEvalua = '$NoEmpleado'
+                AND NoEmpleadoEvaluado = '" . $avance['NoEmpleadoEvaluado'] . "'
+                AND idEvaluaciones = '" . $avance['idEvaluaciones'] . "'
+                AND JefeEvalua = 1
+                AND Status = 1;";
+            $permiso = $this->Select($qPermiso);
+            $tienePermiso = isset($permiso[0]['TienePermiso']) ? intval($permiso[0]['TienePermiso']) : 0;
+
+            if ($tienePermiso === 0 || intval($avance['StatusConfirmaActividades']) !== 1 || intval($avance['StatusConfirmaPlanAccion']) === 1) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No tienes permiso para aprobar este avance o el plan ya no permite cambios."
+                ]);
+            }
+
+            if (intval($avance['NuevoAvance']) <= intval($avance['ProgresoAprobado'])) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "El avance ya no es válido porque existe un porcentaje aprobado igual o mayor."
+                ]);
+            }
+
+            $qApprove = "UPDATE AvanceActividadPlanA
+                SET EstadoAprobacion = 1,
+                    FechaRevision = NOW(),
+                    UsuarioRevision = '$NoEmpleado',
+                    MotivoRevision = NULL
+                WHERE idAvanceActividadPlanA = '$progressIdDec';";
+            $this->ExecuteQuery($qApprove, array());
+
+            $qUpdateActivity = "UPDATE ActividadesPlanAccion
+                SET Progreso = '" . intval($avance['NuevoAvance']) . "'
+                WHERE idActividadesPlanAccion = '" . $avance['idActividadesPlanAccion'] . "';";
+            $this->ExecuteQuery($qUpdateActivity, array());
+
+            $bossName = $this->getEmployeeName($NoEmpleado, 'Tu jefe directo');
+            $this->notifyPlanActionParticipant(
+                $avance['NoEmpleadoEvaluado'],
+                'Avance aprobado en Plan de Acción',
+                "$bossName aprobó tu avance de " . intval($avance['NuevoAvance']) . "% en la actividad: " . $avance['Titulo'] . ".",
+                $avance['PlanId'],
+                false
+            );
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "El avance fue aprobado correctamente."
+            ]);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    public function rejectProgressEntry($progressId, $motivo)
+    {
+        try {
+            $NoEmpleado = SessionManager::get("NoEmpleado");
+            $progressIdDec = base64_decode($progressId);
+            $motivoSafe = addslashes($motivo);
+
+            $qDetalle = "SELECT AVA.idAvanceActividadPlanA,
+                                APA.Titulo, AVA.NuevoAvance,
+                                PAE.idPlanesAccionEvaluacion AS PlanId,
+                                PAE.NoEmpleado AS NoEmpleadoEvaluado, PAE.idEvaluaciones, PAE.StatusConfirmaPlanAccion
+              FROM AvanceActividadPlanA AS AVA
+              INNER JOIN ActividadesPlanAccion AS APA ON APA.idActividadesPlanAccion = AVA.idActividadesPlanAccion
+              INNER JOIN ObjetivosPlanAccion AS OPA ON OPA.idObjetivosPlanAccion = APA.idObjetivosPlanAccion
+              INNER JOIN PlanesAccionEvaluacion AS PAE ON PAE.idPlanesAccionEvaluacion = OPA.idPlanesAccionEvaluacion
+              WHERE AVA.idAvanceActividadPlanA = '$progressIdDec'
+                AND AVA.idHistorialRechazo IS NULL
+                AND COALESCE(AVA.EstadoAprobacion,1) = 0
+              LIMIT 1;";
+            $detalle = $this->Select($qDetalle);
+
+            if (count($detalle) === 0) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No se encontró un avance pendiente para rechazar."
+                ]);
+            }
+
+            $avance = $detalle[0];
+            $qPermiso = "SELECT COUNT(*) AS TienePermiso
+              FROM EvaluacionDetalle
+              WHERE NoEmpleadoEvalua = '$NoEmpleado'
+                AND NoEmpleadoEvaluado = '" . $avance['NoEmpleadoEvaluado'] . "'
+                AND idEvaluaciones = '" . $avance['idEvaluaciones'] . "'
+                AND JefeEvalua = 1
+                AND Status = 1;";
+            $permiso = $this->Select($qPermiso);
+            $tienePermiso = isset($permiso[0]['TienePermiso']) ? intval($permiso[0]['TienePermiso']) : 0;
+
+            if ($tienePermiso === 0 || intval($avance['StatusConfirmaPlanAccion']) === 1) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No tienes permiso para rechazar este avance o el plan ya no permite cambios."
+                ]);
+            }
+
+            $qReject = "UPDATE AvanceActividadPlanA
+                SET EstadoAprobacion = 2,
+                    FechaRevision = NOW(),
+                    UsuarioRevision = '$NoEmpleado',
+                    MotivoRevision = '$motivoSafe'
+                WHERE idAvanceActividadPlanA = '$progressIdDec';";
+            $this->ExecuteQuery($qReject, array());
+
+            $bossName = $this->getEmployeeName($NoEmpleado, 'Tu jefe directo');
+            $this->notifyPlanActionParticipant(
+                $avance['NoEmpleadoEvaluado'],
+                'Avance rechazado en Plan de Acción',
+                "$bossName rechazó tu avance de " . intval($avance['NuevoAvance']) . "% en la actividad: " . $avance['Titulo'] . ". Motivo: $motivo",
+                $avance['PlanId'],
+                false
+            );
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "El avance fue rechazado. Se conserva el último porcentaje aprobado de la actividad."
+            ]);
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
+    private function getEmployeeName($employeeNumber, $fallback = 'Usuario')
+    {
+        try {
+            $employeeNumber = addslashes($employeeNumber);
+            $q = "SELECT Nombre FROM Empleados WHERE NoEmpleado = '$employeeNumber' LIMIT 1;";
+            $result = $this->Select($q, array());
+            return !empty($result[0]['Nombre']) ? $result[0]['Nombre'] : $fallback;
+        } catch (\Exception $e) {
+            return $fallback;
+        }
+    }
+
+    private function getPlanActionNotificationContext($planId)
+    {
+        try {
+            $planId = addslashes($planId);
+            $q = "SELECT PAE.idPlanesAccionEvaluacion,
+                    PAE.NoEmpleado AS NoEmpleadoEvaluado,
+                    PAE.StatusConfirmaActividades,
+                    E.Nombre AS NombreEvaluado,
+                    ED.NoEmpleadoEvalua AS NoEmpleadoJefe,
+                    EJ.Nombre AS NombreJefe
+                FROM PlanesAccionEvaluacion AS PAE
+                LEFT JOIN Empleados AS E ON E.NoEmpleado = PAE.NoEmpleado
+                LEFT JOIN EvaluacionDetalle AS ED ON ED.NoEmpleadoEvaluado = PAE.NoEmpleado
+                    AND ED.idEvaluaciones = PAE.idEvaluaciones
+                    AND ED.JefeEvalua = 1
+                    AND ED.Status = 1
+                LEFT JOIN Empleados AS EJ ON EJ.NoEmpleado = ED.NoEmpleadoEvalua
+                WHERE PAE.idPlanesAccionEvaluacion = '$planId'
+                LIMIT 1;";
+            $result = $this->Select($q, array());
+            return $result[0] ?? [];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    private function notifyPlanActionParticipant($noEmpleado, $title, $message, $planId, $bossView = false)
+    {
+        try {
+            require_once(__DIR__ . '/../Notifications/Notifications.php');
+            $planIdBase64 = base64_encode((string) $planId);
+            $link = 'plan-action.php?PA=' . urlencode($planIdBase64);
+            $notifService = new Notifications();
+            $notifService->insertNotification(
+                (string) $noEmpleado,
+                'plan_action',
+                $title,
+                $message,
+                $link,
+                intval($planId),
+                'PlanesAccionEvaluacion'
+            );
+        } catch (\Exception $notifEx) {
+            error_log('[notifyPlanActionParticipant] Web notification error: ' . $notifEx->getMessage());
+        }
+
+        $route = $bossView
+            ? '/plan-accion/equipo/' . base64_encode((string) $planId)
+            : '/plan-accion/' . base64_encode((string) $planId);
+
+        $this->sendMobileInternalNotification((string) $noEmpleado, 'PlanAccion', $title, $message, [
+            'tipo' => 'PlanAccion',
+            'route' => $route,
+            'target' => $bossView ? 'team' : 'mine'
+        ]);
+    }
+
+    private function sendMobileInternalNotification($noEmpleado, $tipo, $titulo, $cuerpo, $payload = [])
+    {
+        try {
+            $apiUrl = defined('DOTNET_API_URL') ? DOTNET_API_URL : 'http://localhost:5000';
+            $internalKey = defined('DOTNET_INTERNAL_KEY') ? DOTNET_INTERNAL_KEY : 'pip-internal-2025-X9kLmQ7rNvTz';
+            $requestBody = json_encode([
+                'noEmpleado' => (string) $noEmpleado,
+                'tipo' => $tipo,
+                'titulo' => $titulo,
+                'cuerpo' => $cuerpo,
+                'payload' => $payload,
+            ]);
+
+            $ch = curl_init("$apiUrl/api/notificacion/internal/enviar");
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $requestBody,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    "X-Internal-Key: $internalKey",
+                    'ngrok-skip-browser-warning: 1',
+                ],
+                CURLOPT_TIMEOUT => 10,
+                CURLOPT_SSL_VERIFYPEER => false,
+            ]);
+            $result = curl_exec($ch);
+            $curlErr = curl_error($ch);
+            if ($curlErr) {
+                error_log('[sendMobileInternalNotification] Curl error: ' . $curlErr);
+            } else {
+                error_log('[sendMobileInternalNotification] Result: ' . $result);
+            }
+            curl_close($ch);
+        } catch (\Exception $pushEx) {
+            error_log('[sendMobileInternalNotification] Error: ' . $pushEx->getMessage());
         }
     }
 
@@ -2262,9 +2706,9 @@ class Evaluaciones extends Conexiones
                     FechaRegistro DESC;";
             $resultado = $this->Select($q);
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -2314,24 +2758,24 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
             if (count($resultado) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado[0]
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado[0]
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "Msg" => "Evaluación no encontrada"
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "Msg" => "Evaluación no encontrada"
                 ];
             }
 
             return json_encode($arrReturn);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Siguiente" => false,
-              "Msg" => $e->getMessage()
+                "Resultado" => false,
+                "Siguiente" => false,
+                "Msg" => $e->getMessage()
             ]);
         }
     }
@@ -2379,19 +2823,19 @@ class Evaluaciones extends Conexiones
             // Mensaje según el tipo
             $tipoMsg = $tipoEvaluacion == 1 ? "Evaluación 360°" : "Encuesta Normal";
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "$tipoMsg registrada con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "$tipoMsg registrada con éxito"
             ];
 
             return json_encode($arrReturn);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Siguiente" => false,
-              "ConMsg" => true,
-              "Msg" => "Error al registrar: " . $e->getMessage()
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al registrar: " . $e->getMessage()
             ]);
         }
     }
@@ -2414,9 +2858,9 @@ class Evaluaciones extends Conexiones
             $arrFinal = array_merge($arrFinal, $resAnExpected);
             $arrFinal = array_merge($arrFinal, $resRangeExpected);
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $arrFinal
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $arrFinal
             ];
 
             return json_encode($arrReturn);
@@ -2525,8 +2969,8 @@ class Evaluaciones extends Conexiones
             }
 
             return [
-              "answers" => $resAnswers,
-              "expected" => $expectedData
+                "answers" => $resAnswers,
+                "expected" => $expectedData
             ];
         } catch (\Exception $e) {
             return $e;
@@ -2581,8 +3025,8 @@ class Evaluaciones extends Conexiones
             $resExpected = $Con2->Select($q2, array());
 
             return [
-              "answers" => $resAnswers,
-              "expected" => $resExpected
+                "answers" => $resAnswers,
+                "expected" => $resExpected
             ];
         } catch (\Exception $e) {
             return $e;
@@ -2604,20 +3048,20 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
             if ($resultado[0]["CantidadR"] > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "resultFound" => true,
-                  "Msg" => "La respuesta que se intenta eliminar ya se encuentra registrada como posible respuesta esperada dentro de la pregunta."
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "resultFound" => true,
+                    "Msg" => "La respuesta que se intenta eliminar ya se encuentra registrada como posible respuesta esperada dentro de la pregunta."
                 ];
             } else {
                 $Con2 = new Conexiones();
                 $q2 = "DELETE FROM PreguntasPosiblesRespuestas WHERE idPreguntasPosiblesRespuestas = '$answer' AND idPreguntasEvaluacion = '$question';";
                 $Con2->ExecuteQuery($q2, array());
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "resultFound" => false,
-                  // "Msg" => "La respuesta que se intenta eliminar ya se encuentra registrada como posible respuesta esperada dentro de la pregunta."
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "resultFound" => false,
+                    // "Msg" => "La respuesta que se intenta eliminar ya se encuentra registrada como posible respuesta esperada dentro de la pregunta."
                 ];
             }
 
@@ -2637,10 +3081,10 @@ class Evaluaciones extends Conexiones
                 $NewCon->ExecuteQuery($q, array());
             }
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se ha agregado nuevas respuestas esperadas para la pregunta seleccionada"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se ha agregado nuevas respuestas esperadas para la pregunta seleccionada"
             ];
 
             return json_encode($arrReturn);
@@ -2656,10 +3100,10 @@ class Evaluaciones extends Conexiones
               WHERE idPreguntasEvaluacion = '$question' AND NivelEmpleadoEsperadoOM = '$lvl' AND RespuestaEsperadoOM = '$answer';";
             $this->ExecuteQuery($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se ha eliminado la respuesta esperada de la pregunta"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se ha eliminado la respuesta esperada de la pregunta"
             ];
 
             return json_encode($arrReturn);
@@ -2726,8 +3170,8 @@ class Evaluaciones extends Conexiones
                                 for ($j = 0; $j < sizeof($expectedVal); $j++) {
                                     if ($expectedVal[$j]->answer == $i) {
                                         array_push($arrRespuestasEsperadas, [
-                                          "IdRespuesta" => $IdRespuesta,
-                                          "NivelEsperado" => $expectedVal[$j]->lvl,
+                                            "IdRespuesta" => $IdRespuesta,
+                                            "NivelEsperado" => $expectedVal[$j]->lvl,
                                         ]);
                                     }
                                 }
@@ -2791,8 +3235,8 @@ class Evaluaciones extends Conexiones
                         if (sizeof($res) > 0) {
                             $IdRespuesta = $res[0]["IdRespuesta"];
                             $arrNewResponsesGen[] = [
-                              "IdRespuesta" => $IdRespuesta,
-                              "PositionArr" => $i
+                                "IdRespuesta" => $IdRespuesta,
+                                "PositionArr" => $i
                             ];
                         } else {
                             return false;
@@ -2820,10 +3264,10 @@ class Evaluaciones extends Conexiones
                 }
             }
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se ha actualizado los datos de la pregunta seleccionada"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se ha actualizado los datos de la pregunta seleccionada"
             ];
 
             return json_encode($arrReturn);
@@ -2838,10 +3282,10 @@ class Evaluaciones extends Conexiones
             $q = "CALL sp_EliminaPregunta('$idQuestion');";
             $this->Procedure($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se ha eliminado la pregunta con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se ha eliminado la pregunta con éxito"
             ];
 
             return json_encode($arrReturn);
@@ -2864,10 +3308,10 @@ class Evaluaciones extends Conexiones
                 $resProcedure = $this->ProcedureWithParam($q, array($NoEmpleado, $evaluation));
             }
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Evaluación publicada con éxito"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Evaluación publicada con éxito"
             ];
 
             return json_encode($arrReturn);
@@ -2885,9 +3329,9 @@ class Evaluaciones extends Conexiones
               ORDER BY Descripcion ASC;";
             $resultado = $this->Select($q);
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -2905,9 +3349,9 @@ class Evaluaciones extends Conexiones
               ORDER BY Competencia ASC;";
             $resultado = $this->Select($q);
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ];
 
             return json_encode($arrReturn);
@@ -2934,10 +3378,10 @@ class Evaluaciones extends Conexiones
                 $jsonError = json_last_error_msg();
                 error_log("saveQuestionsConfig - Error JSON: " . $jsonError);
                 $arrReturn = [
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Error al decodificar los datos JSON: " . $jsonError
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Error al decodificar los datos JSON: " . $jsonError
                 ];
 
                 return json_encode($arrReturn);
@@ -2952,10 +3396,10 @@ class Evaluaciones extends Conexiones
             if (count($data) === 0) {
                 error_log("saveQuestionsConfig - No hay preguntas para guardar");
                 $arrReturn = [
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "No hay preguntas para guardar"
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No hay preguntas para guardar"
                 ];
 
                 return json_encode($arrReturn);
@@ -3008,20 +3452,20 @@ class Evaluaciones extends Conexiones
                 }
             }
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se han agregado las preguntas a la evaluación"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se han agregado las preguntas a la evaluación"
             ];
 
             return json_encode($arrReturn);
         } catch (\Exception $e) {
             error_log("saveQuestionsConfig - Exception: " . $e->getMessage());
             $arrReturn = [
-              "Resultado" => false,
-              "Siguiente" => false,
-              "ConMsg" => true,
-              "Msg" => "Error al guardar: " . $e->getMessage()
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al guardar: " . $e->getMessage()
             ];
 
             return json_encode($arrReturn);
@@ -3106,8 +3550,8 @@ class Evaluaciones extends Conexiones
                     for ($j = 0; $j < count($expectedVal); $j++) {
                         if ($expectedVal[$j]->answer == $i) {
                             array_push($arrRespuestasEsperadas, [
-                              "IdRespuesta" => $IdRespuesta,
-                              "NivelEsperado" => $expectedVal[$j]->lvl,
+                                "IdRespuesta" => $IdRespuesta,
+                                "NivelEsperado" => $expectedVal[$j]->lvl,
                             ]);
                         }
                     }
@@ -3178,10 +3622,10 @@ class Evaluaciones extends Conexiones
             }
             $this->ExecuteQuery($q, array());
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => $Msg
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => $Msg
             ];
 
             return json_encode($arrReturn);
@@ -3239,16 +3683,16 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
             if (count($resultado) > 0) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "Data" => $resultado
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "Data" => $resultado
                 ];
             } else {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un problema al obtener el detalle de los evaluadores para el empleado seleccionado"
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un problema al obtener el detalle de los evaluadores para el empleado seleccionado"
                 ];
             }
 
@@ -3322,20 +3766,20 @@ class Evaluaciones extends Conexiones
             $DataLvl = $Instlvl->getLevelOfTheEvaluatedPerEvaluation($employee, $evaluation);
             if (!$DataLvl) {
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al obtener el nivel del empleado evaluado."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al obtener el nivel del empleado evaluado."
                 ];
             } else {
                 $InstAllEvaluationDet = new Evaluaciones();
                 $ResInstDetail = $InstAllEvaluationDet->getAllEvaluationDetail($evaluation, $employee);
                 if (!$ResInstDetail) {
                     $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => "Ha ocurrido un problema al obtener el detalle de las evaluaciones del evaluado seleccionado."
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => "Ha ocurrido un problema al obtener el detalle de las evaluaciones del evaluado seleccionado."
                     ];
                 } else {
                     $q = "SELECT TO_BASE64(PC.idPreguntasEvaluacion) AS IdPregunta,
@@ -3352,14 +3796,14 @@ class Evaluaciones extends Conexiones
                           WHERE TO_BASE64(PE.idEvaluaciones) = '$evaluation';";
                     $resAnswers = $Con2->Select($qAnswers);
                     $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => [
-                        "AllAnswersQuestion" => $resAnswers,
-                        "ConfigQ" => $result,
-                        "LvlEmp" => $DataLvl,
-                        "allEvaluationDetail" => $ResInstDetail
-                      ],
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => [
+                            "AllAnswersQuestion" => $resAnswers,
+                            "ConfigQ" => $result,
+                            "LvlEmp" => $DataLvl,
+                            "allEvaluationDetail" => $ResInstDetail
+                        ],
                     ];
                 }
             }
@@ -3381,11 +3825,11 @@ class Evaluaciones extends Conexiones
             if ($resultado[0]["ExisteR"] > 0) {
                 $resInst = $InstDetalle->getDetailTempEvaluation($evaluation, $branchL);
                 $arrReturn = [
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "ConMsg" => true,
-                  "Data" => $resInst,
-                  "Msg" => "Los datos temporales se han obtenido con éxito."
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "ConMsg" => true,
+                    "Data" => $resInst,
+                    "Msg" => "Los datos temporales se han obtenido con éxito."
                 ];
             } else {
                 $insConf = new Evaluaciones();
@@ -3401,11 +3845,11 @@ class Evaluaciones extends Conexiones
                 if (count($resProc) > 0) {
                     $resInst = $InstDetalle->getDetailTempEvaluation($evaluation, $branchL);
                     $arrReturn = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "Data" => $resInst,
-                      "ConMsg" => true,
-                      "Msg" => "Se han añadido los registros temporales y posteriormente se han obtenido con éxito."
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "Data" => $resInst,
+                        "ConMsg" => true,
+                        "Msg" => "Se han añadido los registros temporales y posteriormente se han obtenido con éxito."
                     ];
                 }
             }
@@ -3456,10 +3900,10 @@ class Evaluaciones extends Conexiones
               WHERE idEvaluacionDetalle = ?;";
             $this->ExecuteQueryWithParam($q, array($newVal, $detEv));
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Se ha actualizado el estado del detalle de la evaluación seleccionado"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Se ha actualizado el estado del detalle de la evaluación seleccionado"
             ];
 
             return json_encode($arrReturn);
@@ -3480,26 +3924,26 @@ class Evaluaciones extends Conexiones
                 $IdGenerado = $resultado[0]["IdGenerado"];
                 if ($valProc == 1) {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => true,
-                      "ConMsg" => true,
-                      "Msg" => $msgProc,
-                      "Data" => $resultado[0]
+                        "Resultado" => true,
+                        "Siguiente" => true,
+                        "ConMsg" => true,
+                        "Msg" => $msgProc,
+                        "Data" => $resultado[0]
                     ];
                 } else {
                     $arrRetorno = [
-                      "Resultado" => true,
-                      "Siguiente" => false,
-                      "ConMsg" => true,
-                      "Msg" => $msgProc
+                        "Resultado" => true,
+                        "Siguiente" => false,
+                        "ConMsg" => true,
+                        "Msg" => $msgProc
                     ];
                 }
             } else {
                 $arrRetorno = [
-                  "Resultado" => true,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Ha ocurrido un error al agregar un nuevo evaluador."
+                    "Resultado" => true,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Ha ocurrido un error al agregar un nuevo evaluador."
                 ];
             }
 
@@ -3516,10 +3960,10 @@ class Evaluaciones extends Conexiones
             $q = "CALL sp_EliminaEvaluadorDetalle(?)";
             $this->ProcedureWithParam($q, array($evDetail));
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "Detalle eliminado."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Detalle eliminado."
             ];
 
             return json_encode($arrReturn);
@@ -3540,26 +3984,26 @@ class Evaluaciones extends Conexiones
             $check = $this->SelectNotClose("SELECT Activado, PreguntasAceptadas FROM Evaluaciones WHERE idEvaluaciones = '$evDecoded'");
             if (count($check) === 0) {
                 return json_encode([
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "La evaluación no fue encontrada."
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "La evaluación no fue encontrada."
                 ]);
             }
             if ($check[0]['Activado'] == 1) {
                 return json_encode([
-                  "Resultado" => true,
-                  "Siguiente" => true,
-                  "ConMsg" => true,
-                  "Msg" => "La evaluación ya se encuentra activada."
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "ConMsg" => true,
+                    "Msg" => "La evaluación ya se encuentra activada."
                 ]);
             }
             if ($check[0]['PreguntasAceptadas'] != 1) {
                 return json_encode([
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Las preguntas de la evaluación aún no han sido aceptadas."
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Las preguntas de la evaluación aún no han sido aceptadas."
                 ]);
             }
 
@@ -3608,10 +4052,10 @@ class Evaluaciones extends Conexiones
 
             if ($spResult === false) {
                 return json_encode([
-                  "Resultado" => false,
-                  "Siguiente" => false,
-                  "ConMsg" => true,
-                  "Msg" => "Error al ejecutar el procedimiento de publicación."
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Error al ejecutar el procedimiento de publicación."
                 ]);
             }
 
@@ -3645,25 +4089,25 @@ class Evaluaciones extends Conexiones
                 $tituloEv = $tituloInfo2[0]['Titulo'] ?? 'Evaluación';
                 $pushPayload = json_encode([
                     'titulo' => 'Nueva evaluación disponible',
-                    'cuerpo'  => "Tienes una nueva evaluación pendiente: $tituloEv",
+                    'cuerpo' => "Tienes una nueva evaluación pendiente: $tituloEv",
                 ]);
                 $apiUrl = defined('DOTNET_API_URL') ? DOTNET_API_URL : 'http://localhost:5000';
                 $internalKey = defined('DOTNET_INTERNAL_KEY') ? DOTNET_INTERNAL_KEY : 'pip-internal-2025-X9kLmQ7rNvTz';
                 $ch = curl_init("$apiUrl/api/notificacion/internal/evaluacion/$evDecoded/notificar");
                 curl_setopt_array($ch, [
                     CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST           => true,
-                    CURLOPT_POSTFIELDS     => $pushPayload,
-                    CURLOPT_HTTPHEADER     => [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $pushPayload,
+                    CURLOPT_HTTPHEADER => [
                         'Content-Type: application/json',
                         "X-Internal-Key: $internalKey",
                         'ngrok-skip-browser-warning: 1',
                     ],
-                    CURLOPT_TIMEOUT        => 10,
+                    CURLOPT_TIMEOUT => 10,
                     CURLOPT_SSL_VERIFYPEER => false,
                 ]);
                 $pushResult = curl_exec($ch);
-                $curlErr    = curl_error($ch);
+                $curlErr = curl_error($ch);
                 if ($curlErr) {
                     error_log("[acceptPublicationOfTheEvaluation] Push móvil curl error: $curlErr");
                 } else {
@@ -3674,10 +4118,10 @@ class Evaluaciones extends Conexiones
             }
 
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "La evaluación ha sido activada."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "La evaluación ha sido activada."
             ];
 
             return json_encode($arrReturn);
@@ -3685,10 +4129,10 @@ class Evaluaciones extends Conexiones
             error_log("Error en acceptPublicationOfTheEvaluation: " . $e->getMessage());
 
             return json_encode([
-              "Resultado" => false,
-              "Siguiente" => false,
-              "ConMsg" => true,
-              "Msg" => "Error al publicar la evaluación: " . $e->getMessage()
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al publicar la evaluación: " . $e->getMessage()
             ]);
         }
     }
@@ -3724,10 +4168,10 @@ class Evaluaciones extends Conexiones
               WHERE idEvaluaciones = ?;";
             $this->ExecuteQueryWithParam($q, array($iEvaluation));
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Nsg" => "Se han aceptado las preguntas para la evaluación seleccionada."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Nsg" => "Se han aceptado las preguntas para la evaluación seleccionada."
             ];
 
             return json_encode($arrReturn);
@@ -3744,9 +4188,9 @@ class Evaluaciones extends Conexiones
             $q = "CALL sp_eliminarDetalleEvaluadoresSucursal(?,?)";
             $this->ExecuteQueryWithParam($q, array($ev, $branch));
             $arrReturn = [
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Msg" => "¡Evaluadores eliminados!"
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Msg" => "¡Evaluadores eliminados!"
             ];
 
             return json_encode($arrReturn);
@@ -3766,9 +4210,9 @@ class Evaluaciones extends Conexiones
             $res = $this->ExecuteQueryWithParam($q, [$ev]);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res[0]
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res[0]
             ]);
         } catch (\Exception $e) {
             return $e;
@@ -3789,9 +4233,9 @@ class Evaluaciones extends Conexiones
                         $resAddB = $insAddBranchS->addBranchesSelectedForEvaluation($branchSel, $ev);
                     } else {
                         return json_encode([
-                          "Resultado" => true,
-                          "Siguiente" => false,
-                          "Msg" => "Ingrese al menos una sucursal para la evaluación."
+                            "Resultado" => true,
+                            "Siguiente" => false,
+                            "Msg" => "Ingrese al menos una sucursal para la evaluación."
                         ]);
                     }
                 } elseif ($typeSelBranch == 2) {
@@ -3800,9 +4244,9 @@ class Evaluaciones extends Conexiones
                         $resCantB = $instCantBranch->getCantBranchInSystem();
                         if ($cantBranchSel == $resCantB) {
                             return json_encode([
-                              "Resultado" => true,
-                              "Siguiente" => false,
-                              "Msg" => "No es posible excluir todas las sucursales disponibles."
+                                "Resultado" => true,
+                                "Siguiente" => false,
+                                "Msg" => "No es posible excluir todas las sucursales disponibles."
                             ]);
                         } else {
                             $insAddBranchS = new Evaluaciones();
@@ -3810,9 +4254,9 @@ class Evaluaciones extends Conexiones
                         }
                     } else {
                         return json_encode([
-                          "Resultado" => true,
-                          "Siguiente" => false,
-                          "Msg" => "Por favor, seleccione al menos una sucursal para excluir."
+                            "Resultado" => true,
+                            "Siguiente" => false,
+                            "Msg" => "Por favor, seleccione al menos una sucursal para excluir."
                         ]);
                     }
                 }
@@ -3822,9 +4266,9 @@ class Evaluaciones extends Conexiones
             $this->ExecuteQueryWithParam($q, [$typeSelBranch, $typeOption, $ev]);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Msg" => "Se ha concluido la configuración de las sucursales."
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Msg" => "Se ha concluido la configuración de las sucursales."
             ]);
         } catch (\Exception $e) {
             return $e;
@@ -3894,9 +4338,9 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return $e;
@@ -3922,9 +4366,9 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return $e;
@@ -3955,14 +4399,14 @@ class Evaluaciones extends Conexiones
             $res = $this->Select($q);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Mensaje" => $e->getMessage()
+                "Resultado" => false,
+                "Mensaje" => $e->getMessage()
             ]);
         }
     }
@@ -3979,14 +4423,14 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Mensaje" => $e->getMessage()
+                "Resultado" => false,
+                "Mensaje" => $e->getMessage()
             ]);
         }
     }
@@ -3998,14 +4442,14 @@ class Evaluaciones extends Conexiones
             $res = $this->Select($q);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Mensaje" => $e->getMessage()
+                "Resultado" => false,
+                "Mensaje" => $e->getMessage()
             ]);
         }
     }
@@ -4049,14 +4493,14 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $res
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $res
             ]);
         } catch (\Exception $e) {
             return json_encode([
-              "Resultado" => false,
-              "Mensaje" => $e->getMessage()
+                "Resultado" => false,
+                "Mensaje" => $e->getMessage()
             ]);
         }
     }
@@ -4092,9 +4536,9 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             error_log("Error en getEvaluacionesPostulante: " . $e->getMessage());
@@ -4169,10 +4613,10 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $preguntas,
-              "Estatus" => $estatus
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $preguntas,
+                "Estatus" => $estatus
             ]);
         } catch (\Exception $e) {
             error_log("Error en getPreguntasEvaluacionPostulante: " . $e->getMessage());
@@ -4267,8 +4711,8 @@ class Evaluaciones extends Conexiones
 
             if ($respondidas < $totalPreguntas) {
                 return json_encode([
-                  "Resultado" => false,
-                  "Msg" => "Faltan " . ($totalPreguntas - $respondidas) . " preguntas por responder."
+                    "Resultado" => false,
+                    "Msg" => "Faltan " . ($totalPreguntas - $respondidas) . " preguntas por responder."
                 ]);
             }
 
@@ -4307,11 +4751,11 @@ class Evaluaciones extends Conexiones
                              WHERE IdPostulanteEvaluacion = $IdPostulanteEvaluacion", array());
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "ConMsg" => true,
-              "Msg" => "¡Evaluación finalizada! Calificación: $calificacion%",
-              "Calificacion" => $calificacion
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "¡Evaluación finalizada! Calificación: $calificacion%",
+                "Calificacion" => $calificacion
             ]);
         } catch (\Exception $e) {
             error_log("Error en finalizarEvaluacionPostulante: " . $e->getMessage());
@@ -4389,8 +4833,8 @@ class Evaluaciones extends Conexiones
                     $puntos = $resDesg[0]['Puntos'] ?? 0;
 
                     $desglose[] = [
-                      "Competencia" => $comp['Competencia'],
-                      "Porcentaje" => round(($puntos / $total) * 100, 2)
+                        "Competencia" => $comp['Competencia'],
+                        "Porcentaje" => round(($puntos / $total) * 100, 2)
                     ];
                 }
 
@@ -4398,12 +4842,12 @@ class Evaluaciones extends Conexiones
             }
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => [
-                "Postulantes" => $postulantes,
-                "Competencias" => $competencias
-              ]
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => [
+                    "Postulantes" => $postulantes,
+                    "Competencias" => $competencias
+                ]
             ]);
         } catch (\Exception $e) {
             error_log("Error en getResultadosComparativosPostulantes: " . $e->getMessage());
@@ -4437,9 +4881,9 @@ class Evaluaciones extends Conexiones
             $resultado = $this->Select($q);
 
             return json_encode([
-              "Resultado" => true,
-              "Siguiente" => true,
-              "Data" => $resultado
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => $resultado
             ]);
         } catch (\Exception $e) {
             return json_encode(["Resultado" => false, "Msg" => $e->getMessage()]);

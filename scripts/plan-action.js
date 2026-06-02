@@ -65,6 +65,10 @@ const dv_content_PlanAction = document.getElementById('dv_content_PlanAction'),
       t_summ_planA = document.getElementById('t_summ_planA'),
       card_acceptActivities = document.getElementById('card_acceptActivities'),
       card_acceptProgress = document.getElementById('card_acceptProgress'),
+      tx_accept_progress_note = document.getElementById('tx_accept_progress_note'),
+      btn_acceptProgress = document.getElementById('btn_acceptProgress'),
+      btn_rejectProgress = document.getElementById('btn_rejectProgress'),
+      btn_m_addProgress = document.getElementById('btn_m_addProgress'),
       card_rechazo = document.getElementById('card_rechazo'),
       tx_rechazo_motivo = document.getElementById('tx_rechazo_motivo'),
       tx_rechazo_fecha = document.getElementById('tx_rechazo_fecha'),
@@ -74,6 +78,45 @@ const dv_content_PlanAction = document.getElementById('dv_content_PlanAction'),
       bar_global_progress = document.getElementById('bar_global_progress');
 
 let gblActConfirmada, gblPlanAConfirmada, gblTypeUser;
+
+function getProgressStatusBadge(status, reviewReason, reviewerName, reviewDate) {
+  const approvalStatus = Number(status || 1);
+  if (approvalStatus === 0) {
+    return `<span class="badge bg-info-subtle text-info fw-bold"><i class="fa-regular fa-hourglass-half me-1"></i> Pendiente de revisión</span>`;
+  }
+
+  if (approvalStatus === 2) {
+    const reviewText = [reviewerName, reviewDate].filter(Boolean).join(' · ');
+    const title = reviewReason || reviewText || 'Rechazado por el superior';
+    return `<span class="badge bg-danger-subtle text-danger fw-bold" title="${title}"><i class="fa-regular fa-circle-xmark me-1"></i> Rechazado</span>`;
+  }
+
+  const approvedText = [reviewerName, reviewDate].filter(Boolean).join(' · ');
+  return `<span class="badge bg-success-subtle text-success fw-bold" title="${approvedText || 'Aprobado'}"><i class="fa-regular fa-circle-check me-1"></i> Aprobado</span>`;
+}
+
+function renderProgressBar(progressValue, status) {
+  const approvalStatus = Number(status || 1);
+  const progressClass = approvalStatus === 2 ? 'bg-danger' : approvalStatus === 0 ? 'bg-info' : 'bg-success';
+  const progressLabel = approvalStatus === 0 ? 'En revisión' : approvalStatus === 2 ? 'Rechazado' : 'Aprobado';
+  return `<div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="small text-dark fw-bold">${progressLabel}</span>
+        <span class="small fw-bold">${progressValue}%</span>
+      </div>
+      <div class="progress" style="height: 8px; background-color: rgba(0,0,0,.1);">
+        <div class="progress-bar ${progressClass}" role="progressbar" style="width: ${progressValue}%" aria-valuenow="${progressValue}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function refreshPlanActionView() {
+  await getSummaryPlanAction();
+  $("#accordionPlanAction").empty();
+  await getInitialDetailPlanAction();
+}
 
 // Helper para obtener o inicializar la instancia de Modal de Bootstrap 5
 function getModalInstance(id) {
@@ -111,6 +154,9 @@ function printSummaryPlanAction(data){
   }
   const cantidades = data.Cantidades || { CantidadAct: 0, CantidadActTerminadas: 0 };
   const resumen = data.Resumen || data[0] || {};
+  const pendingCount = Number((cantidades && cantidades.CantidadAvancesPendientes) || resumen.CantidadAvancesPendientes || 0);
+  const totalActivities = Number(cantidades.CantidadAct || 0);
+  const finishedActivities = Number(cantidades.CantidadActTerminadas || 0);
   t_cant_act.textContent = cantidades.CantidadAct || 0;
   t_cant_actF.textContent = cantidades.CantidadActTerminadas || 0;
   if (resumen.TipoRealiza) {
@@ -131,6 +177,19 @@ function printSummaryPlanAction(data){
   gblTypeUser = resumen.TipoRealiza;
   gblActConfirmada = resumen.StatusConfirmaActividades;
   gblPlanAConfirmada = resumen.StatusConfirmaPlanAccion;
+
+  if (!resumen.TipoRealiza && resumen.StatusConfirmaActividades && !resumen.StatusConfirmaPlanAccion) {
+    if (pendingCount > 0) {
+      tx_accept_progress_note.textContent = `Hay ${pendingCount} avance(s) pendiente(s) de revisión. Primero apruébalos o recházalos desde el historial de cada actividad.`;
+    } else if (totalActivities > 0 && finishedActivities < totalActivities) {
+      tx_accept_progress_note.textContent = 'El cierre final se habilita sólo cuando todas las actividades alcancen 100% aprobado.';
+    } else {
+      tx_accept_progress_note.textContent = 'Todos los avances ya fueron revisados. Puedes cerrar el plan si el 100% aprobado es correcto.';
+    }
+
+    btn_acceptProgress.disabled = pendingCount > 0 || totalActivities === 0 || finishedActivities < totalActivities;
+    btn_rejectProgress.style.display = 'none';
+  }
 
   // Mostrar u ocultar el card de rechazo para el empleado
   if (data.TieneRechazo && !resumen.StatusConfirmaPlanAccion) {
@@ -168,7 +227,7 @@ async function getInitialDetailPlanAction(){
 
 function printInitialDetailPlanAction(data){
   let principalHTMLF = "";
-  
+
   // Calcular progreso general del plan en base a todas las actividades de todas las competencias
   let totalProgressPct = 0;
   let totalActivitiesCount = 0;
@@ -191,20 +250,51 @@ function printInitialDetailPlanAction(data){
 
     for (var j = 0; j < allActivities.length; j++) {
       let act = allActivities[j];
+      const pendingCount = Number(act["CantidadAvancesPendientes"] || 0);
+      const hasPendingReview = pendingCount > 0;
+      const hasHistory = hasPendingReview || Number(act["CantidadAvancesRegistrados"] || 0) > 0 || Number(act["Progreso"] || 0) > 0;
       let statusIcon = "";
-      let statusBadge = "";
+      let statusBadges = [];
 
-      if (act["Progreso"] == 100) {
+      if (hasPendingReview) {
+        statusIcon = `<div class="checklist-status-icon checklist-status-pending" title="Pendiente de revisión"><i class="fa-solid fa-user-check"></i></div>`;
+        statusBadges.push(`<span class="badge bg-info text-white fw-bold">${pendingCount} pendiente(s) de revisión</span>`);
+      } else if (act["Progreso"] == 100) {
         statusIcon = `<div class="checklist-status-icon checklist-status-completed" title="Realizada"><i class="fa-solid fa-check"></i></div>`;
-        statusBadge = `<span class="badge bg-success text-white">Realizado</span>`;
+        statusBadges.push(`<span class="badge bg-success text-white">Realizado</span>`);
       } else {
         if (act["FechaCaduca"] == 1) {
           statusIcon = `<div class="checklist-status-icon checklist-status-delayed" title="Retrasada"><i class="fa-solid fa-triangle-exclamation"></i></div>`;
-          statusBadge = `<span class="badge bg-danger text-white">Retrasada</span>`;
+          statusBadges.push(`<span class="badge bg-danger text-white">Retrasada</span>`);
         } else {
           statusIcon = `<div class="checklist-status-icon checklist-status-pending" title="Pendiente"><i class="fa-solid fa-spinner"></i></div>`;
-          statusBadge = `<span class="badge bg-warning text-dark fw-bold">Pendiente</span>`;
+          statusBadges.push(`<span class="badge bg-warning text-dark fw-bold">Pendiente</span>`);
         }
+      }
+
+      let actionButtons = [];
+      if (gblActConfirmada == 1 && gblPlanAConfirmada == 0) {
+        if (gblTypeUser == 1 && Number(act["Progreso"]) < 100 && !hasPendingReview) {
+          actionButtons.push(`
+            <button class="btn btn-minimal btn-minimal-primary btn-sm btn-addProgress" data-desc="${act["Descripcion"]}" data-title="${act["Titulo"]}" data-addprogressd="${act["idActividadesPlanAccion"]}">
+              <i class="fa-solid fa-plus me-1"></i> Agregar Avance
+            </button>
+          `);
+        }
+
+        if (hasHistory || gblTypeUser == 0) {
+          actionButtons.push(`
+            <button class="btn btn-minimal ${hasPendingReview && gblTypeUser == 0 ? 'btn-minimal-warning' : 'btn-minimal-success'} btn-sm btn-viewProgress" data-desc="${act["Descripcion"]}" data-title="${act["Titulo"]}" data-viewprogress="${act["idActividadesPlanAccion"]}">
+              <i class="fa-solid ${hasPendingReview && gblTypeUser == 0 ? 'fa-user-check' : 'fa-eye'} me-1"></i> ${hasPendingReview && gblTypeUser == 0 ? 'Revisar Avances' : 'Ver Historial'}
+            </button>
+          `);
+        }
+      } else if (hasHistory) {
+        actionButtons.push(`
+          <button class="btn btn-minimal btn-minimal-success btn-sm btn-viewProgress" data-desc="${act["Descripcion"]}" data-title="${act["Titulo"]}" data-viewprogress="${act["idActividadesPlanAccion"]}">
+            <i class="fa-solid fa-eye me-1"></i> Ver Historial
+          </button>
+        `);
       }
 
       let actHTML = `
@@ -213,7 +303,7 @@ function printInitialDetailPlanAction(data){
             ${statusIcon}
             <div class="flex-grow-1">
               <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                ${statusBadge}
+                ${statusBadges.join('')}
                 <span class="small fw-bold text-dark"><i class="fa-regular fa-calendar text-danger me-1"></i> ${act["FechaInicio"]} - ${act["FechaFin"]}</span>
               </div>
               <h6 class="fw-bold text-dark mb-1" style="font-size: 0.90rem; line-height: 1.3;">${act["Titulo"].toUpperCase()}</h6>
@@ -221,7 +311,7 @@ function printInitialDetailPlanAction(data){
                 <span class="text-success small d-block fw-bold" style="font-size: 0.72rem; letter-spacing: 0.3px;">Criterios de éxito / Descripción</span>
                 <span class="small text-dark d-block" style="font-size: 0.78rem;" title="${act["Descripcion"]}">${act["Descripcion"]}</span>
               </div>
-              
+
               <div class="d-flex align-items-center gap-2" style="max-width: 250px;">
                 <div class="progress flex-grow-1" style="height: 6px; background-color: rgba(0,0,0,.08); border-radius: 3px;">
                   <div class="progress-bar bg-success" role="progressbar" style="width: ${act["Progreso"]}%" aria-valuenow="${act["Progreso"]}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -231,15 +321,9 @@ function printInitialDetailPlanAction(data){
             </div>
           </div>
           <div class="text-end flex-shrink-0">
-            ${gblActConfirmada == 0 ? '': act["Progreso"] < 100 ? gblTypeUser == 1 ? `
-              <button class="btn btn-minimal btn-minimal-primary btn-sm btn-addProgress" data-desc="${act["Descripcion"]}" data-title="${act["Titulo"]}" data-addprogressd="${act["idActividadesPlanAccion"]}">
-                <i class="fa-solid fa-plus me-1"></i> Agregar Avance
-              </button>
-            ` : '' : `
-              <button class="btn btn-minimal btn-minimal-success btn-sm btn-viewProgress" data-desc="${act["Descripcion"]}" data-title="${act["Titulo"]}" data-viewprogress="${act["idActividadesPlanAccion"]}">
-                <i class="fa-solid fa-eye me-1"></i> Ver Avance Final
-              </button>
-            `}
+            <div class="d-flex flex-column gap-2 align-items-end">
+              ${actionButtons.join('')}
+            </div>
           </div>
         </div>
       `;
@@ -292,9 +376,9 @@ function printInitialDetailPlanAction(data){
                    <button class="btn btn-minimal btn-minimal-primary btn-sm" data-objetivebtn="${data[i]["Principal"]["idObjetivosPlanAccion"]}"><i class="fa-solid fa-user-pen"></i> Editar</button>
                  </div>
                  <p id="obj_desc_${data[i]["Principal"]["idObjetivosPlanAccion"]}" class="mb-3 text-dark small">${data[i]["Principal"]["DescObjetivo"] === null || data[i]["Principal"]["DescObjetivo"] == "" ? "No se ha especificado una descripción del objetivo" : `<span><b>Descripción: </b>${data[i]["Principal"]["DescObjetivo"]}</span>`}</p>
-                 
+
                  ${activitiesListHTML}
-  
+
                  ${gblTypeUser == 1 ? gblActConfirmada == 0 ? `
                  <div class="text-center mt-3 pt-2 border-top">
                    <button class="btn btn-minimal btn-minimal-primary btn-sm a_addActivity" data-objetive="${data[i]["Principal"]["idObjetivosPlanAccion"]}">
@@ -337,7 +421,7 @@ async function addActivityPerObjetive(){
   const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
   if (ajaxR !== undefined) {
     getModalInstance("modal_Activity").hide();
-    
+
     // Recargar resúmenes y el progreso global del plan
     await getSummaryPlanAction();
     // Vaciar y volver a pintar el acordeón completo con la nueva actividad en su columna Kanban
@@ -426,25 +510,21 @@ async function getGeneralDetailActivityPlan(activity){
 
 function printGeneralDetailActivityPlan(data){
   table_progressAct.fnClearTable();
+  const hasPendingReview = data.some((row) => Number(row["EstadoAprobacion"] || 1) === 0);
   if (data.length > 0) {
     for (var i = 0; i < data.length; i++) {
       table_progressAct.fnAddData([
         data[i]["DescripcionAvance"],
         data[i]["FechaRegistro"],
-        `<div class="row">
-          <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="small text-dark fw-bold">Completado</span>
-              <span class="small fw-bold">${data[i]["NuevoAvance"]}%</span>
-            </div>
-            <div class="progress" style="height: 8px; background-color: rgba(0,0,0,.1);">
-              <div class="progress-bar bg-success" role="progressbar" style="width: ${data[i]["NuevoAvance"]}%" aria-valuenow="${data[i]["NuevoAvance"]}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-          </div>
-        </div>`
+        getProgressStatusBadge(data[i]["EstadoAprobacion"], data[i]["MotivoRevision"], data[i]["NombreRevision"], data[i]["FechaRevision"]),
+        renderProgressBar(data[i]["NuevoAvance"], data[i]["EstadoAprobacion"])
       ])
     }
   }
+  btn_m_addProgress.disabled = hasPendingReview;
+  btn_m_addProgress.innerHTML = hasPendingReview
+    ? '<i class="fa-regular fa-hourglass-half me-1"></i> Avance pendiente de revisión'
+    : 'Registrar Avance';
   const dv = "dv_inp_newProgress";
   cleanVerifyInputs(dv);
   getModalInstance("modal-addProgress").show();
@@ -484,18 +564,14 @@ async function addProgressActivity(){
   const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
   if (ajaxR !== undefined) {
     getModalInstance("modal-addProgress").hide();
-    
-    // Recargar resúmenes y el progreso global del plan
-    await getSummaryPlanAction();
-    // Vaciar y volver a pintar el acordeón completo con la actividad movida a la columna Kanban correspondiente (si llegó al 100%)
-    $("#accordionPlanAction").empty();
-    await getInitialDetailPlanAction();
+    await refreshPlanActionView();
   }
 }
 
 $(document).on("click", ".btn-viewProgress", async function(element){
   tx_modal_act_ViewProgress.textContent = element.currentTarget.dataset.title;
   tx_modal_desc_ViewProgress.textContent = element.currentTarget.dataset.desc;
+  document.getElementById("modal_ViewProgressFinal").dataset.activity = element.currentTarget.dataset.viewprogress;
   getGeneralDetailActivityPlanAF(element.currentTarget.dataset.viewprogress);
 });
 
@@ -513,27 +589,105 @@ async function getGeneralDetailActivityPlanAF(activity){
 
 function printGeneralDetailActivityPlanF(data){
   table_progressActView.fnClearTable();
+  const activityId = document.getElementById("modal_ViewProgressFinal").dataset.activity;
+  const canReviewProgress = gblTypeUser == 0 && gblActConfirmada == 1 && gblPlanAConfirmada == 0;
   if (data.length > 0) {
     for (var i = 0; i < data.length; i++) {
+      const approvalStatus = Number(data[i]["EstadoAprobacion"] || 1);
+      const canReviewThisEntry = canReviewProgress && approvalStatus === 0;
+      const actionsHtml = canReviewThisEntry ? `
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-minimal btn-minimal-success btn-sm btn-approveProgressEntry" data-progressid="${data[i]["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
+            <i class="fa-solid fa-check me-1"></i> Aprobar
+          </button>
+          <button class="btn btn-minimal btn-minimal-danger btn-sm btn-rejectProgressEntry" data-progressid="${data[i]["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
+            <i class="fa-solid fa-xmark me-1"></i> Rechazar
+          </button>
+        </div>
+      ` : '<span class="text-muted small">Sin acciones</span>';
+
       table_progressActView.fnAddData([
         data[i]["DescripcionAvance"],
         data[i]["FechaRegistro"],
-        `<div class="row">
-          <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="small text-dark fw-bold">Completado</span>
-              <span class="small fw-bold">${data[i]["NuevoAvance"]}%</span>
-            </div>
-            <div class="progress" style="height: 8px; background-color: rgba(0,0,0,.1);">
-              <div class="progress-bar bg-success" role="progressbar" style="width: ${data[i]["NuevoAvance"]}%" aria-valuenow="${data[i]["NuevoAvance"]}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-          </div>
-        </div>`
+        getProgressStatusBadge(data[i]["EstadoAprobacion"], data[i]["MotivoRevision"], data[i]["NombreRevision"], data[i]["FechaRevision"]),
+        renderProgressBar(data[i]["NuevoAvance"], data[i]["EstadoAprobacion"]),
+        actionsHtml
       ])
     }
   }
   getModalInstance("modal_ViewProgressFinal").show();
 }
+
+$(document).on("click", ".btn-approveProgressEntry", async function(element){
+  const progressId = element.currentTarget.dataset.progressid;
+  const activityId = element.currentTarget.dataset.activityid;
+
+  const result = await Swal.fire({
+    title: '¿Aprobar avance?',
+    text: 'El porcentaje aprobado de la actividad se actualizará con este avance.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#198754',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, aprobar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!result.isConfirmed) {
+    return;
+  }
+
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, {
+    op: 'approveProgressActivity',
+    progressId: progressId
+  }, 1);
+
+  if (ajaxR !== undefined) {
+    await refreshPlanActionView();
+    await getGeneralDetailActivityPlanAF(activityId);
+  }
+});
+
+$(document).on("click", ".btn-rejectProgressEntry", async function(element){
+  const progressId = element.currentTarget.dataset.progressid;
+  const activityId = element.currentTarget.dataset.activityid;
+
+  const result = await Swal.fire({
+    title: 'Rechazar avance',
+    input: 'textarea',
+    inputLabel: 'Motivo del rechazo',
+    inputPlaceholder: 'Indica al empleado qué debe corregir o complementar...',
+    inputAttributes: {
+      'aria-label': 'Motivo del rechazo'
+    },
+    inputValidator: (value) => {
+      if (!value || !value.trim()) {
+        return 'Debes proporcionar un motivo para rechazar el avance.';
+      }
+      return null;
+    },
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Rechazar avance',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!result.isConfirmed) {
+    return;
+  }
+
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, {
+    op: 'rejectProgressEntry',
+    progressId: progressId,
+    motivo: result.value.trim()
+  }, 1);
+
+  if (ajaxR !== undefined) {
+    await refreshPlanActionView();
+    await getGeneralDetailActivityPlanAF(activityId);
+  }
+});
 
 $(document).on("click", "#acceptActivities", async function(){
   let title = "¿Desea confirmar las actividades del plan de acción actual?";

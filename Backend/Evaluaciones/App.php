@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 // URL y clave de la API .NET para notificaciones push móvil
 if (!defined('DOTNET_API_URL')) {
-    define('DOTNET_API_URL', 'https://f08a-2806-101e-e-530e-a5a3-7bca-d8f6-4767.ngrok-free.app');
+    define('DOTNET_API_URL', 'https://f40a-2806-101e-e-530e-18b2-d58d-8fb3-90c7.ngrok-free.app');
 }
 if (!defined('DOTNET_INTERNAL_KEY')) {
     define('DOTNET_INTERNAL_KEY', 'pip-internal-2025-X9kLmQ7rNvTz');
@@ -309,6 +309,17 @@ if ($op == "addProgressActivity") {
     $newProgress = $_POST["newProgress"];
     $description = $_POST["description"];
     echo trim($Evaluaciones->addProgressActivity($activity, $newProgress, $description));
+}
+
+if ($op == "approveProgressActivity") {
+    $progressId = $_POST["progressId"];
+    echo trim($Evaluaciones->approveProgressActivity($progressId));
+}
+
+if ($op == "rejectProgressEntry") {
+    $progressId = $_POST["progressId"];
+    $motivo = $_POST["motivo"];
+    echo trim($Evaluaciones->rejectProgressEntry($progressId, $motivo));
 }
 
 if ($op == "acceptActivitiesActionPlan") {

@@ -94,8 +94,11 @@ function printPlanActionPerEmployee(data){
   table_planAction.fnClearTable();
   for (var i = 0; i < data.length; i++) {
     let badgeStatus = "";
+    const pendingCount = Number(data[i]["CantidadAvancesPendientes"] || 0);
     if (data[i]["MsgEstadoPlanA"] === 'Plan de acción finalizado') {
       badgeStatus = `<span class="badge bg-success-subtle text-success"><i class="fa-solid fa-circle-check me-1"></i> Finalizado</span>`;
+    } else if (pendingCount > 0) {
+      badgeStatus = `<span class="badge bg-info-subtle text-info"><i class="fa-solid fa-user-check me-1"></i> ${pendingCount} pendiente(s) de revisión</span>`;
     } else {
       badgeStatus = `<span class="badge bg-warning-subtle text-warning"><i class="fa-solid fa-spinner me-1"></i> En Proceso</span>`;
     }
@@ -106,7 +109,7 @@ function printPlanActionPerEmployee(data){
       `<button class="btn btn-minimal btn-minimal-primary btn-sm" onclick="window.location.href='plan-action.php?PA=${data[i]["idPlanesAccionEvaluacion"]}'"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Entrar al Plan</button>`
     ])
   }
-  
+
   // Abrir modal usando Bootstrap 5
   const modalEl = document.getElementById("modal_plan_actions");
   if (modalEl) {

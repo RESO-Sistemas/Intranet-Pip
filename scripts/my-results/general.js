@@ -153,7 +153,11 @@ async function loadPlanSummary(planActionId){
 
   if (finalPlanApproval) {
 
-    finalPlanApproval.textContent = Number(summary.StatusConfirmaPlanAccion) === 1 ? `Aprobado el ${safeText(summary.FechaConfirmaPlanAccion)}` : 'Pendiente';
+    finalPlanApproval.textContent = Number(summary.StatusConfirmaPlanAccion) === 1
+      ? `Aprobado el ${safeText(summary.FechaConfirmaPlanAccion)}`
+      : Number(summary.CantidadAvancesPendientes || 0) > 0
+        ? `${summary.CantidadAvancesPendientes} avance(s) pendiente(s) de revisión`
+        : 'Pendiente';
 
   }
 
