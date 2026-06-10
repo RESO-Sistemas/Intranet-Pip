@@ -2,49 +2,52 @@ const myKeysValues = window.location.search;
 const urlParams = new URLSearchParams(myKeysValues);
 const _planActionGB = urlParams.get('PA');
 
-let table_progressAct = $("#table_progressAct").dataTable({
-  language: {
-    lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-    zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-    info: "PÁGINA _PAGE_ DE _PAGES_",
-    infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-    infoFiltered: "",
-    search: "BUSCAR",
-  },
-  columnDefs: [
-    {
-      className: "dt-center",
-      targets: "_all",
-    },
-  ],
-  order: [],
-  bSort: true,
-  bPaginate: true,
-  bFilter: true,
-  bInfo: true,
-});
+const timeline_progressAct = document.getElementById('timeline_progressAct');
+const timeline_progressActView = document.getElementById('timeline_progressActView');
 
-let table_progressActView = $("#table_progressActView").dataTable({
-  language: {
-    lengthMenu: "MOSTRAR _MENU_ REGISTROS POR PÁGINA",
-    zeroRecords: "NO HAY REGISTROS POR MOSTRAR",
-    info: "PÁGINA _PAGE_ DE _PAGES_",
-    infoEmpty: "NO HAY DATOS PARA MOSTRAR",
-    infoFiltered: "",
-    search: "BUSCAR",
-  },
-  columnDefs: [
-    {
-      className: "dt-center",
-      targets: "_all",
-    },
-  ],
-  order: [],
-  bSort: true,
-  bPaginate: true,
-  bFilter: true,
-  bInfo: true,
-});
+function buildProgressTimeline(data, canReview, activityId) {
+  if (!data || data.length === 0) {
+    return `<p class="pt-empty">No se han registrado avances en este periodo.</p>`;
+  }
+  return data.map((row, idx) => {
+    const status = Number(row["EstadoAprobacion"] ?? 1);
+    const dotClass = status === 0 ? 'pt-dot-pending' : status === 2 ? 'pt-dot-rejected' : 'pt-dot-approved';
+    const badgeHtml = getProgressStatusBadge(row["EstadoAprobacion"], row["MotivoRevision"], row["NombreRevision"], row["FechaRevision"]);
+    const isLast = idx === data.length - 1;
+    const reviewReasonHtml = row["MotivoRevision"]
+      ? `<p class="pt-review-reason"><i class="fa-solid fa-triangle-exclamation me-1"></i>${row["MotivoRevision"]}</p>` : '';
+    const reviewMetaHtml = row["NombreRevision"]
+      ? `<p class="pt-review-meta"><i class="fa-solid fa-user-check me-1"></i>Revisado por <strong>${row["NombreRevision"]}</strong>${row["FechaRevision"] ? ' · ' + row["FechaRevision"] : ''}</p>` : '';
+    const actionsHtml = (canReview && status === 0)
+      ? `<div class="pt-actions">
+          <button class="btn btn-minimal btn-minimal-success btn-sm btn-approveProgressEntry" data-progressid="${row["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
+            <i class="fa-solid fa-check me-1"></i> Aprobar
+          </button>
+          <button class="btn btn-minimal btn-minimal-danger btn-sm btn-rejectProgressEntry" data-progressid="${row["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
+            <i class="fa-solid fa-xmark me-1"></i> Rechazar
+          </button>
+        </div>` : '';
+    return `
+      <div class="pt-item">
+        <div class="pt-indicator">
+          <div class="pt-line pt-line-top"></div>
+          <div class="pt-dot ${dotClass}"></div>
+          ${isLast ? '' : '<div class="pt-line" style="flex:1"></div>'}
+        </div>
+        <div class="pt-body">
+          <div class="pt-header">
+            <span class="pt-percent">${row["NuevoAvance"]}%</span>
+            <span class="pt-date">${row["FechaRegistro"] ?? ''}</span>
+          </div>
+          ${badgeHtml}
+          <p class="pt-desc">${row["DescripcionAvance"] ?? ''}</p>
+          ${reviewReasonHtml}
+          ${reviewMetaHtml}
+          ${actionsHtml}
+        </div>
+      </div>`;
+  }).join('');
+}
 
 const dv_content_PlanAction = document.getElementById('dv_content_PlanAction'),
       m_add_objetiveSel = document.getElementById('m_add_objetiveSel'),
@@ -509,18 +512,8 @@ async function getGeneralDetailActivityPlan(activity){
 }
 
 function printGeneralDetailActivityPlan(data){
-  table_progressAct.fnClearTable();
-  const hasPendingReview = data.some((row) => Number(row["EstadoAprobacion"] || 1) === 0);
-  if (data.length > 0) {
-    for (var i = 0; i < data.length; i++) {
-      table_progressAct.fnAddData([
-        data[i]["DescripcionAvance"],
-        data[i]["FechaRegistro"],
-        getProgressStatusBadge(data[i]["EstadoAprobacion"], data[i]["MotivoRevision"], data[i]["NombreRevision"], data[i]["FechaRevision"]),
-        renderProgressBar(data[i]["NuevoAvance"], data[i]["EstadoAprobacion"])
-      ])
-    }
-  }
+  const hasPendingReview = data.some((row) => Number(row["EstadoAprobacion"] ?? 1) === 0);
+  timeline_progressAct.innerHTML = buildProgressTimeline(data, false, null);
   btn_m_addProgress.disabled = hasPendingReview;
   btn_m_addProgress.innerHTML = hasPendingReview
     ? '<i class="fa-regular fa-hourglass-half me-1"></i> Avance pendiente de revisión'
@@ -588,33 +581,9 @@ async function getGeneralDetailActivityPlanAF(activity){
 }
 
 function printGeneralDetailActivityPlanF(data){
-  table_progressActView.fnClearTable();
   const activityId = document.getElementById("modal_ViewProgressFinal").dataset.activity;
   const canReviewProgress = gblTypeUser == 0 && gblActConfirmada == 1 && gblPlanAConfirmada == 0;
-  if (data.length > 0) {
-    for (var i = 0; i < data.length; i++) {
-      const approvalStatus = Number(data[i]["EstadoAprobacion"] || 1);
-      const canReviewThisEntry = canReviewProgress && approvalStatus === 0;
-      const actionsHtml = canReviewThisEntry ? `
-        <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-minimal btn-minimal-success btn-sm btn-approveProgressEntry" data-progressid="${data[i]["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
-            <i class="fa-solid fa-check me-1"></i> Aprobar
-          </button>
-          <button class="btn btn-minimal btn-minimal-danger btn-sm btn-rejectProgressEntry" data-progressid="${data[i]["idAvanceActividadPlanA"]}" data-activityid="${activityId}">
-            <i class="fa-solid fa-xmark me-1"></i> Rechazar
-          </button>
-        </div>
-      ` : '<span class="text-muted small">Sin acciones</span>';
-
-      table_progressActView.fnAddData([
-        data[i]["DescripcionAvance"],
-        data[i]["FechaRegistro"],
-        getProgressStatusBadge(data[i]["EstadoAprobacion"], data[i]["MotivoRevision"], data[i]["NombreRevision"], data[i]["FechaRevision"]),
-        renderProgressBar(data[i]["NuevoAvance"], data[i]["EstadoAprobacion"]),
-        actionsHtml
-      ])
-    }
-  }
+  timeline_progressActView.innerHTML = buildProgressTimeline(data, canReviewProgress, activityId);
   getModalInstance("modal_ViewProgressFinal").show();
 }
 

@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 // URL y clave de la API .NET para notificaciones push móvil
 if (!defined('DOTNET_API_URL')) {
-    define('DOTNET_API_URL', 'https://f40a-2806-101e-e-530e-18b2-d58d-8fb3-90c7.ngrok-free.app');
+    define('DOTNET_API_URL', 'https://d077-2806-101e-e-530e-d52a-c23d-8805-639e.ngrok-free.app');
 }
 if (!defined('DOTNET_INTERNAL_KEY')) {
     define('DOTNET_INTERNAL_KEY', 'pip-internal-2025-X9kLmQ7rNvTz');
@@ -350,6 +350,52 @@ if ($op == "getListEvaluations") {
 if ($op == "getEvaluationById") {
     $idEvaluacion = $_POST["idEvaluacion"];
     echo trim($Evaluaciones->getEvaluationById($idEvaluacion));
+}
+
+if ($op == "duplicateEvaluation") {
+    $idEvaluaciones = $_POST["idEvaluaciones"];
+    // Opcional: clonar también las filas de EvaluacionDetalle (participantes/pares ya generados).
+    // Por defecto NO se copian (la copia es un borrador que se reconfigura antes de publicar).
+    $copyParticipants = isset($_POST["copyParticipants"]) ? $_POST["copyParticipants"] : false;
+    echo trim($Evaluaciones->duplicateEvaluation($idEvaluaciones, $copyParticipants));
+}
+
+if ($op == "getEvaluationForEdit") {
+    $idEvaluaciones = $_POST["idEvaluaciones"];
+    echo trim($Evaluaciones->getEvaluationForEdit($idEvaluaciones));
+}
+
+if ($op == "updateEvaluationHeader") {
+    $idEvaluaciones = $_POST["idEvaluaciones"];
+    $inpTitulo = $_POST["inpTitulo"];
+    $tipoEvaluacion = $_POST["tipoEvaluacion"];
+    $dirigidoA = $_POST["dirigidoA"];
+    $periodicidad = isset($_POST["periodicidad"]) && $_POST["periodicidad"] !== 'null' ? $_POST["periodicidad"] : null;
+    $inpFechaInicio = !empty($_POST["inpFechaInicio"]) && $_POST["inpFechaInicio"] !== 'null' ? $_POST["inpFechaInicio"] : null;
+    $inpFechaFin = !empty($_POST["inpFechaFin"]) && $_POST["inpFechaFin"] !== 'null' ? $_POST["inpFechaFin"] : null;
+    $inpRetroFechaIni = isset($_POST["inpRetroFechaIni"]) && $_POST["inpRetroFechaIni"] !== 'null' ? $_POST["inpRetroFechaIni"] : null;
+    $inpRetroFechaFin = isset($_POST["inpRetroFechaFin"]) && $_POST["inpRetroFechaFin"] !== 'null' ? $_POST["inpRetroFechaFin"] : null;
+    $inpPlanAFechaIni = isset($_POST["inpPlanAFechaIni"]) && $_POST["inpPlanAFechaIni"] !== 'null' ? $_POST["inpPlanAFechaIni"] : null;
+    $inpPlanAFechaFin = isset($_POST["inpPlanAFechaFin"]) && $_POST["inpPlanAFechaFin"] !== 'null' ? $_POST["inpPlanAFechaFin"] : null;
+    echo trim($Evaluaciones->updateEvaluationHeader(
+        $idEvaluaciones,
+        $inpTitulo,
+        $tipoEvaluacion,
+        $dirigidoA,
+        $periodicidad,
+        $inpFechaInicio,
+        $inpFechaFin,
+        $inpRetroFechaIni,
+        $inpRetroFechaFin,
+        $inpPlanAFechaIni,
+        $inpPlanAFechaFin
+    ));
+}
+
+if ($op == "updateEvaluationParticipants") {
+    $idEvaluaciones = $_POST["idEvaluaciones"];
+    $empleadosParticipantes = isset($_POST["empleadosParticipantes"]) ? $_POST["empleadosParticipantes"] : "";
+    echo trim($Evaluaciones->updateEvaluationParticipants($idEvaluaciones, $empleadosParticipantes));
 }
 
 if ($op == "saveEvaluationNoE") {

@@ -1515,8 +1515,48 @@ async function saveQuestionsConfig(){
 
   if (ajaxR !== undefined) {
 
+    // FEATURE 3 — Refrescar estado tras dar de alta preguntas SIN recargar la pagina.
+    // Arquitectura: ListadoEvaluaciones.php contiene un panel con iframes hermanos:
+    //   - evPanelOverviewFrame  -> DetalleEvaluacion.php (aqui vive el boton
+    //                               "Publicar" / "Aceptar Preguntas", renderActions()).
+    //   - evPanelQuestionsFrame -> questionsEv.php (esta vista).
+    // Al guardar preguntas, ConPreguntas pasa de 0 a 1, por lo que el boton del
+    // resumen debe cambiar de "Publicar" a "Aceptar Preguntas". Como ese boton se
+    // calcula con getEvaluationById() en el iframe de resumen, hay que refrescar
+    // ESE iframe hermano (no solo el propio) para que el cambio se vea sin reload.
+    try {
+      if (window.parent && window.parent !== window) {
+        // 1) Refrescar el grid del listado del padre (recalcula badges/acciones).
+        if (typeof window.parent.getEvaluaciones === 'function') {
+          window.parent.getEvaluaciones();
+        }
+
+        // 2) Refrescar el iframe de Resumen (donde esta el boton Publicar/Aceptar).
+        const overviewFrame = window.parent.document.getElementById('evPanelOverviewFrame');
+        if (overviewFrame) {
+          const ow = overviewFrame.contentWindow;
+          // Si el detalle expone un recargador propio, usarlo (no recarga la pagina).
+          if (ow && typeof ow.loadEvaluationDetail === 'function' && typeof ow.getEVParam === 'function') {
+            const evId = ow.getEVParam();
+            if (evId) ow.loadEvaluationDetail(evId);
+          } else if (overviewFrame.src && overviewFrame.src !== 'about:blank') {
+            // Fallback: recargar solo el iframe de resumen, no la pagina completa.
+            overviewFrame.contentWindow.location.reload();
+          }
+        }
+
+        // 3) Fallback: notificar al padre por si quiere reaccionar de otra forma.
+        window.parent.postMessage({ type: 'evaluationQuestionsSaved' }, '*');
+      }
+    } catch (e) {
+      console.warn('No se pudo refrescar el resumen/listado padre:', e);
+    }
+
     setTimeout(function () {
 
+      // Recargar solo la propia vista de preguntas para reflejar las preguntas
+      // recien guardadas y el bloqueo de "Aceptar preguntas". El boton del resumen
+      // ya se actualizo arriba sin recargar toda la pagina.
       location.reload();
 
     }, 1500);

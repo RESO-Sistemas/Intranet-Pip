@@ -17,11 +17,25 @@
      </div>
      <div class="app-menu">
 
+       <?php
+         $noEmpleadoMenu = SessionManager::get('NoEmpleado');
+         $esBossResult = $Conf->Select("SELECT COUNT(*) AS total FROM EvaluacionDetalle WHERE NoEmpleadoEvalua = '$noEmpleadoMenu' AND JefeEvalua = 1", array());
+         $esBoss = !empty($esBossResult) && $esBossResult[0]['total'] > 0;
+       ?>
        <ul class="accordion-menu">
          <!-- Menú INICIO manual, siempre primero -->
          <li>
            <a href="index.php"><i class="material-icons-two-tone">home</i>INICIO</a>
          </li>
+         <!-- Planes de acción: disponibles para todos sin permisos en BD -->
+         <li>
+           <a href="my-action-plans.php"><i class="material-icons-two-tone">task_alt</i>MIS PLANES</a>
+         </li>
+         <?php if ($esBoss): ?>
+         <li>
+           <a href="list-plan-action.php"><i class="material-icons-two-tone">group</i>PLANES DEL EQUIPO</a>
+         </li>
+         <?php endif; ?>
          <?php
           $iconMap = [
             'PRINCIPAL'        => 'dashboard',

@@ -2,6 +2,31 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-06-09 22:02:23] ✨ feat: duplicar/editar evaluaciones y rediseño de planes de acción
+
+### Evaluaciones — Duplicar (Feature 1)
+- ✨ **Duplicar evaluación:** Nuevo `duplicateEvaluation()` en `Backend/Evaluaciones/Evaluaciones.php` (op `duplicateEvaluation` en `App.php`) que clona encabezado, preguntas, configuraciones y respuestas posibles (remapeando referencias) como **borrador editable** (`Activado=0`, `PreguntasAceptadas=0`, `Status=1`). La clonación de `EvaluacionDetalle` es opcional (`copyParticipants`).
+- ✨ **UI de duplicado:** Botón "Duplicar" en el grid de `ListadoEvaluaciones.js` con confirmación SweetAlert; al duplicar, abre el wizard de edición precargado con el nuevo id.
+
+### Evaluaciones — Editar no publicadas (Feature 2)
+- ✨ **Edición de borrador:** Nuevos `getEvaluationForEdit()`, `updateEvaluationHeader()` y `updateEvaluationParticipants()` (con validación server-side que rechaza si `Activado=1`).
+- ✨ **Wizard en modo edición:** `abrirEdicionEvaluacion()` reusa el modal de "Nueva Evaluación" precargando tipo, dirigido, fechas y participantes; el botón "Editar" del grid se deshabilita para evaluaciones publicadas.
+
+### Evaluaciones — Refresco sin recarga (Feature 3)
+- ♻️ **Resumen en caliente:** Tras guardar preguntas (`contentFunctions.js`), se refresca el iframe hermano de resumen (`evPanelOverviewFrame`) y el grid del padre para que el botón cambie de "Publicar" a "Aceptar Preguntas" sin recargar la página.
+
+### Planes de acción
+- ✨ **Rediseño "Mis Planes":** `my-action-plans.php` y `my-action-plans.js` migran de DataTable a tarjetas con barra de avance global, badge de estado y conteo de avances pendientes. Query `getMyPlansAction` enriquecida con `ProgresoGlobal`, `CantidadAvancesPendientes`, `StatusConfirmaPlanAccion` y `StatusConfirmaActividades`.
+- ✨ **Timeline de avances:** `plan-action.js` reemplaza las DataTables de avances por una línea de tiempo con estado de aprobación (`EstadoAprobacion`) y acciones de revisión.
+- ✨ **Menú lateral:** `menus.php` agrega "MIS PLANES" para todos los empleados y "PLANES DEL EQUIPO" solo para jefes (detectado por `EvaluacionDetalle.JefeEvalua`).
+- 🐛 **Páginas libres:** `my-action-plans.php` añadida a las páginas accesibles sin permisos en BD (`AutorizaPagina.php` y `Empleados.php`).
+
+### Correcciones
+- 🏗️ **API .NET:** Actualizada la URL ngrok `DOTNET_API_URL`.
+- 🐛 **PHP 8:** Eliminadas llamadas a `curl_close()` (deprecado) en `Evaluaciones.php`, `Empleados.php` y `Feed.php`.
+- 🐛 **SyntaxError:** `ListadoEvaluaciones.php` ya no recarga `global.js` (se carga en `neptune_js.php`), evitando la re-declaración de `const`.
+- 📄 **Docs/i18n:** Nueva investigación `docs/evaluaciones-360-investigacion.md` y traducción `assets/libs/datatables/lang/Spanish.json`.
+
 ## [2026-05-20 22:44:40] ✨ feat: páginas libres y firmas svg móvil
 
 - 🐛 **Permisos:** Se agregaron `SolicitudVacaciones.php`, `FormatoVacaciones.php`

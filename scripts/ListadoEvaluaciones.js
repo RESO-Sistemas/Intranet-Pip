@@ -7,6 +7,11 @@ let gridEvaluaciones = null;
 let evDataMap = {};
 let _panelCurrentEv = null;
 
+// FEATURE 2 — Estado del wizard en modo edición.
+// _evEditId guarda el id (base64) cuando se está editando; null = alta nueva.
+let _evEditId = null;
+let _evEditPendingParticipants = null;
+
 function shouldHideEvaluationResultTabs(row) {
   if (!row) return false;
 
@@ -188,8 +193,15 @@ function getEvaluaciones() {
           ? `<button type="button" class="btn-minimal btn-minimal-secondary btn-sm btn-accion btn-toggle-activo" data-status="1" data-id="${row.idEvaluaciones}" title="Desactivar evaluación"><span class="material-symbols-outlined">visibility_off</span></button>`
           : `<button type="button" class="btn-minimal btn-minimal-success btn-sm btn-accion btn-toggle-activo" data-status="0" data-id="${row.idEvaluaciones}" title="Activar evaluación"><span class="material-symbols-outlined">check_circle</span></button>`;
 
+        // Editar: solo habilitado si la evaluación NO está publicada (Activado = 0)
+        const editBtn = row.Activado == 1
+          ? `<button type="button" class="btn-minimal btn-minimal-secondary btn-sm btn-accion" disabled title="No se puede editar una evaluación publicada"><span class="material-symbols-outlined">edit</span></button>`
+          : `<button type="button" class="btn-minimal btn-minimal-warning btn-sm btn-accion btn-editar-ev" data-id="${row.idEvaluaciones}" title="Editar evaluación"><span class="material-symbols-outlined">edit</span></button>`;
+
         let Acciones = `<div class="d-flex justify-content-center gap-2">
             <button type="button" class="btn-minimal btn-minimal-primary btn-sm btn-accion btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><span class="material-symbols-outlined">visibility</span></button>
+            ${editBtn}
+            <button type="button" class="btn-minimal btn-minimal-info btn-sm btn-accion btn-duplicar-ev" data-id="${row.idEvaluaciones}" title="Duplicar evaluación"><span class="material-symbols-outlined">content_copy</span></button>
             ${toggleBtn}
             <button type="button" class="btn-minimal btn-minimal-danger btn-sm btn-accion btn-eliminar-ev" data-id="${row.idEvaluaciones}" title="Eliminar evaluación"><span class="material-symbols-outlined">delete</span></button>
           </div>`;
@@ -270,6 +282,20 @@ function getEvaluaciones() {
             if (btnEliminar) {
                 const id = btnEliminar.getAttribute("data-id");
                 eliminarEvaluacion(btoa(id));
+                return;
+            }
+
+            const btnDuplicar = clickedElement.closest(".btn-duplicar-ev");
+            if (btnDuplicar) {
+                const id = btnDuplicar.getAttribute("data-id");
+                duplicarEvaluacion(btoa(id));
+                return;
+            }
+
+            const btnEditar = clickedElement.closest(".btn-editar-ev");
+            if (btnEditar) {
+                const id = btnEditar.getAttribute("data-id");
+                abrirEdicionEvaluacion(btoa(id));
             }
         },
         created: function () {
@@ -329,6 +355,42 @@ async function eliminarEvaluacion(idEncoded) {
     console.error(e);
     const msg = `<div class="alert-content"><span class="alert-title">Error!</span><span class="alert-text">Error al eliminar. Ver consola.</span></div>`;
     showBootstrapAlertWar(msg, 'top-right', 5000);
+  }
+}
+
+// ============================================================
+// FEATURE 1 — Duplicar evaluación
+// ============================================================
+async function duplicarEvaluacion(idEncoded) {
+  const result = await Swal.fire({
+    title: 'Duplicar evaluación',
+    html: `<div style="text-align:center">
+      <p>Se creará una copia como <strong>borrador editable</strong> con sus preguntas y participantes.</p>
+      <p style="margin-top:15px;">Podrás ajustar tipo, dirigido a, preguntas y participantes antes de publicarla.</p>
+      <p style="margin-top:15px;"><strong>¿Desea continuar?</strong></p>
+    </div>`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#ffc407',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Duplicar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  if (!result.isConfirmed) return;
+
+  const dataSend = {
+    op: 'duplicateEvaluation',
+    idEvaluaciones: idEncoded,
+  };
+
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  if (ajaxR !== undefined) {
+    // Refrescar lista. Si llega el nuevo id, abrir el wizard de edición precargado.
+    getEvaluaciones();
+    if (ajaxR.NewId) {
+      setTimeout(() => abrirEdicionEvaluacion(ajaxR.NewId), 600);
+    }
   }
 }
 
@@ -592,6 +654,13 @@ function _evWizardPopulateSummary() {
 }
 
 function _evWizardReset() {
+  // FEATURE 2 — limpiar estado de edición y restaurar UI de "Nueva Evaluación"
+  _evEditId = null;
+  _evEditPendingParticipants = null;
+  const lbl = document.getElementById('modalNuevaEvLabel');
+  if (lbl) lbl.textContent = 'Nueva Evaluación';
+  $('#btn_SaveData').html('<i class="fas fa-rocket me-1"></i>Crear Evaluación');
+
   _evWizardGoTo(1);
   $('#tipoEvaluacion').val('');
   $('#periodicidad').val('');
@@ -772,6 +841,75 @@ $(document).on('change', '#dirigidoA', function () {
   }
 });
 
+// ============================================================
+// FEATURE 2 — Abrir wizard en MODO EDICIÓN
+// ============================================================
+async function abrirEdicionEvaluacion(idEncoded) {
+  const dataSend = { op: 'getEvaluationForEdit', idEvaluaciones: idEncoded };
+  const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
+  if (ajaxR === undefined || !ajaxR.Data) return;
+
+  const header = ajaxR.Data.Header;
+  const participants = ajaxR.Data.Participants || [];
+
+  // Bloqueo defensivo en cliente (la validación real es server-side)
+  if (String(header.Activado) === '1') {
+    toastr.warning('La evaluación ya está publicada y no puede editarse.', 'Aviso');
+    return;
+  }
+
+  _evEditId = idEncoded;
+  _evEditPendingParticipants = participants.map(p => String(p));
+
+  // Ajustar UI del modal a modo edición
+  document.getElementById('modalNuevaEvLabel').textContent = 'Editar Evaluación';
+  $('#btn_SaveData').html('<i class="fas fa-save me-1"></i>Guardar cambios');
+
+  // Abrir el modal (dispara shown.bs.modal -> inicializa select2 y carga empleados)
+  const modalEl = document.getElementById('modalNuevaEvaluacion');
+  // El bootstrap.min.js de neptune es < 5.1 y no expone getOrCreateInstance.
+  // Patrón del repo: reusar instancia existente o crear una nueva.
+  const bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  bsModal.show();
+
+  // Precargar campos una vez visible el modal.
+  // Se ejecuta DESPUÉS del handler persistente shown.bs.modal (que inicializa
+  // select2 y carga empleados), por lo que aquí cambiamos tipo/dirigido (que
+  // limpian participantes y fechas) y luego recargamos los participantes
+  // guardados y asignamos las fechas.
+  $(modalEl).one('shown.bs.modal', function () {
+    // Tipo dispara su listener (habilita/deshabilita dirigidoA, fija reglas 360°, etc.)
+    $('#tipoEvaluacion').val(String(header.TipoEvaluacion)).trigger('change');
+    // dirigidoA puede haber quedado fijado por el listener de tipo; reasignar
+    $('#dirigidoA').val(String(header.DirigidoA)).trigger('change');
+    $('#title_c').val(header.Titulo || '');
+
+    if (header.Periodicidad !== null && header.Periodicidad !== undefined && String(header.Periodicidad) !== '') {
+      $('#periodicidad').val(String(header.Periodicidad));
+    }
+
+    // Fechas (pueden venir nulas). Se asignan después de los triggers anteriores
+    // porque esos listeners limpian los campos de fecha.
+    $('#inpFechaInicio').val(header.FechaInicio || '');
+    $('#inpFechaFin').val(header.FechaFin || '');
+    $('#inpRetroIni').val(header.RetroFechaIni || '');
+    $('#inpRetroFin').val(header.RetroFechaFin || '');
+    $('#inpPlanAIni').val(header.PlanAFechaIni || '');
+    $('#inpPlanAFin').val(header.PlanAFechaFin || '');
+
+    _evUpdateParticipantVisibility();
+    _evUpdateDateVisibility();
+
+    // Recargar participantes guardados (los triggers de tipo/dirigido los limpiaron).
+    if (String(header.DirigidoA) !== '2') {
+      _evEditPendingParticipants = participants.map(p => String(p));
+      getEmpleadosParaEvaluacion();
+    }
+
+    _evWizardGoTo(1);
+  });
+}
+
 // ---- GUARDAR ----
 
 $(document).on('click', '#btn_SaveData', async function () {
@@ -791,8 +929,8 @@ $(document).on('click', '#btn_SaveData', async function () {
     return;
   }
 
-  const dataSend = {
-    op:                 'saveEvaluationNoE',
+  const empleadosCsv = empleados ? empleados.join(',') : '';
+  const camposEv = {
     inpTitulo:          quitarEspaciosExtras(titulo),
     tipoEvaluacion:     tipo,
     dirigidoA:          dirigido,
@@ -803,7 +941,39 @@ $(document).on('click', '#btn_SaveData', async function () {
     inpRetroFechaFin:   tipo === '1' ? $('#inpRetroFin').val() : null,
     inpPlanAFechaIni:   tipo === '1' ? $('#inpPlanAIni').val() : null,
     inpPlanAFechaFin:   tipo === '1' ? $('#inpPlanAFin').val() : null,
-    empleadosParticipantes: empleados ? empleados.join(',') : '',
+  };
+
+  // FEATURE 2 — Modo edición vs alta nueva
+  if (_evEditId) {
+    // 1) Actualizar encabezado
+    const headerR = await pAjaxAsync('Backend/Evaluaciones/App.php', {
+      op: 'updateEvaluationHeader',
+      idEvaluaciones: _evEditId,
+      ...camposEv,
+    }, 1);
+    if (headerR === undefined) return;
+
+    // 2) Actualizar participantes (solo aplica a empleados, no a postulantes)
+    if (dirigido !== '2') {
+      await pAjaxAsync('Backend/Evaluaciones/App.php', {
+        op: 'updateEvaluationParticipants',
+        idEvaluaciones: _evEditId,
+        empleadosParticipantes: empleadosCsv,
+      }, 1);
+    }
+
+    const modalEl = document.getElementById('modalNuevaEvaluacion');
+    const bsModal = bootstrap.Modal.getInstance(modalEl);
+    if (bsModal) bsModal.hide();
+    setTimeout(() => { getEvaluaciones(); _evWizardReset(); }, 400);
+    return;
+  }
+
+  // Alta nueva
+  const dataSend = {
+    op: 'saveEvaluationNoE',
+    ...camposEv,
+    empleadosParticipantes: empleadosCsv,
   };
 
   const ajaxR = await pAjaxAsync('Backend/Evaluaciones/App.php', dataSend, 1);
@@ -858,7 +1028,12 @@ async function getEmpleadosParaEvaluacion() {
     });
     const r = JSON.parse(res.trim());
     if (r.Resultado && r.Data) {
-      const current = $('#slctEmpleados').val() || [];
+      // En modo edición, precargar los participantes guardados la primera vez.
+      let current = $('#slctEmpleados').val() || [];
+      if (_evEditPendingParticipants && _evEditPendingParticipants.length) {
+        current = _evEditPendingParticipants;
+        _evEditPendingParticipants = null;
+      }
       $('#slctEmpleados').html('');
       r.Data.forEach(emp => {
         const sel = current.includes(emp.NoEmpleado.toString()) ? 'selected' : '';

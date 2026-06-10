@@ -88,7 +88,6 @@
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         $response = curl_exec($ch);
         error_log($response);
-        curl_close($ch);
         return $response;
     }
 

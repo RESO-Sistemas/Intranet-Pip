@@ -1808,9 +1808,28 @@ class Evaluaciones extends Conexiones
     {
         try {
             $NoEmpleado = SessionManager::get("NoEmpleado");
-            $q = "SELECT TO_BASE64(PAE.idPlanesAccionEvaluacion) AS idPlanesAccionEvaluacion, EV.Titulo
+            $q = "SELECT
+                TO_BASE64(PAE.idPlanesAccionEvaluacion) AS idPlanesAccionEvaluacion,
+                EV.Titulo,
+                PAE.StatusConfirmaPlanAccion,
+                PAE.StatusConfirmaActividades,
+                (
+                    SELECT COALESCE(AVG(APA2.Progreso), 0)
+                    FROM ActividadesPlanAccion APA2
+                    INNER JOIN ObjetivosPlanAccion OPA2 ON OPA2.idObjetivosPlanAccion = APA2.idObjetivosPlanAccion
+                    WHERE OPA2.idPlanesAccionEvaluacion = PAE.idPlanesAccionEvaluacion
+                ) AS ProgresoGlobal,
+                (
+                    SELECT COUNT(*)
+                    FROM AvanceActividadPlanA AVA2
+                    INNER JOIN ActividadesPlanAccion APA3 ON APA3.idActividadesPlanAccion = AVA2.idActividadesPlanAccion
+                    INNER JOIN ObjetivosPlanAccion OPA3 ON OPA3.idObjetivosPlanAccion = APA3.idObjetivosPlanAccion
+                    WHERE OPA3.idPlanesAccionEvaluacion = PAE.idPlanesAccionEvaluacion
+                        AND AVA2.idHistorialRechazo IS NULL
+                        AND COALESCE(AVA2.EstadoAprobacion, 1) = 0
+                ) AS CantidadAvancesPendientes
               FROM PlanesAccionEvaluacion AS PAE
-              INNER JOIN Evaluaciones AS EV  ON EV.idEvaluaciones = PAE.idEvaluaciones
+              INNER JOIN Evaluaciones AS EV ON EV.idEvaluaciones = PAE.idEvaluaciones
               WHERE PAE.Requerido = 1 AND PAE.NoEmpleado = '$NoEmpleado';";
             $resultado = $this->Select($q, array());
             $arrReturn = [
@@ -2662,7 +2681,6 @@ class Evaluaciones extends Conexiones
             } else {
                 error_log('[sendMobileInternalNotification] Result: ' . $result);
             }
-            curl_close($ch);
         } catch (\Exception $pushEx) {
             error_log('[sendMobileInternalNotification] Error: ' . $pushEx->getMessage());
         }
@@ -2776,6 +2794,333 @@ class Evaluaciones extends Conexiones
                 "Resultado" => false,
                 "Siguiente" => false,
                 "Msg" => $e->getMessage()
+            ]);
+        }
+    }
+
+    // ============================================================
+    // Duplicar evaluación (encabezado + preguntas + configuraciones
+    // + respuestas posibles + participantes). La copia queda como
+    // borrador editable: Activado = 0, PreguntasAceptadas = 0, Status = 1.
+    // ============================================================
+    public function duplicateEvaluation($idEvaluaciones, $copyParticipants = false)
+    {
+        try {
+            $idDecoded = base64_decode($idEvaluaciones);
+
+            // Validar que la evaluación origen exista
+            $origen = $this->SelectNotClose("SELECT * FROM Evaluaciones WHERE idEvaluaciones = '$idDecoded' LIMIT 1");
+            if (count($origen) === 0) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "La evaluación a duplicar no fue encontrada."
+                ]);
+            }
+            $row = $origen[0];
+
+            // --- 1. Clonar el encabezado en Evaluaciones (siempre como borrador) ---
+            $nuevoTitulo = addslashes($row['Titulo'] . ' (Copia)');
+            $tipo        = (int) $row['TipoEvaluacion'];
+            $dirigido    = (int) $row['DirigidoA'];
+            $period      = isset($row['Periodicidad']) && $row['Periodicidad'] !== null ? "'" . (int) $row['Periodicidad'] . "'" : "NULL";
+            $fechaIni    = !empty($row['FechaInicio']) ? "'" . addslashes($row['FechaInicio']) . "'" : "NULL";
+            $fechaFin    = !empty($row['FechaFin']) ? "'" . addslashes($row['FechaFin']) . "'" : "NULL";
+            $retroIni    = !empty($row['RetroFechaIni']) ? "'" . addslashes($row['RetroFechaIni']) . "'" : "NULL";
+            $retroFin    = !empty($row['RetroFechaFin']) ? "'" . addslashes($row['RetroFechaFin']) . "'" : "NULL";
+            $planIni     = !empty($row['PlanAFechaIni']) ? "'" . addslashes($row['PlanAFechaIni']) . "'" : "NULL";
+            $planFin     = !empty($row['PlanAFechaFin']) ? "'" . addslashes($row['PlanAFechaFin']) . "'" : "NULL";
+            $participantes = addslashes($row['EmpleadosParticipantes'] ?? '');
+
+            $qInsert = "INSERT INTO Evaluaciones
+                (Titulo, TipoEvaluacion, Periodicidad, FechaInicio, FechaFin, Status,
+                 RetroFechaIni, RetroFechaFin, PlanAFechaIni, PlanAFechaFin, DirigidoA,
+                 EmpleadosParticipantes, Activado, PreguntasAceptadas)
+                VALUES
+                ('$nuevoTitulo', '$tipo', $period, $fechaIni, $fechaFin, 1,
+                 $retroIni, $retroFin, $planIni, $planFin, '$dirigido',
+                 '$participantes', 0, 0);";
+            $newId = $this->InsertAndGetId($qInsert);
+
+            if (!$newId) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "No se pudo crear la copia de la evaluación."
+                ]);
+            }
+
+            // --- 2. Clonar preguntas (PreguntasEvaluacion) y sus dependencias ---
+            $preguntas = $this->SelectNotClose("SELECT * FROM PreguntasEvaluacion WHERE idEvaluaciones = '$idDecoded'");
+            foreach ($preguntas as $preg) {
+                $oldQId      = $preg['idPreguntasEvaluacion'];
+                $idTipo      = (int) $preg['idTipoPregunta'];
+                $idComp      = (int) $preg['idCompetencias'];
+                $titulo      = addslashes($preg['Titulo']);
+                $descripcion = addslashes($preg['Descripcion']);
+
+                $qPreg = "INSERT INTO PreguntasEvaluacion (idEvaluaciones, idTipoPregunta, idCompetencias, Titulo, Descripcion)
+                          VALUES ('$newId', '$idTipo', '$idComp', '$titulo', '$descripcion');";
+                $newQId = $this->InsertAndGetId($qPreg);
+                if (!$newQId) {
+                    continue;
+                }
+
+                // 2a. Clonar respuestas posibles y mapear viejo->nuevo id
+                $mapaRespuestas = [];
+                $respuestas = $this->SelectNotClose("SELECT * FROM PreguntasPosiblesRespuestas WHERE idPreguntasEvaluacion = '$oldQId'");
+                foreach ($respuestas as $resp) {
+                    $descResp = addslashes($resp['DescripcionRespuesta']);
+                    $qResp = "INSERT INTO PreguntasPosiblesRespuestas (idPreguntasEvaluacion, DescripcionRespuesta)
+                              VALUES ('$newQId', '$descResp');";
+                    $newRespId = $this->InsertAndGetId($qResp);
+                    if ($newRespId) {
+                        $mapaRespuestas[$resp['idPreguntasPosiblesRespuestas']] = $newRespId;
+                    }
+                }
+
+                // 2b. Clonar configuraciones (rangos / booleanos / respuestas esperadas)
+                //     Remapear las columnas que referencian idPreguntasPosiblesRespuestas.
+                $configs = $this->SelectNotClose("SELECT * FROM PreguntasConfiguracion WHERE idPreguntasEvaluacion = '$oldQId'");
+                foreach ($configs as $cfg) {
+                    $rangoIni = isset($cfg['RangoInicial']) && $cfg['RangoInicial'] !== null ? "'" . (int) $cfg['RangoInicial'] . "'" : "NULL";
+                    $rangoFin = isset($cfg['RangoFinal']) && $cfg['RangoFinal'] !== null ? "'" . (int) $cfg['RangoFinal'] . "'" : "NULL";
+                    $boolCorr = isset($cfg['BoolCorreta']) && $cfg['BoolCorreta'] !== null ? "'" . (int) $cfg['BoolCorreta'] . "'" : "NULL";
+                    $valEsp   = isset($cfg['ValorEsperadoOM']) && $cfg['ValorEsperadoOM'] !== null ? "'" . (int) $cfg['ValorEsperadoOM'] . "'" : "NULL";
+                    $nivelEsp = isset($cfg['NivelEmpleadoEsperadoOM']) && $cfg['NivelEmpleadoEsperadoOM'] !== null ? "'" . (int) $cfg['NivelEmpleadoEsperadoOM'] . "'" : "NULL";
+
+                    // Remapear referencias a respuestas posibles
+                    $respEsp = "NULL";
+                    if (isset($cfg['RespuestaEsperadoOM']) && $cfg['RespuestaEsperadoOM'] !== null && isset($mapaRespuestas[$cfg['RespuestaEsperadoOM']])) {
+                        $respEsp = "'" . $mapaRespuestas[$cfg['RespuestaEsperadoOM']] . "'";
+                    }
+                    $respCorr = "NULL";
+                    if (isset($cfg['RespuestaCorrectaOM']) && $cfg['RespuestaCorrectaOM'] !== null && isset($mapaRespuestas[$cfg['RespuestaCorrectaOM']])) {
+                        $respCorr = "'" . $mapaRespuestas[$cfg['RespuestaCorrectaOM']] . "'";
+                    }
+
+                    $qCfg = "INSERT INTO PreguntasConfiguracion
+                        (idPreguntasEvaluacion, RangoInicial, RangoFinal, BoolCorreta, RespuestaEsperadoOM, ValorEsperadoOM, NivelEmpleadoEsperadoOM, RespuestaCorrectaOM)
+                        VALUES
+                        ('$newQId', $rangoIni, $rangoFin, $boolCorr, $respEsp, $valEsp, $nivelEsp, $respCorr);";
+                    $this->ExecuteQuery($qCfg, array());
+                }
+            }
+
+            // --- 3. Participantes ---
+            // El CSV de participantes (EmpleadosParticipantes) ya se copió en el paso 1.
+            // La clonación de filas en EvaluacionDetalle (pares/evaluadores ya generados al
+            // publicar el original) queda OPCIONAL: por defecto NO se copian, porque la copia
+            // es un borrador que normalmente se reconfigura antes de publicar. Solo se clonan
+            // si copyParticipants = true.
+            $copy = ($copyParticipants === true || $copyParticipants === 'true' || $copyParticipants === 1 || $copyParticipants === '1');
+            if (!$copy) {
+                return json_encode([
+                    "Resultado" => true,
+                    "Siguiente" => true,
+                    "ConMsg" => true,
+                    "Msg" => "Evaluación duplicada con éxito. La copia quedó como borrador editable.",
+                    "NewId" => base64_encode((string) $newId)
+                ]);
+            }
+
+            $detalles = $this->SelectNotClose("SELECT * FROM EvaluacionDetalle WHERE idEvaluaciones = '$idDecoded' AND Status = 1");
+            foreach ($detalles as $det) {
+                $evalua    = (int) $det['NoEmpleadoEvalua'];
+                $evaluado  = (int) $det['NoEmpleadoEvaluado'];
+                $jefe      = (int) $det['JefeEvalua'];
+                $par       = (int) $det['ParEvalua'];
+                $auto      = (int) $det['AutoEvalua'];
+                $sub       = (int) $det['SubordinadoEvalua'];
+                $nivel     = (int) $det['NivelEvaluado'];
+                $puesto    = (int) $det['PuestoEvaluado'];
+
+                // StatusEvaluado = 0: el detalle clonado aún no ha sido respondido.
+                $qDet = "INSERT INTO EvaluacionDetalle
+                    (idEvaluaciones, NoEmpleadoEvalua, NoEmpleadoEvaluado, Status, StatusEvaluado, JefeEvalua, ParEvalua, AutoEvalua, SubordinadoEvalua, NivelEvaluado, PuestoEvaluado)
+                    VALUES
+                    ('$newId', '$evalua', '$evaluado', 1, 0, '$jefe', '$par', '$auto', '$sub', '$nivel', '$puesto');";
+                $this->ExecuteQuery($qDet, array());
+            }
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Evaluación duplicada con éxito. La copia quedó como borrador editable.",
+                "NewId" => base64_encode((string) $newId)
+            ]);
+        } catch (\Exception $e) {
+            error_log("duplicateEvaluation - Exception: " . $e->getMessage());
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al duplicar la evaluación: " . $e->getMessage()
+            ]);
+        }
+    }
+
+    // ============================================================
+    // Edición de evaluación NO publicada (Feature 2)
+    // ============================================================
+
+    // Devuelve encabezado + participantes (CSV) + preguntas de una evaluación
+    // para precargar el wizard en modo edición.
+    public function getEvaluationForEdit($idEvaluaciones)
+    {
+        try {
+            $idDecoded = base64_decode($idEvaluaciones);
+            $header = $this->SelectNotClose(
+                "SELECT idEvaluaciones, Titulo, TipoEvaluacion, DirigidoA, Periodicidad,
+                        FechaInicio, FechaFin, RetroFechaIni, RetroFechaFin,
+                        PlanAFechaIni, PlanAFechaFin, EmpleadosParticipantes,
+                        Activado, PreguntasAceptadas, Status
+                 FROM Evaluaciones WHERE idEvaluaciones = '$idDecoded' LIMIT 1"
+            );
+            if (count($header) === 0) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Evaluación no encontrada."
+                ]);
+            }
+
+            // Participantes como arreglo (desde el CSV)
+            $participantes = array_values(array_filter(array_map('trim', explode(',', $header[0]['EmpleadosParticipantes'] ?? ''))));
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "Data" => [
+                    "Header" => $header[0],
+                    "Participants" => $participantes
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al cargar la evaluación: " . $e->getMessage()
+            ]);
+        }
+    }
+
+    // Actualiza el encabezado. Rechaza si la evaluación ya está publicada (Activado = 1).
+    public function updateEvaluationHeader($idEvaluaciones, $inpTitulo, $tipoEvaluacion, $dirigidoA, $periodicidad, $inpFechaInicio, $inpFechaFin, $inpRetroFechaIni, $inpRetroFechaFin, $inpPlanAFechaIni, $inpPlanAFechaFin)
+    {
+        try {
+            $idDecoded = base64_decode($idEvaluaciones);
+
+            // Validación server-side: solo editable si no está publicada
+            $check = $this->SelectNotClose("SELECT Activado FROM Evaluaciones WHERE idEvaluaciones = '$idDecoded' LIMIT 1");
+            if (count($check) === 0) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Evaluación no encontrada."
+                ]);
+            }
+            if ((int) $check[0]['Activado'] === 1) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "La evaluación ya está publicada y no puede editarse."
+                ]);
+            }
+
+            $titulo   = addslashes($inpTitulo);
+            $tipo     = (int) $tipoEvaluacion;
+            $dirigido = (int) $dirigidoA;
+            $period   = ($periodicidad !== null && $periodicidad !== '' && $periodicidad !== 'null') ? "'" . (int) $periodicidad . "'" : "NULL";
+            $fechaIni = (!empty($inpFechaInicio) && $inpFechaInicio !== 'null') ? "'" . addslashes($inpFechaInicio) . "'" : "NULL";
+            $fechaFin = (!empty($inpFechaFin) && $inpFechaFin !== 'null') ? "'" . addslashes($inpFechaFin) . "'" : "NULL";
+            $retroIni = (!empty($inpRetroFechaIni) && $inpRetroFechaIni !== 'null') ? "'" . addslashes($inpRetroFechaIni) . "'" : "NULL";
+            $retroFin = (!empty($inpRetroFechaFin) && $inpRetroFechaFin !== 'null') ? "'" . addslashes($inpRetroFechaFin) . "'" : "NULL";
+            $planIni  = (!empty($inpPlanAFechaIni) && $inpPlanAFechaIni !== 'null') ? "'" . addslashes($inpPlanAFechaIni) . "'" : "NULL";
+            $planFin  = (!empty($inpPlanAFechaFin) && $inpPlanAFechaFin !== 'null') ? "'" . addslashes($inpPlanAFechaFin) . "'" : "NULL";
+
+            $q = "UPDATE Evaluaciones SET
+                    Titulo = '$titulo',
+                    TipoEvaluacion = '$tipo',
+                    DirigidoA = '$dirigido',
+                    Periodicidad = $period,
+                    FechaInicio = $fechaIni,
+                    FechaFin = $fechaFin,
+                    RetroFechaIni = $retroIni,
+                    RetroFechaFin = $retroFin,
+                    PlanAFechaIni = $planIni,
+                    PlanAFechaFin = $planFin
+                  WHERE idEvaluaciones = '$idDecoded';";
+            $this->ExecuteQuery($q, array());
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Evaluación actualizada con éxito."
+            ]);
+        } catch (\Exception $e) {
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al actualizar la evaluación: " . $e->getMessage()
+            ]);
+        }
+    }
+
+    // Reemplaza los participantes (CSV en EmpleadosParticipantes) de una evaluación.
+    // Rechaza si la evaluación ya está publicada (Activado = 1).
+    public function updateEvaluationParticipants($idEvaluaciones, $empleadosParticipantes)
+    {
+        try {
+            $idDecoded = base64_decode($idEvaluaciones);
+
+            $check = $this->SelectNotClose("SELECT Activado FROM Evaluaciones WHERE idEvaluaciones = '$idDecoded' LIMIT 1");
+            if (count($check) === 0) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "Evaluación no encontrada."
+                ]);
+            }
+            if ((int) $check[0]['Activado'] === 1) {
+                return json_encode([
+                    "Resultado" => false,
+                    "Siguiente" => false,
+                    "ConMsg" => true,
+                    "Msg" => "La evaluación ya está publicada y no puede editarse."
+                ]);
+            }
+
+            // Normalizar CSV (solo números de empleado válidos)
+            $lista = array_values(array_filter(array_map('trim', explode(',', $empleadosParticipantes ?? ''))));
+            $listaLimpia = array_map(function ($v) { return (int) $v; }, $lista);
+            $csv = addslashes(implode(',', $listaLimpia));
+
+            $q = "UPDATE Evaluaciones SET EmpleadosParticipantes = '$csv' WHERE idEvaluaciones = '$idDecoded';";
+            $this->ExecuteQuery($q, array());
+
+            return json_encode([
+                "Resultado" => true,
+                "Siguiente" => true,
+                "ConMsg" => true,
+                "Msg" => "Participantes actualizados con éxito."
+            ]);
+        } catch (\Exception $e) {
+            return json_encode([
+                "Resultado" => false,
+                "Siguiente" => false,
+                "ConMsg" => true,
+                "Msg" => "Error al actualizar participantes: " . $e->getMessage()
             ]);
         }
     }

@@ -107,6 +107,26 @@
       border-color: #ced4da !important;
       color: #e6b200 !important;
     }
+
+    /* Timeline de avances */
+    .progress-timeline { display: flex; flex-direction: column; gap: 0; }
+    .pt-item { display: flex; min-height: 72px; }
+    .pt-indicator { width: 28px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+    .pt-line { width: 2px; flex: 1; background-color: #e9ecef; }
+    .pt-line-top { height: 8px; }
+    .pt-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #dee2e6; flex-shrink: 0; }
+    .pt-dot-pending { background-color: #0dcaf0; box-shadow: 0 0 0 2px #0dcaf0; }
+    .pt-dot-approved { background-color: #198754; box-shadow: 0 0 0 2px #198754; }
+    .pt-dot-rejected { background-color: #dc3545; box-shadow: 0 0 0 2px #dc3545; }
+    .pt-body { flex: 1; padding: 0 0 20px 14px; }
+    .pt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .pt-percent { font-size: 1rem; font-weight: 800; color: #212529; }
+    .pt-date { font-size: 0.72rem; color: #6c757d; }
+    .pt-desc { font-size: 0.85rem; color: #343a40; line-height: 1.45; margin: 4px 0 0; }
+    .pt-review-reason { font-size: 0.8rem; color: #dc3545; margin-top: 4px; }
+    .pt-review-meta { font-size: 0.75rem; color: #6c757d; margin-top: 2px; }
+    .pt-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .pt-empty { font-size: 0.82rem; color: #6c757d; font-style: italic; text-align: center; padding: 16px 0; }
   </style>
 </head>
 
@@ -419,20 +439,7 @@
           <h5 id="tx_modal_act_ViewProgress" class="fw-bold text-dark mb-2"></h5>
           <span id="tx_modal_desc_ViewProgress" class="text-dark d-block mb-3"></span>
           <hr>
-          <div class="table-responsive">
-            <table id="table_progressActView" class="table table-striped table-hover text-center w-100">
-              <thead>
-                <tr>
-                  <th>Descripción</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Avance</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
+          <div id="timeline_progressActView" class="progress-timeline"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-minimal btn-minimal-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -469,19 +476,7 @@
             </div>
           </div>
           <hr>
-          <div class="table-responsive">
-            <table id="table_progressAct" class="table table-striped table-hover text-center w-100">
-              <thead>
-                <tr>
-                  <th>Descripción</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Avance</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
+          <div id="timeline_progressAct" class="progress-timeline"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-minimal btn-minimal-secondary" data-bs-dismiss="modal">Cancelar</button>

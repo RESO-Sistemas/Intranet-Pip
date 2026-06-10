@@ -97,7 +97,7 @@ class Empleados extends Conexiones
       }
 
       // Paginas que siempre se permiten para evitar loops o porque son transversales
-      $paginasLibres = ['index.php', 'login.php', 'logout.php', 'MiPerfil.php', 'SolicitudVacaciones.php', 'FormatoVacaciones.php', 'LineaEticaUs.php', 'my-results.php', 'plan-action.php', 'list-plan-action.php', ''];
+      $paginasLibres = ['index.php', 'login.php', 'logout.php', 'MiPerfil.php', 'SolicitudVacaciones.php', 'FormatoVacaciones.php', 'LineaEticaUs.php', 'my-results.php', 'plan-action.php', 'list-plan-action.php', 'my-action-plans.php', ''];
       if (in_array($URL, $paginasLibres)) {
         return "1";
       }
@@ -523,7 +523,6 @@ class Empleados extends Conexiones
           curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
           curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
           $response = curl_exec($ch);
-          curl_close($ch);
         }// return $response;
     }
 

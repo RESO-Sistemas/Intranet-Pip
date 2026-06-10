@@ -1222,7 +1222,7 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="https://unpkg.com/read-excel-file@5.x/bundle/read-excel-file.min.js"></script>
 
-  <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
+  <!-- global.js ya se carga en neptune_js.php; incluirlo aquí re-declara sus const (SyntaxError). -->
   <script src="scripts/ListadoEvaluaciones.js?v=<?= time() ?>" charset="utf-8"></script>
   <script src="scripts/PublishWizard.js?v=<?= time() ?>" charset="utf-8"></script>
 

@@ -10,7 +10,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 $currentPage = basename($currentPath);
 
 // Mis resultados, plan de accion y listado de planes deben estar disponibles para cualquier empleado con sesion activa.
-if ($currentPage === 'my-results.php' || $currentPage === 'plan-action.php' || $currentPage === 'list-plan-action.php') {
+if ($currentPage === 'my-results.php' || $currentPage === 'plan-action.php' || $currentPage === 'list-plan-action.php' || $currentPage === 'my-action-plans.php') {
   return;
 }
 
