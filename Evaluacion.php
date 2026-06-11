@@ -364,6 +364,28 @@ SessionManager::requireLogin();
       color: var(--ev-muted);
     }
 
+    /* Slider de rango */
+    .ev-range-wrap { flex-direction: column; align-items: stretch; gap: 10px; }
+    .ev-slider-value { text-align: center; }
+    .ev-slider-value span { font-size: 2.2rem; font-weight: 800; color: var(--ev-primary); line-height: 1; }
+    .ev-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 8px; border-radius: 6px;
+      background: var(--ev-border); outline: none; cursor: pointer;
+    }
+    .ev-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--ev-primary); cursor: pointer;
+      border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25);
+    }
+    .ev-slider::-moz-range-thumb {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--ev-primary); cursor: pointer;
+      border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25);
+    }
+    .ev-slider-scale { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ev-muted); }
+
     /* Textarea de comentarios */
     .ev-comment-wrap label {
       font-size: .75rem;

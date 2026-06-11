@@ -157,25 +157,22 @@ function renderQuestion(index) {
     answerHTML = `<div class="ev-options-wrap">${options}</div>`;
 
   } else if (q.idTipoPregunta == 3) {
-    // Rango numérico
-    const val = q.Contestado != 0 ? q.RespuestaQ : "";
+    // Rango numérico → slider configurado con los valores de la pregunta (step de 1)
+    const ini = Number(q.Config.RangoInicial);
+    const fin = Number(q.Config.RangoFinal);
+    const val = (q.Contestado != 0 && q.RespuestaQ !== "" && q.RespuestaQ != null)
+      ? Number(q.RespuestaQ) : ini;
     answerHTML = `
       <div class="ev-range-wrap">
-        <div class="ev-range-field">
-          <label>Rango Inicial</label>
-          <input type="number" data-typen="initial" data-range="${q.Config.RangoInicial}"
-            value="${q.Config.RangoInicial}" readonly>
-        </div>
-        <div class="ev-range-field">
-          <label>Rango Final</label>
-          <input type="number" data-typen="end" data-ramge="${q.Config.RangoFinal}"
-            value="${q.Config.RangoFinal}" readonly>
-        </div>
-        <div class="ev-range-field">
-          <label>Tu respuesta</label>
-          <input type="number" class="valueRange"
-            min="${q.Config.RangoInicial}" max="${q.Config.RangoFinal}" value="${val}"
-            placeholder="Ingresa un valor">
+        <input type="hidden" data-typen="initial" data-range="${ini}" value="${ini}">
+        <input type="hidden" data-typen="end" data-ramge="${fin}" value="${fin}">
+        <div class="ev-slider-value"><span id="evSliderVal">${val}</span></div>
+        <input type="range" class="valueRange ev-slider"
+          min="${ini}" max="${fin}" step="1" value="${val}"
+          oninput="document.getElementById('evSliderVal').textContent = this.value;">
+        <div class="ev-slider-scale">
+          <span>${ini}</span>
+          <span>${fin}</span>
         </div>
       </div>`;
   }

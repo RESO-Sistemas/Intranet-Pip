@@ -218,6 +218,15 @@ async function acceptQuestionsDialog(iEvaluation) {
   }
 }
 
+// Refresca el grid del listado (ListadoEvaluaciones) si este detalle está embebido.
+function refreshParentGrid() {
+  try {
+    if (window.parent && window.parent !== window && typeof window.parent.getEvaluaciones === "function") {
+      window.parent.getEvaluaciones();
+    }
+  } catch (e) { /* sin padre accesible */ }
+}
+
 async function acceptQuestionsEv(iEvaluation) {
   let dataSend = {
     op: "acceptQuestionsEv",
@@ -228,6 +237,7 @@ async function acceptQuestionsEv(iEvaluation) {
     // Reload the detail page
     const evId = getEVParam();
     await loadEvaluationDetail(evId);
+    refreshParentGrid();
   }
 }
 
@@ -299,6 +309,7 @@ async function publishNormalSurveyDirectly(evaluation) {
 
     if (respuesta && respuesta.Resultado && respuesta.Siguiente) {
       toastr.success(respuesta.Msg || "Encuesta publicada exitosamente.", "¡Completado!");
+      refreshParentGrid();
       // Recargar la página de detalle para reflejar cambios
       setTimeout(function() {
         const evId = getEVParam();
@@ -478,6 +489,7 @@ async function updateStatusEvaluacion(accion, evaluacion) {
       // Recargar detalle ANTES de mostrar el mensaje
       const evId = getEVParam();
       await loadEvaluationDetail(evId);
+      refreshParentGrid();
       const messageContent =
         '<div class="alert-content">' +
         '<span class="alert-title">Completado!</span>' +

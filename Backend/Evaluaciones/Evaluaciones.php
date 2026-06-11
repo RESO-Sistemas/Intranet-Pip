@@ -4175,7 +4175,7 @@ class Evaluaciones extends Conexiones
                 $arrReturn = [
                     "Resultado" => true,
                     "Siguiente" => true,
-                    "ConMsg" => true,
+                    "ConMsg" => false,
                     "Data" => $resInst,
                     "Msg" => "Los datos temporales se han obtenido con éxito."
                 ];
@@ -4196,7 +4196,7 @@ class Evaluaciones extends Conexiones
                         "Resultado" => true,
                         "Siguiente" => true,
                         "Data" => $resInst,
-                        "ConMsg" => true,
+                        "ConMsg" => false,
                         "Msg" => "Se han añadido los registros temporales y posteriormente se han obtenido con éxito."
                     ];
                 }
@@ -4518,8 +4518,8 @@ class Evaluaciones extends Conexiones
             $arrReturn = [
                 "Resultado" => true,
                 "Siguiente" => true,
-                "ConMsg" => true,
-                "Nsg" => "Se han aceptado las preguntas para la evaluación seleccionada."
+                "ConMsg" => false,
+                "Msg" => "Se han aceptado las preguntas para la evaluación seleccionada."
             ];
 
             return json_encode($arrReturn);
