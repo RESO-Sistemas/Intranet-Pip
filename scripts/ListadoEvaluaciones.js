@@ -198,9 +198,16 @@ function getEvaluaciones() {
           ? `<button type="button" class="btn-minimal btn-minimal-secondary btn-sm btn-accion" disabled title="No se puede editar una evaluación publicada"><span class="material-symbols-outlined">edit</span></button>`
           : `<button type="button" class="btn-minimal btn-minimal-warning btn-sm btn-accion btn-editar-ev" data-id="${row.idEvaluaciones}" title="Editar evaluación"><span class="material-symbols-outlined">edit</span></button>`;
 
+        // Configurar evaluadores: solo 360 (tipo 1) en borrador (Activado = 0).
+        // Entrada persistente a la matriz, independiente de preguntas/momento de creación.
+        const configBtn = (String(row.TipoEvaluacion) === '1' && row.Activado != 1)
+          ? `<button type="button" class="btn-minimal btn-minimal-success btn-sm btn-accion btn-config-ev" data-id="${row.idEvaluaciones}" data-titulo="${(row.Titulo || '').replace(/"/g, '&quot;')}" title="Configurar evaluadores"><span class="material-symbols-outlined">groups</span></button>`
+          : '';
+
         let Acciones = `<div class="d-flex justify-content-center gap-2">
             <button type="button" class="btn-minimal btn-minimal-primary btn-sm btn-accion btn-open-panel" data-id="${row.idEvaluaciones}" title="Ver detalle"><span class="material-symbols-outlined">visibility</span></button>
             ${editBtn}
+            ${configBtn}
             <button type="button" class="btn-minimal btn-minimal-info btn-sm btn-accion btn-duplicar-ev" data-id="${row.idEvaluaciones}" title="Duplicar evaluación"><span class="material-symbols-outlined">content_copy</span></button>
             ${toggleBtn}
             <button type="button" class="btn-minimal btn-minimal-danger btn-sm btn-accion btn-eliminar-ev" data-id="${row.idEvaluaciones}" title="Eliminar evaluación"><span class="material-symbols-outlined">delete</span></button>
@@ -296,6 +303,16 @@ function getEvaluaciones() {
             if (btnEditar) {
                 const id = btnEditar.getAttribute("data-id");
                 abrirEdicionEvaluacion(btoa(id));
+                return;
+            }
+
+            const btnConfig = clickedElement.closest(".btn-config-ev");
+            if (btnConfig) {
+                const id = btnConfig.getAttribute("data-id");
+                const titulo = btnConfig.getAttribute("data-titulo") || "";
+                if (typeof openPublishWizard === "function") {
+                    openPublishWizard(btoa(id), titulo, { canPublish: false });
+                }
             }
         },
         created: function () {
@@ -386,10 +403,15 @@ async function duplicarEvaluacion(idEncoded) {
 
   const ajaxR = await pAjaxAsync(url_m_Evaluaciones, dataSend, 1);
   if (ajaxR !== undefined) {
-    // Refrescar lista. Si llega el nuevo id, abrir el wizard de edición precargado.
     getEvaluaciones();
     if (ajaxR.NewId) {
-      setTimeout(() => abrirEdicionEvaluacion(ajaxR.NewId), 600);
+      // 360: encadenar a config de evaluadores (la matriz no se clona; se genera
+      // fresca desde el organigrama). Encuesta Normal: abrir edición precargada.
+      if (String(ajaxR.TipoEvaluacion) === '1' && typeof openPublishWizard === 'function') {
+        setTimeout(() => openPublishWizard(ajaxR.NewId, ajaxR.NewTitulo || '', { canPublish: false }), 600);
+      } else {
+        setTimeout(() => abrirEdicionEvaluacion(ajaxR.NewId), 600);
+      }
     }
   }
 }
@@ -480,7 +502,10 @@ let _evWizardStep = 1;
 let _optPostulantesEv = null;
 
 function _evWizardGetSteps() {
-  return $('#dirigidoA').val() === '2' ? [1, 3, 4] : [1, 2, 3, 4];
+  // 360 (tipo 1) y Postulantes no usan el paso de participantes.
+  // En 360 la población se define al configurar evaluadores tras crear.
+  const sinParticipantes = $('#tipoEvaluacion').val() === '1' || $('#dirigidoA').val() === '2';
+  return sinParticipantes ? [1, 3, 4] : [1, 2, 3, 4];
 }
 
 function _evWizardGoTo(step) {
@@ -588,7 +613,9 @@ function _evWizardPopulateSummary() {
   const evergreen = _evIsEvergreen();
 
   let empleadosHtml;
-  if (isPost) {
+  if (is360) {
+    empleadosHtml = '<span class="ev-sbadge teal">Se define al configurar evaluadores</span>';
+  } else if (isPost) {
     empleadosHtml = '<span class="ev-sbadge teal">Todos los Postulantes</span>';
   } else {
     const sel = $('#slctEmpleados').select2('data');
@@ -705,7 +732,8 @@ function _evResetScheduleFields() {
 }
 
 function _evUpdateParticipantVisibility() {
-  $('#divParticipantes').toggle($('#dirigidoA').val() !== '2');
+  const ocultar = $('#tipoEvaluacion').val() === '1' || $('#dirigidoA').val() === '2';
+  $('#divParticipantes').toggle(!ocultar);
 }
 
 function _evUpdateDateVisibility() {
@@ -924,7 +952,9 @@ $(document).on('click', '#btn_SaveData', async function () {
   if (!_evValidateDates()) return;
 
   const empleados = $('#slctEmpleados').val();
-  if (dirigido !== '2' && (!empleados || empleados.length === 0)) {
+  // 360 (tipo 1) no usa participantes aquí: se definen al configurar evaluadores.
+  const requiereParticipantes = dirigido !== '2' && tipo !== '1';
+  if (requiereParticipantes && (!empleados || empleados.length === 0)) {
     toastr.error('Debe seleccionar al menos un empleado participante', 'Error');
     return;
   }
@@ -953,8 +983,9 @@ $(document).on('click', '#btn_SaveData', async function () {
     }, 1);
     if (headerR === undefined) return;
 
-    // 2) Actualizar participantes (solo aplica a empleados, no a postulantes)
-    if (dirigido !== '2') {
+    // 2) Actualizar participantes (solo encuestas normales a empleados;
+    //    360 y postulantes no manejan participantes en este paso)
+    if (requiereParticipantes) {
       await pAjaxAsync('Backend/Evaluaciones/App.php', {
         op: 'updateEvaluationParticipants',
         idEvaluaciones: _evEditId,
@@ -981,7 +1012,20 @@ $(document).on('click', '#btn_SaveData', async function () {
     const modalEl = document.getElementById('modalNuevaEvaluacion');
     const bsModal = bootstrap.Modal.getInstance(modalEl);
     if (bsModal) bsModal.hide();
-    setTimeout(() => { getEvaluaciones(); _evWizardReset(); }, 400);
+
+    // 360: encadenar a la configuración de evaluadores. El commit (publicar)
+    // sigue gated por preguntas aceptadas y se hace luego desde el detalle.
+    if (tipo === '1' && ajaxR.idEvaluaciones && typeof openPublishWizard === 'function') {
+      const nuevoId = ajaxR.idEvaluaciones;
+      const tituloEv = quitarEspaciosExtras(titulo);
+      setTimeout(() => {
+        getEvaluaciones();
+        _evWizardReset();
+        openPublishWizard(nuevoId, tituloEv, { canPublish: false });
+      }, 450);
+    } else {
+      setTimeout(() => { getEvaluaciones(); _evWizardReset(); }, 400);
+    }
   }
 });
 

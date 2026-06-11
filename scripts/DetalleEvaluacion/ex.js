@@ -239,9 +239,17 @@ async function openShareEvaluation(evaluation) {
   console.log("openShareEvaluation - TipoEvaluacion:", tipoEvaluacion);
 
   if (tipoEvaluacion == 1) {
-    // Evaluación 360° - Abrir wizard en el padre si está en iframe, sino fallback a página completa
-    if (window.parent && typeof window.parent.openPublishWizard === 'function') {
-      const titulo = currentEvaluation ? (currentEvaluation.Titulo || '') : '';
+    // Evaluación 360°. Si los evaluadores ya están configurados, publicar directo
+    // (sin reabrir el wizard). Si no, abrir el wizard una sola vez para configurar.
+    const titulo = currentEvaluation ? (currentEvaluation.Titulo || '') : '';
+    const c = await pAjaxAsync(url_m_Evaluaciones, { op: 'countTempEvaluators', ev: evaluation }, 1);
+    if (c !== undefined && Number(c.Count) > 0) {
+      const ok = await dialogConfirmSAlert(
+        '¿Publicar evaluación?',
+        'Los evaluadores ya están configurados. Al publicar se activarán los cuestionarios para los evaluadores con pares activos. Esta acción no se puede deshacer.'
+      );
+      if (ok) await publishNormalSurveyDirectly(evaluation);
+    } else if (window.parent && typeof window.parent.openPublishWizard === 'function') {
       window.parent.openPublishWizard(evaluation, titulo);
     } else {
       window.location.href = "publish-evaluation.php?EV=" + evaluation;

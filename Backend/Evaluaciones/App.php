@@ -586,6 +586,17 @@ if ($op == "getListBranchInEvaluation") {
     echo trim($Evaluaciones->getListBranchInEvaluation($ev));
 }
 
+if ($op == "resetBranchConfig") {
+    $ev = base64_decode($_POST["ev"]);
+    $branchSel = isset($_POST["branchSel"]) ? $_POST["branchSel"] : [];
+    echo trim($Evaluaciones->resetBranchConfigForEvaluation($ev, $branchSel));
+}
+
+if ($op == "countTempEvaluators") {
+    $ev = base64_decode($_POST["ev"]);
+    echo trim($Evaluaciones->countTempEvaluators($ev));
+}
+
 if ($op == "getListBranchNewEv") {
     echo trim($Evaluaciones->getListBranchNewEv());
 }

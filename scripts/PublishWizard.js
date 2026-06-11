@@ -63,13 +63,16 @@ window.pwSwitchTab = function(btn) {
 };
 
 // ===== ABRIR WIZARD =====
-window.openPublishWizard = async function(evId, titulo) {
+window.openPublishWizard = async function(evId, titulo, opts = {}) {
   PW.evId             = evId;
   PW.evTitulo         = titulo || '';
   PW.step             = 1;
   PW.branches         = [];
   PW.selectedBranches = new Set();
   PW.tempData         = [];
+  // canPublish=false => solo configurar (la matriz se guarda al vuelo).
+  // El commit/publicar se hace luego desde el detalle tras aceptar preguntas.
+  PW.canPublish       = opts.canPublish !== false;
 
   const titEl = document.getElementById('pw-eval-titulo');
   if (titEl) titEl.textContent = PW.evTitulo;
@@ -115,9 +118,12 @@ function pwGoToStep(n) {
   // Botón siguiente / publicar
   const nextBtn = document.getElementById('pw-btn-next');
   if (nextBtn) {
-    if (n === 3) {
+    if (n === 3 && PW.canPublish) {
       nextBtn.className = 'btn pw-btn-publish';
       nextBtn.innerHTML = '<span class="material-symbols-outlined me-1" style="font-size:16px;vertical-align:middle;">rocket_launch</span> Publicar';
+    } else if (n === 3) {
+      nextBtn.className = 'btn ev-btn-indigo';
+      nextBtn.innerHTML = '<span class="material-symbols-outlined me-1" style="font-size:16px;vertical-align:middle;">save</span> Guardar y salir';
     } else {
       nextBtn.className = 'btn ev-btn-indigo';
       nextBtn.innerHTML = 'Siguiente <i class="fas fa-arrow-right ms-1"></i>';
@@ -135,32 +141,59 @@ window.pwNext = async function() {
       Swal.fire({ icon: 'warning', title: 'Selecciona al menos una sucursal', timer: 2000, showConfirmButton: false });
       return;
     }
+    // Si la selección de sucursales cambió, reconfigurar: limpia la matriz
+    // previa y regenera scopeada a las sucursales elegidas (SP PERZ).
+    const currentKey = pwBranchesKey(PW.selectedBranches);
+    if (currentKey !== PW.persistedKey) {
+      const r = await pAjaxAsync(url_m_Evaluaciones, {
+        op: 'resetBranchConfig',
+        ev: PW.evId,
+        branchSel: [...PW.selectedBranches],
+      }, 1);
+      if (r === undefined) return;
+      PW.persistedKey = currentKey;
+    }
     pwGoToStep(2);
     await pwLoadTempData();
   } else if (PW.step === 2) {
     pwGoToStep(3);
     pwRenderStep3();
   } else if (PW.step === 3) {
-    await pwPublish();
+    if (PW.canPublish) {
+      await pwPublish();
+    } else {
+      // Config ya guardada al vuelo; solo cerrar y refrescar.
+      bootstrap.Modal.getInstance(document.getElementById('modalPublishWizard'))?.hide();
+      Swal.fire({ icon: 'success', title: 'Configuración guardada', text: 'Publica desde el detalle tras aceptar las preguntas.', timer: 2200, showConfirmButton: false });
+      setTimeout(() => getEvaluaciones(), 800);
+    }
   }
 };
 
 // ===== PASO 1: SUCURSALES =====
-async function pwLoadBranches() {
-  const res = await pAjaxAsync(url_m_Evaluaciones, {
-    op: 'getListBranchInEvaluation',
-    ev: PW.evId,
-  }, 1);
+function pwBranchesKey(set) {
+  return [...set].sort().join(',');
+}
 
-  if (res !== undefined && res.Data) {
-    PW.branches = res.Data;
-    PW.selectedBranches = new Set(res.Data.map(b => String(b.IdSucursal)));
-    pwRenderBranches();
-  } else if (res !== undefined) {
-    PW.branches = [];
+async function pwLoadBranches() {
+  // Universo = todas las sucursales (chips). Selección = la guardada para la
+  // evaluación (si no hay config previa, getListBranchInEvaluation devuelve todas).
+  const [allRes, selRes] = await Promise.all([
+    pAjaxAsync(url_m_Evaluaciones, { op: 'getListBranchNewEv' }, 1),
+    pAjaxAsync(url_m_Evaluaciones, { op: 'getListBranchInEvaluation', ev: PW.evId }, 1),
+  ]);
+
+  PW.branches = (allRes !== undefined && allRes.Data) ? allRes.Data : [];
+  const savedIds = (selRes !== undefined && selRes.Data) ? selRes.Data.map(b => String(b.IdSucursal)) : [];
+  PW.selectedBranches = new Set(savedIds);
+  PW.persistedKey = pwBranchesKey(PW.selectedBranches);
+
+  if (!PW.branches.length) {
     document.getElementById('pw-branches-chips').innerHTML =
       '<p class="text-muted" style="font-size:0.85rem;">Sin sucursales disponibles para esta evaluación</p>';
+    return;
   }
+  pwRenderBranches();
 }
 
 function pwRenderBranches() {
@@ -633,11 +666,17 @@ function pwRenderStep3() {
         </div>
       </div>` : ''}
 
+    ${PW.canPublish ? `
     <div class="pw-confirm-box">
       <span class="material-symbols-outlined" style="color:#10B981;font-size:36px;">check_circle</span>
       <p>Al publicar, los cuestionarios se activarán para todos los evaluadores con pares <strong>activos</strong>.<br>
          <span style="color:#DC2626;font-weight:600;">Esta acción no puede deshacerse.</span></p>
-    </div>`;
+    </div>` : `
+    <div class="pw-confirm-box">
+      <span class="material-symbols-outlined" style="color:#3B82F6;font-size:36px;">save</span>
+      <p>La configuración de evaluadores se guarda automáticamente.<br>
+         Para <strong>publicar</strong>, agrega y acepta las preguntas desde el detalle de la evaluación.</p>
+    </div>`}`;
 }
 
 // ===== PUBLICAR =====

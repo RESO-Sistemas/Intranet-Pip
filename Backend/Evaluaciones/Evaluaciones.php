@@ -2922,7 +2922,9 @@ class Evaluaciones extends Conexiones
                     "Siguiente" => true,
                     "ConMsg" => true,
                     "Msg" => "Evaluación duplicada con éxito. La copia quedó como borrador editable.",
-                    "NewId" => base64_encode((string) $newId)
+                    "NewId" => base64_encode((string) $newId),
+                    "TipoEvaluacion" => $tipo,
+                    "NewTitulo" => $row['Titulo'] . ' (Copia)'
                 ]);
             }
 
@@ -3163,7 +3165,7 @@ class Evaluaciones extends Conexiones
             }
 
             $q = "INSERT INTO Evaluaciones($columns) VALUES ($values);";
-            $this->ExecuteQuery($q, array());
+            $newId = $this->InsertAndGetId($q, array());
 
             // Mensaje según el tipo
             $tipoMsg = $tipoEvaluacion == 1 ? "Evaluación 360°" : "Encuesta Normal";
@@ -3171,6 +3173,7 @@ class Evaluaciones extends Conexiones
                 "Resultado" => true,
                 "Siguiente" => true,
                 "ConMsg" => true,
+                "idEvaluaciones" => $newId !== false ? base64_encode($newId) : null,
                 "Msg" => "$tipoMsg registrada con éxito"
             ];
 
@@ -4632,6 +4635,47 @@ class Evaluaciones extends Conexiones
             return $res[0];
         } catch (\Exception $e) {
             return $e;
+        }
+    }
+
+    // Reconfigura las sucursales de un 360 BORRADOR: limpia la matriz temporal
+    // y la config previa, y guarda la nueva selección como personalizada (incluir).
+    // La matriz se regenera scopeada (SP PERZ) en el siguiente checkTemporaryDataEvaluation.
+    // $ev: id decodificado. $branchSel: array de IdSucursal en base64.
+    public function resetBranchConfigForEvaluation($ev, $branchSel)
+    {
+        try {
+            $chk = $this->SelectNotClose("SELECT Activado FROM Evaluaciones WHERE idEvaluaciones = '$ev'");
+            if (count($chk) === 0) {
+                return json_encode(["Resultado" => false, "Siguiente" => false, "ConMsg" => true, "Msg" => "Evaluación no encontrada."]);
+            }
+            if ((int) $chk[0]['Activado'] === 1) {
+                return json_encode(["Resultado" => false, "Siguiente" => false, "ConMsg" => true, "Msg" => "La evaluación ya está publicada; no se puede reconfigurar."]);
+            }
+
+            $this->ExecuteQueryWithParam("DELETE FROM EvaluacionDetalle WHERE idEvaluaciones = ?", [$ev]);
+            $this->ExecuteQueryWithParam("DELETE FROM ConfiguracionInicialEvaluacion WHERE idEvaluaciones = ?", [$ev]);
+
+            if (is_array($branchSel) && count($branchSel) > 0) {
+                $this->addBranchesSelectedForEvaluation($branchSel, $ev);
+            }
+            $this->ExecuteQueryWithParam("UPDATE Evaluaciones SET TipoOpcionConfiguracion = 1, TipoSeleccionaSucursal = 1 WHERE idEvaluaciones = ?", [$ev]);
+
+            return json_encode(["Resultado" => true, "Siguiente" => true, "ConMsg" => false, "Msg" => "Configuración de sucursales actualizada."]);
+        } catch (\Exception $e) {
+            return json_encode(["Resultado" => false, "Siguiente" => false, "ConMsg" => true, "Msg" => "Error al reconfigurar: " . $e->getMessage()]);
+        }
+    }
+
+    // Cuenta los pares de la matriz temporal (EvaluacionDetalle) de una evaluación.
+    // Permite al wizard saber si ya está configurada y saltar al paso de publicar.
+    public function countTempEvaluators($ev)
+    {
+        try {
+            $res = $this->Select("SELECT COUNT(*) AS Count FROM EvaluacionDetalle WHERE idEvaluaciones = '$ev'");
+            return json_encode(["Resultado" => true, "Siguiente" => true, "Count" => (int) ($res[0]['Count'] ?? 0)]);
+        } catch (\Exception $e) {
+            return json_encode(["Resultado" => false, "Count" => 0, "Msg" => $e->getMessage()]);
         }
     }
 
