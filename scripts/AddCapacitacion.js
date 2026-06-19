@@ -26,6 +26,58 @@ let globalTipoCap = "";
 
 let RegistrosFiltro = [];
 
+const ALLOWED_EXTENSIONS = [
+  ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+  ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".mp4"
+];
+
+const ALLOWED_MIME_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/gif",
+  "image/webp",
+  "image/bmp",
+  "video/mp4"
+];
+
+const MAX_FILE_SIZE = 500 * 1024 * 1024;
+
+function formatBytes(bytes) {
+  if (bytes === 0 || !bytes) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+function truncateFileName(name, max = 22) {
+  if (!name || name.length <= max) return name;
+  const ext = name.split(".").pop();
+  const base = name.substring(0, name.length - ext.length - 1);
+  const keep = Math.max(1, max - ext.length - 4);
+  return base.substring(0, keep) + "..." + ext;
+}
+
+function getFileIconClass(ext) {
+  if (!ext) return "insert_drive_file";
+  ext = ext.toLowerCase();
+  if (ext === "pdf") return "picture_as_pdf";
+  if (["doc", "docx"].includes(ext)) return "description";
+  if (["xls", "xlsx"].includes(ext)) return "table_chart";
+  if (["ppt", "pptx"].includes(ext)) return "slideshow";
+  if (["png", "jpg", "jpeg", "gif", "webp", "bmp"].includes(ext)) return "image";
+  if (ext === "mp4") return "videocam";
+  return "insert_drive_file";
+}
+
 // Ocultar preloader cuando todo esté listo
 $(window).on('load', function() {
   $(".preloader").fadeOut();
@@ -73,17 +125,13 @@ function tipoCap(val) {
 
     $("#fechaFin").val("");
 
-    $("#HoraInicio").fadeOut();
+    $("#colHoraInicio").fadeOut();
 
     $("#HoraInicio").removeAttr("required");
 
-    $("#textHoraInicio").fadeOut();
-
-    $("#textHoraFin").fadeOut();
+    $("#colHoraFin").fadeOut();
 
     $("#HoraInicio").val("");
-
-    $("#HoraFin").fadeOut();
 
     $("#HoraFin").removeAttr("required");
 
@@ -103,17 +151,13 @@ function tipoCap(val) {
 
     $("#fechaFin").val("");
 
-    $("#HoraInicio").fadeIn();
+    $("#colHoraInicio").fadeIn();
 
     $("#HoraInicio").prop("required", true);
 
-    $("#textHoraInicio").fadeIn();
-
-    $("#textHoraFin").fadeIn();
+    $("#colHoraFin").fadeIn();
 
     $("#HoraInicio").val("");
-
-    $("#HoraFin").fadeIn();
 
     $("#HoraFin").prop("required", true);
 
@@ -1209,9 +1253,9 @@ async function getListadoPersonal() {
 
         personal.Nombre,
 
-        `<button class="btn btn-success" role="button" onclick="SeleccionaEmpleado(${personal.NoEmpleado},'${personal.Nombre}','${personal.Puesto}',
+        `<button class="btn-minimal btn-minimal-success btn-sm" role="button" onclick="SeleccionaEmpleado(${personal.NoEmpleado},'${personal.Nombre}','${personal.Puesto}',
 
-                '${personal.Sucursal}','${personal.Email}')"><span class="material-symbols-outlined">arrow_right_alt</span></button>`,
+                '${personal.Sucursal}','${personal.Email}')" title="Agregar"><span class="material-symbols-outlined">add</span></button>`,
 
       ]);
 
@@ -1593,7 +1637,7 @@ async function loadEmpleadosSeleccionados() {
 
                 <div class="col-12 text-center">
 
-                    <button id="selected${empleados.NoEmpleado}" class="btn btn-danger btn-sm" style="border-radius:15px;" onclick="deleteEmpleadoSelected(${empleados.NoEmpleado})">
+                    <button id="selected${empleados.NoEmpleado}" class="btn-minimal btn-minimal-danger btn-sm" onclick="deleteEmpleadoSelected(${empleados.NoEmpleado})" title="Quitar">
 
                         <span class="material-symbols-outlined">delete</span>
 
@@ -1655,7 +1699,7 @@ $("#NuevoArchivo").click(function () {
 
 function previewFile(event, querySelector) {
 
-  //Recuperamos el input que desencadeno la acción
+  //Recuperamos el input que desencadeno la acci�n
 
   // console.log("click 2");
 
@@ -1667,43 +1711,31 @@ function previewFile(event, querySelector) {
 
 
 
-  if (ext == ".pdf") {
+  if (!ext || !file) return;
 
-    div_view_file.html("");
 
-    div_view_file.append(`<object data="" type="application/pdf" id="filePreview" alt="" style="width: 40%;background: black"></object>
 
-        <h6>${file.name}</h6>`);
+  div_view_file.html("");
 
-  }
+  const rawExt = ext.replace(".", "").toLowerCase();
 
-  if (ext === ".mp4") {
+  const iconClass = getFileIconClass(rawExt);
 
-    div_view_file.html("");
+  div_view_file.append(`
 
-    div_view_file.html(`<video src="" id="filePreview" mute="true" controls style="width:60%; border-right: gray 1px solid" allowfullscreen>
+    <div class="text-center p-3">
 
-              <source src="" type="video/mp4" />
+      <span class="material-symbols-outlined" style="font-size:64px;">${iconClass}</span>
 
-              </video>
+      <h6 class="mt-2">${file.name}</h6>
 
-              <h6>${file.name}</h6>`);
+      <small class="text-muted">${formatBytes(file.size)}</small>
 
-  }
+    </div>`);
 
-  if (ext === ".pptx" || ext === ".ppt") {
 
-    div_view_file.html("");
-
-    div_view_file.html(`<img id="filePreview" style="width: 50%;padding:1em ; background: #df040ba4">
-
-      <h6>${file.name}</h6>`);
-
-  }
 
   //Recuperamos la etiqueta img donde cargaremos la imagen
-
-  //$imgPreview = document.querySelector(querySelector);
 
   $imgPreview = document.querySelector(querySelector);
 
@@ -1729,43 +1761,34 @@ function previewFile(event, querySelector) {
 
   //Modificamos el atributo src de la etiqueta img
 
-  if (ext === ".pdf") {
+  if ([".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"].includes(ext)) {
 
-    $imgPreview.data = objectURL;
+    div_view_file.html(`<img src="${objectURL}" id="filePreview" style="max-width:60%; max-height:300px; object-fit:contain;">
 
-  }
+      <h6 class="mt-2">${file.name}</h6>`);
 
-  if (ext === ".mp4") {
-
-    $imgPreview.src = objectURL;
+    if ($imgPreview) $imgPreview.src = objectURL;
 
   }
 
-  if (ext === ".pptx" || ext === ".ppt") {
-
-    $imgPreview.src = _IMG;
-
-  }
 
   console.log("img _ ", _IMG);
 
 }
 
-
-
 function validarFile(all) {
 
   //EXTENSIONES Y TAMANO PERMITIDO.
 
-  var extensiones_permitidas = [".pdf", ".mp4", ".pptx", ".ppt"];
+  var extensiones_permitidas = ALLOWED_EXTENSIONS;
 
-  var tamano = 4; // EXPRESADO EN MB.
+  var tamano = MAX_FILE_SIZE; // 500 MB en bytes.
 
   var rutayarchivo = all.value;
 
   var ultimo_punto = all.value.lastIndexOf(".");
 
-  var extension = rutayarchivo.slice(ultimo_punto, rutayarchivo.length);
+  var extension = rutayarchivo.slice(ultimo_punto, rutayarchivo.length).toLowerCase();
 
   if (extensiones_permitidas.indexOf(extension) == -1) {
 
@@ -1789,9 +1812,9 @@ function validarFile(all) {
 
   }
 
-  if (all.files[0].size / 200048576 > tamano) {
+  if (all.files[0].size > tamano) {
 
-    alert("El archivo no puede superar los " + tamano + "GB");
+    alert("El archivo no puede superar los 500 MB");
 
     document.getElementById(all.id).value = "";
 
@@ -1843,33 +1866,19 @@ let arrayFiles = [];
 
       tamaño = files[i]["size"];
 
-      if (tamaño <= 1.5e7) {
+      var ext = "." + (files[i]["name"].split(".").pop() || "").toLowerCase();
 
-        // if (tipo=="image/png" || tipo=="image/jpg" || tipo=="image/jpeg") {
+      var mimeOk = ALLOWED_MIME_TYPES.indexOf(tipo) !== -1;
 
-        if (
+      var extOk = ALLOWED_EXTENSIONS.indexOf(ext) !== -1;
 
-          tipo == "image/png" ||
+      if (tamaño <= MAX_FILE_SIZE) {
 
-          tipo == "image/jpg" ||
-
-          tipo == "image/jpeg" ||
-
-          tipo == "application/pdf" ||
-
-          tipo == "application/vnd.ms-powerpoint"
-
-        ) {
+        if (mimeOk || extOk) {
 
           arrayFiles.push(files[i]);
 
         } else {
-
-          // toastr.info(
-
-          //   `El archivo: ${files[i]["name"]} no puede agregarse, verifique que sea unicamente formato PDF, PPT,PNG, JPG ó JPEG y que el tamaño sea menor a 15MB.`
-
-          // );
 
           const messageContent = `
 
@@ -1877,7 +1886,7 @@ let arrayFiles = [];
 
              <span class="alert-title">Información!</span>
 
-              <span class="alert-text">El archivo: ${files[i]["name"]} no puede agregarse, verifique que sea unicamente formato PDF, PPT,PNG, JPG ó JPEG y que el tamaño sea menor a 15MB.</span>
+              <span class="alert-text">El archivo: ${files[i]["name"]} no puede agregarse, verifique que sea unicamente formato PDF, Word, Excel, PowerPoint, imágenes (PNG, JPG, GIF, WEBP, BMP) o MP4 y que el tamaño sea menor a 500 MB.</span>
 
         </div>`;
 
@@ -1887,19 +1896,13 @@ let arrayFiles = [];
 
       } else {
 
-        // toastr.info(
-
-        //   `El archivo es demasiado pesado, el tamaño maximo aceptado es: 15MB`
-
-        // );
-
         const messageContent = `
 
         <div class="alert-content">
 
              <span class="alert-title">Información!</span>
 
-              <span class="alert-text">El archivo es demasiado pesado, el tamaño maximo aceptado es: 15MB.</span>
+              <span class="alert-text">El archivo es demasiado pesado, el tamaño máximo aceptado es: 500 MB.</span>
 
         </div>`;
 
@@ -1931,7 +1934,7 @@ let arrayFiles = [];
 
     e.preventDefault();
 
-    this.className = "upload_drops";
+    this.className = "upload-area p-4";
 
     startUpload(e.dataTransfer.files);
 
@@ -1939,7 +1942,7 @@ let arrayFiles = [];
 
   dropZone.ondragover = function () {
 
-    this.className = "upload_drops drop";
+    this.className = "upload-area p-4 drop-active";
 
     return false;
 
@@ -1947,7 +1950,7 @@ let arrayFiles = [];
 
   dropZone.ondragleave = function () {
 
-    this.className = "upload_drops";
+    this.className = "upload-area p-4";
 
   };
 
@@ -1999,89 +2002,48 @@ function ver(files, cont) {
 
 function ImagenesDrop() {
 
-  mostarchivoss = "";
-
-  cont = 0;
+  let mostarchivoss = `<div class="row g-2 justify-content-start">`;
 
   $.each(arrayFiles, function (index, arrfiles) {
 
-    let extension = arrfiles.name.split(".").pop();
+    let extension = (arrfiles.name.split(".").pop() || "").toLowerCase();
 
-    if (extension === "pdf") {
+    let iconClass = getFileIconClass(extension);
+    let safeName = arrfiles.name.replace(/'/g, "\\'");
 
-      mostarchivoss += `
+    mostarchivoss += `
 
-    <div class="mostArchivo col-md-2 text-center">
+      <div class="col-6 col-md-4 col-lg-3">
 
-      <img class="im" id="preview${cont}" width="50" height="50" title="${arrfiles.name}">
+        <div class="card h-100 shadow-sm border">
 
-      <br>
+          <div class="card-body p-2 text-center">
 
-      <h6 class="form-label text-dark">${arrfiles.name}</h6>
+            <span class="material-symbols-outlined" style="font-size:40px; color:#6c757d;">${iconClass}</span>
 
-      <a class="btn btn-danger" onclick="RemoverArchivo('${arrfiles.name}');" data-toggle="tooltip" title="Quitar archivo">
+            <p class="mb-1 mt-1 text-dark fw-semibold" style="font-size:12px;" title="${arrfiles.name}">${truncateFileName(arrfiles.name)}</p>
 
-        <span class="material-symbols-outlined">delete</span>
+            <small class="text-muted" style="font-size:11px;">${formatBytes(arrfiles.size)}</small>
 
-      </a>
+          </div>
 
-    </div>
+          <div class="card-footer p-1 text-center bg-white border-top-0">
 
-    <div class="mostt"></div>`;
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="RemoverArchivo('${safeName}');" title="Quitar archivo">
 
-    } else if (extension == "ppt") {
+              <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
 
-      mostarchivoss += `
+            </button>
 
-<div class="mostArchivo col-md-2 text-center">
+          </div>
 
-  <img class="im" id="preview${cont}" width="50" height="50" title="${arrfiles["name"]}">
+        </div>
 
-  <br>
-
-  <h6 class="form-label text-dark">${arrfiles["name"]}</h6>
-
-  <a class="btn btn-danger" onclick="RemoverArchivo('${arrfiles["name"]}');" data-toggle="tooltip" title="Quitar archivo">
-
-    <span class="material-symbols-outlined">delete</span>
-
-  </a>
-
-</div>
-
-<div class="mostt"></div>`;
-
-    } else {
-
-      mostarchivoss += `
-
-<div class="mostArchivo col-md-2 text-center">
-
-  <img class="im" id="preview${cont}" width="50" height="50" title="${arrfiles["name"]}">
-
-  <br>
-
-  <h6 class="form-label text-dark">${arrfiles["name"]}</h6>
-
-  <a class="btn btn-danger" onclick="RemoverArchivo('${arrfiles["name"]}');" data-toggle="tooltip" title="Quitar archivo">
-
-    <span class="material-symbols-outlined">delete</span>
-
-  </a>
-
-</div>
-
-<div class="mostt"></div>`;
-
-    }
-
-
-
-    ver(arrfiles, cont);
-
-    cont++;
+      </div>`;
 
   });
+
+  mostarchivoss += `</div>`;
 
   $("#ImagenesDrop").html(mostarchivoss);
 
@@ -2106,4 +2068,145 @@ function RemoverArchivo(archivo) {
   ImagenesDrop();
 
 }
+
+// ============================================================
+// Wizard de capacitación
+// ============================================================
+let currentStep = 1;
+const totalSteps = 4;
+
+function goToStep(step) {
+  if (step < 1 || step > totalSteps) return;
+
+  // Validar paso actual antes de avanzar
+  if (step > currentStep && !validateStep(currentStep)) return;
+
+  currentStep = step;
+
+  // Actualizar pasos visuales
+  $(".wizard-step-content").removeClass("active");
+  $(`#step-${currentStep}`).addClass("active");
+
+  $(".step").removeClass("active completed");
+  $(".step").each(function () {
+    const stepNum = parseInt($(this).data("step"));
+    if (stepNum < currentStep) {
+      $(this).addClass("completed");
+    } else if (stepNum === currentStep) {
+      $(this).addClass("active");
+    }
+  });
+
+  // Actualizar barra de progreso
+  const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+  $("#stepperProgress").css("width", progress + "%");
+
+  // Actualizar botones
+  $("#btnPrev").css("visibility", currentStep === 1 ? "hidden" : "visible");
+  if (currentStep === totalSteps) {
+    $("#btnNext").hide();
+    $("#btnAgregar").show();
+    updateSummary();
+  } else {
+    $("#btnNext").show();
+    $("#btnAgregar").hide();
+  }
+
+  // Scroll al inicio
+  $("html, body").animate({ scrollTop: $("#stepper").offset().top - 100 }, 200);
+}
+
+function validateStep(step) {
+  let valid = true;
+  let message = "";
+
+  if (step === 1) {
+    const tipo = $("#tipoCapacitacion").val();
+    if (!tipo) {
+      valid = false;
+      message = "Selecciona el tipo de capacitación.";
+    } else {
+      const desc = $("#Desc").val().trim();
+      const fechaInicio = $("#fechaInicio").val();
+      const fechaFin = $("#fechaFin").val();
+
+      if (!desc || !fechaInicio || !fechaFin) {
+        valid = false;
+        message = "Completa la descripción y las fechas.";
+      } else if (tipo === "DIA") {
+        const horaInicio = $("#HoraInicio").val();
+        const horaFin = $("#HoraFin").val();
+        if (!horaInicio || !horaFin) {
+          valid = false;
+          message = "Completa el horario para capacitaciones por días.";
+        } else if (DiasCalendario.length === 0) {
+          valid = false;
+          message = "Selecciona al menos un día de la semana.";
+        }
+      }
+    }
+  } else if (step === 2) {
+    if (ArrayContenidoEmpleados.length < 1) {
+      valid = false;
+      message = "Selecciona al menos un empleado.";
+    }
+  }
+
+  if (!valid) {
+    const messageContent = `
+      <div class="alert-content">
+        <span class="alert-title">Información!</span>
+        <span class="alert-text">${message}</span>
+      </div>`;
+    showBootstrapAlert(messageContent, "top-right", 5000);
+  }
+
+  return valid;
+}
+
+function updateSummary() {
+  const tipo = $("#tipoCapacitacion").val();
+  const tipoText = tipo === "PROL" ? "Capacitación Prolongada" : "Por días";
+  const desc = $("#Desc").val().trim();
+  const fechaInicio = $("#fechaInicio").val();
+  const fechaFin = $("#fechaFin").val();
+  const horaInicio = $("#HoraInicio").val();
+  const horaFin = $("#HoraFin").val();
+
+  $("#summaryTipo").text(tipoText);
+  $("#summaryDescripcion").text(desc || "-");
+  $("#summaryPeriodo").text(`${fechaInicio} al ${fechaFin}`);
+
+  if (tipo === "DIA") {
+    $("#summaryHorarioItem").show();
+    $("#summaryHorario").text(`${horaInicio} a ${horaFin}`);
+    $("#summaryDiasItem").show();
+    $("#summaryDias").text(DiasCalendario.length > 0 ? DiasCalendario.join(", ") : "-");
+  } else {
+    $("#summaryHorarioItem").hide();
+    $("#summaryDiasItem").hide();
+  }
+
+  $("#summaryEmpleados").text(ArrayContenidoEmpleados.length);
+  $("#summaryArchivos").text(arrayFiles.length);
+
+  let totalSize = 0;
+  arrayFiles.forEach(f => totalSize += f.size);
+  $("#summaryTamano").text(formatBytes(totalSize));
+}
+
+$("#btnNext").click(function () {
+  goToStep(currentStep + 1);
+});
+
+$("#btnPrev").click(function () {
+  goToStep(currentStep - 1);
+});
+
+$(".step").click(function () {
+  const targetStep = parseInt($(this).data("step"));
+  if (targetStep < currentStep || validateStep(currentStep)) {
+    goToStep(targetStep);
+  }
+});
 

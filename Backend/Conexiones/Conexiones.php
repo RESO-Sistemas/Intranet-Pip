@@ -163,10 +163,14 @@ class Conexiones{
 			$stmt = $this->dbh->prepare($q);
 			
 			// Bind de parámetros normales y LOB
-			$stmt->bindValue(1, $params[0]); // idFeed
-			$stmt->bindValue(2, $params[1]); // Archivo (nombre)
-			$stmt->bindValue(3, $params[2]); // ContentType
-			$stmt->bindParam(4, $params[3], PDO::PARAM_LOB); // Content (BLOB)
+			foreach ($params as $i => $value) {
+				$paramNo = $i + 1;
+				if ($i === $lobIndex) {
+					$stmt->bindValue($paramNo, $value, PDO::PARAM_LOB);
+				} else {
+					$stmt->bindValue($paramNo, $value);
+				}
+			}
 			
 			$stmt->execute();
 			$lastId = $this->dbh->lastInsertId();

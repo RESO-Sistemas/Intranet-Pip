@@ -142,7 +142,8 @@
     function getCapacitacionDisponibles () {
       $ListCapacitaciones = [];
       $q = "SELECT C.Descripcion,C.FechaInicio,C.FechaFin,C.HoraInicio,C.HoraFin,C.idCapacitacion,C.Dias,C.archivo,C.Tipo,CD.NoEmpleado,
-            IF(C.Status = 1,'Activa','Inactiva') as Status
+            IF(C.Status = 1,'Activa','Inactiva') as Status,
+            (SELECT COUNT(*) FROM CapacitacionArchivos CA WHERE CA.idCapacitacion = C.idCapacitacion) AS CantidadArchivos
             FROM Capacitacion AS C INNER JOIN CapacitacionDetalle AS CD ON CD.id_capacitacion = C.idCapacitacion
             group by C.idCapacitacion;";
       
@@ -182,7 +183,8 @@
             "Dias" => $AllDias ?: "Indefinido",
             "Archivo" => $resp[$i]["archivo"],
             "TipoCapacitacion" => $resp[$i]["Tipo"],
-            "Status" => $resp[$i]["Status"]
+            "Status" => $resp[$i]["Status"],
+            "CantidadArchivos" => (int)$resp[$i]["CantidadArchivos"]
           ];
         }
       }
@@ -454,6 +456,66 @@
           return "1";
         } catch (\Exception $e) {
           return "ERROR!";
+        }
+      }
+
+      function insertArchivoCapacitacion($idCapacitacion, $nombreOriginal, $mimeType, $extension, $pesoBytes, $contenido) {
+        try {
+          $extensionLimpia = ltrim($extension, '.');
+          $nombreSistema = uniqid('cap_', true) . ($extensionLimpia ? '.' . strtolower($extensionLimpia) : '');
+
+          $q = "INSERT INTO CapacitacionArchivos (idCapacitacion, nombreOriginal, nombreSistema, mimeType, extension, pesoBytes, contenido) VALUES (?, ?, ?, ?, ?, ?, ?)";
+          $params = [$idCapacitacion, $nombreOriginal, $nombreSistema, $mimeType, $extensionLimpia, $pesoBytes, $contenido];
+
+          $lastId = $this->ExecuteWithLob($q, $params, 6);
+          return $lastId ? (int)$lastId : false;
+        } catch (\Exception $e) {
+          error_log("Error insertArchivoCapacitacion: " . $e->getMessage());
+          return false;
+        }
+      }
+
+      function getArchivosPorCapacitacion($idCapacitacion) {
+        try {
+          $q = "SELECT id, idCapacitacion, nombreOriginal, extension, mimeType, pesoBytes, fechaRegistro FROM CapacitacionArchivos WHERE idCapacitacion = ?";
+          $result = $this->ExecuteQueryWithParam($q, [$idCapacitacion]);
+          return json_encode($result !== null ? $result : []);
+        } catch (\Exception $e) {
+          error_log("Error getArchivosPorCapacitacion: " . $e->getMessage());
+          return json_encode([]);
+        }
+      }
+
+      function getArchivoContenido($idArchivo) {
+        try {
+          $q = "SELECT contenido, mimeType, nombreOriginal FROM CapacitacionArchivos WHERE id = ?";
+          $result = $this->SelectWithLob($q, [$idArchivo]);
+          return $result;
+        } catch (\Exception $e) {
+          error_log("Error getArchivoContenido: " . $e->getMessage());
+          return null;
+        }
+      }
+
+      function eliminarArchivoCapacitacion($idArchivo) {
+        try {
+          $q = "DELETE FROM CapacitacionArchivos WHERE id = ?";
+          $result = $this->ExecuteQueryWithParam($q, [$idArchivo]);
+          return $result !== null;
+        } catch (\Exception $e) {
+          error_log("Error eliminarArchivoCapacitacion: " . $e->getMessage());
+          return false;
+        }
+      }
+
+      function getCantidadArchivosPorCapacitacion($idCapacitacion) {
+        try {
+          $q = "SELECT COUNT(*) AS total FROM CapacitacionArchivos WHERE idCapacitacion = ?";
+          $result = $this->ExecuteQueryWithParam($q, [$idCapacitacion]);
+          return $result !== null && isset($result[0]["total"]) ? (int)$result[0]["total"] : 0;
+        } catch (\Exception $e) {
+          error_log("Error getCantidadArchivosPorCapacitacion: " . $e->getMessage());
+          return 0;
         }
       }
   }

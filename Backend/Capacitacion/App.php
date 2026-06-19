@@ -3,11 +3,14 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0); // No mostrar en pantalla
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/php_errors.log');
+ini_set('memory_limit', '1024M');
+ini_set('max_execution_time', '300');
+// Nota: upload_max_filesize y post_max_size deben configurarse en php.ini para soportar archivos de 500 MB.
 
 include("Capacitacion.php");
 $Capacitacion = new Capacitacion();
 $carpeta = "../../Archivos/Capacitaciones/";
-$op = $_POST["op"];
+$op = $_REQUEST["op"];
 
 if ($op == "getFechasRango") {
     $fechaInicio = $_POST["fechaInicio"];
@@ -75,37 +78,41 @@ if ($op == "addCapacitacion") {
         echo "ERROR: " . $respuesta;
         exit;
     }
-    
-    $ContadorArchivos = 0;
-    $fechaActual = date('Ymd_His');
-    $carpeta = "../../Archivos/Capacitaciones/$respuesta/";
-    
-    if (sizeof($_FILES) > 0) {
-      $NombreArchivo = "";
-      for ($i=0; $i < sizeof($_FILES['ArrArchivos']['name']) ; $i++) {
-        $ContadorArchivos ++;
-        if (isset($_FILES['ArrArchivos']['name'][$i]) && $_FILES['ArrArchivos']['name'][$i] != '') {
-          $namefile = $_FILES['ArrArchivos']['name'][$i];
-          $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-          $extValida = array("png","jpeg","jpg","pdf","ppt");
-          if (in_array($ext,$extValida)) {
-            $path = $carpeta.$respuesta.$fechaActual.$ContadorArchivos.".$ext";
-            $nameArchivo = "$respuesta$fechaActual$ContadorArchivos.$ext";
-            $path2 = $carpeta;
-              if (!file_exists($path2)) {
-                mkdir($path2, 0777, true);
-              }
-              if (move_uploaded_file($_FILES['ArrArchivos']['tmp_name'][$i],$path)) {
-                  $NombreArchivo .= $nameArchivo.",";
-                }
-          }
+
+    // Guardar archivos adjuntos en la base de datos
+    if (isset($_FILES['ArrArchivos']) && is_array($_FILES['ArrArchivos']['name'])) {
+        $extValidas = array("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "png", "jpg", "jpeg", "gif", "webp", "bmp", "mp4");
+
+        for ($i = 0; $i < sizeof($_FILES['ArrArchivos']['name']); $i++) {
+            $namefile = $_FILES['ArrArchivos']['name'][$i];
+            $tmpName = $_FILES['ArrArchivos']['tmp_name'][$i];
+
+            if (!isset($namefile) || $namefile === '' || !is_uploaded_file($tmpName)) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
+            if (!in_array($ext, $extValidas)) {
+                error_log("Extensión no permitida: $ext");
+                continue;
+            }
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $tmpName);
+            finfo_close($finfo);
+
+            $size = filesize($tmpName);
+            $content = file_get_contents($tmpName);
+
+            if ($content === false) {
+                error_log("No se pudo leer el archivo: $namefile");
+                continue;
+            }
+
+            $Capacitacion->insertArchivoCapacitacion($respuesta, $namefile, $mimeType, $ext, $size, $content);
         }
-      }
-      $NombreArchivo = substr($NombreArchivo, 0, -1);
-      $Capacitacion2 = new Capacitacion();
-      $Capacitacion2->updateNameArchivoCapacitacion($NombreArchivo,$respuesta);
     }
-    
+
     // Si llegamos aquí, todo salió bien
     echo "1";
 }
@@ -119,39 +126,45 @@ if ($op == "UpdateCapacitacion") {
   $Dias = $_POST["dias"];
   $Tipo = $_POST["tipoCapacitacion"];
   $idCapacitacion = $_POST["idCapacitacion"];
-  $CantidadArchivosAct = $Capacitacion->GetCantidadArchivosActuales($idCapacitacion);
   $idCapacitacion = base64_decode($idCapacitacion);
   $NoEmpleado = $_POST["NoEmpleado"];
-  $fechaActual = date('Ymd_His');
 
-  $carpeta = "../../Archivos/Capacitaciones/$idCapacitacion/";
-  if (sizeof($_FILES) > 0) {
-    if (sizeof($_FILES['ArrArchivos']['name'])> 0) {
-      $NombreArchivo = "";
-      for ($i=0; $i < sizeof($_FILES['ArrArchivos']['name']) ; $i++) {
-        $CantidadArchivosAct ++;
-        if (isset($_FILES['ArrArchivos']['name'][$i]) && $_FILES['ArrArchivos']['name'][$i] != '') {
-          $namefile = $_FILES['ArrArchivos']['name'][$i];
-          $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
-          $extValida = array("png","jpeg","jpg","pdf","ppt");
-          if (in_array($ext,$extValida)) {
-            $path = $carpeta.$idCapacitacion.$fechaActual.$CantidadArchivosAct.".$ext";
-            $nameArchivo = "$idCapacitacion$fechaActual$CantidadArchivosAct.$ext";
-            $path2 = $carpeta;
-              if (!file_exists($path2)) {
-                mkdir($path2, 0777, true);
-              }
-              if (move_uploaded_file($_FILES['ArrArchivos']['tmp_name'][$i],$path)) {
-                  $NombreArchivo .= $nameArchivo.",";
-                }
-          }
-        }
+  // Guardar archivos nuevos adjuntos en la base de datos
+  if (isset($_FILES['ArrArchivos']) && is_array($_FILES['ArrArchivos']['name']) && sizeof($_FILES['ArrArchivos']['name']) > 0) {
+    $extValidas = array("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "png", "jpg", "jpeg", "gif", "webp", "bmp", "mp4");
+
+    for ($i = 0; $i < sizeof($_FILES['ArrArchivos']['name']); $i++) {
+      $namefile = $_FILES['ArrArchivos']['name'][$i];
+      $tmpName = $_FILES['ArrArchivos']['tmp_name'][$i];
+
+      if (!isset($namefile) || $namefile === '' || !is_uploaded_file($tmpName)) {
+        continue;
       }
+
+      $ext = strtolower(pathinfo($namefile, PATHINFO_EXTENSION));
+      if (!in_array($ext, $extValidas)) {
+        error_log("Extensión no permitida: $ext");
+        continue;
+      }
+
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $mimeType = finfo_file($finfo, $tmpName);
+      finfo_close($finfo);
+
+      $size = filesize($tmpName);
+      $content = file_get_contents($tmpName);
+
+      if ($content === false) {
+        error_log("No se pudo leer el archivo: $namefile");
+        continue;
+      }
+
+      $Capacitacion->insertArchivoCapacitacion($idCapacitacion, $namefile, $mimeType, $ext, $size, $content);
     }
   }
-  $NombreArchivo = substr($NombreArchivo, 0, -1);
+
   $Capacitacion2 = new Capacitacion();
-  $Capacitacion2->UpdateCapacitacion($Descripcion,$FechaInicio,$FechaFin,$HoraInicio,$HoraFin,$Dias,$NombreArchivo,$Tipo,$idCapacitacion,$NoEmpleado);
+  $Capacitacion2->UpdateCapacitacion($Descripcion,$FechaInicio,$FechaFin,$HoraInicio,$HoraFin,$Dias,"",$Tipo,$idCapacitacion,$NoEmpleado);
   echo "1";
 }
 
@@ -198,13 +211,37 @@ if ($op == "getDetalleCapacitacion") {
 
 if ($op == "getArchivosActualesCapacitacion") {
   $idCapacitacion = $_POST["idCapacitacion"];
-  echo trim($Capacitacion->getArchivosActualesCapacitacion($idCapacitacion));
+  $idCapacitacion = base64_decode($idCapacitacion);
+  echo trim($Capacitacion->getArchivosPorCapacitacion($idCapacitacion));
 }
 
 if ($op == "eliminarArchivoCapacitacionSelected") {
-  $idCapacitacion = $_POST["idCapacitacion"];
-  $Archivo = $_POST["Archivo"];
-  echo trim($Capacitacion->eliminarArchivoCapacitacionSelected($idCapacitacion,$Archivo));
+  $idArchivo = $_POST["idArchivo"];
+  echo trim($Capacitacion->eliminarArchivoCapacitacion($idArchivo));
+}
+
+if ($op == "getArchivoCapacitacion") {
+  $idArchivo = $_REQUEST["idArchivo"];
+  $download = isset($_REQUEST["download"]) && $_REQUEST["download"] == "1";
+
+  $archivo = $Capacitacion->getArchivoContenido($idArchivo);
+
+  if (!$archivo || !isset($archivo['contenido'])) {
+    http_response_code(404);
+    echo "Archivo no encontrado";
+    exit;
+  }
+
+  $mimeType = !empty($archivo['mimeType']) ? $archivo['mimeType'] : 'application/octet-stream';
+  header("Content-Type: " . $mimeType);
+  header("Content-Length: " . strlen($archivo['contenido']));
+
+  $disposition = $download ? "attachment" : "inline";
+  $safeName = rawurlencode($archivo['nombreOriginal']);
+  header("Content-Disposition: $disposition; filename=\"" . $safeName . "\"");
+
+  echo $archivo['contenido'];
+  exit;
 }
 
 if ($op == "deleteCapacitacion") {

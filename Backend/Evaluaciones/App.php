@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 
 // URL y clave de la API .NET para notificaciones push móvil
 if (!defined('DOTNET_API_URL')) {
-    define('DOTNET_API_URL', 'https://d077-2806-101e-e-530e-d52a-c23d-8805-639e.ngrok-free.app');
+    define('DOTNET_API_URL', 'https://469b-2806-101e-e-3687-c0f8-81ba-3373-b9c2.ngrok-free.app');
 }
 if (!defined('DOTNET_INTERNAL_KEY')) {
     define('DOTNET_INTERNAL_KEY', 'pip-internal-2025-X9kLmQ7rNvTz');

@@ -2,6 +2,45 @@
 
 Todos los cambios relevantes del proyecto se registran aquí en orden cronológico inverso.
 
+## [2026-06-19 13:53:32] ✨ feat: wizard capacitación y archivos en BD
+
+### Almacenamiento de archivos en base de datos
+- 🏗️ **Nueva tabla `CapacitacionArchivos`:** Migración `database/migrations/003_capacitacion_archivos.sql` que crea la tabla con `contenido LONGBLOB`, FK a `Capacitacion` con `ON DELETE CASCADE` e índices por capacitación.
+- 🐛 **Fix bind LOB genérico:** `Backend/Conexiones/Conexiones.php::ExecuteWithLob` ahora itera los parámetros y bindea como `PDO::PARAM_LOB` solo el índice indicado, soportando cualquier query con binarios.
+- ✨ **Backend archivos:** Nuevos métodos en `Backend/Capacitacion/Capacitacion.php` — `insertArchivoCapacitacion()`, `getArchivosPorCapacitacion()`, `getArchivoContenido()`, `eliminarArchivoCapacitacion()` y `getCantidadArchivosPorCapacitacion()`.
+- ✨ **Endpoint de descarga/visualización:** Nueva `op=getArchivoCapacitacion` en `Backend/Capacitacion/App.php` que sirve el BLOB con `Content-Type` real (vía `finfo`) y soporta `?download=1` para forzar descarga con el nombre original.
+- ♻️ **Migración addCapacitacion/UpdateCapacitacion:** Se elimina la escritura a `Archivos/Capacitaciones/` en disco; los archivos se guardan directamente en BD durante el POST. `memory_limit` sube a 1024M y `max_execution_time` a 300s.
+- ✨ **Conteos en listados:** `getCapacitacionesDisponibles` y `getCapacitacionDisponibles` devuelven `CantidadArchivos` (COUNT sobre `CapacitacionArchivos`) para mostrar el contador en la UI.
+
+### Wizard de creación (AddCapacitacion.php / scripts/AddCapacitacion.js)
+- ✨ **Wizard 4 pasos:** Nuevo stepper visual con barra de progreso para crear capacitación en orden: 1) General (tipo, descripción, fechas, horario, días), 2) Audiencia (filtros y selección de empleados), 3) Archivos (drag & drop) y 4) Resumen.
+- ✨ **Validación por paso:** `validateStep()` impide avanzar con campos incompletos y muestra alertas bootstrap en la esquina superior derecha; los días solo se piden cuando el tipo es "Por días".
+- ✨ **Resumen previo al envío:** `updateSummary()` consolida tipo, descripción, período, horario, días, cantidad de empleados, archivos y peso total antes del POST.
+- ✨ **Drop zone rediseñado:** `ImagenesDrop()` ahora usa tarjetas con icono de Material Symbols según la extensión, nombre truncado, peso formateado (`formatBytes`) y botón "Quitar".
+- ✨ **Preview de archivo genérico:** `previewFile()` muestra icono + nombre + tamaño para tipos no-imagen y previsualiza la imagen con `URL.createObjectURL` cuando aplica.
+- ✨ **Tipos permitidos ampliados:** Se aceptan `pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, jpeg, gif, webp, bmp, mp4` con whitelist de MIME types. Tamaño máximo 500 MB por archivo (antes 1.5 GB mal calculado).
+- 🎨 **UI:** Botones `btn-minimal-success` / `btn-minimal-danger` para agregar/quitar empleados, columna `#colHoraInicio` / `#colHoraFin` para ocultar el bloque horario completo, paleta amarilla `#ffc107` consistente con identidad PIP.
+
+### Wizard de edición (UpdateCapacitacion.php / scripts/UpdateCapacitacion.js)
+- ✨ **Wizard 3 pasos:** Mismo patrón visual que la creación pero en 3 etapas: General, Audiencia y revisión final. Botón "Regresar" lleva de vuelta al listado.
+- 🐛 **Eliminación de archivos:** `eliminarArchivoCapacitacionSelected(idArchivo)` ahora borra por `id` de `CapacitacionArchivos` (antes recibía el nombre, propenso a errores de path).
+- ♻️ **Sin preview embebido al eliminar:** El modal de confirmación ya no muestra el contenido del archivo (que provenía del filesystem), solo mensaje de advertencia.
+
+### Vista de capacitación para usuarios (scripts/CapacitacionUs.js)
+- ✨ **Render async/await:** `getCapacitacionDisponibles` ahora itera con `async/await` y llama `getArchivosCapacitacionUs` por capacitación para evitar un solo payload enorme.
+- ✨ **Preview embebido desde BD:** Iframes para PDFs, `<img>` para imágenes y `<video controls>` para MP4 servidos directamente desde el endpoint `getArchivoCapacitacion`; el enlace "Descargar" usa `?download=1`.
+- 🐛 **Fix import:** Se eliminó la dependencia de la variable global `globalId` y del campo legacy `Archivo` concatenado en `Capacitacion.archivo` (ahora se calcula por id).
+- 🐛 **Empty state:** Si no hay capacitaciones o la consulta devuelve error, se muestra mensaje "Sin capacitaciones disponibles."
+
+### Listado principal (Capacitacion.php / scripts/Capacitacion.js)
+- ✨ **Header y métricas:** Nueva cabecera amarilla con descripción, métricas en vivo (`#metricTotal`, `#metricActivas`, `#metricInactivas`) y botón oscuro "Nueva capacitación" con icono `add`.
+- ✨ **Columna Archivos:** Botón "Archivos (N)" en cada fila con `verArchivosCapacitacion(id)` que abre un modal listando cada adjunto con icono, nombre y peso.
+- ✨ **Badge de estatus:** Nueva columna `StatusBadgeHTML` con pill verde/rojo en lugar del texto plano.
+- ♻️ **Botones de tabla:** Iconos con `<span class="material-symbols-outlined">` para activar/desactivar y eliminar.
+
+### Backend misc
+- 🐛 **URL ngrok:** `Backend/Evaluaciones/App.php` actualiza `DOTNET_API_URL` a `https://469b-2806-101e-e-3687-c0f8-81ba-3373-b9c2.ngrok-free.app`.
+
 ## [2026-06-09 22:02:23] ✨ feat: duplicar/editar evaluaciones y rediseño de planes de acción
 
 ### Evaluaciones — Duplicar (Feature 1)

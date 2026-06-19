@@ -18,6 +18,34 @@ let ind;
 let globalTipoCap = "";
 
 let gridCapacitacion = null;
+
+function formatBytes(bytes) {
+  if (bytes === 0 || !bytes) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+function truncateFileName(name, max = 22) {
+  if (!name || name.length <= max) return name;
+  const ext = name.split(".").pop();
+  const base = name.substring(0, name.length - ext.length - 1);
+  const keep = Math.max(1, max - ext.length - 4);
+  return base.substring(0, keep) + "..." + ext;
+}
+
+function getFileIconClass(ext) {
+  if (!ext) return "insert_drive_file";
+  ext = ext.toLowerCase();
+  if (ext === "pdf") return "picture_as_pdf";
+  if (["doc", "docx"].includes(ext)) return "description";
+  if (["xls", "xlsx"].includes(ext)) return "table_chart";
+  if (["ppt", "pptx"].includes(ext)) return "slideshow";
+  if (["png", "jpg", "jpeg", "gif", "webp", "bmp"].includes(ext)) return "image";
+  if (ext === "mp4") return "videocam";
+  return "insert_drive_file";
+}
 getCapacitaciones();
 m = $("#modalNuevaCapacitacion");
 cierre = $("#cerrarModal");
@@ -287,9 +315,20 @@ function getCapacitaciones() {
           }
         }
         if (!Array.isArray(response)) response = [];
-        
+
+        // Actualizar métricas del dashboard
+        const total = response.length;
+        const activas = response.filter(r => r.Status === "Activa").length;
+        const inactivas = response.filter(r => r.Status === "Inactiva").length;
+        $("#metricTotal").text(total);
+        $("#metricActivas").text(activas);
+        $("#metricInactivas").text(inactivas);
+
         let mappedData = response.map(row => {
           const b64 = btoa(row.idCapacitacion);
+          const statusBadge = row.Status === "Activa"
+            ? `<span class="badge bg-success">Activa</span>`
+            : `<span class="badge bg-danger">Inactiva</span>`;
           const statusIcon = row.Status === "Activa" ? "toggle_on" : "toggle_off";
           const statusColor = row.Status === "Activa" ? "btn-success" : "btn-danger";
           const statusTitle = row.Status === "Activa" ? "Desactivar" : "Activar";
@@ -305,8 +344,15 @@ function getCapacitaciones() {
                 <span class="material-symbols-outlined">delete</span>
               </button>
             </div>`;
+          let archivosHtml = `
+            <button onclick="verArchivosCapacitacion(${row.idCapacitacion})" class="btn btn-outline-info btn-sm" title="Ver archivos">
+              <span class="material-symbols-outlined" style="font-size:18px; vertical-align:middle;">folder_open</span>
+              <span class="align-middle">Archivos (${row.CantidadArchivos || 0})</span>
+            </button>`;
             return {
               ...row,
+              StatusBadgeHTML: statusBadge,
+              ArchivosHTML: archivosHtml,
               AccionesHTML: btnHtml
             };
         });
@@ -324,14 +370,15 @@ function getCapacitaciones() {
                 <p class="text-muted mb-0" style="max-width: 350px; font-size: 14px;">Aún no se ha encontrado ninguna capacitación en la base de datos.</p>
               </div>`,
             columns: [
-              { field: "Descripcion", headerText: "Descripción", width: 200 },
-              { field: "Dias", headerText: "Días", width: 150 },
-              { field: "FechaInicio", headerText: "Fecha Inicio", width: 130 },
-              { field: "FechaFin", headerText: "Fecha Fin", width: 130 },
-              { field: "HoraInicio", headerText: "Hora Inicio", width: 130 },
-              { field: "HoraFin", headerText: "Hora Fin", width: 130 },
-              { field: "Status", headerText: "Estatus", width: 120 },
-              { field: "AccionesHTML", headerText: "Acciones", width: 180, textAlign: "Center", disableHtmlEncode: false }
+              { field: "Descripcion", headerText: "Descripción", width: 180 },
+              { field: "Dias", headerText: "Días", width: 140 },
+              { field: "FechaInicio", headerText: "Fecha Inicio", width: 120 },
+              { field: "FechaFin", headerText: "Fecha Fin", width: 120 },
+              { field: "HoraInicio", headerText: "Hora Inicio", width: 120 },
+              { field: "HoraFin", headerText: "Hora Fin", width: 120 },
+              { field: "StatusBadgeHTML", headerText: "Estatus", width: 100, textAlign: "Center", disableHtmlEncode: false },
+              { field: "ArchivosHTML", headerText: "Archivos", width: 130, textAlign: "Center", disableHtmlEncode: false },
+              { field: "AccionesHTML", headerText: "Acciones", width: 160, textAlign: "Center", disableHtmlEncode: false }
             ],
             dataBound: function () {
               const gridElement = this.element;
@@ -782,4 +829,71 @@ function validarFile(all) {
 
 function getFileExtension2(filename) {
   return filename.split(".").pop();
+}
+
+async function verArchivosCapacitacion(idCapacitacion) {
+  const idB64 = btoa(idCapacitacion);
+  const datos = {
+    op: "getArchivosActualesCapacitacion",
+    idCapacitacion: idB64
+  };
+  let respuesta = [];
+  try {
+    respuesta = await $.ajax({
+      type: "post",
+      url: "Backend/Capacitacion/App.php",
+      data: datos,
+      dataType: "json"
+    });
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!Array.isArray(respuesta) || respuesta.length < 1) {
+    Swal.fire({
+      title: "Archivos de la capacitación",
+      text: "Esta capacitación no tiene archivos adjuntos.",
+      icon: "info",
+      confirmButtonColor: "#ffc407",
+      confirmButtonText: "Cerrar"
+    });
+    return;
+  }
+
+  let contenido = `<div class="row g-2" style="max-height:60vh; overflow-y:auto;">`;
+  respuesta.forEach((archivo) => {
+    const ext = (archivo.extension || "").toLowerCase();
+    const iconClass = getFileIconClass(ext);
+    contenido += `
+      <div class="col-12 col-md-6">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body p-2 d-flex align-items-center">
+            <span class="material-symbols-outlined" style="font-size:40px; color:#6c757d;">${iconClass}</span>
+            <div class="ms-2 flex-grow-1 text-start" style="min-width:0;">
+              <p class="mb-0 fw-semibold text-truncate" title="${archivo.nombreOriginal}">${truncateFileName(archivo.nombreOriginal, 28)}</p>
+              <small class="text-muted">${formatBytes(archivo.pesoBytes)}</small>
+            </div>
+          </div>
+          <div class="card-footer p-1 text-center bg-white border-top-0">
+            <a href="Backend/Capacitacion/App.php?op=getArchivoCapacitacion&idArchivo=${archivo.id}&download=1" target="_blank" class="btn btn-outline-primary btn-sm">
+              <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle;">download</span> Descargar
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  contenido += `</div>`;
+
+  Swal.fire({
+    title: "Archivos de la capacitación",
+    html: contenido,
+    width: "700px",
+    showCloseButton: true,
+    confirmButtonColor: "#ffc407",
+    confirmButtonText: "Cerrar",
+    customClass: {
+      popup: "text-start"
+    }
+  });
 }
