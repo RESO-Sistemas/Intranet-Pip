@@ -86,8 +86,8 @@
 							<div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
 								<div class="card-body d-flex align-items-center gap-3 p-3">
 									<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
-										style="width:48px;height:48px;background:#FFFBEB;">
-										<span class="material-symbols-outlined" style="color:#D97706;font-size:24px;">schedule</span>
+										style="width:48px;height:48px;background:#f0fdf4;">
+										<span class="material-symbols-outlined" style="color:#047857;font-size:24px;">schedule</span>
 									</div>
 									<div>
 										<div class="text-muted" style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Pendientes</div>
@@ -130,7 +130,7 @@
 						<div class="col">
 							<div class="page-description page-description-tabbed d-flex justify-content-between align-items-center flex-wrap gap-2">
 								<h1>Solicitudes de Vacaciones</h1>
-								<button type="button" class="btn btn-outline-warning btn-sm d-inline-flex align-items-center gap-1"
+								<button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
 									data-bs-toggle="modal" data-bs-target="#modalActualizarFirma">
 									<span class="material-symbols-outlined" style="font-size:16px;">draw</span>
 									Actualizar firma

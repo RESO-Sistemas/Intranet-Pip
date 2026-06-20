@@ -99,7 +99,7 @@
 
         .postulante-list-item.selected {
             background-color: #fff9e6;
-            border-left: 3px solid #ffc407;
+            border-left: 3px solid #008837;
         }
 
         .postulante-list-item .pli-name {
@@ -216,7 +216,7 @@
             color: #1a1a2e;
             background: #fff;
             border-color: #dee2e6;
-            border-bottom: 2px solid #ffc407;
+            border-bottom: 2px solid #008837;
         }
 
         .detail-tab .badge {
@@ -282,7 +282,7 @@
 
         .vacantes-sidebar .postulacion-item.active {
             background: #fff9e6;
-            border-left: 3px solid #ffc407;
+            border-left: 3px solid #008837;
         }
 
         .vacantes-sidebar .postulacion-item .fw-bold {
@@ -418,8 +418,8 @@
         [data-theme="dark"] .detail-tab.active {
             background: #2d2d2d;
             border-color: #404040;
-            color: #ffc407;
-            border-bottom: 2px solid #ffc407;
+            color: #008837;
+            border-bottom: 2px solid #008837;
         }
 
         [data-theme="dark"] .info-field .info-value {

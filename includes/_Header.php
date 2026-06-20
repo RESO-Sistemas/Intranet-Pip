@@ -41,7 +41,7 @@
   }
 
   .user-menu-trigger:hover {
-    background: rgba(255, 215, 0, 0.12);
+    background: rgba(0, 136, 55, 0.12);
   }
 
   .user-menu-avatar {
@@ -104,7 +104,7 @@
   }
 
   .user-menu-link i {
-    color: #bfa200;
+    color: #008837;
     font-size: 20px;
   }
 
@@ -151,12 +151,12 @@
   }
 
   .notification-unread {
-    background: rgba(255, 196, 7, 0.05);
-    border-left: 3px solid #ffc407;
+    background: rgba(105, 191, 127, 0.05);
+    border-left: 3px solid #008837;
   }
 
   .notification-unread:hover {
-    background: rgba(255, 196, 7, 0.1);
+    background: rgba(105, 191, 127, 0.1);
   }
 
   .notification-read {
@@ -244,7 +244,7 @@
   .notifications-dropdown-footer a {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #bfa200;
+    color: #008837;
     text-decoration: none;
   }
 

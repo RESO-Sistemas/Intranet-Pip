@@ -6,14 +6,14 @@
   align-items: center;
   gap: 10px;
   padding: 0.75rem 1rem;
-  background: #FFFBEB;
-  border: 1px solid #FDE68A;
+  background: #f0fdf4;
+  border: 1px solid #A7F3D0;
   border-radius: 10px;
 }
 .ev-info-icon {
   width: 36px; height: 36px;
-  background: #FEF3C7;
-  color: #D97706;
+  background: #D1FAE5;
+  color: #047857;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -28,13 +28,13 @@
   align-items: flex-start;
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
-  border-left: 3px solid #F59E0B;
+  border-left: 3px solid #008837;
   border-radius: 8px;
   padding: 0.65rem 1rem;
   font-size: 0.82rem;
   color: #64748B;
 }
-.ev-nota-alert .material-symbols-outlined { font-size: 16px; color: #F59E0B; flex-shrink: 0; margin-top: 1px; }
+.ev-nota-alert .material-symbols-outlined { font-size: 16px; color: #008837; flex-shrink: 0; margin-top: 1px; }
 
 /* Offcanvas panel */
 .ev-evaluadores-panel { width: min(440px, 95vw); }
@@ -64,12 +64,12 @@
   margin-bottom: 8px;
   transition: border-color 0.2s;
 }
-.ev-evaluador-card:hover { border-color: #FDE68A; }
+.ev-evaluador-card:hover { border-color: #A7F3D0; }
 .ev-evaluador-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .ev-evaluador-avatar {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #008837 0%, #047857 100%);
   color: #1C1917;
   font-weight: 700;
   font-size: 0.78rem;
@@ -96,7 +96,7 @@
   font-weight: 700;
   margin-top: 3px;
 }
-.ev-sbadge.amber  { background: #FEF3C7; color: #92400E; }
+.ev-sbadge.amber  { background: #D1FAE5; color: #92400E; }
 .ev-sbadge.teal   { background: #F0FDFA; color: #0F766E; }
 .ev-sbadge.blue   { background: #EFF6FF; color: #1D4ED8; }
 .ev-sbadge.gray   { background: #F1F5F9; color: #64748B; }
@@ -117,7 +117,7 @@
   cursor: pointer;
   white-space: nowrap;
 }
-.btn-minimal:hover { border-color: #F59E0B; background: #FFFBEB; color: #1a1a2e; }
+.btn-minimal:hover { border-color: #008837; background: #f0fdf4; color: #1a1a2e; }
 .btn-minimal:focus { box-shadow: 0 0 0 0.2rem rgba(245,158,11,0.2); outline: none; }
 .btn-minimal.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
 .btn-minimal .material-symbols-outlined { font-size: 17px; line-height: 1; }
@@ -157,7 +157,7 @@
   transition: all 0.2s ease;
   width: 100%;
 }
-.btn-ghost:hover { border-color: #F59E0B; color: #1a1a2e; background: #FFFBEB; }
+.btn-ghost:hover { border-color: #008837; color: #1a1a2e; background: #f0fdf4; }
 
 /* Modal nuevo evaluador */
 .ev-modal-header-styled {
@@ -219,13 +219,13 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .ev-evaluado-card:hover {
-  border-color: #FDE68A;
+  border-color: #A7F3D0;
   box-shadow: 0 2px 10px rgba(245,158,11,0.08);
 }
 .ev-evaluado-avatar-lg {
   width: 46px; height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #008837 0%, #047857 100%);
   color: #1C1917;
   font-weight: 800;
   font-size: 0.9rem;
@@ -263,8 +263,8 @@
 .ev-search-wrap { margin-bottom: 12px; }
 .ev-search-wrap .input-group-text { background: #fff; border-right: none; }
 .ev-search-wrap .form-control { border-left: none; font-size: 0.875rem; }
-.ev-search-wrap .form-control:focus { box-shadow: none; border-color: #F59E0B; }
-.ev-search-wrap .form-control:focus + * { border-color: #F59E0B; }
+.ev-search-wrap .form-control:focus { box-shadow: none; border-color: #008837; }
+.ev-search-wrap .form-control:focus + * { border-color: #008837; }
 
 /* Empty state */
 .ev-empty-state {

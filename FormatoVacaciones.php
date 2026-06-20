@@ -14,7 +14,7 @@
   <style>
     /* ── Variables de diseño ──────────────────────── */
     :root {
-      --pip-yellow: #ffc407;
+      --pip-yellow: #008837;
       --pip-dark:   #1a1a2e;
       --border:     #E2E8F0;
       --text-muted: #64748B;
@@ -135,7 +135,7 @@
       margin-top: 4px;
     }
     .dias-card.highlight {
-      background: #FFFBEB;
+      background: #f0fdf4;
       border-color: var(--pip-yellow);
     }
     .dias-card.highlight .dias-num { color: #92400E; }

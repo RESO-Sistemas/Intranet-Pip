@@ -23,7 +23,7 @@ SessionManager::requireLogin();
        Evaluacion — layout iframe: sidebar + contenido
     ============================================================ */
     :root {
-      --ev-primary:       #ffc407;
+      --ev-primary:       #008837;
       --ev-primary-dark:  #e6ac00;
       --ev-primary-light: #fff9e6;
       --ev-success:       #16a34a;
@@ -78,7 +78,7 @@ SessionManager::requireLogin();
       font-weight: 600;
       background: var(--ev-primary-light);
       color: #92700a;
-      border: 1px solid #fde68a;
+      border: 1px solid #A7F3D0;
     }
 
     /* Barra de progreso del header */
@@ -247,7 +247,7 @@ SessionManager::requireLogin();
       padding: 4px 12px;
       background: var(--ev-primary-light);
       color: #92700a;
-      border: 1px solid #fde68a;
+      border: 1px solid #A7F3D0;
       border-radius: 99px;
       font-size: .72rem;
       font-weight: 700;
@@ -301,7 +301,7 @@ SessionManager::requireLogin();
       font-weight: 700;
     }
     .ev-option-label:hover .ev-option-pill {
-      border-color: #fde68a;
+      border-color: #A7F3D0;
       background: var(--ev-primary-light);
     }
 
@@ -357,7 +357,7 @@ SessionManager::requireLogin();
     .ev-range-field input:focus {
       outline: none;
       border-color: var(--ev-primary);
-      box-shadow: 0 0 0 3px rgba(255,196,7,.15);
+      box-shadow: 0 0 0 3px rgba(105, 191, 127,.15);
     }
     .ev-range-field input[readonly] {
       background: #f8fafc;
@@ -408,7 +408,7 @@ SessionManager::requireLogin();
     .ev-comment-wrap textarea:focus {
       outline: none;
       border-color: var(--ev-primary);
-      box-shadow: 0 0 0 3px rgba(255,196,7,.15);
+      box-shadow: 0 0 0 3px rgba(105, 191, 127,.15);
     }
 
     /* Navegación inferior */

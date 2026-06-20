@@ -1217,7 +1217,7 @@
   pointer-events: none;
 }
 .e-richtexteditor .e-rte-character-count.e-warning {
-  color: #ffc107;
+  color: #008837;
   opacity: unset;
 }
 .e-richtexteditor .e-rte-character-count.e-error {

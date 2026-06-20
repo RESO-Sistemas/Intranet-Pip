@@ -32,7 +32,7 @@
 			width: 48px;
 			height: 48px;
 			border-radius: 12px;
-			background: #ffc107;
+			background: #008837;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -107,13 +107,13 @@
 		.org-card-title-wrap { position: relative; }
 		.org-card-title-input {
 			width: 100%; font-size: 15px; font-weight: 600; color: #1e293b;
-			border: 1.5px solid #ffc107; border-radius: 6px;
+			border: 1.5px solid #008837; border-radius: 6px;
 			padding: 2px 30px 2px 6px; outline: none;
-			background: #fffbeb;
+			background: #f0fdf4;
 		}
 		.org-card-title-save {
 			position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
-			background: #ffc107; border: none; border-radius: 4px;
+			background: #008837; border: none; border-radius: 4px;
 			width: 22px; height: 22px; cursor: pointer;
 			display: flex; align-items: center; justify-content: center;
 			padding: 0;

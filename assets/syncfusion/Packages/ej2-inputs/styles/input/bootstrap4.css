@@ -2116,7 +2116,7 @@ textarea.e-input,
 .e-input-group.e-control-wrapper.e-warning .e-input-group-icon,
 .e-input-group.e-warning textarea.e-input,
 .e-input-group.e-control-wrapper.e-warning textarea.e-input {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-input.e-error,
@@ -2171,7 +2171,7 @@ label.e-float-text,
 .e-float-input.e-control-wrapper.e-warning input,
 .e-float-input.e-warning textarea,
 .e-float-input.e-control-wrapper.e-warning textarea {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-float-input.e-error input,
@@ -2448,7 +2448,7 @@ textarea.e-input::selection,
 .e-input-group.e-control-wrapper.e-warning,
 .e-input-group.e-warning:not(.e-float-icon-left),
 .e-input-group.e-control-wrapper.e-warning:not(.e-float-icon-left) {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-input-group.e-error,

@@ -181,7 +181,7 @@ function showStatusHelpModal() {
 
             <h5 class="modal-title" id="statusHelpLabel" style="font-weight:600;">
 
-              <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:6px;color:#ffc407;">info</span>
+              <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:6px;color:#008837;">info</span>
 
               ¿Qué significa el Status?
 

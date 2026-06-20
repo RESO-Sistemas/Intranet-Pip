@@ -1865,13 +1865,13 @@
   border-left-color: #007bff;
 }
 .e-gantt .e-gantt-chart .e-event-markers .e-span-label {
-  background-color: #ffc107;
+  background-color: #008837;
   color: #000;
   font-size: 14px;
 }
 .e-gantt .e-gantt-chart .e-event-markers .e-gantt-right-arrow {
-  border-right-color: #ffc107;
-  border-left-color: #ffc107 !important; /* stylelint-disable-line declaration-no-important */
+  border-right-color: #008837;
+  border-left-color: #008837 !important; /* stylelint-disable-line declaration-no-important */
 }
 .e-gantt .e-gantt-chart .e-gantt-unscheduled-taskbar {
   background: -webkit-gradient(linear, left top, right top, from(rgba(0, 123, 255, 0.2)), color-stop(30%, #007bff), color-stop(70%, #007bff), color-stop(70%, #007bff), to(rgba(0, 123, 255, 0.2)));
@@ -2030,10 +2030,10 @@
   color: #333;
 }
 .e-gantt .e-gantt-chart .e-baseline-bar {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-baseline-gantt-milestone-container {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-uptail::before {
   border-bottom-color: #e0e0e0;
@@ -2204,7 +2204,7 @@
 .e-bigger .e-gantt .e-gantt-chart .e-event-markers .e-gantt-right-arrow {
   border-bottom: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-right-color: #ffc107;
+  border-right-color: #008837;
   border-top: 6px solid transparent;
   top: 73px !important;
 }

@@ -1175,10 +1175,10 @@
   color: #ffd600 !important; }
 
 .amber, .topbar nav .mailbox.dropdown-content .message-center a .user-img .away, .right-sidebar .sidenav.right-sidenav .mailbox .message-center a .user-img .away, .chat-windows .user-chat .chat-head .away, .chatbox .message-center a .user-img .away {
-  background-color: #ffc107 !important; }
+  background-color: #008837 !important; }
 
 .amber-text {
-  color: #ffc107 !important; }
+  color: #008837 !important; }
 
 .amber.lighten-5, .topbar nav .mailbox.dropdown-content .message-center a .user-img .lighten-5.away, .right-sidebar .sidenav.right-sidenav .mailbox .message-center a .user-img .lighten-5.away, .chat-windows .user-chat .chat-head .lighten-5.away, .chatbox .message-center a .user-img .lighten-5.away {
   background-color: #fff8e1 !important; }

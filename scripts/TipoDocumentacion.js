@@ -328,7 +328,7 @@ async function toggleEstatus(idEncoded) {
         text: '¿Está seguro de cambiar el estatus de este tipo de documento?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#ffc107',
+        confirmButtonColor: '#008837',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Aceptar',
         cancelButtonText: 'Cancelar'

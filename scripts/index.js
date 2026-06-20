@@ -616,7 +616,7 @@ function getInitialsFromName(fullName) {
 }
 
 function buildAvatarDataUriFromName(fullName) {
-  const palette = ["#e6b200"];
+  const palette = ["#7EBF8E"];
   const normalized = String(fullName || "Usuario");
   let hash = 0;
   for (let i = 0; i < normalized.length; i += 1) {
@@ -634,7 +634,7 @@ function getProfileAvatarUrl(imageName, employeeNumber, fullName) {
 
 // Función para generar un avatar con iniciales en tamaño pequeño (para comentarios)
 function buildCommentAvatarFromName(fullName) {
-    const palette = ["#e6b200"];
+    const palette = ["#7EBF8E"];
     const normalized = String(fullName || "Usuario");
   let hash = 0;
   for (let i = 0; i < normalized.length; i += 1) {
@@ -899,7 +899,7 @@ function updateDatosEmpleado() {
     text: "",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Actualizar Datos",
@@ -1300,7 +1300,7 @@ async function loadFeeds(page = 1) {
     for (let i = 0; i < response.length; i++) {
       try {
       const feed = response[i];
-      let colorMg = feed.MeGusta == 1 ? "color:#FFC107;" : "color:black;";
+      let colorMg = feed.MeGusta == 1 ? "color:#008837;" : "color:black;";
       let colorCong =
         feed.Felicitacion == 1 ? "color:#8E24AA;" : "color:black;";
       let cantComm = parseInt(
@@ -1872,7 +1872,7 @@ async function MeGusta(valor, tipo) {
       $btnMeGusta.removeClass("liked").css({ color: "" });
     } else {
       $heartIcon.removeClass("heart-outline").addClass("heart-filled");
-      $btnMeGusta.addClass("liked").css({ color: "#FFC107" });
+      $btnMeGusta.addClass("liked").css({ color: "#008837" });
     }
   } else {
     const $btnFel = $("#btnEventoF" + valor);
@@ -1911,7 +1911,7 @@ async function MeGusta(valor, tipo) {
       const $heart = $btnMG.find(".heart-icon");
       if (resObj.MeGusta == "1") {
         $heart.removeClass("heart-outline").addClass("heart-filled");
-        $btnMG.addClass("liked").css({ color: "#FFC107" });
+        $btnMG.addClass("liked").css({ color: "#008837" });
       } else {
         $heart.removeClass("heart-filled").addClass("heart-outline");
         $btnMG.removeClass("liked").css({ color: "" });
@@ -1970,7 +1970,7 @@ async function MeGusta(valor, tipo) {
       $btnMG.find(".me-gusta-count").text(prevCount);
       if (prevLiked) {
         $heart.removeClass("heart-outline").addClass("heart-filled");
-        $btnMG.addClass("liked").css({ color: "#FFC107" });
+        $btnMG.addClass("liked").css({ color: "#008837" });
       } else {
         $heart.removeClass("heart-filled").addClass("heart-outline");
         $btnMG.removeClass("liked").css({ color: "" });
@@ -2536,7 +2536,7 @@ const viewAllCommentsFeed = async (feed) => {
       }
       console.log(dataFeed.commentsData[i].inReaction);
       if (dataFeed.commentsData[i].inReaction) {
-        colorReaction = "#ffc407";
+        colorReaction = "#008837";
       }
       if (dataFeed.commentsData[i].TypeCommentUs == 1) {
         contentComments += `
@@ -2751,7 +2751,7 @@ const reactsToComment = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#ffc407";
+            icon.style.color = "#008837";
           } else {
             icon.style.color = "black";
           }
@@ -2796,7 +2796,7 @@ const reactsToCommentM = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#ffc407";
+            icon.style.color = "#008837";
           } else {
             icon.style.color = "black";
           }

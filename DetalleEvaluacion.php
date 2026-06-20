@@ -10,7 +10,7 @@
   <link href="assets/libs/toastr/build/toastr.min.css" rel="stylesheet">
   <style>
     body { padding: 0.75rem; margin: 0; background: #fff; }
-    .detail-card { border-left: 4px solid #ffc407; margin-bottom: 1rem; }
+    .detail-card { border-left: 4px solid #008837; margin-bottom: 1rem; }
     .detail-label { font-weight: 600; color: #6c757d; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.25rem; }
     .detail-value { font-size: 1rem; margin-bottom: 0; }
     .action-btn { min-width: 160px; margin: 0.25rem; }
@@ -24,8 +24,8 @@
     /* Estilos personalizados para el Modal de Faltantes */
     .bg-danger-subtle { background-color: #fee2e2 !important; }
     .text-danger { color: #dc2626 !important; }
-    .bg-warning-subtle { background-color: #fef3c7 !important; }
-    .text-warning { color: #d97706 !important; }
+    .bg-warning-subtle { background-color: #D1FAE5 !important; }
+    .text-warning { color: #047857 !important; }
     .avatar-circle-sm {
       width: 38px;
       height: 38px;
@@ -253,7 +253,7 @@
 
   <style>
     .detail-card {
-      border-left: 4px solid #ffc407;
+      border-left: 4px solid #008837;
       margin-bottom: 1rem;
     }
     .detail-label {
@@ -336,8 +336,8 @@
     /* Estilos personalizados para el Modal de Faltantes */
     .bg-danger-subtle { background-color: #fee2e2 !important; }
     .text-danger { color: #dc2626 !important; }
-    .bg-warning-subtle { background-color: #fef3c7 !important; }
-    .text-warning { color: #d97706 !important; }
+    .bg-warning-subtle { background-color: #D1FAE5 !important; }
+    .text-warning { color: #047857 !important; }
     .avatar-circle-sm {
       width: 38px;
       height: 38px;

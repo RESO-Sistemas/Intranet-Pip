@@ -45,7 +45,7 @@ export function getSeriesColor(theme) {
             break;
         case 'Tailwind':
             palette = ['#5A61F6', '#65A30D', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#8B5CF6', '#22D3EE', '#F87171', '#4ADE80', '#E879F9',
@@ -53,7 +53,7 @@ export function getSeriesColor(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'Fluent':
             palette = ['#1AC9E6', '#DA4CB2', '#EDBB40', '#AF4BCF', '#FF7266',

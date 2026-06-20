@@ -53,7 +53,7 @@
     .info-item .value { font-size: 0.95rem; color: #222; font-weight: 500; margin-top: 4px; }
 
     /* Badges estado */
-    .badge-estado-abierta { background-color: #ffc107; color: #1a1a1a; font-size: .8rem; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
+    .badge-estado-abierta { background-color: #008837; color: #1a1a1a; font-size: .8rem; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
     .badge-estado-proceso { background-color: #0d6efd; color: #fff; font-size: .8rem; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
     .badge-estado-resuelta { background-color: #28a745; color: #fff; font-size: .8rem; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
 
@@ -98,7 +98,7 @@
       transition: width 0.4s ease;
     }
     .progress-fill.bg-success { background: #28a745 !important; }
-    .progress-fill.bg-warning { background: #ffc107 !important; }
+    .progress-fill.bg-warning { background: #008837 !important; }
     .progress-fill.bg-danger { background: #dc3545 !important; }
     
     .activity-body {

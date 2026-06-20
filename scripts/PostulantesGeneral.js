@@ -6,7 +6,7 @@ let selectedIdPostulanteVacante = null;
 // ==========================================
 // RESULTADOS DE EVALUACIÓN
 // ==========================================
-const pgYellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+const pgYellowPalette = ['#008837', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#f0fdf4'];
 let pgChartPostulante = null;
 
 function hasHistorialUI() {
@@ -528,7 +528,7 @@ async function loadResultadosEvaluacion(idPostulanteVacante) {
                 datosEv.forEach(comp => {
                     const score = parseFloat(comp.ScoreCompetencia);
                     const pct = Math.round(score);
-                    const color = score >= 70 ? '#28a745' : (score >= 40 ? '#ffc107' : '#dc3545');
+                    const color = score >= 70 ? '#28a745' : (score >= 40 ? '#008837' : '#dc3545');
                     html += `
                         <div class="text-center" style="min-width:70px;">
                             <div style="width:50px;height:50px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;background:${color}20;color:${color};border:2px solid ${color};">${pct}%</div>

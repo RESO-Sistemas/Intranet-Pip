@@ -98,14 +98,14 @@
     }
 
     .form-control:focus {
-      border-color: #ffc407 !important;
-      box-shadow: 0 0 0 0.25rem rgba(255, 196, 7, 0.2) !important;
+      border-color: #008837 !important;
+      box-shadow: 0 0 0 0.25rem rgba(105, 191, 127, 0.2) !important;
     }
 
     .input-group-text-premium {
       background-color: #fffaf0 !important;
       border-color: #ced4da !important;
-      color: #e6b200 !important;
+      color: #7EBF8E !important;
     }
 
     /* Timeline de avances */
@@ -176,7 +176,7 @@
 
                 <!-- Progreso Global del Plan -->
                 <div class="card mb-3 shadow-sm border-0"
-                  style="background-color: #fffaf0; border-left: 4px solid #ffc407 !important;">
+                  style="background-color: #fffaf0; border-left: 4px solid #008837 !important;">
                   <div class="card-body">
                     <h6 class="text-dark small text-uppercase fw-bold mb-2">Avance Global del Plan</h6>
                     <div class="d-flex align-items-baseline mb-2">
@@ -184,7 +184,7 @@
                     </div>
                     <div class="progress" style="height: 8px; background-color: rgba(0,0,0,.06); border-radius: 4px;">
                       <div id="bar_global_progress" class="progress-bar" role="progressbar"
-                        style="width: 0%; background-color: #ffc407;" aria-valuenow="0" aria-valuemin="0"
+                        style="width: 0%; background-color: #008837;" aria-valuenow="0" aria-valuemin="0"
                         aria-valuemax="100"></div>
                     </div>
                   </div>
@@ -367,7 +367,7 @@
         </div>
         <div class="modal-body p-4">
           <div class="alert d-flex align-items-start mb-4 p-3" role="alert"
-            style="background:#fff3cd; border:1px solid #ffc107; border-radius:8px;">
+            style="background:#fff3cd; border:1px solid #008837; border-radius:8px;">
             <i class="fa-solid fa-triangle-exclamation text-warning fs-5 me-3 mt-1"></i>
             <div>
               <strong class="text-dark d-block mb-1">Atención</strong>

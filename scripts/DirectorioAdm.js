@@ -271,7 +271,7 @@ function getDirectorioSucursal() {
 
 // ─── Modal Correos-Teléfonos ──────────────────────────────────────────────────
 async function openModalAddEmpCorreosTelefonos(idTipo, Nombre) {
-  $.blockUI({ message: '<h5><i class="fa fa-spinner fa-spin"></i></h5>', css: { border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#ffc407" } });
+  $.blockUI({ message: '<h5><i class="fa fa-spinner fa-spin"></i></h5>', css: { border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#008837" } });
   $("#NameDirectorio").html(`Directorio: ${Nombre}`);
   $("#IdTipoEmTel").val(idTipo);
   $("#slctDivisionEm, #slctPuestoEm, #slctSucursalEm").val("").trigger("change");
@@ -332,7 +332,7 @@ async function SeleccionarEmpleadoDirEmTel(id, nameEmpleado) {
 }
 
 async function addEmpleadosDirectorioCorreosTelefonos() {
-  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   const Email = $("#txtCorreoEmTel").val();
   if (Email && !validateEmail(Email)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }
@@ -356,7 +356,7 @@ async function addEmpleadosDirectorioCorreosTelefonos() {
 }
 
 async function updateRegistroDirectorioCorreosTelefonos(val) {
-  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos actualizados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos actualizados?",icon:"question",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, confirmar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   const Email = $("#emailDir"+val).val();
   if (Email && !validateEmail(Email)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }
@@ -374,7 +374,7 @@ async function updateRegistroDirectorioCorreosTelefonos(val) {
 }
 
 async function deleteEmpleadosDirectorioCorreosTelefonos(val) {
-  const result = await Swal.fire({ title:"Confirmación",html:"<h6>¿Eliminar empleado del directorio?</h6>",icon:"warning",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",html:"<h6>¿Eliminar empleado del directorio?</h6>",icon:"warning",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   try {
     const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"deleteEmpleadosDirectorioCorreosTelefonos",idDetalleDirectoriosCorreosTelefonos:val} });
@@ -427,7 +427,7 @@ function getSucursales() {
 
 // ─── Modal Extensiones ────────────────────────────────────────────────────────
 async function openModalAddEmpExtensiones(idTipo, Nombre) {
-  $.blockUI({ message:'<h5><i class="fa fa-spinner fa-spin"></i></h5>', css:{border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#ffc407"} });
+  $.blockUI({ message:'<h5><i class="fa fa-spinner fa-spin"></i></h5>', css:{border:"none",padding:"15px",backgroundColor:"#000","border-radius":"10px",opacity:0.5,color:"#008837"} });
   $("#NameDirectorioExtension").html(`Directorio: ${Nombre}`);
   $("#IdTipoExtensiones").val(idTipo);
   $("#slctDivisionEmExt, #slctPuestoEmExt, #slctSucursalEmExt").val("").trigger("change");
@@ -508,7 +508,7 @@ async function addEmpleadoDirectorioExtensiones() {
 }
 
 async function deleteEmpleadosDirectorioExtension(val) {
-  const result = await Swal.fire({ title:"Confirmación",text:"¿Eliminar empleado del directorio?",icon:"warning",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Eliminar empleado del directorio?",icon:"warning",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   try {
     const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{op:"deleteEmpleadosDirectorioExtension",idDetalleDirectorioExtensiones:val} });
@@ -518,7 +518,7 @@ async function deleteEmpleadosDirectorioExtension(val) {
 }
 
 async function updateExtesionEmp(DetalleId, Directorio) {
-  const result = await Swal.fire({ title:"Confirmación",text:"¿Actualizar extensión?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Actualizar extensión?",icon:"question",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   try {
     const resp = await $.ajax({ type:"post", url:"Backend/Directorios/App.php", data:{
@@ -577,7 +577,7 @@ $(document).ready(function() {
   });
 
   $("#btnAgregaSucursalDirectorio").click(async function() {
-    const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, agregar",cancelButtonText:"Cancelar" });
+    const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, agregar",cancelButtonText:"Cancelar" });
     if (!result.isConfirmed) return;
 
     const IdSucursal     = $("#slctListadoSucursalesDisp").val();
@@ -619,7 +619,7 @@ async function getSucursalesDisponiblesDirectorio() {
 }
 
 async function updateRegistroDirectorioSucursal(val) {
-  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#ffc407",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
+  const result = await Swal.fire({ title:"Confirmación",text:"¿Confirmar datos ingresados?",icon:"question",showCancelButton:true,confirmButtonColor:"#008837",cancelButtonColor:"#d33",confirmButtonText:"Sí, actualizar",cancelButtonText:"Cancelar" });
   if (!result.isConfirmed) return;
   const Correo = $("#CorreoSucur"+val).val();
   if (Correo && !validateEmail(Correo)) { showBootstrapAlertWar(`<div class="alert-content"><span class="alert-title">Formato incorrecto!</span><span class="alert-text">Correo no válido.</span></div>`, "top-right", 5000); return; }

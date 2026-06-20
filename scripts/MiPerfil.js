@@ -438,7 +438,7 @@ function updateDatosEmpleado() {
     text: "",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Actualizar Datos",
@@ -525,7 +525,7 @@ function guardarPerfilPersonal() {
     text: "Se actualizarán los datos de tu perfil",
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Guardar",
@@ -1308,7 +1308,7 @@ const renderCommentsFeedInline = (content) => {
   const cant = ajaxR.Data.length;
   let contentCom = "";
   if (cant > 0) {
-    let colorReaction = ajaxR.Data[0].inReaction ? "#ffc407" : "black";
+    let colorReaction = ajaxR.Data[0].inReaction ? "#008837" : "black";
     let employeesRLike = "";
     let cantReactions = ajaxR.Data[0].reactionsC.length;
     if (cantReactions > 0) {
@@ -1501,7 +1501,7 @@ const viewAllCommentsFeed = async (feed) => {
       }
       console.log(dataFeed.commentsData[i].inReaction);
       if (dataFeed.commentsData[i].inReaction) {
-        colorReaction = "#ffc407";
+        colorReaction = "#008837";
       }
       if (dataFeed.commentsData[i].TypeCommentUs == 1) {
         contentComments += `
@@ -1675,7 +1675,7 @@ const reactsToComment = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#ffc407";
+            icon.style.color = "#008837";
           } else {
             icon.style.color = "black";
           }
@@ -1720,7 +1720,7 @@ const reactsToCommentM = async (type, comment) => {
       if (cantData > 0) {
         if (cantData) {
           if (ajaxR.Data.inReaction) {
-            icon.style.color = "#ffc407";
+            icon.style.color = "#008837";
           } else {
             icon.style.color = "black";
           }

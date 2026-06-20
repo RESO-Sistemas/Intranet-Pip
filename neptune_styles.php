@@ -135,35 +135,53 @@ if ($current_page !== 'login'):
     margin-left: 0 !important;
   }
 
-  /* Sidebar — logo sin ícono azul del template */
-  .app-sidebar .logo .logo-icon {
-    background: none !important;
-    padding-left: 0 !important;
-    width: auto !important;
-    height: auto !important;
+  /* Sidebar — Ajuste de contenedor del logo para cubrir el espacio de forma natural */
+  .app-sidebar .logo {
+    padding: 0 !important;
+    height: 120px !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    padding-left: 55px !important;
+    justify-content: center !important;
+    background-color: #008837 !important;
+    overflow: hidden !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  body.dark-mode .app-sidebar .logo {
+    background-color: #008837 !important;
+  }
+
+  .app-sidebar .logo .logo-icon {
+    background: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .app-sidebar .logo .logo-icon img {
-    max-height: 52px !important;
+    height: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    object-fit: contain !important;
     transition: transform 0.25s ease, filter 0.25s ease !important;
   }
 
   .app-sidebar .logo .logo-icon:hover {
-    padding-left: 55px !important;
+    padding-left: 0 !important;
   }
 
   .app-sidebar .logo .logo-icon:hover img {
-    transform: translateY(-3px) scale(1.06) !important;
-    filter: brightness(1.1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25)) !important;
+    transform: scale(1.03) !important;
+    filter: brightness(1.05) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15)) !important;
   }
 
-  /* Sidebar — íconos siempre amarillos */
+  /* Sidebar — íconos siempre verdes esmeralda */
   .app-menu>ul>li>a>i:not(.has-sub-menu).material-icons-two-tone {
-    filter: brightness(0) saturate(100%) invert(79%) sepia(82%) saturate(596%) hue-rotate(356deg) brightness(103%) contrast(101%) !important;
+    filter: brightness(0) saturate(100%) invert(29%) sepia(86%) saturate(1263%) hue-rotate(119deg) brightness(96%) contrast(101%) !important;
   }
 
   /* Sidebar — menús padre: texto gris por defecto, amarillo en hover/activo */
@@ -174,7 +192,7 @@ if ($current_page !== 'login'):
   .app-menu>ul>li>a:hover,
   .app-menu>ul>li.open>a,
   .app-menu>ul>li.active-page>a {
-    color: #ffc407 !important;
+    color: #008837 !important;
   }
 
   /* Sidebar — menús hijo: texto gris por defecto, amarillo en hover/activo */
@@ -184,7 +202,7 @@ if ($current_page !== 'login'):
 
   .app-menu>ul>li ul li a:hover,
   .app-menu>ul>li ul li a.active {
-    color: #ffc407 !important;
+    color: #008837 !important;
     font-weight: 500;
   }
 

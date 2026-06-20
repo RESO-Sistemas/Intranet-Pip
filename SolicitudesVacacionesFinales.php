@@ -71,9 +71,9 @@ $FechaMenosMes = date("Y-m-d", strtotime($hoy . "- 2 month"));
 								<div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
 									<div class="card-body d-flex align-items-center gap-3 p-3">
 										<div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
-											style="width:48px;height:48px;background:#FFFBEB;">
+											style="width:48px;height:48px;background:#f0fdf4;">
 											<span class="material-symbols-outlined"
-												style="color:#D97706;font-size:24px;">pending_actions</span>
+												style="color:#047857;font-size:24px;">pending_actions</span>
 										</div>
 										<div>
 											<div class="text-muted"

@@ -39,7 +39,7 @@ function printMyPlansAction(data) {
     const progreso = parseFloat(plan["ProgresoGlobal"] || 0).toFixed(1);
     const pendientes = parseInt(plan["CantidadAvancesPendientes"] || 0, 10);
     const statusBadge = getStatusBadge(plan["StatusConfirmaPlanAccion"], plan["StatusConfirmaActividades"], pendientes);
-    const barColor = Number(plan["StatusConfirmaPlanAccion"]) === 1 ? '#198754' : '#ffc107';
+    const barColor = Number(plan["StatusConfirmaPlanAccion"]) === 1 ? '#198754' : '#008837';
 
     return `
       <div class="col-12 col-md-6 col-xl-4">

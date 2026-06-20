@@ -29,7 +29,7 @@
       border-radius: 0.25rem;
     }
     .badge-puesto {
-      background-color: #ffc407;
+      background-color: #008837;
       color: #fff9e6;
       font-size: 0.8rem;
       padding: 3px 8px;
@@ -37,7 +37,7 @@
       white-space: nowrap;
     }
     body.dark-mode .badge-puesto {
-      background-color: #ffc407;
+      background-color: #008837;
       color: #1a1a1a;
     }
   </style>

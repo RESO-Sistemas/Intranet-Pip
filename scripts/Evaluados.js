@@ -147,7 +147,7 @@ async function verificaEvaluadores(noEmpleado, name) {
 async function list_evaluadores() {
   const container = document.getElementById('ev-evaluadores-list');
   if (container) {
-    container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#F59E0B;"></div></div>';
+    container.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#008837;"></div></div>';
   }
 
   const ajaxResponse = await pAjaxAsync(url_m_Evaluaciones, {
@@ -224,7 +224,7 @@ async function verificaDeleteEvaluador(val, name) {
     showCancelButton: true,
     confirmButtonText: "Sí, cancelar",
     cancelButtonText: "No, mantener",
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#dc3545",
   });
 
@@ -396,7 +396,7 @@ async function addEmpleadoEvaluador(val, empleado) {
     showCancelButton: true,
     confirmButtonText: "Sí, registrar",
     cancelButtonText: "Cancelar",
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#dc3545",
   });
 

@@ -30,7 +30,7 @@
     }
     /* Badge puestos — amarillo primario + texto amarillo claro */
     .badge-puesto {
-      background-color: #ffc407;
+      background-color: #008837;
       color: #fff9e6;
       font-size: 0.8rem;
       padding: 3px 8px;
@@ -38,7 +38,7 @@
       white-space: nowrap;
     }
     body.dark-mode .badge-puesto {
-      background-color: #ffc407;
+      background-color: #008837;
       color: #1a1a1a;
     }
     /* Quitar contorno feo al arrastrar filas */
@@ -53,8 +53,8 @@
     }
 
     .select2-container--default.select2-container--focus .select2-selection--single {
-      border-color: #ffc407;
-      box-shadow: 0 0 0 0.2rem rgba(255, 196, 7, 0.25);
+      border-color: #008837;
+      box-shadow: 0 0 0 0.2rem rgba(105, 191, 127, 0.25);
     }
     .select2-dropdown {
       border-color: #ced4da;

@@ -6074,7 +6074,7 @@ function getSeriesColor(theme) {
             break;
         case 'Tailwind':
             palette = ['#5A61F6', '#65A30D', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#8B5CF6', '#22D3EE', '#F87171', '#4ADE80', '#E879F9',
@@ -6082,7 +6082,7 @@ function getSeriesColor(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'FluentDark':
             palette = ['#1AC9E6', '#DA4CB2', '#EDBB40', '#AF4BCF', '#FF7266',
@@ -60899,7 +60899,7 @@ function getSeriesColor$1(theme) {
             break;
         case 'Tailwind':
             palette = ['#5A61F6', '#65A30D', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#8B5CF6', '#22D3EE', '#F87171', '#4ADE80', '#E879F9',
@@ -60907,7 +60907,7 @@ function getSeriesColor$1(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'Fluent':
             palette = ['#1AC9E6', '#DA4CB2', '#EDBB40', '#AF4BCF', '#FF7266',
@@ -65535,7 +65535,7 @@ function getSeriesColor$2(theme) {
             break;
         case 'Tailwind':
             palette = ['#5A61F6', '#65A30D', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#8B5CF6', '#22D3EE', '#F87171', '#4ADE80', '#E879F9',
@@ -65543,7 +65543,7 @@ function getSeriesColor$2(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'FluentDark':
             palette = ['#1AC9E6', '#DA4CB2', '#EDBB40', '#AF4BCF', '#FF7266',
@@ -69581,7 +69581,7 @@ function get3DSeriesColor(theme) {
             break;
         case 'Tailwind':
             palette = ['#5C43F4', '#FFB400', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#00C2FF', '#FD7400', '#F87171', '#4ADE80', '#E879F9',
@@ -69589,7 +69589,7 @@ function get3DSeriesColor(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'FluentDark':
             palette = ['#41E4FF', '#FF7E6F', '#EDBB40', '#AF4BCF', '#FF7266',
@@ -81090,7 +81090,7 @@ function getCircular3DSeriesColor(theme) {
             break;
         case 'Tailwind':
             palette = ['#5A61F6', '#65A30D', '#334155', '#14B8A6', '#8B5CF6',
-                '#0369A1', '#F97316', '#9333EA', '#F59E0B', '#15803D'];
+                '#0369A1', '#F97316', '#9333EA', '#008837', '#15803D'];
             break;
         case 'TailwindDark':
             palette = ['#8B5CF6', '#22D3EE', '#F87171', '#4ADE80', '#E879F9',
@@ -81098,7 +81098,7 @@ function getCircular3DSeriesColor(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#FFC107', '#198754', '#0DCAF0'];
+            palette = ['#FD7E14', '#6610F2', '#6F42C1', '#D63384', '#DC3545', '#008837', '#198754', '#0DCAF0'];
             break;
         case 'FluentDark':
             palette = ['#1AC9E6', '#DA4CB2', '#EDBB40', '#AF4BCF', '#FF7266',
@@ -88620,7 +88620,7 @@ function getNodeColor(theme) {
                 '#A80000', '#016CC0', '#D83B01', '#CEA000', '#198754', '#107C10', '#0378D5', '#076376', '#876800'];
             break;
         case 'Bootstrap4':
-            palette = ['#17A2B8', '#007BFF', '#FFC107', '#DC3545', '#6C757D',
+            palette = ['#17A2B8', '#007BFF', '#008837', '#DC3545', '#6C757D',
                 '#6610F2', '#20C997', '#FD7E14', '#6F42C1', '#28A745', '#D39E00', '#17A2B8', '#117A8B', '#E83E8C'];
             break;
         case 'Bootstrap':
@@ -88662,7 +88662,7 @@ function getNodeColor(theme) {
             break;
         case 'Bootstrap5Dark':
         case 'Bootstrap5':
-            palette = ['#6F42C1', '#0D6EFD', '#FFC107', '#DC3545', '#6C757D',
+            palette = ['#6F42C1', '#0D6EFD', '#008837', '#DC3545', '#6C757D',
                 '#F3A93C', '#52236C', '#FD7E14', '#6610F2', '#20C997', '#198754', '#0DCAF0', '#066477', '#D64F56'];
             break;
         case 'FluentDark':

@@ -74,7 +74,7 @@ function buildCircleSVG(pct) {
   const offset = circ - (pct / 100) * circ;
 
   // Color según avance: usa el amarillo del tema o verde si completado
-  const stroke = pct === 100 ? "#16a34a" : "#ffc407";
+  const stroke = pct === 100 ? "#16a34a" : "#008837";
 
   return `
     <div class="ev-circle-wrap">
@@ -98,7 +98,7 @@ function buildEvaluationCard(ev) {
   const isDone = pct === 100;
   const id     = ev.idEvaluaciones;
 
-  const fillColor = isDone ? "#16a34a" : "#ffc407";
+  const fillColor = isDone ? "#16a34a" : "#008837";
 
   const badgeHTML = isDone
     ? `<span class="ev-badge done"><i class="fas fa-check-circle"></i> Completada</span>`
@@ -210,7 +210,7 @@ function buildEmployeeCard(emp) {
         <div class="ev-employee-meta">
           <span><i class="fas fa-comment-alt"></i> ${emp.Respondidas ?? 0} resp.</span>
           <span><span class="ev-type-badge ${typeClass}">${emp.RelacionEvaluado ?? 'Sin tipo'}</span></span>
-          <span style="color:${isDone ? '#16a34a' : '#d97706'};">
+          <span style="color:${isDone ? '#16a34a' : '#047857'};">
             <i class="fas fa-${isDone ? 'check' : 'hourglass-half'}"></i>
             ${emp.StatusRealizado ?? '—'}
           </span>

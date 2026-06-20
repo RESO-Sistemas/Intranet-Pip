@@ -2458,8 +2458,8 @@ textarea.e-input::selection,
 .e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-error).e-warning,
 .e-input-group:not(.e-disabled):active:not(.e-success):not(.e-error).e-warning,
 .e-input-group.e-control-wrapper:not(.e-disabled):active:not(.e-success):not(.e-error).e-warning {
-  -webkit-box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.25);
-  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.25);
+  -webkit-box-shadow: 0 0 0 4px rgba(0, 136, 55, 0.25);
+  box-shadow: 0 0 0 4px rgba(0, 136, 55, 0.25);
 }
 
 .e-input-group:not(.e-success):not(.e-warning):not(.e-error) input.e-input:focus,
@@ -6062,7 +6062,7 @@ body.e-colorpicker-overflow {
 .e-otpinput.e-warning.e-outline .e-otp-input-field.e-otp-input-focus, .e-otpinput.e-warning.e-underlined .e-otp-input-field,
 .e-otpinput.e-warning.e-underlined .e-otp-input-field.e-otp-input-focus, .e-otpinput.e-warning.e-filled .e-otp-input-field,
 .e-otpinput.e-warning.e-filled .e-otp-input-field.e-otp-input-focus {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-listen-icon::before {

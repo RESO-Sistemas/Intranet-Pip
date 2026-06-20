@@ -39,7 +39,7 @@
 }
 
 .link-warning {
-  color: #ffc107;
+  color: #008837;
 }
 .link-warning:hover, .link-warning:focus {
   color: #ffcd39;
@@ -437,7 +437,7 @@
 }
 
 .border-warning {
-  border-color: #ffc107 !important;
+  border-color: #008837 !important;
 }
 
 .border-danger {
@@ -1266,7 +1266,7 @@
 }
 
 .text-warning {
-  color: #ffc107 !important;
+  color: #008837 !important;
 }
 
 .text-danger {
@@ -1322,7 +1322,7 @@
 }
 
 .bg-warning {
-  background-color: #ffc107 !important;
+  background-color: #008837 !important;
 }
 
 .bg-danger {

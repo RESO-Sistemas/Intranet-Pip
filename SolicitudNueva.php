@@ -44,15 +44,15 @@
       flex-shrink: 0;
     }
     .day-toggle-btn:hover {
-      border-color: #ffc407;
+      border-color: #008837;
       color: #856404;
-      background: #FFFBEB;
+      background: #f0fdf4;
     }
     .day-toggle-btn.active {
-      background: #ffc407;
-      border-color: #ffc407;
+      background: #008837;
+      border-color: #008837;
       color: #1a1a1a;
-      box-shadow: 0 2px 8px rgba(255,196,7,.4);
+      box-shadow: 0 2px 8px rgba(105, 191, 127,.4);
     }
 
     /* ── Panel sticky de resumen ─────────────────────── */
@@ -265,7 +265,7 @@
                   <div class="card-body p-4">
 
                     <div class="d-flex align-items-center gap-2 mb-3">
-                      <span class="material-symbols-outlined" style="color:#ffc407;font-size:22px;">summarize</span>
+                      <span class="material-symbols-outlined" style="color:#008837;font-size:22px;">summarize</span>
                       <span class="fw-bold" style="font-size:15px;">Resumen de tu solicitud</span>
                     </div>
 
@@ -312,8 +312,8 @@
                     </div>
 
                     <!-- Info del flujo -->
-                    <div class="mt-3 p-2 rounded-2 d-flex align-items-start gap-2" style="background:#FFFBEB;">
-                      <span class="material-symbols-outlined mt-1" style="color:#D97706;font-size:16px;flex-shrink:0;">info</span>
+                    <div class="mt-3 p-2 rounded-2 d-flex align-items-start gap-2" style="background:#f0fdf4;">
+                      <span class="material-symbols-outlined mt-1" style="color:#047857;font-size:16px;flex-shrink:0;">info</span>
                       <p class="mb-0 text-muted" style="font-size:11px;line-height:1.5;">
                         Tu solicitud será revisada primero por tu <strong>jefe inmediato</strong>
                         y luego por <strong>Nómina</strong> antes de ser aprobada definitivamente.

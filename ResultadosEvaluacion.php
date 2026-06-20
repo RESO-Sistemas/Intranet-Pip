@@ -34,7 +34,7 @@
     }
     .res-page-header-icon {
       width: 36px; height: 36px;
-      background: #FEF3C7; color: #D97706;
+      background: #D1FAE5; color: #047857;
       border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
@@ -84,7 +84,7 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .res-search-input:focus {
-      border-color: #F59E0B;
+      border-color: #008837;
       box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
     }
 
@@ -231,7 +231,7 @@
       font-size: 0.76rem; font-weight: 600;
     }
     .res-hero-badge.score {
-      background: #F59E0B; border-color: #F59E0B;
+      background: #008837; border-color: #008837;
       color: #1C1917; font-size: 0.85rem; font-weight: 700;
     }
     .res-hero-close {
@@ -272,7 +272,7 @@
       border-bottom: 2px solid transparent; cursor: pointer;
       white-space: nowrap; transition: color 0.2s, border-color 0.2s;
     }
-    .res-modal-tab.active { color: #D97706; border-bottom-color: #D97706; }
+    .res-modal-tab.active { color: #047857; border-bottom-color: #047857; }
     .res-modal-tab:hover:not(.active) { color: #475569; }
 
     #selTypeResult-wrapper { display: none !important; }
@@ -355,7 +355,7 @@
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .res-panel-icon.amber  { background: #FEF3C7; color: #D97706; }
+    .res-panel-icon.amber  { background: #D1FAE5; color: #047857; }
     .res-panel-icon.teal   { background: #CCFBF1; color: #0D9488; }
     .res-panel-icon.green  { background: #DCFCE7; color: #16A34A; }
     .res-panel-icon.indigo { background: #EEF2FF; color: #4338CA; }
@@ -443,7 +443,7 @@
       width: 40px; height: 40px;
       background: rgba(245,158,11,0.18); border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      color: #F59E0B; flex-shrink: 0;
+      color: #008837; flex-shrink: 0;
     }
     .res-detail-hero-name {
       font-size: 0.96rem;
@@ -495,7 +495,7 @@
       background: #fff;
     }
     .res-detail-hero-actions #slc_evaluated_by:focus {
-      border-color: #F59E0B;
+      border-color: #008837;
       box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
     }
     .res-detail-hero-actions .select2-container { width: 100% !important; }

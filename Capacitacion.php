@@ -21,7 +21,7 @@
 
     <style media="screen">
         :root {
-            --cap-amarillo: #ffc107;
+            --cap-amarillo: #008837;
             --cap-amarillo-oscuro: #e0a800;
         }
 
@@ -31,7 +31,7 @@
             padding: 2rem;
             color: #212529;
             margin-bottom: 1.5rem;
-            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 136, 55, 0.25);
         }
 
         .capacitacion-header h1 {

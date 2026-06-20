@@ -95,7 +95,7 @@ export function getProgressThemeColor(theme) {
                 tooltipLightLabel: '#000000',
                 success: '#28a745',
                 danger: '#dc3545',
-                warning: '#ffc107',
+                warning: '#008837',
                 info: '#17a2b8',
                 tooltipLabelFont: {
                     color: '#F9FAFB', fontFamily: 'Helvetica Neue', fontWeight: '400'
@@ -330,7 +330,7 @@ export function getProgressThemeColor(theme) {
                 tooltipLightLabel: '#FFFFFF',
                 success: '#198754',
                 danger: '#DC3545',
-                warning: '#FFC107',
+                warning: '#008837',
                 info: '#0DCAF0',
                 tooltipLabelFont: {
                     color: '#F9FAFB', fontFamily: 'Segoe UI', fontWeight: '400'
@@ -363,7 +363,7 @@ export function getProgressThemeColor(theme) {
                 tooltipLightLabel: '#212529',
                 success: '#198754',
                 danger: '#DC3545',
-                warning: '#FFC107',
+                warning: '#008837',
                 info: '#0DCAF0',
                 tooltipLabelFont: {
                     color: '#212529', fontFamily: 'Segoe UI', fontWeight: '400'

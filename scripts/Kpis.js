@@ -388,7 +388,7 @@ async function toggleKpi(idEncoded, nuevoEstado) {
     text: `¿Deseas ${accion} este KPI?`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#ffc407',
+    confirmButtonColor: '#008837',
     cancelButtonColor: '#6c757d',
     confirmButtonText: `Sí, ${accion}`,
     cancelButtonText: 'Cancelar'

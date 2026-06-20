@@ -202,7 +202,7 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #ffc407 0%, #ff9f43 100%);
+      background: linear-gradient(90deg, #008837 0%, #ff9f43 100%);
       border-radius: 4px 4px 0 0;
     }
 
@@ -274,7 +274,7 @@
     .eval-progress-fill {
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #ffc407 0%, #ff9f43 100%);
+      background: linear-gradient(90deg, #008837 0%, #ff9f43 100%);
       transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -348,7 +348,7 @@
     }
 
     .eval-switch input[type="checkbox"]:checked {
-      background: #ffc407;
+      background: #008837;
     }
 
     .eval-switch input[type="checkbox"]::after {

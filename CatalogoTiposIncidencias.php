@@ -17,7 +17,7 @@
     .badge-inactivo { background-color: #dc3545; color: #fff; font-size: .85rem; padding: 4px 10px; border-radius: .25rem; }
 
     .badge-sev-baja    { background-color: #28a745; color: #fff; font-size: .8rem; padding: 3px 9px; border-radius: .25rem; }
-    .badge-sev-media   { background-color: #ffc107; color: #1a1a1a; font-size: .8rem; padding: 3px 9px; border-radius: .25rem; }
+    .badge-sev-media   { background-color: #008837; color: #1a1a1a; font-size: .8rem; padding: 3px 9px; border-radius: .25rem; }
     .badge-sev-alta    { background-color: #fd7e14; color: #fff; font-size: .8rem; padding: 3px 9px; border-radius: .25rem; }
     .badge-sev-critica { background-color: #dc3545; color: #fff; font-size: .8rem; padding: 3px 9px; border-radius: .25rem; }
   </style>

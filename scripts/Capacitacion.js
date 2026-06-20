@@ -462,7 +462,7 @@ async function eliminarCapacitacion(cap, desc) {
     text: "Si elimina la capacitación, se eliminarán de forma permanente todos los registros relacionados.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     confirmButtonText: "Confirmar",
     cancelButtonText: "Cancelar",
@@ -854,7 +854,7 @@ async function verArchivosCapacitacion(idCapacitacion) {
       title: "Archivos de la capacitación",
       text: "Esta capacitación no tiene archivos adjuntos.",
       icon: "info",
-      confirmButtonColor: "#ffc407",
+      confirmButtonColor: "#008837",
       confirmButtonText: "Cerrar"
     });
     return;
@@ -890,7 +890,7 @@ async function verArchivosCapacitacion(idCapacitacion) {
     html: contenido,
     width: "700px",
     showCloseButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     confirmButtonText: "Cerrar",
     customClass: {
       popup: "text-start"

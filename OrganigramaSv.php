@@ -87,7 +87,7 @@
         transition: all 0.2s ease;
     }
     .org-title-save-btn:hover {
-        border-color: #ffc407;
+        border-color: #008837;
         color: #1a1a2e;
         background: #fff9e6;
     }
@@ -111,8 +111,8 @@
     }
     .tb-btn:hover { background: #f1f5f9; color: #1e293b; }
     .tb-btn .material-symbols-outlined { font-size: 16px; }
-    .tb-btn-primary { background: #ffc407; border-color: #ffc407; color: #1a1a1a; }
-    .tb-btn-primary:hover { background: #e6b200; border-color: #e6b200; }
+    .tb-btn-primary { background: #008837; border-color: #008837; color: #1a1a1a; }
+    .tb-btn-primary:hover { background: #7EBF8E; border-color: #7EBF8E; }
 
     /* ── Editor main ──────────────────────────────────── */
     .org-editor-main {
@@ -222,7 +222,7 @@
         width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
     }
     .tipo-dot.principal { background: #22c55e; }
-    .tipo-dot.empleado  { background: #f59e0b; }
+    .tipo-dot.empleado  { background: #008837; }
     .tipo-dot.otros     { background: #a855f7; }
 
     /* ── Search section ───────────────────────────────── */
@@ -262,7 +262,7 @@
         flex-shrink: 0; cursor: pointer; transition: all 0.2s ease;
     }
     .org-search-add-btn:hover {
-        border-color: #ffc407;
+        border-color: #008837;
         color: #1a1a2e;
         background: #fff9e6;
     }
@@ -294,8 +294,8 @@
         padding: 0;
     }
     .sv-zoom-btn:hover {
-        background: #ffc107;
-        border-color: #ffc107;
+        background: #008837;
+        border-color: #008837;
         color: #111;
     }
     .sv-zoom-btn .material-symbols-outlined { font-size: 16px; }
@@ -381,9 +381,9 @@
     }
     .prop-btn .material-symbols-outlined { font-size: 16px; }
     .prop-btn-blue   { background: transparent; color: #6c757d; border: 1px dashed #adb5bd; }
-    .prop-btn-blue:hover   { border-color: #ffc407; color: #1a1a2e; background: #fff9e6; }
-    .prop-btn-yellow { background: #fffbeb; color: #d97706; }
-    .prop-btn-yellow:hover { background: #fef3c7; }
+    .prop-btn-blue:hover   { border-color: #008837; color: #1a1a2e; background: #fff9e6; }
+    .prop-btn-yellow { background: #f0fdf4; color: #047857; }
+    .prop-btn-yellow:hover { background: #D1FAE5; }
     .prop-btn-red    { background: #fff1f2; color: #e11d48; }
     .prop-btn-red:hover    { background: #ffe4e6; }
 
@@ -392,7 +392,7 @@
         padding: 16px 20px;
         color: #fff;
     }
-    .org-oc-header-add { background: #f59e0b; }
+    .org-oc-header-add { background: #008837; }
     .org-oc-header-edit { background: linear-gradient(135deg,#6d28d9 0%,#a855f7 100%); }
     .org-oc-header h5 { margin: 0; font-size: 15px; font-weight: 600; }
     .org-oc-header .btn-close { filter: invert(1); }
@@ -413,7 +413,7 @@
     .tipo-pill .material-symbols-outlined { font-size: 20px; }
     .tipo-pill:hover { border-color: #cbd5e1; background: #f1f5f9; }
     .tipo-pill.active-1 { border-color: #22c55e; background: #f0fdf4; color: #15803d; }
-    .tipo-pill.active-2 { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .tipo-pill.active-2 { border-color: #008837; background: #f0fdf4; color: #92400e; }
     .tipo-pill.active-3 { border-color: #a855f7; background: #faf5ff; color: #7e22ce; }
 
     /* Select2 custom */
@@ -542,7 +542,7 @@
                         </div>
                         <input type="hidden" id="propNodeRawId">
                         <div class="org-prop-emp">
-                            <span id="propEmpInitials" style="display:flex;width:52px;height:52px;border-radius:50%;background:#ffc107;color:#111;font-size:16px;font-weight:800;align-items:center;justify-content:center;letter-spacing:-1px;">?</span>
+                            <span id="propEmpInitials" style="display:flex;width:52px;height:52px;border-radius:50%;background:#008837;color:#111;font-size:16px;font-weight:800;align-items:center;justify-content:center;letter-spacing:-1px;">?</span>
                             <div class="org-prop-name" id="propEmpName">—</div>
                             <div class="org-prop-role" id="propEmpRole">—</div>
                             <div class="org-prop-tipo" id="propEmpTipo">—</div>
@@ -587,7 +587,7 @@
                     </label>
                     <label class="tipo-pill active-2" id="addPillEmpleado">
                         <input type="radio" name="tipoEmpAdd" value="2" checked>
-                        <span class="material-symbols-outlined" style="color:#f59e0b">person</span>
+                        <span class="material-symbols-outlined" style="color:#008837">person</span>
                         Empleado
                     </label>
                     <label class="tipo-pill" id="addPillOtros">
@@ -643,7 +643,7 @@
                     </label>
                     <label class="tipo-pill" id="editPillEmpleado">
                         <input type="radio" name="tipoEmpEdit" value="2">
-                        <span class="material-symbols-outlined" style="color:#f59e0b">person</span>
+                        <span class="material-symbols-outlined" style="color:#008837">person</span>
                         Empleado
                     </label>
                     <label class="tipo-pill" id="editPillOtros">
@@ -695,7 +695,7 @@
                 </div>
                 <div style="padding:16px 20px;background:#fff;display:flex;justify-content:flex-end;gap:10px;">
                     <button data-bs-dismiss="modal" class="tb-btn">Cancelar</button>
-                    <button id="btnConfirmarExport" class="tb-btn tb-btn-primary" style="background:#ffc107;border-color:#ffc107;color:#111;">
+                    <button id="btnConfirmarExport" class="tb-btn tb-btn-primary" style="background:#008837;border-color:#008837;color:#111;">
                         <span class="material-symbols-outlined" style="font-size:16px;">download</span>
                         Descargar PNG
                     </button>

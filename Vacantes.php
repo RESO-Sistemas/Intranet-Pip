@@ -80,14 +80,14 @@
             padding: 20px;
             margin-bottom: 16px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            border-left: 4px solid #ffc407;
+            border-left: 4px solid #008837;
         }
 
         .vacante-header-card .vacante-icon-lg {
             width: 56px;
             height: 56px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ffc407 0%, #ffdb58 100%);
+            background: linear-gradient(135deg, #008837 0%, #ffdb58 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,7 +135,7 @@
 
         .section-title-v2 .material-symbols-outlined {
             font-size: 20px;
-            color: #ffc407;
+            color: #008837;
         }
 
         /* Chips / Tags */
@@ -145,7 +145,7 @@
             gap: 6px;
             background: #fff9e6;
             color: #856404;
-            border: 1px solid #ffc407;
+            border: 1px solid #008837;
             border-radius: 20px;
             padding: 6px 14px;
             font-size: 0.85rem;
@@ -155,7 +155,7 @@
         }
 
         .chip-tag:hover {
-            background: #ffc407;
+            background: #008837;
             color: #1a1a2e;
         }
 
@@ -188,8 +188,8 @@
         }
 
         .mini-card:hover {
-            border-color: #ffc407;
-            box-shadow: 0 2px 8px rgba(255, 196, 7, 0.15);
+            border-color: #008837;
+            box-shadow: 0 2px 8px rgba(105, 191, 127, 0.15);
         }
 
         .mini-card-title {
@@ -221,7 +221,7 @@
         }
 
         .btn-add-ghost:hover {
-            border-color: #ffc407;
+            border-color: #008837;
             color: #1a1a2e;
             background: #fff9e6;
         }
@@ -271,7 +271,7 @@
 
         .podium-label .material-symbols-outlined {
             font-size: 17px;
-            color: #ffc407;
+            color: #008837;
         }
 
         .podium-card {
@@ -286,19 +286,19 @@
         }
 
         .podium-card:hover {
-            box-shadow: 0 4px 16px rgba(255, 196, 7, .18);
-            border-color: #ffc407;
+            box-shadow: 0 4px 16px rgba(105, 191, 127, .18);
+            border-color: #008837;
             transform: translateY(-2px);
         }
 
         .podium-card.active-podium {
-            border-color: #ffc407;
+            border-color: #008837;
             background: #fff9e6;
-            box-shadow: 0 2px 10px rgba(255, 196, 7, .2);
+            box-shadow: 0 2px 10px rgba(105, 191, 127, .2);
         }
 
         .podium-card.gold {
-            border-top: 4px solid #ffc407;
+            border-top: 4px solid #008837;
         }
 
         .podium-card.silver {
@@ -341,7 +341,7 @@
             font-size: .95rem;
             font-weight: 800;
             color: #1a1a2e;
-            background: conic-gradient(#ffc407 var(--pct), #f0f0f0 0deg);
+            background: conic-gradient(#008837 var(--pct), #f0f0f0 0deg);
             position: relative;
         }
 
@@ -522,7 +522,7 @@
         }
 
         .comp-bar-fill.mid {
-            background: #ffc107;
+            background: #008837;
         }
 
         .comp-bar-fill.low {
@@ -564,15 +564,15 @@
         }
 
         .resultados-modal-header-custom .btn-ver-eval {
-            color: #ffc407;
-            border-color: #ffc407;
+            color: #008837;
+            border-color: #008837;
             font-size: .78rem;
             font-weight: 700;
             padding: 4px 12px;
         }
 
         .resultados-modal-header-custom .btn-ver-eval:hover {
-            background: #ffc407;
+            background: #008837;
             color: #1a1a2e;
         }
 
@@ -701,7 +701,7 @@
         }
 
         .wizard-step.active .step-number {
-            background: #ffc407;
+            background: #008837;
             color: #1a1a2e;
         }
 
@@ -792,7 +792,7 @@
 
         .nav-tabs-sm .nav-link.active {
             color: #1a1a2e;
-            border-bottom-color: #ffc407;
+            border-bottom-color: #008837;
             background: transparent;
         }
 
@@ -826,7 +826,7 @@
             height: 16px;
             border-radius: 50%;
             background: white;
-            border: 3px solid #ffc407;
+            border: 3px solid #008837;
             z-index: 2;
         }
 
@@ -1014,7 +1014,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #ffc407;
+            background: #008837;
             border-radius: 2px;
         }
 
@@ -1049,8 +1049,8 @@
         }
 
         .postulante-card-v2:hover {
-            border-color: #ffc407;
-            /* box-shadow: 0 4px 16px rgba(255, 196, 7, 0.12); */
+            border-color: #008837;
+            /* box-shadow: 0 4px 16px rgba(105, 191, 127, 0.12); */
             /* transform: translateY(-1px); */
         }
 
@@ -1485,18 +1485,18 @@
         }
 
         .btn-minimal:hover {
-            border-color: #ffc407;
+            border-color: #008837;
             color: #1a1a2e;
             background: #fff9e6;
         }
 
         .btn-minimal:focus {
-            box-shadow: 0 0 0 0.2rem rgba(255, 196, 7, 0.2);
+            box-shadow: 0 0 0 0.2rem rgba(105, 191, 127, 0.2);
         }
 
         .btn-minimal.active {
-            background: #ffc407 !important;
-            border-color: #ffc407 !important;
+            background: #008837 !important;
+            border-color: #008837 !important;
             color: #1a1a2e !important;
             font-weight: 600;
         }
@@ -1508,7 +1508,7 @@
         }
 
         .btn-minimal:not(.active):hover {
-            border-color: #ffc407;
+            border-color: #008837;
             color: #1a1a2e;
             background: #fff9e6;
         }
@@ -1549,7 +1549,7 @@
         }
 
         .btn-ghost:hover {
-            border-color: #ffc407;
+            border-color: #008837;
             color: #1a1a2e;
             background: #fff9e6;
         }
@@ -2336,7 +2336,7 @@
                                                             <label class="form-label fw-bold small mb-1">
                                                                 <span
                                                                     class="material-symbols-outlined align-middle me-1"
-                                                                    style="font-size:15px;color:#ffc407;">assignment</span>
+                                                                    style="font-size:15px;color:#008837;">assignment</span>
                                                                 Evaluación
                                                             </label>
                                                             <select id="selComparativoEvaluaciones"
@@ -2347,7 +2347,7 @@
                                                             <label class="form-label fw-bold small mb-1">
                                                                 <span
                                                                     class="material-symbols-outlined align-middle me-1"
-                                                                    style="font-size:15px;color:#ffc407;">group</span>
+                                                                    style="font-size:15px;color:#008837;">group</span>
                                                                 Candidatos a comparar
                                                             </label>
                                                             <select id="selCandidatosComparar"
@@ -2706,7 +2706,7 @@
                             <div class="col-md-4">
                                 <label class="form-label fw-bold small mb-1">
                                     <span class="material-symbols-outlined align-middle me-1"
-                                        style="font-size:15px;color:#ffc407;">assignment</span>
+                                        style="font-size:15px;color:#008837;">assignment</span>
                                     Evaluación
                                 </label>
                                 <select id="selResultadosPostulante" class="form-select form-select-sm"

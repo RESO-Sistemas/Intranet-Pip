@@ -1677,7 +1677,7 @@
   background-color: rgb(239.075, 241.35, 243.625);
 }
 .e-gantt .e-gantt-chart .e-rangecontainer .e-rg-rangdiv {
-  border: 2px solid #ffc107;
+  border: 2px solid #008837;
   width: 5px;
   z-index: 6;
 }
@@ -1850,10 +1850,10 @@
   color: #212529;
 }
 .e-gantt .e-gantt-chart .e-baseline-bar {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-baseline-gantt-milestone-container {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-uptail::before {
   border-bottom-color: #dee2e6;

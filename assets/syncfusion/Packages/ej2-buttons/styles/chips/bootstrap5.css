@@ -1435,8 +1435,8 @@
   color: #000;
 }
 .e-chip-list.e-chip.e-warning, .e-chip-list .e-chip.e-warning {
-  background: #ffc107;
-  border-color: #ffc107;
+  background: #008837;
+  border-color: #008837;
   color: #000;
 }
 .e-chip-list.e-chip.e-warning .e-chip-icon,
@@ -1448,7 +1448,7 @@
   color: #000;
 }
 .e-chip-list.e-chip.e-warning .e-chip-avatar, .e-chip-list .e-chip.e-warning .e-chip-avatar {
-  background-color: #ffc107;
+  background-color: #008837;
   color: #000;
 }
 .e-chip-list.e-chip.e-warning:not(.e-active) .e-chip-delete.e-dlt-btn:hover, .e-chip-list .e-chip.e-warning:not(.e-active) .e-chip-delete.e-dlt-btn:hover {
@@ -1535,8 +1535,8 @@
   color: #000;
 }
 .e-chip-list.e-chip.e-warning.e-disabled, .e-chip-list .e-chip.e-warning.e-disabled {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   color: rgba(0, 0, 0, 0.65);
 }
 .e-chip-list.e-chip.e-warning.e-disabled .e-chip-icon,
@@ -1545,7 +1545,7 @@
   color: rgba(0, 0, 0, 0.65);
 }
 .e-chip-list.e-chip.e-warning.e-disabled .e-chip-avatar, .e-chip-list .e-chip.e-warning.e-disabled .e-chip-avatar {
-  background-color: rgba(255, 193, 7, 0.65);
+  background-color: rgba(0, 136, 55, 0.65);
   color: rgba(0, 0, 0, 0.65);
 }
 .e-chip-list.e-chip.e-warning.e-clone-chip, .e-chip-list .e-chip.e-warning.e-clone-chip {
@@ -1567,7 +1567,7 @@
 }
 .e-chip-list.e-chip.e-warning.e-outline, .e-chip-list .e-chip.e-warning.e-outline {
   background: transparent;
-  border-color: #ffc107;
+  border-color: #008837;
   color: rgb(134.5, 100.875, 0);
 }
 .e-chip-list.e-chip.e-warning.e-outline .e-chip-icon,
@@ -1579,7 +1579,7 @@
   color: rgb(134.5, 100.875, 0);
 }
 .e-chip-list.e-chip.e-warning.e-outline .e-chip-avatar, .e-chip-list .e-chip.e-warning.e-outline .e-chip-avatar {
-  background-color: #ffc107;
+  background-color: #008837;
   color: #000;
 }
 .e-chip-list.e-chip.e-warning.e-outline:not(.e-active) .e-chip-delete.e-dlt-btn:hover, .e-chip-list .e-chip.e-warning.e-outline:not(.e-active) .e-chip-delete.e-dlt-btn:hover {

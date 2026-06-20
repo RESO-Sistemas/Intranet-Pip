@@ -14,7 +14,7 @@
 
   <style>
     .badge-completo      { background-color: #28a745; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
-    .badge-observaciones { background-color: #ffc407; color: #1a1a1a; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
+    .badge-observaciones { background-color: #008837; color: #1a1a1a; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
     .badge-incidencia    { background-color: #dc3545; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
     .badge-incompleto    { background-color: #6c757d; color: #fff; font-size: .78rem; padding: 3px 10px; border-radius: .25rem; white-space: nowrap; }
 
@@ -30,7 +30,7 @@
     .det-info { flex: 1; min-width: 0; }
     .det-nombre { font-size: .88rem; font-weight: 500; color: #333; line-height: 1.3; }
     .det-meta { font-size: .75rem; color: #888; margin-top: 2px; }
-    .det-incidencia { font-size: .72rem; background: #fff3cd; color: #856404; border: 1px solid #ffc107; border-radius: 3px; padding: 2px 7px; margin-top: 4px; display: inline-block; }
+    .det-incidencia { font-size: .72rem; background: #fff3cd; color: #856404; border: 1px solid #008837; border-radius: 3px; padding: 2px 7px; margin-top: 4px; display: inline-block; }
     .det-kpi { font-size: .72rem; background: #e8f4fd; color: #0c5460; border: 1px solid #bee5eb; border-radius: 3px; padding: 2px 7px; margin-top: 4px; display: inline-block; }
 
     /* Resumen del modal */
@@ -115,7 +115,7 @@
     body.dark-mode .num-total { color: #eef0f7; }
     body.dark-mode .det-resumen-item .lbl { color: #aebad2; }
 
-    body.dark-mode .det-incidencia { background: rgba(255, 196, 7, 0.15); color: #ffc407; border-color: #ffc407; }
+    body.dark-mode .det-incidencia { background: rgba(105, 191, 127, 0.15); color: #008837; border-color: #008837; }
     body.dark-mode .det-kpi { background: rgba(34, 105, 245, 0.15); color: #74a0f9; border-color: #2269f5; }
 
     body.dark-mode .kpi-gauge-card { background: #2a3038; border-color: #3d4450; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
@@ -125,7 +125,7 @@
     body.dark-mode #modalTab { border-bottom-color: #3d4450; }
     body.dark-mode #modalTab .nav-link { color: #aebad2; }
     body.dark-mode #modalTab .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
-    body.dark-mode #modalTab .nav-link.active { color: #ffc407; border-bottom-color: #ffc407; }
+    body.dark-mode #modalTab .nav-link.active { color: #008837; border-bottom-color: #008837; }
     
     body.dark-mode .modal-content { background-color: #1f2329; color: #eef0f7; }
     body.dark-mode .modal-header, body.dark-mode .modal-footer { border-color: #3d4450; }

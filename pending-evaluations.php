@@ -19,12 +19,12 @@
     ============================================================ */
 
     :root {
-      --ev-primary: #ffc407;
+      --ev-primary: #008837;
       --ev-primary-light: #fff9e6;
       --ev-primary-dark: #e6ac00;
       --ev-success: #16a34a;
       --ev-success-bg: #f0fdf4;
-      --ev-warning: #f59e0b;
+      --ev-warning: #008837;
       --ev-danger: #dc2626;
       --ev-muted: #64748b;
       --ev-border: #e2e8f0;
@@ -32,7 +32,7 @@
       --ev-page-bg: #f8fafc;
       --ev-radius: 12px;
       --ev-shadow: 0 1px 3px rgba(0, 0, 0, .07), 0 2px 8px rgba(0, 0, 0, .05);
-      --ev-shadow-hover: 0 4px 16px rgba(255, 196, 7, .2), 0 2px 8px rgba(0, 0, 0, .08);
+      --ev-shadow-hover: 0 4px 16px rgba(105, 191, 127, .2), 0 2px 8px rgba(0, 0, 0, .08);
     }
 
     /* KPIs */
@@ -154,7 +154,7 @@
 
     .ev-card:hover {
       box-shadow: var(--ev-shadow-hover);
-      border-color: #fde68a;
+      border-color: #A7F3D0;
     }
 
     .ev-card.is-open {
@@ -260,7 +260,7 @@
     .ev-badge.active {
       background: var(--ev-primary-light);
       color: #92700a;
-      border: 1px solid #fde68a;
+      border: 1px solid #A7F3D0;
     }
 
     .ev-badge.done {

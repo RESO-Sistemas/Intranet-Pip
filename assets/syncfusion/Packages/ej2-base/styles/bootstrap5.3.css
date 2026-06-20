@@ -1905,7 +1905,7 @@
   --color-sf-border-selected: #86b7fe;
   --color-sf-border-dragged: #dee2e6;
   --color-sf-border-disabled: #dee2e6;
-  --color-sf-border-warning: #ffc107;
+  --color-sf-border-warning: #008837;
   --color-sf-border-error: #dc3545;
   --color-sf-border-success: #198754;
   --color-sf-spreadsheet-gridline: #dee2e6;
@@ -1919,7 +1919,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #d1e7dd;
   --color-sf-info-light: #cff4fc;
@@ -1937,7 +1937,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-primary-bg-color: var(--color-sf-primary);
   --color-sf-primary-border-color: var(--color-sf-primary);
@@ -1996,7 +1996,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -2108,7 +2108,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);
@@ -2231,7 +2231,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #75b798;
   --color-sf-info-light: #6edff6;
@@ -2249,7 +2249,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-black: 0, 0, 0;
   --color-sf-white: 255, 255, 255;
@@ -2310,7 +2310,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -2421,7 +2421,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);
@@ -2589,7 +2589,7 @@
   --color-sf-border-selected: #86b7fe;
   --color-sf-border-dragged: #dee2e6;
   --color-sf-border-disabled: #dee2e6;
-  --color-sf-border-warning: #ffc107;
+  --color-sf-border-warning: #008837;
   --color-sf-border-error: #dc3545;
   --color-sf-border-success: #198754;
   --color-sf-spreadsheet-gridline: #dee2e6;
@@ -2603,7 +2603,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #d1e7dd;
   --color-sf-info-light: #cff4fc;
@@ -2621,7 +2621,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-primary-bg-color: var(--color-sf-primary);
   --color-sf-primary-border-color: var(--color-sf-primary);
@@ -2680,7 +2680,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -2792,7 +2792,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);
@@ -2915,7 +2915,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #75b798;
   --color-sf-info-light: #6edff6;
@@ -2933,7 +2933,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-black: 0, 0, 0;
   --color-sf-white: 255, 255, 255;
@@ -2994,7 +2994,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -3105,7 +3105,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);
@@ -3279,7 +3279,7 @@
 }
 
 .e-warning {
-  color: #ffc107;
+  color: #008837;
 }
 
 .e-success {
@@ -3366,7 +3366,7 @@
   --color-sf-border-selected: #86b7fe;
   --color-sf-border-dragged: #dee2e6;
   --color-sf-border-disabled: #dee2e6;
-  --color-sf-border-warning: #ffc107;
+  --color-sf-border-warning: #008837;
   --color-sf-border-error: #dc3545;
   --color-sf-border-success: #198754;
   --color-sf-spreadsheet-gridline: #dee2e6;
@@ -3380,7 +3380,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #d1e7dd;
   --color-sf-info-light: #cff4fc;
@@ -3398,7 +3398,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-primary-bg-color: var(--color-sf-primary);
   --color-sf-primary-border-color: var(--color-sf-primary);
@@ -3457,7 +3457,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -3569,7 +3569,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);
@@ -3692,7 +3692,7 @@
   --color-sf-secondary: rgba(108, 117, 125, 1);
   --color-sf-success: rgba(25, 135, 84, 1);
   --color-sf-info: rgba(13, 202, 240, 1);
-  --color-sf-warning: rgba(255, 193, 7, 1);
+  --color-sf-warning: rgba(0, 136, 55, 1);
   --color-sf-danger: rgba(220, 53, 69, 1);
   --color-sf-success-light: #75b798;
   --color-sf-info-light: #6edff6;
@@ -3710,7 +3710,7 @@
   --color-sf-secondary-shadow: 108, 117, 125;
   --color-sf-success-shadow: 25, 135, 84;
   --color-sf-info-shadow: 13, 202, 240;
-  --color-sf-warning-shadow: 255, 193, 7;
+  --color-sf-warning-shadow: 0, 136, 55;
   --color-sf-danger-shadow: 220, 53, 69;
   --color-sf-black: 0, 0, 0;
   --color-sf-white: 255, 255, 255;
@@ -3771,7 +3771,7 @@
   --color-sf-warning-bg-color-focus: var(--color-sf-warning-bg-color-hover);
   --color-sf-warning-border-color-focus: var(--color-sf-warning-bg-color-focus);
   --color-sf-warning-text-focus: var(--color-sf-warning-text);
-  --color-sf-warning-bg-color-disabled: rgba(255, 193, 7, .65);
+  --color-sf-warning-bg-color-disabled: rgba(0, 136, 55, .65);
   --color-sf-warning-border-color-disabled: var(--color-sf-warning-bg-color-disabled);
   --color-sf-warning-text-disabled: rgba(0, 0, 0, .65);
   --color-sf-info-bg-color: var(--color-sf-info);
@@ -3882,7 +3882,7 @@
   --color-sf-msg-warning-bg-color-alt1: transparent;
   --color-sf-msg-warning-border-color-alt1: var(--color-sf-msg-warning-border-color);
   --color-sf-msg-warning-color-alt2: #212529;
-  --color-sf-msg-warning-bg-color-alt2: #ffc107;
+  --color-sf-msg-warning-bg-color-alt2: #008837;
   --color-sf-msg-warning-border-color-alt2: var(--color-sf-msg-warning-bg-color-alt2);
   --color-sf-msg-warning-icon-color: var(--color-sf-msg-warning-color);
   --color-sf-msg-warning-icon-color-alt1: var(--color-sf-msg-warning-color);

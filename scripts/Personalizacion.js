@@ -594,7 +594,7 @@ $("#btnActualizaMensajeBienvenida").click(async function () {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
 
     cancelButtonColor: "#d33",
 
@@ -1612,7 +1612,7 @@ $(document).on("click", "#btnUpdateDF", async function () {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
 
     cancelButtonColor: "#d33",
 
@@ -1900,7 +1900,7 @@ $(document).on("click", "#btnAddDiaF", async function () {
 
       showCancelButton: true,
 
-      confirmButtonColor: "#ffc407",
+      confirmButtonColor: "#008837",
 
       cancelButtonColor: "#d33",
 

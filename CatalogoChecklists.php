@@ -21,10 +21,10 @@
     .badge-no-critico { background-color: #6c757d; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; white-space: nowrap; }
     .badge-verdadero { background-color: #28a745; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
     .badge-falso     { background-color: #dc3545; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
-    .badge-incidencia-si { background-color: #ffc407; color: #1a1a1a; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
+    .badge-incidencia-si { background-color: #008837; color: #1a1a1a; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
     .badge-incidencia-no { background-color: #6c757d; color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; }
-    .badge-puesto { background-color: #ffc407; color: #fff9e6; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; white-space: nowrap; }
-    body.dark-mode .badge-puesto { background-color: #ffc407; color: #1a1a1a; }
+    .badge-puesto { background-color: #008837; color: #fff9e6; font-size: .8rem; padding: 3px 8px; border-radius: .25rem; white-space: nowrap; }
+    body.dark-mode .badge-puesto { background-color: #008837; color: #1a1a1a; }
 
     /* Select2 multi-select: ancho completo y altura auto */
     #slctTurnosChecklist + .select2-container,

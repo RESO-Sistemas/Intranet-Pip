@@ -381,7 +381,7 @@ async function desactivarTelefonoHistorico(idTelefonoHistorico) {
         text: 'El postulante ya no podrá usar este teléfono para iniciar sesión.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#ffc107',
+        confirmButtonColor: '#008837',
         cancelButtonColor: '#6c757d',
         confirmButtonText: 'Sí, desactivar',
         cancelButtonText: 'Cancelar'

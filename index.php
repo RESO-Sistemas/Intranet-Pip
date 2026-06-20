@@ -136,7 +136,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.event-detail-modal .modal-header {
-			background: linear-gradient(120deg, #ffc107, #ff9f1a);
+			background: linear-gradient(120deg, #008837, #ff9f1a);
 			border-bottom: none;
 			padding: 14px 16px;
 		}
@@ -232,7 +232,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		.checklist-item:hover {
 			background: #fff8dc;
-			box-shadow: 0 1px 4px rgba(255, 196, 7, .2);
+			box-shadow: 0 1px 4px rgba(105, 191, 127, .2);
 		}
 
 		.checklist-item .chk-name {
@@ -1079,7 +1079,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.rpc-action-btn.liked {
-			color: #FFC107;
+			color: #008837;
 		}
 
 		.rpc-action-btn.congrat {
@@ -1089,8 +1089,8 @@ $MenuP = $Conf->getMenusPadre();
 		/* ──── Estilos para el corazón relleno vs vacío ──── */
 		.heart-icon.heart-filled {
 			font-weight: 900;
-			-webkit-text-fill-color: #FFC107;
-			color: #FFC107;
+			-webkit-text-fill-color: #008837;
+			color: #008837;
 		}
 
 		.heart-icon.heart-outline {
@@ -1100,7 +1100,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.rpc-action-btn.liked .heart-icon {
-			color: #FFC107;
+			color: #008837;
 			font-weight: 900;
 		}
 
@@ -1177,7 +1177,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.feed-comment-reaction.reacted {
-			color: #ffc407;
+			color: #008837;
 		}
 
 		.feed-comment-empty {
@@ -1192,7 +1192,7 @@ $MenuP = $Conf->getMenusPadre();
 			border: none;
 			font-size: 12px;
 			font-weight: 600;
-			color: #ffc407;
+			color: #008837;
 			cursor: pointer;
 			padding: 2px 8px;
 		}
@@ -1276,12 +1276,12 @@ $MenuP = $Conf->getMenusPadre();
 
 		.rpc-comment-input-row textarea:focus {
 			outline: none;
-			border-color: #ffc407;
+			border-color: #008837;
 			background: #fff;
 		}
 
 		.rpc-comment-input-row .btn-comment {
-			background: #ffc407;
+			background: #008837;
 			color: #1c1e21;
 			border: none;
 			border-radius: 20px;
@@ -1343,7 +1343,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		body.dark-mode .rpc-comment-input-row textarea:focus {
-			border-color: #ffc407;
+			border-color: #008837;
 			background: #232528;
 		}
 
@@ -1394,7 +1394,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		body.dark-mode .feed-empty-icon {
 			background: #333436;
-			color: #ffc107;
+			color: #008837;
 		}
 
 		body.dark-mode .feed-empty-title {
@@ -1441,7 +1441,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		body.dark-mode .rpc-meta .rpc-author {
-			color: #ffc407;
+			color: #008837;
 		}
 
 		body.dark-mode .rpc-actions {
@@ -1458,11 +1458,11 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		body.dark-mode .rpc-action-btn.liked {
-			color: #ffc407;
+			color: #008837;
 		}
 
 		body.dark-mode .heart-icon.heart-filled {
-			color: #ffc407;
+			color: #008837;
 		}
 
 		body.dark-mode .rpc-comments-area {
@@ -1492,7 +1492,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		body.dark-mode .evento-date-box {
-			background: #ffc407;
+			background: #008837;
 			color: #222222;
 		}
 
@@ -1536,7 +1536,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		body.dark-mode .checklist-item:hover {
 			background: #2a2a3d;
-			box-shadow: 0 1px 4px rgba(255, 196, 7, .15);
+			box-shadow: 0 1px 4px rgba(105, 191, 127, .15);
 		}
 
 		body.dark-mode .checklist-item .chk-name {
@@ -1584,7 +1584,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		body.dark-mode .feed-swiper-instance .swiper-button-next,
 		body.dark-mode .feed-swiper-instance .swiper-button-prev {
-			color: #ffc107;
+			color: #008837;
 			background: rgba(31, 31, 32, 0.88);
 		}
 

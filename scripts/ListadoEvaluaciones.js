@@ -341,7 +341,7 @@ async function eliminarEvaluacion(idEncoded) {
     </div>`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#ffc407',
+    confirmButtonColor: '#008837',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Aceptar',
     cancelButtonText: 'Cancelar',
@@ -388,7 +388,7 @@ async function duplicarEvaluacion(idEncoded) {
     </div>`,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonColor: '#ffc407',
+    confirmButtonColor: '#008837',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Duplicar',
     cancelButtonText: 'Cancelar',
@@ -621,7 +621,7 @@ function _evWizardPopulateSummary() {
     const sel = $('#slctEmpleados').select2('data');
     const n = sel ? sel.length : 0;
     empleadosHtml = n > 0
-      ? `<span class="ev-sbadge" style="background:#FEF3C7;color:#92400E;">${n} empleado${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}</span>`
+      ? `<span class="ev-sbadge" style="background:#D1FAE5;color:#92400E;">${n} empleado${n !== 1 ? 's' : ''} seleccionado${n !== 1 ? 's' : ''}</span>`
       : '<span class="text-muted">—</span>';
   }
 
@@ -644,14 +644,14 @@ function _evWizardPopulateSummary() {
         <span class="ev-summary-value">${ri} <i class="fas fa-arrow-right text-muted mx-1" style="font-size:10px"></i> ${rf}</span>
       </div>
       <div class="ev-summary-row">
-        <span class="ev-summary-label"><i class="fas fa-tasks" style="color:#F59E0B"></i> Plan de Acción</span>
+        <span class="ev-summary-label"><i class="fas fa-tasks" style="color:#008837"></i> Plan de Acción</span>
         <span class="ev-summary-value">${pi} <i class="fas fa-arrow-right text-muted mx-1" style="font-size:10px"></i> ${pf}</span>
       </div>`;
   }
 
   const periodRow = periText ? `
     <div class="ev-summary-row">
-      <span class="ev-summary-label"><i class="fas fa-sync-alt" style="color:#F59E0B"></i> Periodicidad</span>
+      <span class="ev-summary-label"><i class="fas fa-sync-alt" style="color:#008837"></i> Periodicidad</span>
       <span class="ev-summary-value">${periText}</span>
     </div>` : '';
 

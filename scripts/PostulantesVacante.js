@@ -9,8 +9,8 @@ let tablePostulantes;
 let postulantesData = [];
 let postulantesProcesosList = [];
 
-// Paleta personalizada (Tints of #ffc407)
-const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+// Paleta personalizada (Tints of #008837)
+const yellowPalette = ['#008837', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#f0fdf4'];
 
 function showListLoading(message = 'Cargando postulantes...') {
     const $target = $('#postulantesDataArea');

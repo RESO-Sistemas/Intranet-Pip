@@ -35,7 +35,7 @@ window.pwSwitchTab = function(btn) {
 
   // Activar la pestaña actual
   btn.classList.add('active');
-  btn.style.backgroundColor = '#ffc407';
+  btn.style.backgroundColor = '#008837';
   btn.style.color = '#1f2937';
   btn.style.borderColor = '#d9a406';
 
@@ -247,7 +247,7 @@ window.pwSelectAllBranches = function(select) {
 // ===== PASO 2: EVALUADORES =====
 async function pwLoadTempData() {
   const container = document.getElementById('pw-evaluadores-content');
-  if (container) container.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm" style="color:#F59E0B;"></div></div>';
+  if (container) container.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm" style="color:#008837;"></div></div>';
 
   // Enviar IDs originales (integers) filtrando desde PW.branches
   const branchIds = PW.branches
@@ -315,7 +315,7 @@ function pwRenderStep2() {
     idx++;
 
     // Generar pestaña de navegación horizontal
-    const activeStyle = 'white-space: nowrap; border-radius: 20px; padding: 6px 14px; font-weight: 600; font-size: 13px; transition: all 0.2s; border: 1px solid #d9a406; background-color: #ffc407; color: #1f2937;';
+    const activeStyle = 'white-space: nowrap; border-radius: 20px; padding: 6px 14px; font-weight: 600; font-size: 13px; transition: all 0.2s; border: 1px solid #d9a406; background-color: #008837; color: #1f2937;';
     const inactiveStyle = 'white-space: nowrap; border-radius: 20px; padding: 6px 14px; font-weight: 500; font-size: 13px; transition: all 0.2s; border: 1px solid #e5e7eb; background-color: #f3f4f6; color: #4b5563;';
 
     tabsHtml += `
@@ -455,7 +455,7 @@ function pwBindStep2Events() {
         showCancelButton: true,
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#ffc407',
+        confirmButtonColor: '#008837',
         cancelButtonColor: '#dc3545',
       });
       if (result.isConfirmed) {
@@ -590,7 +590,7 @@ async function pwConfirmarAddEvaluador(evadorNo, evadorNombre) {
     showCancelButton: true,
     confirmButtonText: 'Sí, registrar',
     cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#ffc407',
+    confirmButtonColor: '#008837',
     cancelButtonColor: '#dc3545',
   });
 
@@ -715,8 +715,8 @@ document.addEventListener('DOMContentLoaded', function() {
       border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #64748B; cursor: pointer;
       transition: all 0.2s ease;
     }
-    .pw-tipo-btn:hover { border-color: #F59E0B; background: #FFFBEB; color: #92400E; }
-    .pw-tipo-btn.active { border-color: #F59E0B; background: #FEF3C7; color: #78350F; }
+    .pw-tipo-btn:hover { border-color: #008837; background: #f0fdf4; color: #92400E; }
+    .pw-tipo-btn.active { border-color: #008837; background: #D1FAE5; color: #78350F; }
   `;
   document.head.appendChild(style);
 });

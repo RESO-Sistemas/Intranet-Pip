@@ -199,14 +199,14 @@ function doBinding(node, data) {
     const role = esc(data.role);
     const initials = (data.name || "?").split(" ").filter(Boolean).slice(0,2)
         .map(w => w.charAt(0).toUpperCase()).join("");
-    const tipoMap  = { PRINCIPAL: ["#111","#ffc107","Principal"], EMPLEADO: ["#1e40af","#dbeafe","Empleado"], OTROS: ["#374151","#f3f4f6","Otro"] };
+    const tipoMap  = { PRINCIPAL: ["#111","#008837","Principal"], EMPLEADO: ["#1e40af","#dbeafe","Empleado"], OTROS: ["#374151","#f3f4f6","Otro"] };
     const [tc, bg, lbl] = tipoMap[data.tipo] || ["#374151","#f3f4f6",""];
     const badge = lbl ? `<span style="display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:${bg};color:${tc};letter-spacing:.04em;text-transform:uppercase;">${lbl}</span>` : "";
-    const avatar = `<span style="display:flex;width:40px;height:40px;border-radius:50%;background:#ffc107;color:#111;font-size:13px;font-weight:800;align-items:center;justify-content:center;flex-shrink:0;">${initials}</span>`;
+    const avatar = `<span style="display:flex;width:40px;height:40px;border-radius:50%;background:#008837;color:#111;font-size:13px;font-weight:800;align-items:center;justify-content:center;flex-shrink:0;">${initials}</span>`;
     node.shape = {
         type: "HTML",
         content:
-            `<div style="width:100%;height:100%;background:#fff;border:1.5px solid #e5e7eb;border-top:4px solid #ffc107;border-radius:8px;overflow:hidden;box-sizing:border-box;padding:0 14px;pointer-events:none;">` +
+            `<div style="width:100%;height:100%;background:#fff;border:1.5px solid #e5e7eb;border-top:4px solid #008837;border-radius:8px;overflow:hidden;box-sizing:border-box;padding:0 14px;pointer-events:none;">` +
             `<table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed;"><tr>` +
             `<td style="width:46px;vertical-align:middle;padding:0;">${avatar}</td>` +
             `<td style="vertical-align:middle;padding:0 0 0 12px;overflow:hidden;">` +
@@ -254,7 +254,7 @@ function eventClick(args) {
 
     const initials = (data.name || "?").split(" ").filter(Boolean).slice(0,2)
         .map(w => w.charAt(0).toUpperCase()).join("");
-    const tipoMap  = { PRINCIPAL: ["#111","#ffc107","Principal"], EMPLEADO: ["#1e40af","#dbeafe","Empleado"], OTROS: ["#374151","#f3f4f6","Otro"] };
+    const tipoMap  = { PRINCIPAL: ["#111","#008837","Principal"], EMPLEADO: ["#1e40af","#dbeafe","Empleado"], OTROS: ["#374151","#f3f4f6","Otro"] };
     const [tc, bg, lbl] = tipoMap[data.tipo] || ["#374151","#f3f4f6","—"];
     const esOtros = data.tipo === "OTROS";
 

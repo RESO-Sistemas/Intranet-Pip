@@ -28318,7 +28318,7 @@ var PdfBrushes = /** @class */ (function () {
                 color = new PdfColor(255, 248, 248, 255);
                 break;
             case KnownColor.Gold:
-                color = new PdfColor(255, 255, 215, 0);
+                color = new PdfColor(255, 0, 136, 55);
                 break;
             case KnownColor.Goldenrod:
                 color = new PdfColor(255, 218, 165, 32);

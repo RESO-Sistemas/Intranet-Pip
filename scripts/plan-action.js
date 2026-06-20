@@ -537,7 +537,7 @@ $(document).on("click", "#btn_m_addProgress", async function(){
         icon: "warning",
         title: "Valor de avance inválido",
         html: `El avance debe ser mayor al registrado actualmente (<b>${currentVal}%</b>) y no puede superar <b>100%</b>.<br>Rango permitido: <b>${minAllowed}% – 100%</b>.`,
-        confirmButtonColor: "#ffc407",
+        confirmButtonColor: "#008837",
         confirmButtonText: "Entendido"
       });
       return;
@@ -666,7 +666,7 @@ $(document).on("click", "#acceptActivities", async function(){
     text: comm,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     confirmButtonText: "Sí, confirmar",
     cancelButtonText: "Cancelar"
@@ -697,7 +697,7 @@ $(document).on("click", "#btn_acceptProgress", async function(){
     text: comm,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     confirmButtonText: "Sí, confirmar",
     cancelButtonText: "Cancelar"

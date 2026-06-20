@@ -428,7 +428,7 @@ async function eliminarFeed(feed) {
     </div>`,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#ffc407',
+    confirmButtonColor: '#008837',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Aceptar',
     cancelButtonText: 'Cancelar',

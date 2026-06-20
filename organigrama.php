@@ -32,7 +32,7 @@
         .ov-toolbar-title .ov-icon {
             width: 38px;
             height: 38px;
-            background: #ffc107;
+            background: #008837;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -73,8 +73,8 @@
         }
 
         .ov-btn:hover {
-            background: #ffc107;
-            border-color: #ffc107;
+            background: #008837;
+            border-color: #008837;
             color: #111;
         }
 
@@ -125,7 +125,7 @@
 
         .org-tab.active {
             color: #111;
-            border-bottom-color: #ffc107;
+            border-bottom-color: #008837;
         }
 
         /* ─── Canvas ─── */
@@ -179,8 +179,8 @@
         }
 
         .org-zoom-btn:hover {
-            background: #ffc107;
-            border-color: #ffc107;
+            background: #008837;
+            border-color: #008837;
             color: #111;
         }
 
@@ -239,13 +239,13 @@
             width: 62px;
             height: 62px;
             border-radius: 50%;
-            background: #ffc107;
+            background: #008837;
             color: #111;
             font-size: 22px;
             font-weight: 800;
             letter-spacing: -1px;
             flex-shrink: 0;
-            box-shadow: 0 2px 12px rgba(255, 193, 7, .4);
+            box-shadow: 0 2px 12px rgba(0, 136, 55, .4);
         }
 
         .modal-emp-header-info {
@@ -441,7 +441,7 @@
                 <div style="padding:16px 20px;background:#fff;display:flex;justify-content:flex-end;gap:10px;">
                     <button data-bs-dismiss="modal" class="ov-btn">Cancelar</button>
                     <button id="btnConfirmarExport" class="ov-btn"
-                        style="background:#ffc107;border-color:#ffc107;color:#111;font-weight:600;">
+                        style="background:#008837;border-color:#008837;color:#111;font-weight:600;">
                         <span class="material-symbols-outlined" style="font-size:16px;">download</span>
                         Descargar PNG
                     </button>

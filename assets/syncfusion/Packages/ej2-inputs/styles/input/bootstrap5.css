@@ -2191,7 +2191,7 @@ textarea.e-input,
 .e-input-group.e-control-wrapper.e-warning .e-input-group-icon,
 .e-input-group.e-warning textarea.e-input,
 .e-input-group.e-control-wrapper.e-warning textarea.e-input {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-input.e-error,
@@ -2246,7 +2246,7 @@ label.e-float-text,
 .e-float-input.e-control-wrapper.e-warning input,
 .e-float-input.e-warning textarea,
 .e-float-input.e-control-wrapper.e-warning textarea {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-float-input.e-error input,
@@ -2448,8 +2448,8 @@ textarea.e-input::selection,
 .e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-error).e-warning,
 .e-input-group:not(.e-disabled):active:not(.e-success):not(.e-error).e-warning,
 .e-input-group.e-control-wrapper:not(.e-disabled):active:not(.e-success):not(.e-error).e-warning {
-  -webkit-box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.25);
-  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.25);
+  -webkit-box-shadow: 0 0 0 4px rgba(0, 136, 55, 0.25);
+  box-shadow: 0 0 0 4px rgba(0, 136, 55, 0.25);
 }
 
 .e-input-group:not(.e-success):not(.e-warning):not(.e-error) input.e-input:focus,
@@ -2509,7 +2509,7 @@ textarea.e-input::selection,
 .e-input-group.e-control-wrapper.e-warning,
 .e-input-group.e-warning:not(.e-float-icon-left),
 .e-input-group.e-control-wrapper.e-warning:not(.e-float-icon-left) {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 
 .e-input-group.e-error,

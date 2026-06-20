@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once("Backend/Session/SessionManager.php");
 
 // Si ya hay sesión activa, redirigir a index
@@ -39,8 +39,8 @@ if (SessionManager::isLoggedIn()) {
             <div class="logo" style="padding: 10px 0; position: relative; left: -30px;">
                 <a href="index.html"
                     class="d-flex align-items-center justify-content-center gap-3 text-decoration-none">
-                    <img src="assets/images/logo-pip.png" alt="PIP" style="max-height:60px;">
-                    <div style="font-size: 1.3rem; font-weight: 600; color: #222; letter-spacing: 1px;">Intranet PIP
+                    <img src="assets/images/logo-esmeralda.png" alt="La Esmeralda" style="max-height:60px;">
+                    <div style="font-size: 1.3rem; font-weight: 600; color: #222; letter-spacing: 1px;">Intranet La Esmeralda
                     </div>
                 </a>
             </div>
@@ -75,7 +75,7 @@ if (SessionManager::isLoggedIn()) {
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-3">
-                        <img src="assets/images/logo-pip.png" alt="Logo Klyns" style="width:40%;">
+                        <img src="assets/images/logo-esmeralda.png" alt="Logo La Esmeralda" style="width:40%;">
                     </div>
                     <div class="p-3">
                         <h6 class="text-center mb-3"><b>Ingrese el correo electrónico ingresado en su cuenta.</b></h6>

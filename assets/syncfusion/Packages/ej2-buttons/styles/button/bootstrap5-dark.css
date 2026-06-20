@@ -430,7 +430,7 @@
 .e-btn.e-round.e-warning:hover, .e-btn.e-round-edge.e-warning:hover,
 .e-css.e-btn.e-round.e-warning:hover,
 .e-css.e-btn.e-round-edge.e-warning:hover {
-  border-color: #ffc107;
+  border-color: #008837;
 }
 .e-btn.e-round.e-warning:focus, .e-btn.e-round-edge.e-warning:focus,
 .e-css.e-btn.e-round.e-warning:focus,
@@ -585,8 +585,8 @@
 
 .e-btn.e-warning,
 .e-css.e-btn.e-warning {
-  background: #ffc107;
-  border-color: #ffc107;
+  background: #008837;
+  border-color: #008837;
   color: #000;
 }
 .e-btn.e-warning:hover,
@@ -600,7 +600,7 @@
 .e-btn.e-warning:focus,
 .e-css.e-btn.e-warning:focus {
   background: rgb(255, 202.3, 44.2);
-  border-color: #ffc107;
+  border-color: #008837;
   color: #000;
   -webkit-box-shadow: 0 0 0 4px rgba(255, 202.3, 44.2, 0.5);
           box-shadow: 0 0 0 4px rgba(255, 202.3, 44.2, 0.5);
@@ -615,8 +615,8 @@
 .e-btn.e-warning:disabled, .e-btn.e-warning.e-disabled,
 .e-css.e-btn.e-warning:disabled,
 .e-css.e-btn.e-warning.e-disabled {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.65);
@@ -870,8 +870,8 @@
 .e-btn.e-flat.e-warning:disabled, .e-btn.e-flat.e-warning.e-disabled,
 .e-css.e-btn.e-flat.e-warning:disabled,
 .e-css.e-btn.e-flat.e-warning.e-disabled {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   color: rgba(0, 0, 0, 0.65);
 }
 .e-btn.e-flat.e-warning .e-ripple-element,
@@ -1100,8 +1100,8 @@
   background: transparent;
   border-color: rgb(255, 205.75, 58);
   color: rgb(255, 205.75, 58);
-  border-color: #ffc107;
-  color: #ffc107;
+  border-color: #008837;
+  color: #008837;
 }
 .e-btn.e-outline.e-warning:hover,
 .e-css.e-btn.e-outline.e-warning:hover {
@@ -1116,7 +1116,7 @@
 }
 .e-btn.e-outline.e-warning:focus:not(:focus-visible),
 .e-css.e-btn.e-outline.e-warning:focus:not(:focus-visible) {
-  background: #ffc107;
+  background: #008837;
   color: #000;
 }
 .e-btn.e-outline.e-warning:focus-visible,
@@ -1134,8 +1134,8 @@
 .e-btn.e-outline.e-warning:disabled, .e-btn.e-outline.e-warning.e-disabled,
 .e-css.e-btn.e-outline.e-warning:disabled,
 .e-css.e-btn.e-outline.e-warning.e-disabled {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.65);

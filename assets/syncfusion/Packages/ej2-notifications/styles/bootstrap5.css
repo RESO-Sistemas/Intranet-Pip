@@ -1062,8 +1062,8 @@ button .e-badge.e-badge-circle.e-badge-ghost {
           box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 .e-message.e-filled.e-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
+  background-color: #008837;
+  border-color: #008837;
   color: #212529;
 }
 .e-message.e-filled.e-warning .e-msg-icon {

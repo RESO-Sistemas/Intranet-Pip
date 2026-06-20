@@ -508,7 +508,7 @@ function cancelarCapacitacion(val) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
 
     cancelButtonColor: "#d33",
 
@@ -1026,7 +1026,7 @@ async function SeleccionaEmpleado(NoEmpleado, Nombre, Puesto, Sucursal, Email) {
 
       text: "El empleado ya se encuentra en la lista.",
 
-      confirmButtonColor: "#ffc407",
+      confirmButtonColor: "#008837",
 
     });
 
@@ -1252,7 +1252,7 @@ async function VerDetalles() {
 
     confirmButtonText: "Cerrar",
 
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
 
   });
 
@@ -2170,7 +2170,7 @@ async function eliminarArchivoCapacitacionSelected(idArchivo) {
 
     showCancelButton: true,
 
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
 
     cancelButtonColor: "#d33",
 

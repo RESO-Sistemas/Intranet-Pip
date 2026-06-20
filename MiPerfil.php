@@ -111,7 +111,7 @@ $MenuP = $Conf->getMenusPadre();
 		.profile-loading-card .spinner-border {
 			width: 2.5rem;
 			height: 2.5rem;
-			color: #f59e0b;
+			color: #008837;
 		}
 
 		.profile-loading-text {
@@ -238,7 +238,7 @@ $MenuP = $Conf->getMenusPadre();
 			left: -4px;
 			right: -4px;
 			bottom: -4px;
-			border: 3px solid #FFD700;
+			border: 3px solid #008837;
 			border-radius: 50%;
 			pointer-events: none;
 		}
@@ -247,7 +247,7 @@ $MenuP = $Conf->getMenusPadre();
 			position: absolute;
 			bottom: 6px;
 			right: 6px;
-			background: #FFD700;
+			background: #008837;
 			color: #2d3436;
 			width: 32px;
 			height: 32px;
@@ -308,7 +308,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.btn-warning-pip {
-			background: #FFD700;
+			background: #008837;
 			color: #2d3436;
 			border: none;
 			font-weight: 700;
@@ -319,15 +319,15 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.btn-warning-pip:hover {
-			background: #e6c200;
+			background: #7EBF8E;
 			transform: translateY(-1px);
-			box-shadow: 0 4px 12px rgba(255, 215, 0, 0.35);
+			box-shadow: 0 4px 12px rgba(0, 136, 55, 0.35);
 		}
 
 		.btn-outline-warning-pip {
 			background: transparent;
-			color: #bfa200;
-			border: 2px solid #FFD700;
+			color: #008837;
+			border: 2px solid #008837;
 			font-weight: 700;
 			border-radius: 10px;
 			padding: 10px 20px;
@@ -335,7 +335,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.btn-outline-warning-pip:hover {
-			background: #FFD700;
+			background: #008837;
 			color: #2d3436;
 		}
 

@@ -202,7 +202,7 @@ export function getThemeColor(theme) {
                 emptyCellColor: '#E9ECEF',
                 legendLabel: '#212529',
                 palette: [{ 'color': '#DC3545' },
-                    { 'color': '#FFC107' },
+                    { 'color': '#008837' },
                     { 'color': '#D63384' }]
             };
             break;
@@ -217,7 +217,7 @@ export function getThemeColor(theme) {
                 emptyCellColor: '#343A40',
                 legendLabel: '#DEE2E6',
                 palette: [{ 'color': '#DC3545' },
-                    { 'color': '#FFC107' },
+                    { 'color': '#008837' },
                     { 'color': '#D63384' }]
             };
             break;

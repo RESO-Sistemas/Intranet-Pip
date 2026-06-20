@@ -46,15 +46,15 @@
         }
 
         #myTab .nav-link:hover {
-            color: #3467f1;
-            background-color: rgba(52, 103, 241, 0.05);
+            color: #008837;
+            background-color: rgba(0, 136, 55, 0.05);
         }
 
         #myTab .nav-link.active {
-            color: #3467f1 !important;
+            color: #008837 !important;
             font-weight: 700;
             background: transparent;
-            border-bottom: 3px solid #3467f1 !important;
+            border-bottom: 3px solid #008837 !important;
             opacity: 1;
         }
 

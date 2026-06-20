@@ -1482,7 +1482,7 @@ body.tabulator-print-fullscreen-hide > *:not(.tabulator-print-fullscreen) {
 }
 
 .tabulator .tabulator-tableholder .tabulator-table .tabulator-row.bg-warning {
-  background: #ffc107 !important;
+  background: #008837 !important;
 }
 
 .tabulator .tabulator-tableholder .tabulator-table .tabulator-row.bg-danger {
@@ -1554,7 +1554,7 @@ body.tabulator-print-fullscreen-hide > *:not(.tabulator-print-fullscreen) {
 }
 
 .tabulator .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell.bg-warning {
-  background: #ffc107 !important;
+  background: #008837 !important;
 }
 
 .tabulator .tabulator-tableholder .tabulator-table .tabulator-row .tabulator-cell.bg-danger {

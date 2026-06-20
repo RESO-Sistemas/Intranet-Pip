@@ -25,11 +25,11 @@
         /* Scoreboard card */
         .candidate-card { background:#fff;border:1px solid #e9ecef;border-radius:12px;padding:16px;margin-bottom:12px;transition:all .2s;cursor:pointer; }
         .candidate-card:hover { border-color:#c0392b;box-shadow:0 4px 16px rgba(192,57,43,.1); }
-        .candidate-card.top-1 { border-color:#ffc107;background:#fffdf0; }
+        .candidate-card.top-1 { border-color:#008837;background:#fffdf0; }
         .candidate-card.top-2 { border-color:#adb5bd;background:#f8f9fa; }
         .candidate-card.top-3 { border-color:#cd7f32;background:#fdf9f5; }
         .rank-badge { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;flex-shrink:0; }
-        .rank-1 { background:#ffc107;color:#000; }
+        .rank-1 { background:#008837;color:#000; }
         .rank-2 { background:#adb5bd;color:#fff; }
         .rank-3 { background:#cd7f32;color:#fff; }
         .rank-other { background:#e9ecef;color:#555; }

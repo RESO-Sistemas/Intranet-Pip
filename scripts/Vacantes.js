@@ -11,7 +11,7 @@ let postulantesProcesosList = [];
 let postulantesFilterByEstatus = 'todos';
 
 // Charts
-const yellowPalette = ['#ffc407', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#fff9e6'];
+const yellowPalette = ['#008837', '#484747ff', '#ffd551', '#696969ff', '#ffe79b', '#f0fdf4'];
 let rawResultadosPostulante = [];
 let chartPostulanteGeneral = null;
 let rawComparativoVacante = [];
@@ -2130,7 +2130,7 @@ function drawResultadosPostulante() {
     const _score = parseFloat(calificacionGeneral) || 0;
     const _scoreCls = _score >= 80 ? 'high' : _score >= 60 ? 'mid' : 'low';
     const _scoreLabel = _score >= 80 ? 'Excelente' : _score >= 60 ? 'Regular' : 'Bajo';
-    const _ringColor = _score >= 80 ? '#198754' : _score >= 60 ? '#ffc407' : '#dc3545';
+    const _ringColor = _score >= 80 ? '#198754' : _score >= 60 ? '#008837' : '#dc3545';
     $('#lblScoreGeneralPostulante').html(`
         <div class="d-flex align-items-center gap-3">
             <div class="score-ring score-ring-lg flex-shrink-0" style="background:conic-gradient(${_ringColor} ${Math.round(_score)}%, #f0f0f0 0deg);">

@@ -463,7 +463,7 @@ tr.calendar-body .calendar-day .day[disabled] {
 }
 .event-container > .event-icon > div.event-bullet-holiday,
 .event-indicator > .type-bullet > div.type-holiday {
-    background-color: #ffc107;
+    background-color: #008837;
 }
 .event-container > .event-icon > div.event-bullet-birthday,
 .event-indicator > .type-bullet > div.type-birthday {

@@ -47618,8 +47618,8 @@ class PdfGanttTheme {
                 ganttStyle.taskbar.progressColor = new PdfColor(0, 86, 179);
                 ganttStyle.taskbar.criticalTaskColor = new PdfColor(255, 139, 139);
                 ganttStyle.taskbar.criticalProgressColor = new PdfColor(255, 85, 85);
-                ganttStyle.taskbar.baselineColor = new PdfColor(255, 193, 7);
-                ganttStyle.taskbar.baselineBorderColor = new PdfColor(255, 193, 7);
+                ganttStyle.taskbar.baselineColor = new PdfColor(0, 136, 55);
+                ganttStyle.taskbar.baselineBorderColor = new PdfColor(0, 136, 55);
                 ganttStyle.criticalConnectorLineColor = new PdfColor(255, 85, 85);
                 ganttStyle.taskbar.criticalTaskBorderColor = new PdfColor(255, 85, 85);
                 ganttStyle.taskbar.parentTaskColor = new PdfColor(108, 117, 125);
@@ -47642,7 +47642,7 @@ class PdfGanttTheme {
                 ganttStyle.taskbar.manualLineColor = new PdfColor(152, 154, 156);
                 ganttStyle.taskbar.manualParentBorder = new PdfColor(73, 80, 87);
                 ganttStyle.taskbar.manualChildBorder = new PdfColor(102, 40, 238);
-                ganttStyle.eventMarker.label.backgroundColor = new PdfColor(255, 193, 7);
+                ganttStyle.eventMarker.label.backgroundColor = new PdfColor(0, 136, 55);
                 ganttStyle.eventMarker.label.fontColor = new PdfColor(0, 0, 0);
                 ganttStyle.eventMarker.lineStyle = new PdfPen(new PdfColor(0, 123, 255));
                 ganttStyle.holiday.backgroundColor = new PdfColor(233, 236, 239);

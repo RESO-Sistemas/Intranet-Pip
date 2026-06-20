@@ -15,9 +15,9 @@
       rel="stylesheet">
     <style>
       :root {
-        --ev-primary: #F59E0B;
-        --ev-primary-dark: #D97706;
-        --ev-primary-light: #FEF3C7;
+        --ev-primary: #008837;
+        --ev-primary-dark: #047857;
+        --ev-primary-light: #D1FAE5;
         --ev-slate: #64748B;
         --ev-slate-dark: #475569;
         --ev-slate-light: #F1F5F9;
@@ -141,8 +141,8 @@
       }
 
       .evq-alert-banner.warning {
-        border-left-color: #F59E0B;
-        background: #FFFBEB;
+        border-left-color: #008837;
+        background: #f0fdf4;
       }
 
       .evq-alert-banner.error {
@@ -264,7 +264,7 @@
       }
 
       .evq-card-header .evq-meta-line .badge-type-2 {
-        background: #FEF3C7;
+        background: #D1FAE5;
         color: #B45309;
       }
 
@@ -326,8 +326,8 @@
       }
 
       .evq-icon-btn.changeTypeQuestion:hover {
-        background: #fef3c7;
-        color: #d97706;
+        background: #D1FAE5;
+        color: #047857;
       }
 
       .evq-icon-btn.chevron {

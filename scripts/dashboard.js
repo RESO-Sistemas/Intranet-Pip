@@ -593,11 +593,11 @@
           showCancelButton: true,
           confirmButtonText: 'Sí, continuar',
           cancelButtonText: 'No, cancelar',
-          confirmButtonColor: '#ffc407',
+          confirmButtonColor: '#008837',
           cancelButtonColor: '#d33',
           background: '#ffffff',
           color: '#2c3e50',
-          iconColor: '#ffc407',
+          iconColor: '#008837',
           customClass: {
             title: 'fw-bold',
             popup: 'rounded-4 shadow-lg'

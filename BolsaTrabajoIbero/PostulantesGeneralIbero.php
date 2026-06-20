@@ -34,7 +34,7 @@
         .timeline-title { font-weight:600; font-size:.85rem; margin:0 0 2px; }
         .timeline-sub { font-size:.78rem; margin:0; }
         .timeline-time { font-size:.75rem; color:#999; white-space:nowrap; }
-        .badge-estatus-1 { background:#ffc107;color:#000; }
+        .badge-estatus-1 { background:#008837;color:#000; }
         .badge-estatus-2 { background:#28a745;color:#fff; }
         .badge-estatus-3 { background:#dc3545;color:#fff; }
         .badge-estatus-4 { background:#6c757d;color:#fff; }

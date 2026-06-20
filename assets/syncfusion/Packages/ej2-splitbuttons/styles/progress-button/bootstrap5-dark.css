@@ -441,11 +441,11 @@
   stroke: #0dcaf0;
 }
 .e-progress-btn.e-outline.e-warning .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-flat.e-warning .e-spinner-pane .e-spinner-inner svg {
-  fill: #ffc107;
-  stroke: #ffc107;
+  fill: #008837;
+  stroke: #008837;
 }
 .e-progress-btn.e-outline.e-warning .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-flat.e-warning .e-spinner-pane .e-spinner-inner svg .e-path-arc {
-  stroke: #ffc107;
+  stroke: #008837;
 }
 .e-progress-btn.e-outline.e-danger .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-flat.e-danger .e-spinner-pane .e-spinner-inner svg {
   fill: #dc3545;

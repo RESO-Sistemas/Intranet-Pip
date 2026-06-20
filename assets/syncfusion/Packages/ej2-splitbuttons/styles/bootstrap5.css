@@ -917,7 +917,7 @@
 .e-css.e-btn-group input:focus-visible + label.e-btn.e-warning,
 .e-css.e-btn-group input:focus + label.e-btn.e-warning {
   background: rgb(255, 202.3, 44.2);
-  border-color: #ffc107;
+  border-color: #008837;
   color: #000;
   -webkit-box-shadow: 0 0 0 4px rgba(255, 202.3, 44.2, 0.5);
           box-shadow: 0 0 0 4px rgba(255, 202.3, 44.2, 0.5);
@@ -1182,12 +1182,12 @@
 .e-btn-group input:disabled + label.e-btn.e-warning,
 .e-css.e-btn-group .e-btn:disabled.e-warning,
 .e-css.e-btn-group input:disabled + label.e-btn.e-warning {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.65);
-  border-color: #ffc107;
+  border-color: #008837;
 }
 .e-btn-group .e-btn:disabled.e-danger,
 .e-btn-group input:disabled + label.e-btn.e-danger,
@@ -1258,12 +1258,12 @@
 .e-btn-group input:disabled + label.e-btn.e-outline.e-warning,
 .e-css.e-btn-group .e-btn:disabled.e-outline.e-warning,
 .e-css.e-btn-group input:disabled + label.e-btn.e-outline.e-warning {
-  background: rgba(255, 193, 7, 0.65);
-  border-color: rgba(255, 193, 7, 0.65);
+  background: rgba(0, 136, 55, 0.65);
+  border-color: rgba(0, 136, 55, 0.65);
   -webkit-box-shadow: none;
           box-shadow: none;
   color: rgba(0, 0, 0, 0.65);
-  border-color: #ffc107;
+  border-color: #008837;
 }
 .e-btn-group .e-btn:disabled.e-outline.e-danger,
 .e-btn-group input:disabled + label.e-btn.e-outline.e-danger,
@@ -1321,7 +1321,7 @@
 .e-btn-group:not(.e-vertical):not(.e-rtl) input:focus + label.e-btn.e-outline.e-warning,
 .e-css.e-btn-group:not(.e-vertical):not(.e-rtl) .e-btn:focus.e-outline.e-warning,
 .e-css.e-btn-group:not(.e-vertical):not(.e-rtl) input:focus + label.e-btn.e-outline.e-warning {
-  border-color: #ffc107;
+  border-color: #008837;
   outline-color: inherit;
 }
 .e-btn-group:not(.e-vertical):not(.e-rtl) .e-btn:focus.e-outline.e-danger,
@@ -1376,7 +1376,7 @@
 .e-btn-group.e-vertical:not(.e-rtl) input:focus + label.e-btn.e-outline.e-warning,
 .e-css.e-btn-group.e-vertical:not(.e-rtl) .e-btn:focus.e-outline.e-warning,
 .e-css.e-btn-group.e-vertical:not(.e-rtl) input:focus + label.e-btn.e-outline.e-warning {
-  border-color: #ffc107;
+  border-color: #008837;
   outline-color: inherit;
 }
 .e-btn-group.e-vertical:not(.e-rtl) .e-btn:focus.e-outline.e-danger,
@@ -1805,14 +1805,14 @@
   stroke: #000;
 }
 .e-progress-btn.e-warning.e-flat .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-warning.e-outline:hover.e-flat .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-warning.e-outline:focus.e-flat .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-warning.e-flat:hover.e-flat .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-warning.e-flat:focus.e-flat .e-spinner-pane .e-spinner-inner svg {
-  fill: #ffc107;
-  stroke: #ffc107;
+  fill: #008837;
+  stroke: #008837;
 }
 .e-progress-btn.e-warning.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-circle, .e-progress-btn.e-warning.e-outline:hover.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-circle, .e-progress-btn.e-warning.e-outline:focus.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-circle, .e-progress-btn.e-warning.e-flat:hover.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-circle, .e-progress-btn.e-warning.e-flat:focus.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-circle {
-  stroke: #ffc107;
+  stroke: #008837;
 }
 .e-progress-btn.e-warning.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-warning.e-outline:hover.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-warning.e-outline:focus.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-warning.e-flat:hover.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-warning.e-flat:focus.e-flat .e-spinner-pane .e-spinner-inner svg .e-path-arc {
-  stroke: #ffc107;
+  stroke: #008837;
 }
 .e-progress-btn.e-danger .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-danger.e-outline:hover .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-danger.e-outline:focus .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-danger.e-flat:hover .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-danger.e-flat:focus .e-spinner-pane .e-spinner-inner svg {
   fill: #fff;
@@ -1850,11 +1850,11 @@
   stroke: #0dcaf0;
 }
 .e-progress-btn.e-outline.e-warning .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-flat.e-warning .e-spinner-pane .e-spinner-inner svg {
-  fill: #ffc107;
-  stroke: #ffc107;
+  fill: #008837;
+  stroke: #008837;
 }
 .e-progress-btn.e-outline.e-warning .e-spinner-pane .e-spinner-inner svg .e-path-arc, .e-progress-btn.e-flat.e-warning .e-spinner-pane .e-spinner-inner svg .e-path-arc {
-  stroke: #ffc107;
+  stroke: #008837;
 }
 .e-progress-btn.e-outline.e-danger .e-spinner-pane .e-spinner-inner svg, .e-progress-btn.e-flat.e-danger .e-spinner-pane .e-spinner-inner svg {
   fill: #dc3545;

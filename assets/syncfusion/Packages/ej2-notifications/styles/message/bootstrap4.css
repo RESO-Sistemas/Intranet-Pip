@@ -201,7 +201,7 @@
           box-shadow: 0 0 0 2px rgba(52, 58, 64, 0.12);
 }
 .e-message.e-outlined.e-warning {
-  border-color: #ffc107;
+  border-color: #008837;
   color: rgb(134.5, 100.875, 0);
 }
 .e-message.e-outlined.e-warning .e-msg-icon {
@@ -278,8 +278,8 @@
           box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 .e-message.e-filled.e-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
+  background-color: #008837;
+  border-color: #008837;
   color: #212529;
 }
 .e-message.e-filled.e-warning .e-msg-icon {

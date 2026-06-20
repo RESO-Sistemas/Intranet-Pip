@@ -418,7 +418,7 @@ async function updateStatusSolicitud(Val, Solicitud) {
     text: "A continuación verá los datos del solicitante para confirmar.",
     icon: iconSwal,
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     cancelButtonText: "Cancelar",
     confirmButtonText: "Ver detalles",
@@ -518,7 +518,7 @@ async function getDetalleSolicitud(estado, solicitud) {
     html: contHTML,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     confirmButtonText: "Confirmar",
     cancelButtonText: "Cancelar",
@@ -540,7 +540,7 @@ async function getDetalleSolicitud(estado, solicitud) {
             icon: "success",
             title: "¡Listo!",
             text: `La solicitud fue ${mensaje2} correctamente.`,
-            confirmButtonColor: "#ffc407",
+            confirmButtonColor: "#008837",
           });
           // Refrescar todos los grids y contadores
           getMisSolicitudes();
@@ -571,7 +571,7 @@ async function regresarEstadoSolicitudJefe(val) {
     `,
     icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#ffc407",
+    confirmButtonColor: "#008837",
     cancelButtonColor: "#d33",
     confirmButtonText: "Sí, revertir",
     cancelButtonText: "Cancelar",
@@ -600,7 +600,7 @@ async function regresarEstadoSolicitudJefe(val) {
         title: "Revertido",
         text: 'La solicitud regresó a "Pendiente de revisión".',
         showConfirmButton: true,
-        confirmButtonColor: "#ffc407",
+        confirmButtonColor: "#008837",
       });
       await getMisSolicitudesPorRevisar();
       await getMisSolicitudesVacacionesEstadoNomina();

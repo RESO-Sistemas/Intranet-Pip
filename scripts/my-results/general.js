@@ -1236,7 +1236,7 @@ function printRecommendations(){
     const item = document.createElement('div');
     item.style.cssText = 'padding:1rem; border-radius:14px; background:#fef2f2; border:1px solid #fecaca; color:#991b1b;';
     item.innerHTML = `
-      <div style="font-weight:700; margin-bottom:0.4rem;"><i class="fas fa-lightbulb" style="margin-right:0.4rem; color:#f59e0b;"></i>${comp.competence}</div>
+      <div style="font-weight:700; margin-bottom:0.4rem;"><i class="fas fa-lightbulb" style="margin-right:0.4rem; color:#008837;"></i>${comp.competence}</div>
       <div style="font-size:0.92rem; line-height:1.5;">${recText}</div>
     `;
     list.appendChild(item);

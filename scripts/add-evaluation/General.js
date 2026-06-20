@@ -143,14 +143,14 @@ function _evWizardPopulateSummary() {
         <span class="ev-summary-value">${ri} <i class="fas fa-arrow-right text-muted mx-2" style="font-size:11px"></i> ${rf}</span>
       </div>
       <div class="ev-summary-row">
-        <span class="ev-summary-label"><i class="fas fa-tasks" style="color:#F59E0B"></i> Plan de Acción</span>
+        <span class="ev-summary-label"><i class="fas fa-tasks" style="color:#008837"></i> Plan de Acción</span>
         <span class="ev-summary-value">${pi} <i class="fas fa-arrow-right text-muted mx-2" style="font-size:11px"></i> ${pf}</span>
       </div>`;
   }
 
   const periodRow = periText ? `
     <div class="ev-summary-row">
-      <span class="ev-summary-label"><i class="fas fa-sync-alt" style="color:#F59E0B"></i> Periodicidad</span>
+      <span class="ev-summary-label"><i class="fas fa-sync-alt" style="color:#008837"></i> Periodicidad</span>
       <span class="ev-summary-value">${periText}</span>
     </div>` : '';
 

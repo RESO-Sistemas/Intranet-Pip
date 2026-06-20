@@ -1850,10 +1850,10 @@
   color: #fff;
 }
 .e-gantt .e-gantt-chart .e-baseline-bar {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-baseline-gantt-milestone-container {
-  background-color: #ffc107;
+  background-color: #008837;
 }
 .e-gantt .e-gantt-chart .e-uptail::before {
   border-bottom-color: rgb(68.0034482759, 75.85, 83.6965517241);

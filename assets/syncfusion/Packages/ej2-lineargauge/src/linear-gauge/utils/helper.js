@@ -451,7 +451,7 @@ export function getRangePalette(theme) {
     var palette;
     switch (theme.toLowerCase()) {
         case 'tailwind':
-            palette = ['#0369A1', '#14B8A6', '#15803D', '#334155', '#5A61F6', '#65A30D', '#8B5CF6', '#9333EA', '#F59E0B', '#F97316'];
+            palette = ['#0369A1', '#14B8A6', '#15803D', '#334155', '#5A61F6', '#65A30D', '#8B5CF6', '#9333EA', '#008837', '#F97316'];
             break;
         case 'tailwinddark':
             palette = ['#10B981', '#22D3EE', '#2DD4BF', '#4ADE80', '#8B5CF6', '#E879F9', '#F472B6', '#F87171', '#F97316', '#FCD34D'];
@@ -490,7 +490,7 @@ export function getRangePalette(theme) {
         case 'bootstrap5':
         case 'bootstrap5dark':
             palette = ['#6610F2', '#6f42C1', '#D63384', '#DC3545',
-                '#FD7E14', '#FFC107', '#198754', '#0DCAF0'];
+                '#FD7E14', '#008837', '#198754', '#0DCAF0'];
             break;
         default:
             palette = ['#ff5985', '#ffb133', '#fcde0b', '#27d5ff', '#50c917'];

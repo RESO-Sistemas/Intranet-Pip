@@ -94,7 +94,7 @@ function renderChecklist(items) {
         }
 
         const badgeInc = abreInc
-            ? '<span class="chk-badge ms-1" style="background:#ffc107;color:#333;">⚠ Incidencia</span>'
+            ? '<span class="chk-badge ms-1" style="background:#008837;color:#333;">⚠ Incidencia</span>'
             : '';
         const badgeTipo = item.Tipo === 'Critico'
             ? '<span class="chk-badge ms-1" style="background:#dc3545;color:#fff;">Crítico</span>'

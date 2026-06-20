@@ -20,7 +20,7 @@
 
     <style>
         :root {
-            --cap-amarillo: #ffc107;
+            --cap-amarillo: #008837;
             --cap-amarillo-oscuro: #e0a800;
             --cap-amarillo-claro: #fff8e1;
         }
@@ -116,7 +116,7 @@
             border-color: var(--cap-amarillo);
             background: var(--cap-amarillo);
             color: #212529;
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 136, 55, 0.4);
         }
 
         .step.completed .step-number {
@@ -231,7 +231,7 @@
         .btn-wizard-next:hover {
             background: var(--cap-amarillo-oscuro);
             color: #212529;
-            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 136, 55, 0.35);
         }
 
         .btn-wizard-prev {
