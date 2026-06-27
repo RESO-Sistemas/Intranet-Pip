@@ -14,10 +14,10 @@ if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
 
@@ -89,13 +89,15 @@ if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
                         <!-- Descripción -->
                         <div class="mb-3">
                           <label for="txtDescripcion" class="form-label fw-bold">Descripción</label>
-                          <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" rows="8" required></textarea>
+                          <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" rows="8"
+                            required></textarea>
                         </div>
 
                         <!-- Hipervínculo -->
                         <div class="mb-3">
                           <label for="txtHV" class="form-label fw-bold">Hipervínculo</label>
-                          <textarea id="txtHV" name="txtHV" class="form-control" placeholder="Opcional" rows="2"></textarea>
+                          <textarea id="txtHV" name="txtHV" class="form-control" placeholder="Opcional"
+                            rows="2"></textarea>
                         </div>
                       </form>
                     </div>
@@ -118,13 +120,8 @@ if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
                               <br>
 
                               <!-- Input oculto -->
-                              <input type="file"
-                                name="files[]"
-                                id="standard_filess"
-                                style="display:none;"
-                                multiple
-                                accept="application/pdf,image/jpeg,image/x-png,application/vnd.ms-powerpoint"
-                                required>
+                              <input type="file" name="files[]" id="standard_filess" style="display:none;" multiple
+                                accept="application/pdf,image/jpeg,image/x-png,application/vnd.ms-powerpoint" required>
 
                               <!-- Botón -->
                               <button class="btn btn-outline-primary mt-2" type="button" id="btnStandards">
@@ -142,7 +139,7 @@ if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
                     </div>
                     <div class="row text-center">
                       <div class="col">
-                       <button id="CrearFeed"  class='btn btn-success'>Crear Feed</button>
+                        <button id="CrearFeed" class='btn btn-success'>Crear Feed</button>
                       </div>
                     </div>
                   </div>
@@ -158,10 +155,12 @@ if (!isset($_GET["legacy"]) || $_GET["legacy"] !== "1") {
 
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+    integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="scripts/Feed.js" charset="utf-8"></script>
 </body>
 

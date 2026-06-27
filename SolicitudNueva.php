@@ -8,7 +8,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <?php include("neptune_styles.php"); ?>
 
@@ -43,16 +43,18 @@
       user-select: none;
       flex-shrink: 0;
     }
+
     .day-toggle-btn:hover {
       border-color: #008837;
       color: #856404;
       background: #f0fdf4;
     }
+
     .day-toggle-btn.active {
       background: #008837;
       border-color: #008837;
       color: #1a1a1a;
-      box-shadow: 0 2px 8px rgba(105, 191, 127,.4);
+      box-shadow: 0 2px 8px rgba(105, 191, 127, .4);
     }
 
     /* ── Panel sticky de resumen ─────────────────────── */
@@ -60,6 +62,7 @@
       position: sticky;
       top: 80px;
     }
+
     .resumen-row {
       display: flex;
       justify-content: space-between;
@@ -69,9 +72,22 @@
       font-size: 14px;
       gap: 8px;
     }
-    .resumen-row:last-child { border-bottom: none; }
-    .resumen-label { color: #64748B; white-space: nowrap; }
-    .resumen-value { font-weight: 700; color: #1e293b; text-align: right; word-break: break-word; }
+
+    .resumen-row:last-child {
+      border-bottom: none;
+    }
+
+    .resumen-label {
+      color: #64748B;
+      white-space: nowrap;
+    }
+
+    .resumen-value {
+      font-weight: 700;
+      color: #1e293b;
+      text-align: right;
+      word-break: break-word;
+    }
 
     /* ── Alerta inline de días insuficientes ─────────── */
     #alertaDiasInsuficientes {
@@ -80,8 +96,13 @@
     }
 
     /* ── Imagen de firma guardada ────────────────────── */
-    .firma-container { display: none; }
-    .firma-container img { max-height: 80px; }
+    .firma-container {
+      display: none;
+    }
+
+    .firma-container img {
+      max-height: 80px;
+    }
 
     /* ── Botón Enviar deshabilitado ──────────────────── */
     #btnEnviarSolicitud:disabled {
@@ -144,7 +165,9 @@
                         <span class="material-symbols-outlined" style="color:#2563EB;font-size:24px;">person</span>
                       </div>
                       <div>
-                        <div class="text-muted" style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">Solicitante</div>
+                        <div class="text-muted"
+                          style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">
+                          Solicitante</div>
                         <div id="NombreEmpleado" class="fw-bold" style="font-size:16px;">Cargando…</div>
                       </div>
                     </div>
@@ -153,13 +176,12 @@
                     <div class="row g-3 mb-4">
                       <div class="col-12 col-sm-6">
                         <label class="form-label fw-semibold">
-                          <span class="material-symbols-outlined align-middle me-1" style="font-size:16px;">calendar_today</span>
+                          <span class="material-symbols-outlined align-middle me-1"
+                            style="font-size:16px;">calendar_today</span>
                           Fecha de Inicio
                         </label>
-                        <input class="form-control form-control-solid-bordered"
-                          id="FechaInicio" type="date"
-                          onchange="validarFechas(); getDiasSeleccionados(); actualizarPanelResumen()"
-                          required>
+                        <input class="form-control form-control-solid-bordered" id="FechaInicio" type="date"
+                          onchange="validarFechas(); getDiasSeleccionados(); actualizarPanelResumen()" required>
                         <p class="error-message" data-msg="Es necesario ingresar una fecha." for="FechaInicio"></p>
                         <input type="hidden" id="CantidadDiasDisp" value="">
                       </div>
@@ -168,24 +190,24 @@
                           <span class="material-symbols-outlined align-middle me-1" style="font-size:16px;">event</span>
                           Fecha de Fin
                         </label>
-                        <input class="form-control form-control-solid-bordered"
-                          id="FechaFin" type="date"
-                          onchange="validarFechas(); getDiasSeleccionados(); actualizarPanelResumen()"
-                          required>
+                        <input class="form-control form-control-solid-bordered" id="FechaFin" type="date"
+                          onchange="validarFechas(); getDiasSeleccionados(); actualizarPanelResumen()" required>
                         <p for="FechaFin" data-msg="Es necesario ingresar una fecha."></p>
                       </div>
                     </div>
 
                     <!-- Badges ocultos requeridos por SolicitudNueva.js para actualizar estado interno -->
                     <!-- No son visibles: el panel de resumen los lee y los muestra de forma mejorada -->
-                    <span id="DiasDisponibles"  style="display:none;"></span>
+                    <span id="DiasDisponibles" style="display:none;"></span>
                     <span id="DiasSeleccionados" style="display:none;"></span>
-                    <span id="DiaRegreso"        style="display:none;"></span>
+                    <span id="DiaRegreso" style="display:none;"></span>
 
                     <!-- Alerta de días insuficientes -->
-                    <div id="alertaDiasInsuficientes" class="alert alert-danger d-flex align-items-center gap-2 mb-4 py-2 px-3" role="alert">
+                    <div id="alertaDiasInsuficientes"
+                      class="alert alert-danger d-flex align-items-center gap-2 mb-4 py-2 px-3" role="alert">
                       <span class="material-symbols-outlined" style="font-size:18px;">warning</span>
-                      <span>Los días seleccionados superan tus días disponibles. Ajusta las fechas para continuar.</span>
+                      <span>Los días seleccionados superan tus días disponibles. Ajusta las fechas para
+                        continuar.</span>
                     </div>
 
                     <!-- Días de descanso — toggle pills visuales -->
@@ -198,20 +220,22 @@
                         Selecciona los días que <strong>no</strong> cuentan como días laborales en tu jornada.
                       </small>
                       <div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="day-toggle-btn" data-value="Monday"    title="Lunes">Lu</button>
-                        <button type="button" class="day-toggle-btn" data-value="Tuesday"   title="Martes">Ma</button>
-                        <button type="button" class="day-toggle-btn" data-value="Wednesday" title="Miércoles">Mi</button>
-                        <button type="button" class="day-toggle-btn" data-value="Thursday"  title="Jueves">Ju</button>
-                        <button type="button" class="day-toggle-btn" data-value="Friday"    title="Viernes">Vi</button>
-                        <button type="button" class="day-toggle-btn" data-value="Saturday"  title="Sábado">Sa</button>
-                        <button type="button" class="day-toggle-btn" data-value="Sunday"    title="Domingo">Do</button>
+                        <button type="button" class="day-toggle-btn" data-value="Monday" title="Lunes">Lu</button>
+                        <button type="button" class="day-toggle-btn" data-value="Tuesday" title="Martes">Ma</button>
+                        <button type="button" class="day-toggle-btn" data-value="Wednesday"
+                          title="Miércoles">Mi</button>
+                        <button type="button" class="day-toggle-btn" data-value="Thursday" title="Jueves">Ju</button>
+                        <button type="button" class="day-toggle-btn" data-value="Friday" title="Viernes">Vi</button>
+                        <button type="button" class="day-toggle-btn" data-value="Saturday" title="Sábado">Sa</button>
+                        <button type="button" class="day-toggle-btn" data-value="Sunday" title="Domingo">Do</button>
                       </div>
                     </div>
 
                     <!-- Motivo de solicitud -->
                     <div class="mb-4">
                       <label class="form-label fw-semibold">
-                        <span class="material-symbols-outlined align-middle me-1" style="font-size:16px;">edit_note</span>
+                        <span class="material-symbols-outlined align-middle me-1"
+                          style="font-size:16px;">edit_note</span>
                         Motivo de Solicitud
                       </label>
                       <textarea id="MotivoSolicitud" class="form-control"
@@ -234,7 +258,8 @@
                         <div class="text-muted mt-1" style="font-size:11px;">Firma registrada</div>
                       </div>
                       <div>
-                        <button type="button" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
+                        <button type="button"
+                          class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
                           data-bs-toggle="modal" data-bs-target="#modalActualizarFirma">
                           <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
                           Actualizar firma
@@ -244,7 +269,8 @@
 
                     <!-- Botones de acción -->
                     <div class="d-flex justify-content-between gap-2 mt-2 pt-3" style="border-top:1px solid #F1F5F9;">
-                      <a href="SolicitudVacaciones.php" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
+                      <a href="SolicitudVacaciones.php"
+                        class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
                         <span class="material-symbols-outlined" style="font-size:16px;">arrow_back</span>
                         Regresar
                       </a>
@@ -271,9 +297,12 @@
 
                     <!-- Días disponibles (siempre visible) -->
                     <div class="p-3 rounded-2 mb-3" style="background:#ECFDF5;">
-                      <div class="text-muted" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Días disponibles</div>
+                      <div class="text-muted"
+                        style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Días
+                        disponibles</div>
                       <div class="d-flex align-items-end gap-1 mt-1">
-                        <span id="resumenDiasDisponibles" class="fw-bold" style="font-size:28px;line-height:1;color:#059669;">—</span>
+                        <span id="resumenDiasDisponibles" class="fw-bold"
+                          style="font-size:28px;line-height:1;color:#059669;">—</span>
                         <span class="text-muted mb-1" style="font-size:13px;">días</span>
                       </div>
                     </div>
@@ -304,16 +333,20 @@
 
                     <!-- Saldo resultante -->
                     <div class="mt-3 p-3 rounded-2" style="background:#F8FAFC;border:1px solid #E2E8F0;">
-                      <div class="text-muted" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Días restantes después</div>
+                      <div class="text-muted"
+                        style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Días
+                        restantes después</div>
                       <div class="d-flex align-items-end gap-1 mt-1">
-                        <span id="resumenSaldo" class="fw-bold" style="font-size:24px;line-height:1;color:#2563EB;">—</span>
+                        <span id="resumenSaldo" class="fw-bold"
+                          style="font-size:24px;line-height:1;color:#2563EB;">—</span>
                         <span class="text-muted mb-1" style="font-size:13px;">días</span>
                       </div>
                     </div>
 
                     <!-- Info del flujo -->
                     <div class="mt-3 p-2 rounded-2 d-flex align-items-start gap-2" style="background:#f0fdf4;">
-                      <span class="material-symbols-outlined mt-1" style="color:#047857;font-size:16px;flex-shrink:0;">info</span>
+                      <span class="material-symbols-outlined mt-1"
+                        style="color:#047857;font-size:16px;flex-shrink:0;">info</span>
                       <p class="mb-0 text-muted" style="font-size:11px;line-height:1.5;">
                         Tu solicitud será revisada primero por tu <strong>jefe inmediato</strong>
                         y luego por <strong>Nómina</strong> antes de ser aprobada definitivamente.
@@ -327,8 +360,8 @@
             </div><!-- /row principal -->
 
             <!-- ── Modal: asignar jefe (oculto, activado por JS) ── -->
-            <button type="button" id="openModalJefes" class="btn btn-primary"
-              data-bs-toggle="modal" data-bs-target="#ModalAsignarHijo" style="display:none;"></button>
+            <button type="button" id="openModalJefes" class="btn btn-primary" data-bs-toggle="modal"
+              data-bs-target="#ModalAsignarHijo" style="display:none;"></button>
 
             <div class="modal fade" id="ModalAsignarHijo" tabindex="-1" aria-hidden="true" style="display:none;">
               <div class="modal-dialog modal-dialog-centered">
@@ -338,7 +371,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                   </div>
                   <div class="modal-body">
-                    <select id="listadoJefesPosibles" class="form-select" onchange="asignarJefeEmpleado(this.value)"></select>
+                    <select id="listadoJefesPosibles" class="form-select"
+                      onchange="asignarJefeEmpleado(this.value)"></select>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -348,8 +382,8 @@
             </div>
 
             <!-- ── Modal: firma ─────────────────────────────────── -->
-            <div class="modal fade" id="modalActualizarFirma" data-bs-backdrop="static"
-              data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="modalActualizarFirma" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -373,11 +407,13 @@
                     </p>
                   </div>
                   <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-outline-danger d-inline-flex align-items-center gap-1" id="draw-clearBtn">
+                    <button type="button" class="btn btn-outline-danger d-inline-flex align-items-center gap-1"
+                      id="draw-clearBtn">
                       <span class="material-symbols-outlined" style="font-size:16px;">restart_alt</span>
                       Repetir trazo
                     </button>
-                    <button type="button" id="draw-submitBtn" class="btn btn-success d-inline-flex align-items-center gap-1">
+                    <button type="button" id="draw-submitBtn"
+                      class="btn btn-success d-inline-flex align-items-center gap-1">
                       <span class="material-symbols-outlined" style="font-size:16px;">save</span>
                       Guardar Firma
                     </button>
@@ -419,7 +455,7 @@
         return "";
       }
 
-      const normalizeDataUri = function(value) {
+      const normalizeDataUri = function (value) {
         const parts = value.split(",");
         if (parts.length < 2) {
           return value.replace(/ /g, "+");
@@ -448,7 +484,7 @@
         type: "post",
         url: "Backend/Empleados/App.php",
         data: "op=getFirmaEmp",
-        success: function(response) {
+        success: function (response) {
           response = JSON.parse(response.trim());
           if (!response || response.length === 0) {
             $(".firma-container").hide();
@@ -458,10 +494,10 @@
                 let urlImg = resolveSignatureAsset(response[i]["Firma"], response[i]["NoEmpleado"]);
                 $(".imgFirmaClass")
                   .off("load.signature error.signature")
-                  .on("load.signature", function() {
+                  .on("load.signature", function () {
                     $(".firma-container").show();
                   })
-                  .on("error.signature", function() {
+                  .on("error.signature", function () {
                     $(this).attr("src", "");
                     $(".firma-container").hide();
                   })
@@ -473,13 +509,13 @@
             }
           }
         },
-        error: function(e) { alert(e.responseText); }
+        error: function (e) { alert(e.responseText); }
       });
     }
 
     // ── Lógica de toggles de días de descanso ─────────────────────────────────
-    document.querySelectorAll(".day-toggle-btn").forEach(function(btn) {
-      btn.addEventListener("click", function() {
+    document.querySelectorAll(".day-toggle-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
         this.classList.toggle("active");
         // Recalcular días al cambiar el toggle
         getDiasSeleccionados();
@@ -523,32 +559,32 @@
 
       // Días de descanso seleccionados: leer pills activos
       const btnsActivos = document.querySelectorAll(".day-toggle-btn.active");
-      const etiquetas   = Array.from(btnsActivos).map(b => b.title);
+      const etiquetas = Array.from(btnsActivos).map(b => b.title);
       const elRD = document.getElementById("resumenDiasDescanso");
       if (elRD) elRD.textContent = etiquetas.length > 0 ? etiquetas.join(", ") : "Ninguno";
 
       // Saldo restante + validación inline
-      const saldo      = diasDisp - diasSolicitados;
-      const elSaldo    = document.getElementById("resumenSaldo");
+      const saldo = diasDisp - diasSolicitados;
+      const elSaldo = document.getElementById("resumenSaldo");
       const alertaDias = document.getElementById("alertaDiasInsuficientes");
-      const btnEnviar  = document.getElementById("btnEnviarSolicitud");
+      const btnEnviar = document.getElementById("btnEnviarSolicitud");
 
       if (diasSolicitados > 0) {
         if (elSaldo) {
-          elSaldo.textContent  = saldo;
-          elSaldo.style.color  = saldo < 0 ? "#DC2626" : "#2563EB";
+          elSaldo.textContent = saldo;
+          elSaldo.style.color = saldo < 0 ? "#DC2626" : "#2563EB";
         }
         if (saldo < 0) {
           if (alertaDias) alertaDias.style.display = "flex";
-          if (btnEnviar)  btnEnviar.disabled = true;
+          if (btnEnviar) btnEnviar.disabled = true;
         } else {
           if (alertaDias) alertaDias.style.display = "none";
-          if (btnEnviar)  btnEnviar.disabled = false;
+          if (btnEnviar) btnEnviar.disabled = false;
         }
       } else {
         if (elSaldo) { elSaldo.textContent = "—"; elSaldo.style.color = "#2563EB"; }
         if (alertaDias) alertaDias.style.display = "none";
-        if (btnEnviar)  btnEnviar.disabled = false;
+        if (btnEnviar) btnEnviar.disabled = false;
       }
     }
 
@@ -562,48 +598,48 @@
     }
 
     // Actualizar panel cuando SolicitudNueva.js modifica los spans ocultos
-    const observerConfig  = { childList: true, characterData: true, subtree: true };
+    const observerConfig = { childList: true, characterData: true, subtree: true };
     const observerTargets = ["DiasSeleccionados", "DiaRegreso", "DiasDisponibles"];
     const observer = new MutationObserver(actualizarPanelResumen);
-    observerTargets.forEach(function(id) {
+    observerTargets.forEach(function (id) {
       const el = document.getElementById(id);
       if (el) observer.observe(el, observerConfig);
     });
 
     // ── Lógica del canvas de firma (fix para móvil) ───────────────────────────
-    window.requestAnimFrame = (function() {
+    window.requestAnimFrame = (function () {
       return window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame || function(cb) { window.setTimeout(cb, 1000 / 60); };
+        window.mozRequestAnimationFrame || function (cb) { window.setTimeout(cb, 1000 / 60); };
     })();
 
     let canvasListenersAttached = false;
     let drawing = false;
     let mousePos = { x: 0, y: 0 };
-    let lastPos  = { x: 0, y: 0 };
+    let lastPos = { x: 0, y: 0 };
 
     /**
      * Redimensiona y (si es la primera vez) adjunta listeners al canvas.
      * Se llama en cada apertura del modal para corregir el bug de ancho en móvil.
      */
-    $('#modalActualizarFirma').on('shown.bs.modal', function() {
-      const canvas       = document.getElementById("draw-canvas");
+    $('#modalActualizarFirma').on('shown.bs.modal', function () {
+      const canvas = document.getElementById("draw-canvas");
       const contentCanvas = document.getElementById("contentCanvas");
 
       // Medir el contenedor DESPUÉS de que el modal terminó de animar
-      canvas.width  = contentCanvas.offsetWidth;
+      canvas.width = contentCanvas.offsetWidth;
       canvas.height = contentCanvas.offsetHeight;
 
       if (!canvasListenersAttached) {
-        const ctx      = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
         const clearBtn = document.getElementById("draw-clearBtn");
         const submitBtn = document.getElementById("draw-submitBtn");
 
-        clearBtn.addEventListener("click", function() {
+        clearBtn.addEventListener("click", function () {
           // Limpiar el canvas preservando dimensiones
           ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        submitBtn.addEventListener("click", function() {
+        submitBtn.addEventListener("click", function () {
           SubirFirma(canvas.toDataURL());
         });
 
@@ -616,18 +652,18 @@
           return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
         }
 
-        canvas.addEventListener("mousedown",  function(e) { drawing = true;  lastPos = getMousePos(canvas, e); });
-        canvas.addEventListener("mouseup",    function()  { drawing = false; });
-        canvas.addEventListener("mousemove",  function(e) { mousePos = getMousePos(canvas, e); });
-        canvas.addEventListener("touchstart", function(e) {
+        canvas.addEventListener("mousedown", function (e) { drawing = true; lastPos = getMousePos(canvas, e); });
+        canvas.addEventListener("mouseup", function () { drawing = false; });
+        canvas.addEventListener("mousemove", function (e) { mousePos = getMousePos(canvas, e); });
+        canvas.addEventListener("touchstart", function (e) {
           e.preventDefault();
           mousePos = getTouchPos(canvas, e);
           const me = new MouseEvent("mousedown", { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
           canvas.dispatchEvent(me);
         }, { passive: false });
-        canvas.addEventListener("touchend",   function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
-        canvas.addEventListener("touchleave", function(e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
-        canvas.addEventListener("touchmove",  function(e) {
+        canvas.addEventListener("touchend", function (e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
+        canvas.addEventListener("touchleave", function (e) { e.preventDefault(); canvas.dispatchEvent(new MouseEvent("mouseup")); }, { passive: false });
+        canvas.addEventListener("touchmove", function (e) {
           e.preventDefault();
           const me = new MouseEvent("mousemove", { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
           canvas.dispatchEvent(me);
@@ -635,14 +671,14 @@
 
         function renderCanvas() {
           if (drawing) {
-            const tint  = document.getElementById("color");
+            const tint = document.getElementById("color");
             const punta = document.getElementById("puntero");
             ctx.strokeStyle = tint.value;
             ctx.beginPath();
             ctx.moveTo(lastPos.x, lastPos.y);
             ctx.lineTo(mousePos.x, mousePos.y);
             ctx.lineWidth = punta.value;
-            ctx.lineCap  = "round";
+            ctx.lineCap = "round";
             ctx.stroke();
             ctx.closePath();
             lastPos = mousePos;
@@ -661,11 +697,11 @@
         type: "POST",
         url: "Backend/Empleados/App.php",
         data: "op=SubirFirma&imagen64=" + imagen64,
-        success: function() {
+        success: function () {
           $('#modalActualizarFirma').modal('hide');
           getFirmaEmp();
         },
-        error: function(e) { alert(e.responseText); }
+        error: function (e) { alert(e.responseText); }
       });
     }
 

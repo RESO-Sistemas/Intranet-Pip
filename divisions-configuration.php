@@ -17,7 +17,7 @@
 
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 
 	<?php include("neptune_styles.php"); ?>
 </head>
@@ -31,8 +31,8 @@
 
 			<?php
 
-      include("menus.php");
-?>
+			include("menus.php");
+			?>
 
 		</div>
 
@@ -117,8 +117,7 @@
 	<script src="scripts/global.js?v=<?php echo time(); ?>" charset="utf-8">
 	</script>
 
-	<script src="scripts/divisions-configuration.js?v=<?php echo time(); ?>"
-		charset="utf-8"></script>
+	<script src="scripts/divisions-configuration.js?v=<?php echo time(); ?>" charset="utf-8"></script>
 
 
 

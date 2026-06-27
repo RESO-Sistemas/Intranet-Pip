@@ -14,6 +14,21 @@ let prof_NameMobile, prof_EmailMobile, prof_ImgMobile;
 
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function () {
+  // Cambiar el título de las pestañas de forma dinámica a "La Esmeralda"
+  if (document.title.includes("PIP by Lugo")) {
+    document.title = document.title.replace(/PIP by Lugo/gi, "La Esmeralda");
+  } else if (document.title.includes("PIP by lugo")) {
+    document.title = document.title.replace(/PIP by lugo/gi, "La Esmeralda");
+  } else if (document.title === "PIP" || !document.title) {
+    document.title = "La Esmeralda";
+  }
+  
+  // Cambiar el favicon al de La Esmeralda
+  const favicon = document.querySelector("link[rel*='icon']");
+  if (favicon) {
+    favicon.href = "assets/images/logo-esmeralda.png";
+  }
+
   // No ejecutar funciones globales en la página de login
   const currentPage = window.location.pathname.split('/').pop();
   if (currentPage === 'login.php') {

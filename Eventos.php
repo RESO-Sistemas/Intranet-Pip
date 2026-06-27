@@ -8,10 +8,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
 
@@ -73,7 +73,8 @@
             </div>
 
             <!-- Modal Bootstrap -->
-            <div class="modal fade" id="ModalEvento" tabindex="-1" aria-labelledby="ModalEventoLabel" aria-hidden="true">
+            <div class="modal fade" id="ModalEvento" tabindex="-1" aria-labelledby="ModalEventoLabel"
+              aria-hidden="true">
               <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
 
@@ -97,12 +98,14 @@
 
                       <div class="col-6 col-md-3">
                         <label for="txtFechaInicio" class="form-label fw-bold">Fecha Inicio</label>
-                        <input type="date" id="txtFechaInicio" name="txtFechaInicio" class="form-control" required max="2999-09-21">
+                        <input type="date" id="txtFechaInicio" name="txtFechaInicio" class="form-control" required
+                          max="2999-09-21">
                       </div>
 
                       <div class="col-6 col-md-3">
                         <label for="txtFechaFin" class="form-label fw-bold">Fecha Fin</label>
-                        <input type="date" id="txtFechaFin" name="txtFechaFin" class="form-control" required max="2999-09-21">
+                        <input type="date" id="txtFechaFin" name="txtFechaFin" class="form-control" required
+                          max="2999-09-21">
                       </div>
 
                       <div class="col-6 col-md-3">
@@ -120,7 +123,8 @@
 
                   <div class="modal-footer">
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> -->
-                    <button type="button" class="btn btn-primary" id="RegistrarEvento" onclick="EventoOnclick()">Agregar evento</button>
+                    <button type="button" class="btn btn-primary" id="RegistrarEvento" onclick="EventoOnclick()">Agregar
+                      evento</button>
                   </div>
 
                 </div>
@@ -137,15 +141,15 @@
 
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
 
   <script src="assets/libs/block-ui/jquery.blockUI.js"></script>
-  
+
   <!-- Scripts específicos de esta página -->
   <script src="scripts/global.js?v=<?= time() ?>" charset="utf-8"></script>
-    <script src="scripts/Eventos.js?v=<?= time() ?>" charset="utf-8"></script>
+  <script src="scripts/Eventos.js?v=<?= time() ?>" charset="utf-8"></script>
 
 </body>
 

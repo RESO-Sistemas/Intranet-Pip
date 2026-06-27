@@ -179,7 +179,7 @@ if (btnActionGreen) {
           title: '¡Publicación enviada!',
           html: 'Tu publicación fue recibida y está <strong>pendiente de revisión</strong>.<br>Un administrador la aprobará pronto.',
           confirmButtonText: 'Entendido',
-          confirmButtonColor: '#FF4500',
+          confirmButtonColor: '#008837',
           timer: 8000,
           timerProgressBar: true,
         });

@@ -16,7 +16,7 @@
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
 
     <!-- Styles neptune -->
 
@@ -41,59 +41,59 @@
         body.modal-open {
             overflow: visible !important;
         }
-        
+
         .modal {
             overflow: visible !important;
         }
-        
+
         .modal-dialog {
             overflow: visible !important;
         }
-        
+
         .modal-content {
             overflow: visible !important;
         }
-        
+
         .modal-body {
             overflow-y: auto !important;
             overflow-x: visible !important;
             max-height: 70vh;
         }
-        
+
         /* Asegurar que los selects tengan el z-index correcto y posición */
         select.form-select {
             position: relative !important;
             z-index: 9999 !important;
         }
-        
+
         /* Fix para el error de aria-hidden en DataTables */
         .dataTables_length select {
             z-index: auto !important;
         }
-        
+
         /* Asegurar que el backdrop no tape los selects */
         .modal-backdrop {
             z-index: 1040 !important;
         }
-        
+
         #ModalDiasFestivos {
             z-index: 1050 !important;
         }
-        
+
         /* Responsividad para pantallas pequeñas */
         @media (max-width: 767px) {
             .modal-dialog {
                 margin: 0.5rem;
             }
-            
+
             .modal-body {
                 padding: 1rem;
             }
-            
+
             .table-responsive {
                 font-size: 0.875rem;
             }
-            
+
             .btn {
                 font-size: 0.875rem;
                 padding: 0.5rem 1rem;
@@ -130,9 +130,9 @@
 
             <?php
 
-include("menus.php");
+            include("menus.php");
 
-?>
+            ?>
 
         </div>
 
@@ -211,13 +211,14 @@ include("menus.php");
 
                                             <div class="col-12" style="text-align:center">
 
-                                                <button class="btn btn-success" id="btnViewDiasFestivos">Gestionar días festivos.</button>
+                                                <button class="btn btn-success" id="btnViewDiasFestivos">Gestionar días
+                                                    festivos.</button>
 
                                             </div>
 
                                         </div>
 
-                                        <!-- Mensaje de bienvenida 
+                                        <!-- Mensaje de bienvenida
 
                                         <div class="row">
 
@@ -259,17 +260,11 @@ include("menus.php");
                                                         <input type="hidden" value="updateImgBirthday" name="op">
 
                                                         <img src="assets/cumplecursor.png" alt="ImgCumpleaños"
-
-                                                            id="imgPreview"
-
-                                                            class="img-fluid rounded shadow-sm"
-
+                                                            id="imgPreview" class="img-fluid rounded shadow-sm"
                                                             style="height:45vh; cursor:pointer;">
 
                                                         <input type="file" style="display:none;"
-
                                                             name="ContenidoImgBirthday" id="ContenidoImgBirthday"
-
                                                             onchange="previewImage(event,'#imgPreview')" required>
 
                                                     </form>
@@ -299,18 +294,13 @@ include("menus.php");
                                                         <input type="hidden" value="updateImgAnniversary" name="op">
 
                                                         <img src="assets/cumplecursor.png" alt="ImgAnniversary"
-
-                                                            id="imgPreviewAnn"
-
-                                                            class="img-fluid rounded shadow-sm"
-
+                                                            id="imgPreviewAnn" class="img-fluid rounded shadow-sm"
                                                             style="height:45vh; cursor:pointer;">
 
                                                         <input type="file" style="display:none;"
-
                                                             name="ContenidoImgAnniversary" id="ContenidoImgAnniversary"
-
-                                                            onchange="previewImageAnny(event,'#imgPreviewAnn')" required>
+                                                            onchange="previewImageAnny(event,'#imgPreviewAnn')"
+                                                            required>
 
                                                     </form>
 
@@ -348,7 +338,8 @@ include("menus.php");
 
             <!-- Modal Días Festivos -->
 
-            <div class="modal fade" id="ModalDiasFestivos" tabindex="-1" aria-labelledby="ModalDiasFestivosLabel" aria-hidden="true">
+            <div class="modal fade" id="ModalDiasFestivos" tabindex="-1" aria-labelledby="ModalDiasFestivosLabel"
+                aria-hidden="true">
 
                 <div class="modal-dialog modal-xl modal-dialog-scrollable">
 
@@ -362,7 +353,8 @@ include("menus.php");
 
                             <h5 class="modal-title" id="ModalDiasFestivosLabel">Gestión de Días Festivos</h5>
 
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
 
                         </div>
 
@@ -381,22 +373,28 @@ include("menus.php");
                                         <div class="row g-3">
 
                                             <div class="col-12 col-sm-6 col-md-4">
-                                                <label for="mesSelected" class="form-label fw-bold d-block text-center">Seleccione el mes</label>
+                                                <label for="mesSelected"
+                                                    class="form-label fw-bold d-block text-center">Seleccione el
+                                                    mes</label>
                                                 <select id="mesSelected" class="form-select"></select>
                                             </div>
 
                                             <div class="col-12 col-sm-6 col-md-4">
-                                                <label for="diaSelected" class="form-label fw-bold d-block text-center">Seleccione el día</label>
+                                                <label for="diaSelected"
+                                                    class="form-label fw-bold d-block text-center">Seleccione el
+                                                    día</label>
                                                 <select id="diaSelected" class="form-select"></select>
                                             </div>
 
                                             <div class="col-12 col-md-4">
-                                                <label for="txtDescripcionDiaF" class="form-label fw-bold d-block text-center">Descripción</label>
+                                                <label for="txtDescripcionDiaF"
+                                                    class="form-label fw-bold d-block text-center">Descripción</label>
                                                 <input type="text" id="txtDescripcionDiaF" class="form-control">
                                             </div>
 
                                             <div class="col-12 text-center mt-3">
-                                                <button type="button" class="btn btn-success" id="btnAddDiaF">Agregar día festivo</button>
+                                                <button type="button" class="btn btn-success" id="btnAddDiaF">Agregar
+                                                    día festivo</button>
                                             </div>
 
                                         </div>
@@ -460,7 +458,8 @@ include("menus.php");
 
             <!-- Modal Actualizar Día Festivo -->
 
-            <div class="modal fade" id="ModalUpdateDiaFestivo" tabindex="-1" aria-labelledby="ModalUpdateDiaFestivoLabel" aria-hidden="true">
+            <div class="modal fade" id="ModalUpdateDiaFestivo" tabindex="-1"
+                aria-labelledby="ModalUpdateDiaFestivoLabel" aria-hidden="true">
 
                 <div class="modal-dialog modal-lg">
 
@@ -474,7 +473,8 @@ include("menus.php");
 
                             <h5 class="modal-title" id="ModalUpdateDiaFestivoLabel">Actualizar Día Festivo</h5>
 
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
 
                         </div>
 
@@ -501,11 +501,15 @@ include("menus.php");
 
                                         <div class="row g-3">
                                             <div class="col-12 col-sm-6 col-md-7">
-                                                <label for="mesSelectedUpdate" class="form-label fw-bold d-block text-center">Seleccione el mes</label>
+                                                <label for="mesSelectedUpdate"
+                                                    class="form-label fw-bold d-block text-center">Seleccione el
+                                                    mes</label>
                                                 <select id="mesSelectedUpdate" class="form-select"></select>
                                             </div>
                                             <div class="col-12 col-sm-6 col-md-5">
-                                                <label for="diaSelectedUpdate" class="form-label fw-bold d-block text-center">Seleccione el día</label>
+                                                <label for="diaSelectedUpdate"
+                                                    class="form-label fw-bold d-block text-center">Seleccione el
+                                                    día</label>
                                                 <select id="diaSelectedUpdate" class="form-select"></select>
                                             </div>
                                         </div>
@@ -518,9 +522,11 @@ include("menus.php");
 
                                     <div class="col-12 text-center">
 
-                                        <label for="txtDescripcionDiaFUpdate" class="form-label fw-bold">Descripción del día</label>
+                                        <label for="txtDescripcionDiaFUpdate" class="form-label fw-bold">Descripción del
+                                            día</label>
 
-                                        <input type="text" id="txtDescripcionDiaFUpdate" class="form-control form-control-solid-bordered ">
+                                        <input type="text" id="txtDescripcionDiaFUpdate"
+                                            class="form-control form-control-solid-bordered ">
 
                                     </div>
 
@@ -530,7 +536,8 @@ include("menus.php");
 
                                     <div class="col-12 text-center">
 
-                                        <button type="button" class="btn btn-success mt-3" id="btnUpdateDF">Actualizar día Festivo</button>
+                                        <button type="button" class="btn btn-success mt-3" id="btnUpdateDF">Actualizar
+                                            día Festivo</button>
 
                                     </div>
 

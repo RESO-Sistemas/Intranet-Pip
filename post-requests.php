@@ -17,13 +17,13 @@
 
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
 
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet"> -->
 
@@ -118,51 +118,49 @@
 
         <!-- <p class="loader__label">PIP</p> -->
 
-      </div>
+  </div>
 
-    </div> -->
+  </div> -->
 
-    <div id="Menu">
+  <div id="Menu">
 
-      <?php
+    <?php
 
-      include("menus.php");
+    include("menus.php");
 
-      ?>
+    ?>
 
-    </div>
+  </div>
 
-    <div class="app-container">
-      <?php include("includes/_Header.php"); ?>
-      <div class="app-content">
+  <div class="app-container">
+    <?php include("includes/_Header.php"); ?>
+    <div class="app-content">
 
-        <div class="content-wrapper">
+      <div class="content-wrapper">
 
-          <div class="container">
+        <div class="container">
 
-            <div class="row">
+          <div class="row">
 
-              <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
+            <div class="col s10 offset-s1 l5 offset-l7" style="position: fixed; z-index:99;">
 
-                <div class="row">
+              <div class="row">
 
-                  <div class="col s12 l12" style="position: relative;">
+                <div class="col s12 l12" style="position: relative;">
 
-                    <div id="contenidoMensajes" style="margin-right:2vh"></div>
+                  <div id="contenidoMensajes" style="margin-right:2vh"></div>
 
-                  </div>
+                </div>
 
-                  <div class="col s12 l12" style="position: relative;">
+                <div class="col s12 l12" style="position: relative;">
 
-                    <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
+                  <div id="contenidoMensajesSolicitudesVJefe" style="margin-right:2vh"></div>
 
-                  </div>
+                </div>
 
-                  <div class="col s12 l12" style="position: relative;">
+                <div class="col s12 l12" style="position: relative;">
 
-                    <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
-
-                  </div>
+                  <div id="contenidoMensajesSolicitudesNomina" style="margin-right:2vh"></div>
 
                 </div>
 
@@ -170,29 +168,29 @@
 
             </div>
 
-            <div class="row">
+          </div>
 
-              <div class="col">
+          <div class="row">
 
-                <div class="page-description page-description-tabbed">
+            <div class="col">
 
-                  <h1>Peticiones para el Feed</h1>
+              <div class="page-description page-description-tabbed">
 
-                </div>
+                <h1>Peticiones para el Feed</h1>
 
               </div>
 
             </div>
 
-            <div class="row">
+          </div>
 
-              <div class="card">
+          <div class="row">
 
-                <div class="card-body">
+            <div class="card">
 
-                  <ul id="contentPost" style="padding-left: 0px !important; margin-bottom: 0px !important;"></ul>
+              <div class="card-body">
 
-                </div>
+                <ul id="contentPost" style="padding-left: 0px !important; margin-bottom: 0px !important;"></ul>
 
               </div>
 
@@ -208,6 +206,8 @@
 
   </div>
 
+  </div>
+
 
 
 
@@ -218,7 +218,7 @@
 
   <!-- neptune Javascripts -->
 
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
 
   <!-- neptune Javascripts -->
 
@@ -230,11 +230,15 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@9.0.4/swiper-bundle.min.js"></script>
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+    integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+    integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  
+
 
   <!-- Scripts específicos de esta página -->
 

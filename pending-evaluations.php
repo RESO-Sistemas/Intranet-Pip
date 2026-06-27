@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <?php include("neptune_styles.php"); ?>
 
@@ -507,9 +507,11 @@
       flex-direction: column;
       background: #fff;
     }
+
     #ev-overlay.is-open {
       display: flex;
     }
+
     #ev-overlay-header {
       display: flex;
       align-items: center;
@@ -519,12 +521,14 @@
       border-bottom: 1px solid var(--ev-border);
       flex-shrink: 0;
     }
+
     #ev-overlay-title {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
       font-size: .95rem;
       color: #1e293b;
     }
+
     #ev-overlay-close {
       background: none;
       border: none;
@@ -535,7 +539,11 @@
       border-radius: 6px;
       transition: background .15s;
     }
-    #ev-overlay-close:hover { background: #f1f5f9; }
+
+    #ev-overlay-close:hover {
+      background: #f1f5f9;
+    }
+
     #ev-iframe {
       flex: 1;
       border: none;

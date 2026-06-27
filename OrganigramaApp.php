@@ -8,36 +8,40 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
     <link href="dist/css/style.css" rel="stylesheet">
     <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
     <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <!-- Default theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" />
     <!-- Semantic UI theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css" />
     <style media="screen">
-       [data-l-id] path {
+        [data-l-id] path {
             stroke: #212121;
-       }
-       .FondoOrg>svg {
-            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-       }
-       [data-n-id] rect {
-          fill: #fff;
         }
-       .boc-edit-form-header {
-         background-color: #E32636 !important;
-       }
-       .boc-input {
-         padding: 1vh !important;
-       }
+
+        .FondoOrg>svg {
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        [data-n-id] rect {
+            fill: #fff;
+        }
+
+        .boc-edit-form-header {
+            background-color: #E32636 !important;
+        }
+
+        .boc-input {
+            padding: 1vh !important;
+        }
     </style>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
@@ -80,14 +84,14 @@
             </div>
 
             <div style="display:none;">
-              <div id="cDetEmp" class="row">
-                <div class="center-align m-t-30">
-                  <h3 class="card-title m-t-10" id="nameEmpS"></h3>
-                  <img src="assets/Klyns.png" style="width:50%;" id="imgFotoEmp">
-                  <h5 class="card-subtitle" id="puestoEmpS"></h5>
-                  <h5 class="card-subtitle" id="emailEmpS"></h5>
+                <div id="cDetEmp" class="row">
+                    <div class="center-align m-t-30">
+                        <h3 class="card-title m-t-10" id="nameEmpS"></h3>
+                        <img src="assets/Klyns.png" style="width:50%;" id="imgFotoEmp">
+                        <h5 class="card-subtitle" id="puestoEmpS"></h5>
+                        <h5 class="card-subtitle" id="emailEmpS"></h5>
+                    </div>
                 </div>
-              </div>
             </div>
         </div>
     </div>

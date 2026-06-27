@@ -8,11 +8,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
 
@@ -48,7 +48,8 @@
               <div class="col">
                 <div class="page-description page-description-tabbed d-flex justify-content-between align-items-center">
                   <h1 class="mb-0">Permisos</h1>
-                  <a href="Puestos.php" class="btn d-flex align-items-center gap-1" style="white-space: nowrap; background-color: #6c757d; color: #fff; border-color: #6c757d;">
+                  <a href="Puestos.php" class="btn d-flex align-items-center gap-1"
+                    style="white-space: nowrap; background-color: #6c757d; color: #fff; border-color: #6c757d;">
                     <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>Regresar
                   </a>
                 </div>
@@ -73,14 +74,14 @@
     </div>
   </div>
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
 
   <script src="scripts/Permisos.js?v=<?= time() ?>" charset="utf-8"></script>
   <script>
     // Ocultar preloader inmediatamente si el DOM cargó
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() { $(".preloader").fadeOut(200); }, 300);
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () { $(".preloader").fadeOut(200); }, 300);
     });
   </script>
 

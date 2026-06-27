@@ -1417,8 +1417,11 @@ class Evaluaciones extends Conexiones
                         } elseif ($tipo === 3) {
                             if (isset($dataConfig[0]['RangoFinal']) && isset($dataConfig[0]['RangoInicial'])) {
                                 $diffRange = (float) $dataConfig[0]['RangoFinal'] - (float) $dataConfig[0]['RangoInicial'];
-                                $diffValue = $diffRange - (float) $calificacion;
-                                $restFinal = 100 - $diffValue;
+                                if ($diffRange > 0) {
+                                    $restFinal = (((float) $calificacion - (float) $dataConfig[0]['RangoInicial']) / $diffRange) * 100;
+                                } else {
+                                    $restFinal = 0;
+                                }
                                 $sumFinal += $restFinal;
                             }
                         } elseif ($tipo === 4) {

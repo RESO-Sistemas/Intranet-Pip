@@ -1,18 +1,19 @@
 ﻿<?php include("AutorizaPagina.php"); ?>
 <?php
 if (isset($_COOKIE["tipo_sesion"])) {
-    if ($_COOKIE["tipo_sesion"] != "1") {
-        echo '<meta http-equiv="refresh" content="0;url=logout.php">';
-        die();
-    }
+  if ($_COOKIE["tipo_sesion"] != "1") {
+    echo '<meta http-equiv="refresh" content="0;url=logout.php">';
+    die();
+  }
 
-};
-if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
+}
+;
+if (isset($_COOKIE["sesion"]) && isset($_COOKIE["verificaSesion"])) {
   if ($_COOKIE["sesion"] != "activa" || $_COOKIE["verificaSesion"] != "activa") {
     echo '<meta http-equiv="refresh" content="0;url=login.php">';
     die();
   }
-}else {
+} else {
   echo '<meta http-equiv="refresh" content="0;url=login.php">';
   die();
 }
@@ -22,7 +23,7 @@ if (isset($_COOKIE["sesion"])  && isset($_COOKIE["verificaSesion"])) {
   <head>
     <meta charset="utf-8">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
     <link rel="stylesheet" href="assets/cssEvaluaciones/styles.css">
     <link href="assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
     <link href="assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css" rel="stylesheet">

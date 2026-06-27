@@ -277,14 +277,11 @@ async function getDataResultsPerEvaluatorUnique(arr){
           }
         }
       } else if (question.idTipoPregunta == 3) {
-        let diffRange = ((Number(dataQuestion[0].RangoFinal) - Number(dataQuestion[0].RangoInicial)));
-        let diffValue = (Number(diffRange) - Number(question.Calificacion));
-        let restFinal = (100 - diffValue);
-        // console.log(dataQuestion);
-        // console.log(question);
-        // console.log(diffRange);
-        // console.log(diffValue);
-        // console.log(restFinal);
+        let diffRange = ((Number(dataQuestion[0].RangoFinal) - Number(dataQuestion[0].RangoInicial)));
+        let restFinal = 0;
+        if (diffRange > 0) {
+          restFinal = ((Number(question.Calificacion) - Number(dataQuestion[0].RangoInicial)) / diffRange) * 100;
+        }
         sumFinal += restFinal;
       } else if (question.idTipoPregunta == 4) {
         // console.log(question);
@@ -343,14 +340,11 @@ async function getDataResultsPerEvaluator(arr){
           }
         }
       } else if (question.idTipoPregunta == 3) {
-        let diffRange = ((Number(dataQuestion[0].RangoFinal) - Number(dataQuestion[0].RangoInicial)));
-        let diffValue = (Number(diffRange) - Number(question.Calificacion));
-        let restFinal = (100 - diffValue);
-        // console.log(dataQuestion);
-        // console.log(question);
-        // console.log(diffRange);
-        // console.log(diffValue);
-        // console.log(restFinal);
+        let diffRange = ((Number(dataQuestion[0].RangoFinal) - Number(dataQuestion[0].RangoInicial)));
+        let restFinal = 0;
+        if (diffRange > 0) {
+          restFinal = ((Number(question.Calificacion) - Number(dataQuestion[0].RangoInicial)) / diffRange) * 100;
+        }
         sumFinal += restFinal;
       } else if (question.idTipoPregunta == 4) {
         // console.log(question);

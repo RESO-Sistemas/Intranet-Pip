@@ -17,10 +17,10 @@ $MenuP = $Conf->getMenusPadre();
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
 
@@ -77,26 +77,30 @@ $MenuP = $Conf->getMenusPadre();
             </div>
             <div class="row">
               <div class="col">
-            <div class="row" id="contenidoCapacitaciones">
+                <div class="row" id="contenidoCapacitaciones">
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
-  <!-- neptune Javascripts -->
+      <!-- neptune Javascripts -->
+      <?php include("neptune_js.php"); ?>
+      <!-- neptune Javascripts -->
 
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  
-  <!-- Scripts específicos de esta página -->
-  <script src="scripts/global.js" charset="utf-8"></script>
-  <script src="scripts/CapacitacionUs.js" charset="utf-8"></script>
-  <script src="scripts/detallesEmpleadoLogeado.js"></script>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+        integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+      <!-- Scripts específicos de esta página -->
+      <script src="scripts/global.js" charset="utf-8"></script>
+      <script src="scripts/CapacitacionUs.js" charset="utf-8"></script>
+      <script src="scripts/detallesEmpleadoLogeado.js"></script>
 
 </body>
 

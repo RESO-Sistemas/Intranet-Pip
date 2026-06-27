@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
 
     <!-- Styles neptune -->
     <?php include("neptune_styles.php"); ?>
@@ -136,7 +136,8 @@
                     <div class="container">
                         <!-- Notificaciones flotantes -->
                         <div class="row">
-                            <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block" style="position: fixed; z-index:99;">
+                            <div class="col-12 col-lg-5 offset-lg-7 d-none d-lg-block"
+                                style="position: fixed; z-index:99;">
                                 <div class="row">
                                     <div class="col-12" style="position: relative;">
                                         <div id="contenidoMensajes" style="margin-right:2vh"></div>
@@ -154,14 +155,16 @@
                         <!-- Header -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="capacitacion-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                <div
+                                    class="capacitacion-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                                     <div>
                                         <h1>Capacitaciones</h1>
                                         <p>Administra las capacitaciones y sus materiales desde un solo lugar.</p>
                                     </div>
                                     <div class="mt-3 mt-md-0">
                                         <a class="btn btn-nueva text-white" href="AddCapacitacion.php">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px;">add</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle; font-size: 20px;">add</span>
                                             <span style="vertical-align: middle;">Nueva capacitación</span>
                                         </a>
                                     </div>
@@ -217,11 +220,13 @@
                             <div class="col-12">
                                 <div class="card grid-card">
                                     <div class="card-body">
-                                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                                        <div
+                                            class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
                                             <div class="card-title mb-0">Listado de capacitaciones</div>
                                             <div class="mt-2 mt-md-0">
                                                 <span class="text-muted" style="font-size: 0.875rem;">
-                                                    <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">info</span>
+                                                    <span class="material-symbols-outlined"
+                                                        style="font-size: 16px; vertical-align: middle;">info</span>
                                                     Haz clic en "Archivos" para ver los materiales adjuntos
                                                 </span>
                                             </div>

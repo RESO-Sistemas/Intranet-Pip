@@ -17,7 +17,7 @@
 
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 
 	<!-- Styles neptune -->
 
@@ -65,9 +65,9 @@
 
 			<?php
 
-      include("menus.php");
+			include("menus.php");
 
-?>
+			?>
 
 		</div>
 
@@ -417,19 +417,19 @@
 
 		${typeEvaluatorSF(data)}
 
-    </script>
+	</script>
 
 	<script type="text/x-jsrender" id="activeTemplate">
 
 		${activeSF(data)}
 
-    </script>
+	</script>
 
 	<script type="text/x-jsrender" id="deleteTemplate">
 
 		${deleteSF(data)}
 
-    </script>
+	</script>
 
 	<!-- neptune Javascripts -->
 	<?php include("neptune_js.php"); ?>

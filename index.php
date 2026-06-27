@@ -17,7 +17,7 @@ $MenuP = $Conf->getMenusPadre();
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 	<!-- Styles neptune -->
 
 	<?php include("neptune_styles.php"); ?>
@@ -404,7 +404,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		.feed-swiper-instance .swiper-button-next,
 		.feed-swiper-instance .swiper-button-prev {
-			color: #ff6f00;
+			color: #008837;
 			background: rgba(255, 255, 255, 0.92);
 			width: 36px;
 			height: 36px;
@@ -419,7 +419,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.feed-swiper-instance .swiper-pagination-bullet-active {
-			background: #ff4500;
+			background: #008837;
 		}
 
 		#fullscreen-swiper {
@@ -501,13 +501,13 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.feed-empty-state {
-			background: linear-gradient(145deg, #ffffff, #fff8ef);
-			border: 1px solid #ffd7b2;
+			background: linear-gradient(145deg, #ffffff, #f0fdf4);
+			border: 1px solid #c2f0d1;
 			border-radius: 12px;
 			padding: 28px 20px;
 			text-align: center;
 			margin-bottom: 12px;
-			box-shadow: 0 4px 12px rgba(255, 120, 40, .08);
+			box-shadow: 0 4px 12px rgba(0, 136, 55, .05);
 		}
 
 		.feed-empty-icon {
@@ -515,8 +515,8 @@ $MenuP = $Conf->getMenusPadre();
 			height: 54px;
 			margin: 0 auto 12px;
 			border-radius: 50%;
-			background: #fff0de;
-			color: #ff7a18;
+			background: #e6f9ed;
+			color: #008837;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -820,9 +820,9 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.post-compose-form .form-control:focus {
-			border-color: #0079d3;
+			border-color: #008837;
 			background: #fff;
-			box-shadow: 0 0 0 2px rgba(0, 121, 211, .12);
+			box-shadow: 0 0 0 2px rgba(0, 136, 55, .12);
 		}
 
 		.post-compose-form-footer {
@@ -851,7 +851,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.btn-submit-compose {
-			background: #FF4500;
+			background: #008837;
 			border: none;
 			border-radius: 20px;
 			padding: 6px 22px;
@@ -863,7 +863,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.btn-submit-compose:hover {
-			background: #e03d00;
+			background: #006629;
 		}
 
 		.btn-submit-compose:disabled {
@@ -990,7 +990,7 @@ $MenuP = $Conf->getMenusPadre();
 			font-weight: 700;
 			padding: 1px 7px;
 			border-radius: 10px;
-			background: #FF4500;
+			background: #008837;
 			color: #fff;
 			letter-spacing: .04em;
 			vertical-align: middle;
@@ -1066,7 +1066,7 @@ $MenuP = $Conf->getMenusPadre();
 			padding: 5px 8px;
 			font-size: .78rem;
 			font-weight: 700;
-			color: #878a8c;
+			color: #878a8c !important;
 			cursor: pointer;
 			transition: background .1s, color .1s;
 			text-decoration: none;
@@ -1074,16 +1074,16 @@ $MenuP = $Conf->getMenusPadre();
 
 		.rpc-action-btn:hover {
 			background: #f0f0f0;
-			color: #222;
+			color: #222 !important;
 			text-decoration: none;
 		}
 
 		.rpc-action-btn.liked {
-			color: #008837;
+			color: #008837 !important;
 		}
 
 		.rpc-action-btn.congrat {
-			color: #8E24AA;
+			color: #8E24AA !important;
 		}
 
 		/* ──── Estilos para el corazón relleno vs vacío ──── */
@@ -1282,7 +1282,7 @@ $MenuP = $Conf->getMenusPadre();
 
 		.rpc-comment-input-row .btn-comment {
 			background: #008837;
-			color: #1c1e21;
+			color: #ffffff;
 			border: none;
 			border-radius: 20px;
 			padding: 7px 16px;
@@ -1294,7 +1294,7 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		.rpc-comment-input-row .btn-comment:hover {
-			background: #e6ad00;
+			background: #006629;
 		}
 
 		.rpc-comment-input-row .btn-comment:disabled {
@@ -1449,16 +1449,16 @@ $MenuP = $Conf->getMenusPadre();
 		}
 
 		body.dark-mode .rpc-action-btn {
-			color: #818384;
+			color: #818384 !important;
 		}
 
 		body.dark-mode .rpc-action-btn:hover {
 			background: #333436;
-			color: #d7dadc;
+			color: #d7dadc !important;
 		}
 
 		body.dark-mode .rpc-action-btn.liked {
-			color: #008837;
+			color: #008837 !important;
 		}
 
 		body.dark-mode .heart-icon.heart-filled {

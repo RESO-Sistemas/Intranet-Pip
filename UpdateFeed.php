@@ -20,13 +20,13 @@ exit;
 
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
 
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
 
 
@@ -136,8 +136,8 @@ exit;
                   <div class="d-flex justify-content-between align-items-center">
                     <h1>Actualizar Feed</h1>
                     <a href="ListadoFeed.php" class="btn btn-danger d-flex align-items-center gap-2">
-                        <span class="material-symbols-outlined">arrow_back</span>
-                        <span>Regresar</span>
+                      <span class="material-symbols-outlined">arrow_back</span>
+                      <span>Regresar</span>
                     </a>
                   </div>
                 </div>
@@ -179,7 +179,8 @@ exit;
 
                           <label for="txtDescripcion" class="form-label fw-bold">Descripción</label>
 
-                          <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" rows="8" required></textarea>
+                          <textarea id="txtDescripcion" name="txtDescripcion" class="form-control" rows="8"
+                            required></textarea>
 
                         </div>
 
@@ -191,7 +192,8 @@ exit;
 
                           <label for="txtHV" class="form-label fw-bold">Hipervínculo</label>
 
-                          <textarea id="txtHV" name="txtHV" class="form-control" placeholder="Opcional" rows="2"></textarea>
+                          <textarea id="txtHV" name="txtHV" class="form-control" placeholder="Opcional"
+                            rows="2"></textarea>
 
                         </div>
 
@@ -237,19 +239,8 @@ exit;
 
                               <!-- Input oculto -->
 
-                              <input type="file"
-
-                                name="files[]"
-
-                                id="standard_filess"
-
-                                style="display:none;"
-
-                                multiple
-
-                                accept="application/pdf,image/jpeg,image/x-png,application/vnd.ms-powerpoint"
-
-                                required>
+                              <input type="file" name="files[]" id="standard_filess" style="display:none;" multiple
+                                accept="application/pdf,image/jpeg,image/x-png,application/vnd.ms-powerpoint" required>
 
 
 
@@ -311,7 +302,7 @@ exit;
 
                       <div class="col">
 
-                        <button id="btnUpdateFeed"  class='btn btn-success'>Actualizar</button>
+                        <button id="btnUpdateFeed" class='btn btn-success'>Actualizar</button>
 
                       </div>
 
@@ -347,7 +338,7 @@ exit;
 
   <!-- neptune Javascripts -->
 
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
 
 
 
@@ -355,7 +346,9 @@ exit;
 
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+    integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- <script src="assets/libs/toastr/build/toastr.min.js"></script>
 

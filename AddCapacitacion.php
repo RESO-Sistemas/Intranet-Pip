@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
 
     <!-- Styles neptune -->
     <?php include("neptune_styles.php"); ?>
@@ -146,8 +146,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .wizard-card {
@@ -195,7 +202,7 @@
             border-color: #adb5bd;
         }
 
-        .day-checkbox:checked + .day-label {
+        .day-checkbox:checked+.day-label {
             background: var(--cap-amarillo);
             border-color: var(--cap-amarillo);
             color: #212529;
@@ -320,14 +327,16 @@
                         <!-- Header -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="wizard-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                <div
+                                    class="wizard-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                                     <div>
                                         <h1>Nueva Capacitación</h1>
                                         <p>Completa los pasos para crear una nueva capacitación.</p>
                                     </div>
                                     <div class="mt-3 mt-md-0">
                                         <a href="Capacitacion.php" class="btn btn-regresar">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">arrow_back</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle; font-size: 18px;">arrow_back</span>
                                             <span style="vertical-align: middle;">Regresar</span>
                                         </a>
                                     </div>
@@ -366,14 +375,18 @@
                                 <div class="card wizard-card">
                                     <div class="card-body">
                                         <h5 class="section-title">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle;">info</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle;">info</span>
                                             Información general
                                         </h5>
 
                                         <div class="row g-3">
                                             <div class="col-12 col-lg-4 offset-lg-4">
-                                                <label for="tipoCapacitacion" class="form-label fw-bold">Tipo de Capacitación</label>
-                                                <select name="tipoCapacitacion" id="tipoCapacitacion" class="form-select form-select-lg" onchange="tipoCap(this.value)" required>
+                                                <label for="tipoCapacitacion" class="form-label fw-bold">Tipo de
+                                                    Capacitación</label>
+                                                <select name="tipoCapacitacion" id="tipoCapacitacion"
+                                                    class="form-select form-select-lg" onchange="tipoCap(this.value)"
+                                                    required>
                                                     <option value="" selected disabled>Selecciona el tipo</option>
                                                     <option value="PROL">Capacitación Prolongada</option>
                                                     <option value="DIA">Por días</option>
@@ -384,36 +397,47 @@
                                         <div id="detalleCapacitacion" class="row g-3 mt-1" style="display:none;">
                                             <div class="col-12">
                                                 <label for="Desc" class="form-label fw-bold">Descripción:</label>
-                                                <textarea id="Desc" name="Desc" class="form-control" rows="3" required></textarea>
+                                                <textarea id="Desc" name="Desc" class="form-control" rows="3"
+                                                    required></textarea>
                                             </div>
 
                                             <div class="col-12 col-md-6">
-                                                <label for="fechaInicio" class="form-label fw-bold">Fecha Inicio:</label>
-                                                <input id="fechaInicio" name="fechaInicio" type="date" class="form-control" onchange="getDiasArray()" required>
+                                                <label for="fechaInicio" class="form-label fw-bold">Fecha
+                                                    Inicio:</label>
+                                                <input id="fechaInicio" name="fechaInicio" type="date"
+                                                    class="form-control" onchange="getDiasArray()" required>
                                             </div>
                                             <div class="col-12 col-md-6">
                                                 <label for="fechaFin" class="form-label fw-bold">Fecha Fin:</label>
-                                                <input id="fechaFin" name="fechaFin" type="date" class="form-control" onchange="getDiasArray()" required>
+                                                <input id="fechaFin" name="fechaFin" type="date" class="form-control"
+                                                    onchange="getDiasArray()" required>
                                             </div>
 
                                             <div class="col-12 col-md-6" id="colHoraInicio">
-                                                <label for="HoraInicio" id="textHoraInicio" class="form-label fw-bold">Hora Inicio:</label>
-                                                <input id="HoraInicio" name="HoraInicio" type="time" class="form-control" required>
+                                                <label for="HoraInicio" id="textHoraInicio"
+                                                    class="form-label fw-bold">Hora Inicio:</label>
+                                                <input id="HoraInicio" name="HoraInicio" type="time"
+                                                    class="form-control" required>
                                             </div>
                                             <div class="col-12 col-md-6" id="colHoraFin">
-                                                <label for="HoraFin" id="textHoraFin" class="form-label fw-bold">Hora Fin:</label>
-                                                <input id="HoraFin" name="HoraFin" type="time" class="form-control" required>
+                                                <label for="HoraFin" id="textHoraFin" class="form-label fw-bold">Hora
+                                                    Fin:</label>
+                                                <input id="HoraFin" name="HoraFin" type="time" class="form-control"
+                                                    required>
                                             </div>
                                         </div>
 
                                         <div class="row mt-3 d-flex justify-content-center mb-1" id="rowDias">
                                             <div class="col-12 col-lg-8" style="display: none;" id="divContenidoDias">
                                                 <div class="mb-3">
-                                                    <h5 class="fw-bold text-center" style="color: #495057; margin-bottom: 15px;">
-                                                        <span class="material-icons" style="vertical-align: middle; font-size: 24px;">calendar_today</span>
+                                                    <h5 class="fw-bold text-center"
+                                                        style="color: #495057; margin-bottom: 15px;">
+                                                        <span class="material-icons"
+                                                            style="vertical-align: middle; font-size: 24px;">calendar_today</span>
                                                         Días de la semana
                                                     </h5>
-                                                    <p class="text-center text-muted" style="font-size: 13px; margin-bottom: 15px;">
+                                                    <p class="text-center text-muted"
+                                                        style="font-size: 13px; margin-bottom: 15px;">
                                                         Selecciona los días en que se impartirá la capacitación
                                                     </p>
                                                 </div>
@@ -429,27 +453,32 @@
                                 <div class="card wizard-card">
                                     <div class="card-body">
                                         <h5 class="section-title">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle;">groups</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle;">groups</span>
                                             Audiencia
                                         </h5>
 
                                         <div class="row g-3 mb-4">
                                             <div class="col-12 col-lg-4">
                                                 <label class="form-label fw-bold">División</label>
-                                                <select name="slctDivision" id="slctDivision" class="form-select" onchange="onchangeDivision()">
+                                                <select name="slctDivision" id="slctDivision" class="form-select"
+                                                    onchange="onchangeDivision()">
                                                     <option value="" selected>Listado de Divisiones</option>
                                                 </select>
                                             </div>
                                             <div class="col-12 col-lg-4">
                                                 <label class="form-label fw-bold">Puesto</label>
-                                                <select name="slctPuesto" id="slctPuestos" class="form-select" onchange="getListadoPersonal()">
+                                                <select name="slctPuesto" id="slctPuestos" class="form-select"
+                                                    onchange="getListadoPersonal()">
                                                     <option value="" selected>Listado de Puestos</option>
                                                 </select>
                                             </div>
                                             <div class="col-12 col-lg-4">
                                                 <label class="form-label fw-bold">Sucursal / Departamento</label>
-                                                <select name="slctSucursal" id="slctSucursal" class="form-select" onchange="getListadoPersonal()">
-                                                    <option value="" selected>Listados de Sucursales / Departamentos</option>
+                                                <select name="slctSucursal" id="slctSucursal" class="form-select"
+                                                    onchange="getListadoPersonal()">
+                                                    <option value="" selected>Listados de Sucursales / Departamentos
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
@@ -458,15 +487,21 @@
                                             <div class="col-12 col-md-6">
                                                 <div class="card" style="height:450px;">
                                                     <div class="card-body d-flex flex-column" style="height:100%;">
-                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-3">
                                                             <label class="fw-bold mb-0">Empleados disponibles</label>
-                                                            <button type="button" class="btn-minimal btn-minimal-success btn-sm" id="addAll">
-                                                                <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+                                                            <button type="button"
+                                                                class="btn-minimal btn-minimal-success btn-sm"
+                                                                id="addAll">
+                                                                <span class="material-symbols-outlined"
+                                                                    style="font-size: 16px; vertical-align: middle;">done_all</span>
                                                                 <span style="vertical-align: middle;">Todos</span>
                                                             </button>
                                                         </div>
-                                                        <div class="table-responsive flex-grow-1" style="overflow-y:auto;">
-                                                            <table class="display text-center mb-0 w-100" id="tableEmpleados">
+                                                        <div class="table-responsive flex-grow-1"
+                                                            style="overflow-y:auto;">
+                                                            <table class="display text-center mb-0 w-100"
+                                                                id="tableEmpleados">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>No Empleado</th>
@@ -483,15 +518,22 @@
 
                                             <div class="col-12 col-md-6">
                                                 <div class="card" style="height:450px;">
-                                                    <div class="card-body d-flex flex-column" style="height:100%; overflow-y:auto;">
-                                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div class="card-body d-flex flex-column"
+                                                        style="height:100%; overflow-y:auto;">
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-3">
                                                             <label class="fw-bold mb-0">Empleados seleccionados</label>
-                                                            <button type="button" class="btn-minimal btn-minimal-secondary btn-sm" onclick="VerDetalles()">
-                                                                <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">visibility</span>
-                                                                <span style="vertical-align: middle;">Ver detalles</span>
+                                                            <button type="button"
+                                                                class="btn-minimal btn-minimal-secondary btn-sm"
+                                                                onclick="VerDetalles()">
+                                                                <span class="material-symbols-outlined"
+                                                                    style="font-size: 16px; vertical-align: middle;">visibility</span>
+                                                                <span style="vertical-align: middle;">Ver
+                                                                    detalles</span>
                                                             </button>
                                                         </div>
-                                                        <div class="row row-cols-2 g-2 flex-grow-1" id="contenidoEmpleadosSelected"></div>
+                                                        <div class="row row-cols-2 g-2 flex-grow-1"
+                                                            id="contenidoEmpleadosSelected"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -505,21 +547,29 @@
                                 <div class="card wizard-card">
                                     <div class="card-body">
                                         <h5 class="section-title">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle;">upload_file</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle;">upload_file</span>
                                             Materiales de la capacitación
                                         </h5>
 
                                         <div class="upload-area p-4" id="dropzones">
                                             <div class="mb-3">
-                                                <span class="material-symbols-outlined" style="font-size: 48px; color: var(--cap-amarillo-oscuro);">cloud_upload</span>
+                                                <span class="material-symbols-outlined"
+                                                    style="font-size: 48px; color: var(--cap-amarillo-oscuro);">cloud_upload</span>
                                             </div>
                                             <h5 class="fw-bold mb-2">Arrastra archivos aquí</h5>
-                                            <p class="text-muted mb-3">O haz clic en el botón de abajo para seleccionar archivos desde tu dispositivo.</p>
-                                            <span class="badge bg-warning text-dark mb-3">PDF, Word, Excel, PowerPoint, imágenes (PNG, JPG, GIF, WEBP, BMP) y MP4. Máximo 500 MB por archivo.</span>
+                                            <p class="text-muted mb-3">O haz clic en el botón de abajo para seleccionar
+                                                archivos desde tu dispositivo.</p>
+                                            <span class="badge bg-warning text-dark mb-3">PDF, Word, Excel, PowerPoint,
+                                                imágenes (PNG, JPG, GIF, WEBP, BMP) y MP4. Máximo 500 MB por
+                                                archivo.</span>
                                             <br>
-                                            <input type="file" id="standard_filess" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.webp,.bmp,.mp4">
-                                            <button class="btn btn-wizard-next" type="button" name="btnStandards" id="btnStandards">
-                                                <span class="material-symbols-outlined" style="vertical-align: middle;">upload_file</span>
+                                            <input type="file" id="standard_filess" style="display:none;" multiple
+                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.webp,.bmp,.mp4">
+                                            <button class="btn btn-wizard-next" type="button" name="btnStandards"
+                                                id="btnStandards">
+                                                <span class="material-symbols-outlined"
+                                                    style="vertical-align: middle;">upload_file</span>
                                                 <span style="vertical-align: middle;">Seleccionar archivos</span>
                                             </button>
                                             <div id="ImagenesDrop" class="mt-4"></div>
@@ -533,7 +583,8 @@
                                 <div class="card wizard-card">
                                     <div class="card-body">
                                         <h5 class="section-title">
-                                            <span class="material-symbols-outlined" style="vertical-align: middle;">fact_check</span>
+                                            <span class="material-symbols-outlined"
+                                                style="vertical-align: middle;">fact_check</span>
                                             Resumen
                                         </h5>
 
@@ -594,15 +645,19 @@
                         <!-- Botones de navegación -->
                         <div class="row mt-4 mb-4">
                             <div class="col-12 d-flex justify-content-between">
-                                <button type="button" class="btn btn-wizard btn-wizard-prev" id="btnPrev" style="visibility: hidden;">
-                                    <span class="material-symbols-outlined" style="vertical-align: middle;">arrow_back</span>
+                                <button type="button" class="btn btn-wizard btn-wizard-prev" id="btnPrev"
+                                    style="visibility: hidden;">
+                                    <span class="material-symbols-outlined"
+                                        style="vertical-align: middle;">arrow_back</span>
                                     <span style="vertical-align: middle;">Anterior</span>
                                 </button>
                                 <button type="button" class="btn btn-wizard btn-wizard-next" id="btnNext">
                                     <span style="vertical-align: middle;">Siguiente</span>
-                                    <span class="material-symbols-outlined" style="vertical-align: middle;">arrow_forward</span>
+                                    <span class="material-symbols-outlined"
+                                        style="vertical-align: middle;">arrow_forward</span>
                                 </button>
-                                <button type="button" class="btn btn-success btn-wizard" id="btnAgregar" style="display: none;">
+                                <button type="button" class="btn btn-success btn-wizard" id="btnAgregar"
+                                    style="display: none;">
                                     <span class="material-symbols-outlined" style="vertical-align: middle;">save</span>
                                     <span style="vertical-align: middle;">Guardar capacitación</span>
                                 </button>
@@ -620,7 +675,9 @@
     <?php include("neptune_js.php"); ?>
     <!-- neptune Javascripts -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+        integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="assets/libs/toastr/build/toastr.min.js"></script>
     <script src="assets/extra-libs/toastr/toastr-init.js"></script>
     <script src="scripts/AddCapacitacion.js"></script>

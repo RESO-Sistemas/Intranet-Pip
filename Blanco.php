@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-    <title>PIP by Lugo</title>
+    <title>La Esmeralda</title>
     <link href="dist/css/style.css" rel="stylesheet">
     <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
     <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
@@ -31,7 +31,7 @@
         <div id="Menu">
           <?php
           include("menus.php");
-           ?>
+          ?>
         </div>
         <div class="page-wrapper">
             <div class="page-titles">

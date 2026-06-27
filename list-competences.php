@@ -17,13 +17,13 @@
 
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
 
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet">
 
@@ -163,7 +163,8 @@
 
             <!-- Modal Bootstrap 5 adaptado -->
 
-            <div class="modal fade" id="modalDetailCompetence" tabindex="-1" aria-labelledby="modalLabelCompetence" aria-hidden="true">
+            <div class="modal fade" id="modalDetailCompetence" tabindex="-1" aria-labelledby="modalLabelCompetence"
+              aria-hidden="true">
 
               <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
 
@@ -211,7 +212,8 @@
 
                         <select id="slc_typeComp" required class="form-select" style="width: 100%;"></select>
 
-                        <p for="slc_typeComp" data-msg="El tipo de competencia es obligatorio" class="text-danger small"></p>
+                        <p for="slc_typeComp" data-msg="El tipo de competencia es obligatorio"
+                          class="text-danger small"></p>
 
                       </div>
 
@@ -225,7 +227,8 @@
 
                         <input type="text" id="name_Comp" class="form-control" required>
 
-                        <p for="name_Comp" data-msg="El nombre de la competencia es obligatorio" class="text-danger small"></p>
+                        <p for="name_Comp" data-msg="El nombre de la competencia es obligatorio"
+                          class="text-danger small"></p>
 
                       </div>
 
@@ -241,7 +244,8 @@
 
                       <textarea id="sig_Comp" class="form-control" placeholder="Significado" required></textarea>
 
-                      <p for="sig_Comp" data-msg="El significado de la competencia es obligatorio" class="text-danger small"></p>
+                      <p for="sig_Comp" data-msg="El significado de la competencia es obligatorio"
+                        class="text-danger small"></p>
 
                     </div>
 
@@ -310,7 +314,7 @@
 
   <!-- neptune Javascripts -->
 
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
 
   <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
 
@@ -321,9 +325,13 @@
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+    integrity="sha512-eYSzo+20ajZMRsjxB6L7eyqo5kuXuS2+wEbbOkpaur+sA2shQameiJiWEzCIDwJqaB0a4a6tCuEvCOBHUg3Skg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js" integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
+    integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script src="scripts/global.js" charset="utf-8"></script>
 

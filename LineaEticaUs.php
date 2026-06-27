@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 
 	<?php include("neptune_styles.php"); ?>
 
@@ -55,8 +55,17 @@
 		}
 
 		@keyframes wizard-glow {
-			0%, 100% { transform: scale(1); opacity: 0.4; }
-			50% { transform: scale(1.1); opacity: 0.7; }
+
+			0%,
+			100% {
+				transform: scale(1);
+				opacity: 0.4;
+			}
+
+			50% {
+				transform: scale(1.1);
+				opacity: 0.7;
+			}
 		}
 
 		.wizard-header-icon {
@@ -154,8 +163,13 @@
 			transition: color 0.3s ease;
 		}
 
-		.wizard-step-label.active { color: #1a1a1a; }
-		.wizard-step-label.inactive { color: rgba(0, 0, 0, 0.3); }
+		.wizard-step-label.active {
+			color: #1a1a1a;
+		}
+
+		.wizard-step-label.inactive {
+			color: rgba(0, 0, 0, 0.3);
+		}
 
 		.wizard-step-line {
 			width: 60px;
@@ -179,7 +193,9 @@
 			width: 0%;
 		}
 
-		.wizard-step-line-fill.active { width: 100%; }
+		.wizard-step-line-fill.active {
+			width: 100%;
+		}
 
 		.wizard-body {
 			padding: 28px 32px;
@@ -192,11 +208,20 @@
 			animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
-		.wizard-panel.active { display: block; }
+		.wizard-panel.active {
+			display: block;
+		}
 
 		@keyframes fadeSlideIn {
-			from { opacity: 0; transform: translateX(20px); }
-			to { opacity: 1; transform: translateX(0); }
+			from {
+				opacity: 0;
+				transform: translateX(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
 		}
 
 		.wizard-panel-title {
@@ -299,7 +324,9 @@
 			outline: none !important;
 		}
 
-		.wizard-textarea::placeholder { color: rgba(0, 0, 0, 0.25); }
+		.wizard-textarea::placeholder {
+			color: rgba(0, 0, 0, 0.25);
+		}
 
 		.wizard-char-counter {
 			text-align: right;
@@ -363,8 +390,13 @@
 			box-shadow: 0 6px 20px rgba(26, 26, 26, 0.3);
 		}
 
-		.wizard-btn-next:hover::before { left: 100%; }
-		.wizard-btn-next:active { transform: translateY(0); }
+		.wizard-btn-next:hover::before {
+			left: 100%;
+		}
+
+		.wizard-btn-next:active {
+			transform: translateY(0);
+		}
 
 		.wizard-btn-next:disabled {
 			opacity: 0.4;
@@ -403,7 +435,9 @@
 			box-shadow: 0 6px 20px rgba(255, 204, 0, 0.4);
 		}
 
-		.wizard-btn-submit:hover::before { left: 100%; }
+		.wizard-btn-submit:hover::before {
+			left: 100%;
+		}
 
 		.wizard-btn-submit:disabled {
 			opacity: 0.4;
@@ -443,7 +477,9 @@
 			animation: fadeSlideIn 0.5s ease;
 		}
 
-		.wizard-success.active { display: block; }
+		.wizard-success.active {
+			display: block;
+		}
 
 		.wizard-success-icon {
 			width: 80px;
@@ -475,14 +511,38 @@
 		}
 
 		@media (max-width: 768px) {
-			.wizard-header { padding: 24px 20px; }
-			.wizard-header h1 { font-size: 1.3rem; }
-			.wizard-progress { padding: 16px 20px; }
-			.wizard-step-line { width: 40px; }
-			.wizard-step-label { font-size: 0.6rem; }
-			.wizard-body { padding: 24px 20px; }
-			.wizard-footer { padding: 14px 20px; }
-			.wizard-btn { padding: 12px 18px; font-size: 0.85rem; }
+			.wizard-header {
+				padding: 24px 20px;
+			}
+
+			.wizard-header h1 {
+				font-size: 1.3rem;
+			}
+
+			.wizard-progress {
+				padding: 16px 20px;
+			}
+
+			.wizard-step-line {
+				width: 40px;
+			}
+
+			.wizard-step-label {
+				font-size: 0.6rem;
+			}
+
+			.wizard-body {
+				padding: 24px 20px;
+			}
+
+			.wizard-footer {
+				padding: 14px 20px;
+			}
+
+			.wizard-btn {
+				padding: 12px 18px;
+				font-size: 0.85rem;
+			}
 		}
 
 		[data-theme="dark"] .wizard-card {
@@ -507,11 +567,21 @@
 			border-color: #ffcc00;
 		}
 
-		[data-theme="dark"] .wizard-step-label.inactive { color: rgba(255, 255, 255, 0.3); }
-		[data-theme="dark"] .wizard-step-label.active { color: #ffcc00; }
+		[data-theme="dark"] .wizard-step-label.inactive {
+			color: rgba(255, 255, 255, 0.3);
+		}
 
-		[data-theme="dark"] .wizard-step-line { background: rgba(255, 255, 255, 0.08); }
-		[data-theme="dark"] .wizard-step-line-fill { background: #ffcc00; }
+		[data-theme="dark"] .wizard-step-label.active {
+			color: #ffcc00;
+		}
+
+		[data-theme="dark"] .wizard-step-line {
+			background: rgba(255, 255, 255, 0.08);
+		}
+
+		[data-theme="dark"] .wizard-step-line-fill {
+			background: #ffcc00;
+		}
 
 		[data-theme="dark"] .wizard-select,
 		[data-theme="dark"] .wizard-textarea {
@@ -628,7 +698,8 @@
 
 											<div class="wizard-alert">
 												<i class="material-icons">shield</i>
-												<span>Tu identidad será protegida. Este canal es confidencial y seguro.</span>
+												<span>Tu identidad será protegida. Este canal es confidencial y
+													seguro.</span>
 											</div>
 
 											<div class="mb-4">
@@ -648,7 +719,8 @@
 											</div>
 
 											<div class="wizard-buttons">
-												<button type="button" class="wizard-btn wizard-btn-next" id="btnNext1" disabled>
+												<button type="button" class="wizard-btn wizard-btn-next" id="btnNext1"
+													disabled>
 													Siguiente
 													<i class="material-icons">arrow_forward</i>
 												</button>
@@ -680,7 +752,8 @@
 													<i class="material-icons">arrow_back</i>
 													Atrás
 												</button>
-												<button type="button" class="wizard-btn wizard-btn-next" id="btnNext2" disabled>
+												<button type="button" class="wizard-btn wizard-btn-next" id="btnNext2"
+													disabled>
 													Siguiente
 													<i class="material-icons">arrow_forward</i>
 												</button>
@@ -704,8 +777,7 @@
 												<textarea id="contenidoLineaEtica" name="contenidoLineaEtica"
 													class="form-control wizard-textarea"
 													placeholder="Describe detalladamente la situación que deseas reportar..."
-													maxlength="2000"
-													required></textarea>
+													maxlength="2000" required></textarea>
 												<div class="wizard-char-counter">
 													<span id="charCount">0</span> / 2000 caracteres
 												</div>
@@ -716,7 +788,8 @@
 													<i class="material-icons">arrow_back</i>
 													Atrás
 												</button>
-												<button type="button" class="wizard-btn wizard-btn-submit" id="EnviarLineaE" disabled>
+												<button type="button" class="wizard-btn wizard-btn-submit"
+													id="EnviarLineaE" disabled>
 													<i class="material-icons">send</i>
 													Enviar Reporte
 												</button>
@@ -731,7 +804,8 @@
 											<i class="material-icons">check_circle</i>
 										</div>
 										<h2>Reporte Enviado</h2>
-										<p>Tu reporte ha sido enviado de forma anónima. Gracias por contribuir a un mejor ambiente laboral.</p>
+										<p>Tu reporte ha sido enviado de forma anónima. Gracias por contribuir a un
+											mejor ambiente laboral.</p>
 									</div>
 								</div>
 
@@ -758,8 +832,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"
 		integrity="sha512-QSb5le+VXUEVEQbfljCv8vPnfSbVoBF/iE+c6MqDDqvmzqnr4KL04qdQMCm0fJvC3gCWMpoYhmvKBFqm1Z4c9A=="
 		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="scripts/LineaEticaUs.js?v=<?php echo time(); ?>"
-		charset="utf-8"></script>
+	<script src="scripts/LineaEticaUs.js?v=<?php echo time(); ?>" charset="utf-8"></script>
 
 </body>
 

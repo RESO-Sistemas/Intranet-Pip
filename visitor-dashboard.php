@@ -17,13 +17,13 @@
 
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
 
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- <link href="./neptune/plugins/select2/css/select2.min.css" rel="stylesheet"> -->
 
@@ -277,7 +277,7 @@
 
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- <script src="./neptune/plugins/select2/js/select2.full.min.js"></script>
   <script src="./neptune/js/pages/select2.js"></script> -->
   <!-- neptune Javascripts -->

@@ -137,10 +137,10 @@ a.text-primary:hover, a.text-primary:focus {
 
 /* Bootstrap Links */
 a:not(.btn):not(.nav-link):not(.dropdown-item) {
-  color: #E8A000;
+  color: #008837;
 }
 a:not(.btn):not(.nav-link):not(.dropdown-item):hover {
-  color: #69BF7F;
+  color: #006629;
 }
 
 
@@ -1807,11 +1807,7 @@ body.dark-mode .app.app-auth-sign-in {
 }
 
 body.dark-mode .app-auth-background {
-  background: 
-    linear-gradient(135deg, rgba(26, 26, 26, 0.7) 0%, rgba(45, 45, 45, 0.7) 100%), 
-    url('../images/backgrounds/sign-in.svg') no-repeat !important;
-  background-size: 60% !important;
-  background-position: center !important;
+  background: #0c1a10 !important; /* Verde oscuro elegante sin ilustraciones */
 }
 
 body.dark-mode .app-auth-container {
@@ -2506,10 +2502,7 @@ body.dark-mode .ev-sbadge.indigo  { background: #451a03; color: #A7F3D0; }
 
 /* ─── Ajustes de Marca 'La Esmeralda' ─── */
 .app-auth-sign-in .app-auth-background {
-  background-image: url('../../assets/images/esmeralda-bg.png') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-color: #031207 !important;
+  background: #008837 !important; /* Verde oficial de la marca sin ilustraciones */
 }
 
 /* Ajustes de color de texto sobre botones e indicadores del tema verde principal */

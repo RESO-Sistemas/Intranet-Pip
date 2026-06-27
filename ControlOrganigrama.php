@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 
 	<!-- Styles neptune -->
 	<?php include("neptune_styles.php"); ?>
@@ -85,11 +85,27 @@
 			text-decoration: none;
 		}
 
-		.org-card-btn:hover { background: #f1f5f9; color: #1e293b; }
-		a.org-card-btn, a.org-card-btn:visited { color: #64748b !important; }
-		a.org-card-btn:hover { color: #1e293b !important; }
-		a.org-card-btn .material-symbols-outlined { color: #64748b !important; }
-		a.org-card-btn:hover .material-symbols-outlined { color: #1e293b !important; }
+		.org-card-btn:hover {
+			background: #f1f5f9;
+			color: #1e293b;
+		}
+
+		a.org-card-btn,
+		a.org-card-btn:visited {
+			color: #64748b !important;
+		}
+
+		a.org-card-btn:hover {
+			color: #1e293b !important;
+		}
+
+		a.org-card-btn .material-symbols-outlined {
+			color: #64748b !important;
+		}
+
+		a.org-card-btn:hover .material-symbols-outlined {
+			color: #1e293b !important;
+		}
 
 
 		.org-card-btn.danger {
@@ -102,23 +118,47 @@
 			background: #ffe4e6;
 		}
 
-		.org-card-btn .material-symbols-outlined { font-size: 14px; }
+		.org-card-btn .material-symbols-outlined {
+			font-size: 14px;
+		}
 
-		.org-card-title-wrap { position: relative; }
+		.org-card-title-wrap {
+			position: relative;
+		}
+
 		.org-card-title-input {
-			width: 100%; font-size: 15px; font-weight: 600; color: #1e293b;
-			border: 1.5px solid #008837; border-radius: 6px;
-			padding: 2px 30px 2px 6px; outline: none;
+			width: 100%;
+			font-size: 15px;
+			font-weight: 600;
+			color: #1e293b;
+			border: 1.5px solid #008837;
+			border-radius: 6px;
+			padding: 2px 30px 2px 6px;
+			outline: none;
 			background: #f0fdf4;
 		}
+
 		.org-card-title-save {
-			position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
-			background: #008837; border: none; border-radius: 4px;
-			width: 22px; height: 22px; cursor: pointer;
-			display: flex; align-items: center; justify-content: center;
+			position: absolute;
+			right: 4px;
+			top: 50%;
+			transform: translateY(-50%);
+			background: #008837;
+			border: none;
+			border-radius: 4px;
+			width: 22px;
+			height: 22px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			padding: 0;
 		}
-		.org-card-title-save .material-symbols-outlined { font-size: 13px; color: #111; }
+
+		.org-card-title-save .material-symbols-outlined {
+			font-size: 13px;
+			color: #111;
+		}
 	</style>
 </head>
 
@@ -128,15 +168,15 @@
 		<!-- Preloader - style you can find in spinners.css -->
 		<!-- ============================================================== -->
 		<!-- <div class="preloader">
-            <div class="loader">
-                <div class="loader__figure"></div>
-                <p class="loader__label">PIP</p>
-            </div>
-        </div> -->
+			<div class="loader">
+				<div class="loader__figure"></div>
+				<p class="loader__label">PIP</p>
+			</div>
+		</div> -->
 		<div id="Menu">
 			<?php
-            include("menus.php");
-?>
+			include("menus.php");
+			?>
 		</div>
 		<div class="app-container">
 			<?php include("includes/_Header.php"); ?>

@@ -7,7 +7,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-	<title>PIP by Lugo</title>
+	<title>La Esmeralda</title>
 	<!-- Styles neptune -->
 
 	<?php include("neptune_styles.php"); ?>
@@ -60,15 +60,15 @@
 		<!-- Preloader - style you can find in spinners.css -->
 		<!-- ============================================================== -->
 		<!-- <div class="preloader">
-            <div class="loader">
-                <div class="loader__figure"></div>
-                <p class="loader__label">PIP</p>
-            </div>
-        </div> -->
+			<div class="loader">
+				<div class="loader__figure"></div>
+				<p class="loader__label">PIP</p>
+			</div>
+		</div> -->
 		<div id="Menu">
 			<?php
-            include("menus.php");
-?>
+			include("menus.php");
+			?>
 		</div>
 		<div class="app-container">
 			<?php include("includes/_Header.php"); ?>

@@ -196,7 +196,7 @@
       // Query optimizada: subconsultas TIMESTAMPDIFF convertidas a expresiones directas
       // eliminando sub-consultas correlacionadas redundantes por fila
       $q = "SELECT * FROM  (
-                    SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoBirthday' as Archivo,'PIP By Lugo' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
+                    SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoBirthday' as Archivo,'La Esmeralda' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
                     TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) as DMinutos,
                     TIMESTAMPDIFF(HOUR,F.Registro,NOW()) as DHoras,
                     TIMESTAMPDIFF(DAY,F.Registro,NOW()) as DDias,
@@ -214,7 +214,7 @@
                     ORDER BY F.Registro DESC
                     ) AS TABLA1
                     UNION ALL
-        SELECT * FROM (SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoAnniversary' as Archivo,'PIP By Lugo' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
+        SELECT * FROM (SELECT F.Hipervinculo,F.idFeed,F.Titulo,F.Descripcion,F.Registro,'$NombreArchivoAnniversary' as Archivo,'La Esmeralda' as Nombre,'0' AS NoEmpleado,'0.png' as Imagen,
                     TIMESTAMPDIFF(MINUTE,F.Registro,NOW()) as DMinutos,
                     TIMESTAMPDIFF(HOUR,F.Registro,NOW()) as DHoras,
                     TIMESTAMPDIFF(DAY,F.Registro,NOW()) as DDias,

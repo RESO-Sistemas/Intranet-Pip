@@ -16,13 +16,13 @@
 
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
 
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
 
   <!-- Styles neptune -->
 
 
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
 
 
@@ -305,7 +305,7 @@
 
   <!-- neptune Javascripts -->
 
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
 
   <!-- neptune Javascripts -->
 

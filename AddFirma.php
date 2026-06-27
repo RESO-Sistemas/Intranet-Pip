@@ -8,12 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/images/logo-pip.png">
-  <title>PIP by Lugo</title>
+  <title>La Esmeralda</title>
   <!-- Styles neptune -->
 
-  <?php include("neptune_styles.php");  ?>
+  <?php include("neptune_styles.php"); ?>
 
   <!-- Styles neptune -->
 
@@ -49,7 +50,8 @@
               </div>
             </div>
             <div class="row">
-              <div id="contentCanvas" class="col form-control form-control-solid-bordered" style="text-align:center;height:100%;width:100%;">
+              <div id="contentCanvas" class="col form-control form-control-solid-bordered"
+                style="text-align:center;height:100%;width:100%;">
                 <canvas id="draw-canvas">
                   No tienes un buen navegador.
                 </canvas>
@@ -60,7 +62,8 @@
             </div>
             <div class="row mt-4">
               <div class="col text-start">
-                <a href="<?= $_SERVER["HTTP_REFERER"] ?>"><button id="Regresar" class="btn btn-danger"> Regresar </button></a>
+                <a href="<?= $_SERVER["HTTP_REFERER"] ?>"><button id="Regresar" class="btn btn-danger"> Regresar
+                  </button></a>
               </div>
               <div class="col text-end">
                 <button id="draw-submitBtn" onclick="" class="btn btn-success">
@@ -100,20 +103,20 @@
   <script src="scripts/index.js"></script>
 
   <!-- neptune Javascripts -->
-  <?php include("neptune_js.php");  ?>
+  <?php include("neptune_js.php"); ?>
   <!-- neptune Javascripts -->
   <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
 
 
-      (function() {
-        window.requestAnimFrame = (function(callback) {
+      (function () {
+        window.requestAnimFrame = (function (callback) {
           return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
             window.msRequestAnimaitonFrame ||
-            function(callback) {
+            function (callback) {
               window.setTimeout(callback, 1000 / 60);
             };
         })();
@@ -131,11 +134,11 @@
         var clearBtn = document.getElementById("draw-clearBtn");
         var submitBtn = document.getElementById("draw-submitBtn");
 
-        clearBtn.addEventListener("click", function(e) {
+        clearBtn.addEventListener("click", function (e) {
           clearCanvas();
         }, false);
 
-        submitBtn.addEventListener("click", function(e) {
+        submitBtn.addEventListener("click", function (e) {
           var dataUrl = canvas.toDataURL();
           SubirFirma(dataUrl);
         }, false);
@@ -146,22 +149,22 @@
           y: 0
         };
         var lastPos = mousePos;
-        canvas.addEventListener("mousedown", function(e) {
+        canvas.addEventListener("mousedown", function (e) {
           var tint = document.getElementById("color");
           var punta = document.getElementById("puntero");
           console.log(e);
           drawing = true;
           lastPos = getMousePos(canvas, e);
         }, false);
-        canvas.addEventListener("mouseup", function(e) {
+        canvas.addEventListener("mouseup", function (e) {
           drawing = false;
         }, false);
-        canvas.addEventListener("mousemove", function(e) {
+        canvas.addEventListener("mousemove", function (e) {
           mousePos = getMousePos(canvas, e);
         }, false);
 
 
-        canvas.addEventListener("touchstart", function(e) {
+        canvas.addEventListener("touchstart", function (e) {
           mousePos = getTouchPos(canvas, e);
           console.log(mousePos);
           e.preventDefault();
@@ -173,19 +176,19 @@
           canvas.dispatchEvent(mouseEvent);
         }, false);
 
-        canvas.addEventListener("touchend", function(e) {
+        canvas.addEventListener("touchend", function (e) {
           e.preventDefault();
           var mouseEvent = new MouseEvent("mouseup", {});
           canvas.dispatchEvent(mouseEvent);
         }, false);
 
-        canvas.addEventListener("touchleave", function(e) {
+        canvas.addEventListener("touchleave", function (e) {
           e.preventDefault();
           var mouseEvent = new MouseEvent("mouseup", {});
           canvas.dispatchEvent(mouseEvent);
         }, false);
 
-        canvas.addEventListener("touchmove", function(e) {
+        canvas.addEventListener("touchmove", function (e) {
           e.preventDefault();
           var touch = e.touches[0];
           var mouseEvent = new MouseEvent("mousemove", {
@@ -250,17 +253,17 @@
           op: "SubirFirma",
           imagen64: imagen64
         },
-        success: function(text) {
-          setTimeout(function() {
+        success: function (text) {
+          setTimeout(function () {
             $("#Regresar").click();
           }, 1500);
         },
-        error: function(e) {
+        error: function (e) {
           alert(e.responseText);
         }
       });
     }
-    $("#Regresar").click(function() {
+    $("#Regresar").click(function () {
       window.history.go(-1);
     });
   </script>
